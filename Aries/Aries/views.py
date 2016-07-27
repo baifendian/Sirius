@@ -9,7 +9,9 @@ from django.shortcuts import render,render_to_response,redirect
 import json
 from django.http import HttpResponse
 from user_auth.models import *
+
 def login(request):
+    ac_logger.info("######################login#######")
     if request.method == "POST":
         res = {}
         username = "pan.lu"
