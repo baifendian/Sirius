@@ -20,7 +20,7 @@ CORS_ORIGIN_WHITELIST = (
     '192.168.164.120:4001'
 )
 
-import ldap
+#import ldap
 #from django_auth_ldap.config import LDAPSearch
 AUTH_LDAP_SERVER_URI = 'ldap://172.24.3.170:389'
 AUTH_LDAP_USER_DN_TEMPLATE = 'uid=%(user)s,ou=wiki,dc=bfdabc,dc=com'
@@ -135,19 +135,19 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'online',
-            'filename' : '/opt/pan.lu/gitsource/Aries/log/error.log'.replace('\\','/')
+            'filename' : '/Users/pan.lu/work/前端/Sirius/log/error.log'.replace('\\','/')
         },
         'ac_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Aries/log/service.log'.replace('\\','/')
+            'filename' :'/Users/pan.lu/work/前端/Sirius/log/service.log'.replace('\\','/')
         },
         'hdfs_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Aries/log/hdfs.log'.replace('\\','/')
+            'filename' :'/Users/pan.lu/work/前端/Sirius/log/hdfs.log'.replace('\\','/')
         },
         'console':{
             'level':'DEBUG',

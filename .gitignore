@@ -29,7 +29,4 @@ node_modules/
 build/
 dist/
 
-webpack.config.js
-data/
-package.json
 .eslintrc
