@@ -1,0 +1,124 @@
+
+.service-manage{
+  /* 公共部分 */
+  .container{
+    height: 25px;
+    width: 70px;
+    position: relative;
+    border: 1px solid #D4D4D4;
+    margin-top: 3px;
+    margin-right: 3px;
+    -moz-border-radius: 15px;      /* Gecko browsers */
+    -webkit-border-radius: 15px;   /* Webkit browsers */
+    border-radius:15px;            /* W3C syntax */
+    float: left;
+    .round{
+      width:10px;
+      height:10px;
+      display: inline-block;
+      font-size:10px;
+      line-heigth:10px;
+      color:#f00;
+      text-decoration:none;
+      z-index: 9999;
+    }
+  }
+  div:hover{
+    cursor:pointer;
+  }
+  .healthy{
+    background:#4ad083;
+  }
+  .except{
+    background: #fc6154;
+  }
+  .select{
+    background: #57a3f2;
+  }
+  .all{
+    background: #cccccc;
+  }
+
+  /* head部分 */
+  .head{
+     height:50px;
+     border: 0px solid #D4D4D4;
+     > div{
+        color:#ffffff;
+        text-align:center;
+        line-height:22px;
+      }
+  }
+
+  /* top部分 */
+  .top{
+      border: 1px solid #D4D4D4;
+      height: 300px;
+      padding: 3px;
+      overflow-y: scroll;
+  }
+
+  .bottom{
+    margin-top: 0px;
+    .title{
+      border: 0px;
+      line-height: 30px;
+      margin-bottom: 5px;
+    }
+
+    .left{
+      border: 0px solid #D4D4D4;
+      width: 50%;
+      float: left;
+      height: 100%;
+      margin-right: 3%;
+      overflow-y: scroll;
+      .desc{
+        border: 1px solid #D4D4D4;
+        min-height: 150px;
+        overflow-y: scroll;
+        .component{
+          line-height: 40px;
+          margin: 10px;
+          .left{
+            display: inline;
+            border: 0px;
+          }
+          .right{
+            display: inline;
+            border: 0px;
+          }
+        }
+        .service{
+          margin: 10px;
+          .service-bt{
+            position: relative;
+            border: 1px solid #D4D4D4;
+            margin-top: 3px;
+            margin-right: 3px;
+
+          }
+        }
+      }
+    }
+
+    .right{
+      width: 47%;
+      float: right;
+      height: 100%;
+      overflow-y: scroll;
+      .desc{
+        border: 1px solid #D4D4D4;
+        min-height: 150px;
+        overflow-y: scroll;
+        padding: 5px;
+        text-align: center;
+      }
+    }
+  }
+
+  /* 最后fetch部分 */
+  .div-Fetch{
+    display: none;;
+  }
+}
