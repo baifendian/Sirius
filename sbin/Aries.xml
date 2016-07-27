@@ -1,0 +1,10 @@
+<uwsgi>
+<pythonpath>/opt/pan.lu/gitsource/Aries/Aries</pythonpath>
+  <module>Aries.wsgi</module>
+  <master/>
+  <harakiri>100</harakiri>
+  <processes>10</processes>
+  <daemonize>/opt/pan.lu/gitsource/Aries/log/uwsgi.log</daemonize>
+  <http>0.0.0.0:10087</http>
+  <enable-threads></enable-threads>
+</uwsgi>
