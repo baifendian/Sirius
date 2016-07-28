@@ -1,3 +1,4 @@
+#encoding=utf8
 """
 Django settings for Aries project.
 
@@ -70,6 +71,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'user_auth',
     'hdfs',
+    'kd_agent',
     #'Aries',
 )
 
@@ -149,6 +151,12 @@ LOGGING = {
             'formatter': 'complete',
             'filename' :'/Users/pan.lu/work/前端/Sirius/log/hdfs.log'.replace('\\','/')
         },
+        'kd_agent_file': {
+            'level':'DEBUG',
+            'class':'logging.FileHandler',
+            'formatter': 'complete',
+            'filename' :'/Users/pan.lu/work/前端/Sirius/log/kd_agent.log'.replace('\\','/')
+        },
         'console':{
             'level':'DEBUG',
             'class':'logging.StreamHandler',
@@ -175,6 +183,11 @@ LOGGING = {
             'propagate': False,
             'level':'DEBUG',
         },
+        'kd_agent_log': {
+            'handlers':['kd_agent_file','console'],
+            'propagate': False,
+            'level':'DEBUG',
+        },
         'django.request': {
             'handlers': ['ac_file', 'mail_admins'],
             'level': 'ERROR',
@@ -188,6 +201,10 @@ LOGGING = {
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
+# 提供k8s服务的地址
+K8S_IP = '172.24.3.150'
+K8S_PORT = 8080
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -196,6 +213,15 @@ DATABASES = {
         'PORT':'3306',
         'USER':'root',
         'PASSWORD':'baifendian'
+    },
+    # used by app : kd_agent 
+    'kd_agent_bdms': {
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'bdms_web',                   # Or path to database file if using sqlite3.
+        'USER': 'bdms',                       # Not used with sqlite3.
+        'PASSWORD': 'bdms',                   # Not used with sqlite3.
+        'HOST': '172.24.2.114',             # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3306',                       # Set to empty string for default. Not used with sqlite3.
     }
 }
 

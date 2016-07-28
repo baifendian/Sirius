@@ -79,6 +79,39 @@ export default render((
           })
         }}/>
       </Route>
+      <Route path="CalcManage">
+        <Route path="Overview" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/CalcManage/Overview').default)
+          })
+        }}/>
+        <Route path="PodInfo" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/CalcManage/PodInfo').default)
+          })
+        }}/>
+        <Route path="ServiceInfo" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/CalcManage/ServiceInfo').default)
+          })
+        }}/>
+        <Route path="ReplicationControllerInfo" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/CalcManage/ReplicationControllerInfo').default)
+          })
+        }}/>
+        <Route path="MyTask" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/CalcManage/MyTask').default)
+          })
+        }}/>
+        <Route path="CreateCluster" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/CalcManage/CreateCluster').default)
+          })
+        }}/>
+      </Route>
+
       <Route path="login" getComponent={(location, cb) => {
         require.ensure([], require => {
           cb(null, require('./functions/Login').default)
