@@ -2,53 +2,16 @@ import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd/message'
 import Toolkit from 'public/Toolkit/index.js'
 
-xhr.baseUrl = 'http://172.24.5.69:8000/'
-xhr.timeout = 5000
-xhr.onTimeout = (option) => {
-  option.error && option.error({
-    code: 0,
-    msg: 'call option.error occur timeout'
-  })
-}
-xhr.error = (res, option) => {
-  option.error && option.error({
-    code: 0,
-    msg: 'call option.error occur error'
-  })
-}
-xhr.success = (res, option) => {
-  let retu_data = JSON.parse(res)
-  if (typeof retu_data === 'object') {
-    if (retu_data.code && retu_data.code === 1) {
-      option.success && option.success(retu_data)
-    } else {
-      option.error && option.error(retu_data)
-    }
-  } else {
-    option.error && option.error({
-      code: 0,
-      msg: 'unknown error'
-    })
-  }
-}
-
-
-
 var CalcManageDataRequester = {
-  /*
-  getIPAddr(){
-    return 'http://172.24.3.150:8080'
-  },*/
   getCurNameSpace( _this ) {
-    return 'default'
-    //return _this.props.location.query.cur_space
+    return _this.props.location.query.cur_space
   },
   getUrlForm() {
     return {
-      'podlist': 'api/v1/namespaces/{nameSpace}/pods',
-      'serviceList': 'api/v1/namespaces/{nameSpace}/services',
-      'rclist': 'api/v1/namespaces/{nameSpace}/replicationcontrollers',
-      'mytasklist': 'api/v1/namespaces/mytasklist',
+      'podlist': 'k8s/api/v1/namespaces/{nameSpace}/pods',
+      'serviceList': 'k8s/api/v1/namespaces/{nameSpace}/services',
+      'rclist': 'k8s/api/v1/namespaces/{nameSpace}/replicationcontrollers',
+      'mytasklist': 'k8s/api/v1/namespaces/mytasklist',
 
     }
   },
@@ -84,12 +47,10 @@ var CalcManageDataRequester = {
       url: url,
       type: 'GET',
       success: (retu_data) => {
-        callback(_this, retu_data.data)
-      },
-      error: (retu_data) => {
-        message.danger(retu_data.msg || 'unknown error')
+        callback(_this, retu_data)
       }
     })
+  
   },
 
 
