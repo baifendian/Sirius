@@ -30,3 +30,5 @@ build/
 dist/
 
 .eslintrc
+index.ejs
+index.jsp
