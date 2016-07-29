@@ -6,9 +6,10 @@
     "theme": "node bin/theme.js -#42a5f5:#ff7043 -#2196f3:#ff5722 -#1e88e5:#f4511e"
   },
   "dependencies": {
-    "bfd-ui": "^0.2.0",
-    "react-copy-to-clipboard":"^4.2.2",
-    "vis":"^4.16.1"
+    "bfd-ui": "^0.6.0",
+    "react-copy-to-clipboard": "^4.2.2",
+    "uuid": "^2.0.2",
+    "vis": "^4.16.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.6",
