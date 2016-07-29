@@ -37,6 +37,7 @@ def return_http_json(func):
 
         obj = HttpResponse( json.dumps(retu_obj) )
         obj['Access-Control-Allow-Origin'] = '*'
+        obj['Content-Type'] = 'application/json'
         return obj
     return wrapper
 
@@ -47,10 +48,10 @@ def generate_retu_info( code,msg,**ext_info ):
     return retu_data
 
 def generate_success(**ext_info):
-    return generate_retu_info( 1,'',**ext_info )
+    return generate_retu_info( 200,'',**ext_info )
 
 def generate_failure( msg,**ext_info ):
-    return generate_retu_info( 0,msg,**ext_info )
+    return generate_retu_info( 201,msg,**ext_info )
 
 # 去掉时间字符串 2016-07-15T14:38:02Z 中的T、Z
 def trans_time_str(time_str):
