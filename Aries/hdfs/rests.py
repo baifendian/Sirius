@@ -25,7 +25,7 @@ class pathOp(APIView):
         try:
             result = OP_DICT.get("GET").get(op)(request,path)
         except Exception,e:
-            ac_logger.error(e)
+            ac_logger.error(traceback.format_exc())
             result = {"code":"500","msg":"interval error"}
         return packageResponse(result)
 
@@ -92,4 +92,46 @@ class capacityRecovery(APIView):
             ac_logger.error(traceback.format_exc())
             result = {"code":"500","msg":"interval error"}
         return packageResponse(result)
-            
+
+class HostState(APIView):
+    '''
+    主机健康状态
+    '''
+    def get(self, request, format=None):
+        result = HostStateGET(request)
+        return packageResponse(result)
+
+class Relation(APIView):
+    '''
+    各机器上组件的状态
+    '''
+    def get(self, request, host_name, format=None):
+        result = RelationGET(request, host_name)
+        return packageResponse(result)
+
+
+class OperateService(APIView):
+    '''
+    '''
+    def post(self, request, format=None):
+        command = request.GET.get('command')
+        params = request.GET.get('params')
+        result = OperateServicePOST(request, command, params)
+        #response = HttpResponse(content_type='application/json')
+        #response.write(json.dumps(result))
+        #response["Access-Control-Allow-Origin"] = "*"
+        return packageResponse(result)
+
+class OperateComponent(APIView):
+    def post(self, request, host_name, component_name, operate, format=None):
+        #ac_logger.info('a..... %s %s %s ' %(host_name, component_name, operate))
+        if operate == 'RESTART':
+            result = OperateComponentPOST(request, host_name, component_name, operate)
+        elif operate == 'START' or operate == 'STOP':
+            result = OperateComponentPUT(request, host_name, component_name, operate)
+        else:
+            ac_logger.error('operate error')
+        #response = HttpResponse(content_type='application/json')
+        #response.write(json.dumps(result))
+        #response["Access-Control-Allow-Origin"] = "*"
+        return packageResponse(result)

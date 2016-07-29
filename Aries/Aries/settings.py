@@ -137,25 +137,25 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'online',
-            'filename' : '/Users/pan.lu/work/前端/Sirius/log/error.log'.replace('\\','/')
+            'filename' : '/opt/pan.lu/gitsource/Sirius/log/error.log'.replace('\\','/')
         },
         'ac_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/Users/pan.lu/work/前端/Sirius/log/service.log'.replace('\\','/')
+            'filename' :'/opt/pan.lu/gitsource/Sirius/log/service.log'.replace('\\','/')
         },
         'hdfs_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/Users/pan.lu/work/前端/Sirius/log/hdfs.log'.replace('\\','/')
+            'filename' :'/opt/pan.lu/gitsource/Sirius/log/hdfs.log'.replace('\\','/')
         },
         'kd_agent_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/Users/pan.lu/work/前端/Sirius/log/kd_agent.log'.replace('\\','/')
+            'filename' :'/opt/pan.lu/gitsource/Sirius/log/service.log'.replace('\\','/')
         },
         'console':{
             'level':'DEBUG',

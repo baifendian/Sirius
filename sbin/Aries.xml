@@ -1,5 +1,5 @@
 <uwsgi>
-<pythonpath>/opt/pan.lu/gitsource/Aries/Aries</pythonpath>
+<pythonpath>/opt/pan.lu/gitsource/Sirius/Aries</pythonpath>
   <module>Aries.wsgi</module>
   <master/>
   <harakiri>100</harakiri>

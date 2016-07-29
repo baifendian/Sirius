@@ -32,3 +32,5 @@ dist/
 .eslintrc
 index.ejs
 index.jsp
+Aries.xml
+Aries.sh

@@ -389,7 +389,117 @@ def showShare(request,path):
         result["code"] = StatusCode["GET_FAILED"]
         result["data"] = "share failed"
         return result
+
+def HostStateGET(request):
+    dic = req()
+    result = {}
+    if not dic.has_key('status'):
+        all_host = []
+        unhealthy_host = []
+        for i in dic['items']:
+            for j in i['host_components']:
+                all_host.append(j['HostRoles']['host_name']) #所有主机
+                if j['HostRoles']['service_name'] == 'HDFS' and j['HostRoles']['state'] == 'INSTALLED' and j['HostRoles']['component_name'] is not 'HDFS_CLIENT':
+                    unhealthy_host.append(j['HostRoles']['host_name']) #不健康的主机
+        healthy_host = [i for i in all_host if i not in unhealthy_host]
+        a = list(set(all_host))
+        result["code"] = StatusCode["GET_SUCCESS"]
+        result["msg"]="OK"
+        data = {}
+        data["healthy"] = list(set(healthy_host))
+        data["except"] = list(set(unhealthy_host))
+        data["all"] = a
+        result["data"] = data
+    else:
+        result["code"] = StatusCode["GET_FAILED"]
+        result["msg"] = "error"
+    ac_logger.info('result........:%s'%result)
+    return result
+
+def RelationGET(request, host_name):
+    dic = req()
+    relation = []
+    result = {}
+    allhost = []
+    if not dic.has_key('status'):
+        for i in dic['items']:
+            for j in i['host_components']:
+                allhost.append(j['HostRoles']['host_name'])
+                if host_name in allhost:
+                    if j['HostRoles']['service_name'] == 'HDFS' and j['HostRoles']['component_name'] is not 'HDFS_CLIENT' and j['HostRoles']['host_name'] == host_name:
+                         relation.append({"component": j['HostRoles']['component_name'], "state": j['HostRoles']['state']})
+                         result["code"] = StatusCode["GET_SUCCESS"]
+                         result["msg"]="OK"
+                         result["data"] = relation
+                else:
+                    result["code"] = StatusCode["GET_FAILED"]
+                    result["msg"] = "Host name ERROR"
+                    result["data"] = ''
+    else:
+        result["code"] = StatusCode["GET_FAILED"]
+        result["msg"] = "error"
+    ac_logger.info('result........:%s'%result)
+    return result
+
+def OperateServicePOST(request, command, params):
+    import requests
+    from requests.auth import HTTPBasicAuth
+    result = {}
+    url = 'http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/requests'
+    files = '{"RequestInfo":{"context":"Execute %s By Sirius","command":"ARCHIVE","parameters/path":"/%s"},"Requests/resource_filters":[{"service_name":"HDFS","component_name":"HDFS_CLIENT","hosts":"hlg3p64-lupan"}]}' %(command, params)
+    r = requests.post(url, files, auth=HTTPBasicAuth('admin','admin'))
+    a = eval(r.text.encode('ascii'))
+    if a.has_key('Requests') and a['Requests']['status'] == 'Accepted':
+        result["code"] = StatusCode["POST_SUCCESS"]
+        result["msg"] = "OK"
+    else:
+        result["code"] = StatusCode["POST_FAILED"]
+        result["msg"] = "ERROR"
+    ac_logger.info('result........:%s'%result)
+    return result
+
+def OperateComponentPOST(request, host_name, component_name, operate):
+    import requests
+    from requests.auth import HTTPBasicAuth
+    result = {}
+    url = 'http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/requests'
+    files = '{"RequestInfo":{"command":"RESTART","context":"Restart %s via Sirius","operation_level":{"level":"HOST","cluster_name":"hlg_ambari"}}, "Requests/resource_filters":[{"service_name":"HDFS","component_name":"%s","hosts":"%s"}]}' %(component_name, component_name, host_name)
+    r = requests.post(url, files, auth=HTTPBasicAuth('admin','admin'))
+    a = eval(r.text.encode('ascii'))
+    if a.has_key('Requests') and a['Requests']['status'] == 'Accepted':
+        result["code"] = StatusCode["POST_SUCCESS"]
+        result["msg"] = "OK"
+    else:
+        result["code"] = StatusCode["POST_FAILED"]
+        result["msg"] = "ERROR"
+    ac_logger.info('result........:%s'%result)
+    return result
          
+def OperateComponentPUT(request, host_name, component_name, operate):
+    import requests
+    from requests.auth import HTTPBasicAuth
+    result = {}
+    url = 'http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/hosts/%s/host_components/%s' %(host_name, component_name)
+    if operate == 'STOP':
+        files = '{"RequestInfo": {"context" :"STOP %s via Sirius"}, "HostRoles": {"state": "INSTALLED"}}'%component_name
+    else:
+        files = '{"RequestInfo": {"context" :"START %s via Sirius"}, "HostRoles": {"state": "STARTED"}}'%component_name
+    r = requests.put(url, files, auth=HTTPBasicAuth('admin','admin'))
+    a = eval(r.text.encode('ascii'))
+    if a.has_key('Requests') and a['Requests']['status'] == 'Accepted':
+        result["code"] = StatusCode["POST_SUCCESS"]
+        result["msg"] = "OK"
+    else:
+        result["code"] = StatusCode["POST_FAILED"]
+        result["msg"] = "ERROR"
+    return result
+
+def req():
+    import requests
+    from requests.auth import HTTPBasicAuth
+    r = requests.get('http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/hosts?fields=host_components/HostRoles/state,host_components/HostRoles/service_name', auth=HTTPBasicAuth('admin', 'admin'))
+    dic = eval(r.text)
+    return dic
 
 OP_DICT={
     "GET":{
