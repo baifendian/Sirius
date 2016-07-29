@@ -8,7 +8,6 @@ import Transfer from 'bfd-ui/lib/Transfer'
 import Fetch from 'bfd-ui/lib/Fetch'
 import { Select, Option } from 'bfd-ui/lib/Select2'
 import xhr from 'bfd-ui/lib/xhr'
-import $ from 'jquery';
 import message from 'bfd-ui/lib/message'
 
 const SpaceManager = React.createClass({
