@@ -20,10 +20,12 @@ const Bottom = React.createClass({
           let component =<div className="component">
                   <div className="left">{data.component}</div>
                   <div className="right">
-                    <Select defaultValue={data.status} onChange={()=>{this.handleChange(data.name,data.component)}}>
-                      <Option value="START">START</Option>
-                      <Option value="STOP">STOP</Option>
+                    <Select defaultValue={data.state} onChange={()=>{this.handleChange(data.name,data.component)}}>
+                      <Option value="STARTED">START</Option>
+                      <Option value="STOPED">STOP</Option>
                       <Option value="RESTART">RESTART</Option>
+                      <Option value="INSTALLED">INSTALLED</Option>
+
                     </Select>
                   </div>
                 </div>

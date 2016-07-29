@@ -1,5 +1,11 @@
 # Sirius
 
+## namespace的命名规则
+<pre><code>
+    与python中的变量名具有相同的规则，即：以字母、下划线开头，直接接任意的字母、下划线、数字
+</code></pre>
+
+
 ## 页面编译、部署
 
 #### 编译
@@ -25,7 +31,6 @@
     $ npm run build
 
     # 如果编译成功，则当前目录下将会生成 build 文件夹和 index.jsp 文件
-
 </code></pre>
 
 #### 部署
@@ -44,80 +49,68 @@
     # 替换到 Aries/user_auth/templates/index/index.html 文件的相同位置（只替换文件名，不替换路径）
 </code></pre>
 
-
-
-
-
-
-
-
-
-
 ## k8s-dashboard-agent
-
 * 将k8s的API返回的复杂数据的处理放到后端进行
 * 避免出现跨域请求拒绝的问题，方便 dashboard 的开发工作
 
 #### 开发环境
-<pre>
-<code>
+<pre><code>
     Python == 2.7.10
     Django == 1.6.2
     MySQL-python
-</code>
-</pre>
+</code></pre>
 
 #### 配置（修改 **Aries\Aries\settings.py**）
-1. k8s原生服务地址
+* k8s原生服务地址
 
 <pre><code>
-        K8S_IP = '172.24.3.150'
-        K8S_PORT = 8080
+	K8S_IP = '172.24.3.150'
+	K8S_PORT = 8080
 </code></pre>
 
-2. BDMS数据源
+* BDMS数据源
 
 <pre><code>
-        DATABASES = {
-            'xxx'{              # 其它数据库连接
-            },
-            'kd_agent_bdms': {
-                'ENGINE': 'django.db.backends.mysql',
-                'NAME': 'bdms_web',
-                'USER': 'xxx',
-                'PASSWORD': 'xxx',
-                'HOST': 'xxx',
-                'PORT': '3306',
-            }
+    DATABASES = {
+        'xxx'{              # 其它数据库连接
+        },
+        'kd_agent_bdms': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'bdms_web',
+            'USER': 'xxx',
+            'PASSWORD': 'xxx',
+            'HOST': 'xxx',
+            'PORT': '3306',
         }
+    }
 </code></pre>
 
-3. Log文件路径
+* Log文件路径
 
 <pre><code>
-        LOGGING = {
+    LOGGING = {
+	    'xxx':{
+        },
+        'handlers':{
             'xxx':{
             },
-            'handlers':{
-                'xxx':{
-                },
                 'kd_agent_file': {
-                    'level':'DEBUG',
-                    'class':'logging.FileHandler',
-                    'formatter': 'complete',
-                    'filename' :'/root/pan.guo/logs/kd_agent.log'.replace('\\','/')     # 修改log路径
-                }
-            }
-            'loggers': {
-                'xxx': {
-                },
-                'kd_agent_log': {
-                    'handlers':['kd_agent_file','console'],
-                    'propagate': False,
-                    'level':'DEBUG',
-                },
+                'level':'DEBUG',
+                'class':'logging.FileHandler',
+                'formatter': 'complete',
+                'filename' :'/root/pan.guo/logs/kd_agent.log'.replace('\\','/')     # 修改log路径
             }
         }
+        'loggers': {
+            'xxx': {
+            },
+            'kd_agent_log': {
+                'handlers':['kd_agent_file','console'],
+                'propagate': False,
+                'level':'DEBUG',
+            },
+        }
+    }
 </code></pre>
 
 
