@@ -5,31 +5,27 @@ import Head from './Head'
 import Top from './Top'
 import Bottom from './Bottom'
 import Fetch from 'bfd-ui/lib/Fetch'
+import xhr from 'bfd-ui/lib/xhr'
 
 const TabManager = React.createClass({
   statusDataSccuess(data){
-    data = [
-            {"hostname":"BFDabc","status":"healthy"},
-            {"hostname":"bcd","status":"except"},
-            {"hostname":"aaa","status":"healthy"},
-            {"hostname":"abc1","status":"healthy"},
-            {"hostname":"bcd1","status":"except"},
-            {"hostname":"aaa1","status":"healthy"},
-            {"hostname":"abc22","status":"healthy"},
-            {"hostname":"bcd33","status":"except"},
-            {"hostname":"aaa33","status":"except"},
-            {"hostname":"a1aa","status":"except"},
-            {"hostname":"a33aa","status":"except"},
-            {"hostname":"a123aa","status":"except"}
-          ];
+    console.log(data);
+    let healthyHost = data.healthy.map(function(hostname){
+                          return {"hostname":hostname,"status":"healthy"}
+                      });
+    let exceptHost = data.except.map(function(hostname){
+                          return {"hostname":hostname,"status":"except"}
+                      });
+    let allHost = healthyHost.concat(exceptHost);
 
+    /*
     let componentData=[
         {"component":"DATANODE","status":"STOP"},
         {"component":"NAMENODE","status":"START"},
         {"component":"ZKFC","status":"STOP"}
           ];
-
-    this.setState({"statusAllData":data,"filterData":data,"componentData":componentData});
+    */
+    this.setState({"statusAllData":allHost,"filterData":allHost});
   },
   statusFilter(status){
     //主要用于实现状态的过滤. all 则这节返回所有的即可. select 返回选中的节点
@@ -53,7 +49,16 @@ const TabManager = React.createClass({
     this.setState({"filterData":filterData});
   },
   updateData(hostname){
-    this.setState({"selectHost":hostname,"operatorType":"COMPONENT"});
+    //获取当前hostname上面组件内容
+    let componentUrl = `v1/hdfs/relation/${hostname}/`;
+    xhr({
+      type: 'GET',
+      url: componentUrl,
+      success:data=> {
+        console.log(data)
+        this.setState({"selectHost":hostname,"operatorType":"COMPONENT","componentData":data});
+      }
+    });
   },
   getInitialState: function() {
     return {
@@ -76,7 +81,7 @@ const TabManager = React.createClass({
           </div>
         </div>
         <div className="div-Fetch">
-          <Fetch style={{minHeight:100}} url="v1/hdfs/aaaa/?op=LISTSTATUS" onSuccess={this.statusDataSccuess}>
+          <Fetch style={{minHeight:0}} url="v1/hdfs/state/" onSuccess={this.statusDataSccuess}>
           </Fetch>
         </div>
       </div>
