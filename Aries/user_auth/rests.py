@@ -78,7 +78,16 @@ class roleList(APIView):
     def get(self,request,format=None):
         result = roleListGET(request)
         return packageResponse(result)
-           
+
+class userList(APIView):
+    def put(self,request,space,format=None):
+        ac_logger.info("put.....:{0}".format(space)) 
+        result = userListPut(request,space) 
+        return packageResponse(result)      
+    
+    def options(self,request,space,format=None):
+        result = {"code":200,"data":"success"} 
+        return packageResponse(result)   
 
 class spaceInfo(APIView):
     '''

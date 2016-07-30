@@ -69,11 +69,15 @@ def logout(request):
     return response
 
 def index(request):
+    #save cur_space
     user = request.user
+    cur_space = request.GET.get("cur_space","")
     if user:
         username = user.username
         account = Account.objects.get(name=username)
-        user = {"name":username,"type":1,"cur_space":account.cur_space}
+        if not cur_space:
+            cur_space = account.cur_space
+        user = {"name":username,"type":1,"cur_space":cur_space}
     else:
         user = ""
     user = json.dumps(user)

@@ -15,20 +15,33 @@ ac_logger = logging.getLogger("access_log")
 from django.contrib.auth.models import User
 from django.shortcuts import render,render_to_response
 from django.http import HttpResponseRedirect
+from django.http import StreamingHttpResponse
 import json
 from user_auth.tools import *
 from service import *
 class pathOp(APIView):
-#    @print_request
+#   @print_request
     def get(self,request,path,format=None):
         op = request.GET.get("op","")
-        try:
-            result = OP_DICT.get("GET").get(op)(request,path)
-        except Exception,e:
-            ac_logger.error(traceback.format_exc())
-            result = {"code":"500","msg":"interval error"}
-        return packageResponse(result)
-
+        #download return httpresponse
+        if op.upper() != "DOWNLOAD":
+            try:
+                result = OP_DICT.get("GET").get(op)(request,path)
+            except Exception,e:
+                ac_logger.error(traceback.format_exc())
+                result = {"code":"500","msg":"interval error"}
+            return packageResponse(result)
+        else:
+            result = OP_DICT.get("GET").get(op)(request,path)            
+            response = StreamingHttpResponse(result.iter_content(1024))
+            response['Content-Type'] = 'application/octet-stream'
+ 	    response['Content-Disposition'] = 'attachment;filename="{0}"'.format("test1.txt")
+            response["Access-Control-Allow-Origin"] = "*"
+            response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
+            return response
+            #for chunk in result.iter_content(1024):
+                
+            #return HttpResponse(result)
   #  @print_request
     def post(self,request,path,format=None):
         op = request.GET.get("op","")
@@ -117,21 +130,14 @@ class OperateService(APIView):
         command = request.GET.get('command')
         params = request.GET.get('params')
         result = OperateServicePOST(request, command, params)
-        #response = HttpResponse(content_type='application/json')
-        #response.write(json.dumps(result))
-        #response["Access-Control-Allow-Origin"] = "*"
         return packageResponse(result)
 
 class OperateComponent(APIView):
     def post(self, request, host_name, component_name, operate, format=None):
-        #ac_logger.info('a..... %s %s %s ' %(host_name, component_name, operate))
         if operate == 'RESTART':
             result = OperateComponentPOST(request, host_name, component_name, operate)
         elif operate == 'START' or operate == 'STOP':
             result = OperateComponentPUT(request, host_name, component_name, operate)
         else:
             ac_logger.error('operate error')
-        #response = HttpResponse(content_type='application/json')
-        #response.write(json.dumps(result))
-        #response["Access-Control-Allow-Origin"] = "*"
         return packageResponse(result)
