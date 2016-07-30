@@ -15,7 +15,6 @@ import './index.less'
 
 export default React.createClass({
   getInitialState: function () {
-    setTimeout( () => { CMDR.getPodList( this,this.xhrCallback ) }, 0);
     this.oriData = []
     let state_dict = {
       // 表格信息
@@ -76,6 +75,13 @@ export default React.createClass({
     }
     let heightArr = this.calcSplitPanelHeight()
     this.onSplitPanelHeightChange(0,0,heightArr[0],heightArr[1])
+
+    // 如果当前保存的namespace与实时获取的namespace相同，则不再重新请求
+    // 否则，重新请求数据
+    if ( this.curNameSpace !== CMDR.getCurNameSpace(this) ){
+      CMDR.getPodList( this,this.xhrCallback )
+      this.curNameSpace = CMDR.getCurNameSpace(this)
+    }
   },
 
   calcSplitPanelHeight(){
