@@ -59,9 +59,10 @@ const MyTable = React.createClass({
     })
   },
   downLoad(path,component){
-    console.log("down load...."+path);
+    //http download
     path = `${this.props.cur_path}/${path}`;
-    let url = `v1/hdfs/${path}/?type=http&op=DOWNLOAD`
+    let url = `v1/hdfs/${path}/?type=http&op=DOWNLOAD&space_name=${this.props.cur_space}`;
+    //使用表单的形式进行数据下载. xhr({type: 'GET',url: url,success(data) {console.log(data)}});
     console.log(component);
   },
   move(path){
@@ -204,6 +205,7 @@ const MyTable = React.createClass({
       }else{
         itemText = <a href="javascript:void(0);" onClick={()=>{this.skip(cur_path,component.is_dir)}} >{item}</a>
       }
+
       return <div className="table-div">
               <div className="table-div">
                 <a style={{marginRight: '5px'}}> {this.iconType[component.is_dir].call(this)} </a>
@@ -212,7 +214,11 @@ const MyTable = React.createClass({
               <div className="table-div-icon div-float">
                 <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要分享 ${cur_path} 吗?`,this.share,component)}}> <Icon type="share-alt" /></a>
                 <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定删除 ${cur_path} 吗?`,this.trash,component)}}> <Icon type="trash" /> </a>
-                <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要下载 ${cur_path} 吗?`,this.downLoad,component)}}> <Icon type="download" /> </a>
+                {component.is_dir < 1 ? [
+                  <a href={`/v1/hdfs/${this.props.cur_path}/${cur_path}/?type=http&op=DOWNLOAD&space_name=${this.props.cur_space}`}
+                    style={{marginRight: '20px'}}> <Icon type="download" /> </a>
+
+                ] : null}
                 <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要压缩 ${cur_path} 吗?`,this.compress,component)}}> <Icon type="compress" /> </a>
                 <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.move(cur_path)}}> <Icon type="arrows" /> </a>
               </div>

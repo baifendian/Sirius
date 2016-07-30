@@ -48,12 +48,16 @@ const App = React.createClass({
   },
   //space切换
   switchSpace(value){
-    this.setState({cur_space:value});
-    this.props.history.push({
-      pathname:this.props.location.pathname,
-      query: { cur_space:value },
-      //state: { fromDashboard: true } 给下个route传值
-    });
+    //更新用户默认cur_space
+    let url = `v1/user_auth/user/${value}/`
+    xhr({type: 'PUT',url: url,success:data=> {
+        this.setState({cur_space:value});
+        this.props.history.push({
+          pathname:this.props.location.pathname,
+          query: { cur_space:value },
+          //state: { fromDashboard: true } 给下个route传值
+        });
+      }});
   },
   // 跳转到登录页
   login() {
@@ -121,7 +125,7 @@ const App = React.createClass({
                   <NavItem icon="equalizer" href={`CalcManage/Overview?${params}`} title="概览" />
                   <NavItem icon="equalizer" href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
                   <NavItem icon="equalizer" href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
-                  <NavItem icon="equalizer" href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />                  
+                  <NavItem icon="equalizer" href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
                   <NavItem icon="equalizer" href={`CalcManage/MyTask?${params}`} title="我的任务" />
                   <NavItem icon="equalizer" href={`CalcManage/CreateCluster?${params}`} title="创建集群" />
                </NavItem>

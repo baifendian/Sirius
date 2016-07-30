@@ -1,15 +1,22 @@
 import React from 'react'
 import Task from 'public/Task'
 import './index.less'
+import TextOverflow from 'bfd-ui/lib/TextOverflow'
 
 const Top = React.createClass({
   switchContainer(hostname){
     this.props.updateData(hostname);
   },
   container:{
-    healthy:function(hostname){return <div onClick={()=>{this.switchContainer(hostname)}} className="container healthy"></div>},
-    except:function(hostname){return <div onClick={()=>{this.switchContainer(hostname)}}  className="container except"></div>},
-    select:function(hostname){return <div onClick={()=>{this.switchContainer(hostname)}}  className="container select"></div>}
+    healthy:function(hostname){return <div onClick={()=>{this.switchContainer(hostname)}} className="container healthy">
+                                          <TextOverflow><p>{hostname}</p></TextOverflow>
+                                      </div>},
+    except:function(hostname){return <div onClick={()=>{this.switchContainer(hostname)}}  className="container except">
+                                          <TextOverflow><p>{hostname}</p></TextOverflow>
+                                      </div>},
+    select:function(hostname){return <div onClick={()=>{this.switchContainer(hostname)}}  className="container select">
+                                          <TextOverflow><p>{hostname}</p></TextOverflow>
+                                      </div>}
   },
   render:function(){
     let selectHost = this.props.selectHost;

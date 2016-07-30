@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === 'production') {
    */
 
   // 数据接口基础 URL
-  env.baseUrl = 'http://172.24.3.64:10087/';
+  env.baseUrl = 'http://172.24.3.64:10086/';
 
   // 页面根路径
   env.basePath = '/'
