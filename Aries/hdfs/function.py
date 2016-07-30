@@ -265,7 +265,9 @@ class HDFS(object):
         hdfs_logger.info("space_path:{0},path:{1}".format(space_path,path))
         path = os.path.realpath("%s/%s/%s" % (os.path.sep,space_path, path))
         hdfs_logger.info("target_path:{0}".format(path))
-        return self.hdfs.open(path)
+        result =  self.hdfs.open(path)
+        hdfs_logger.info("download:{0}".format(result))
+        return result
 
     def _download_file_by_ftp(self, src_path, dest_path, username):
         filename = os.path.split(src_path)[-1]

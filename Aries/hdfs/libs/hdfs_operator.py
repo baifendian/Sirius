@@ -378,7 +378,8 @@ class HdfsClient(object):
             path, 'OPEN', expected_status=httplib.TEMPORARY_REDIRECT, **kwargs)
         data_response = requests.get(metadata_response.headers['location'], stream=True)
         _check_response(data_response)
-        return data_response.raw
+        return data_response
+        #return data_response.raw
 
     def mkdirs(self, path, **kwargs):
         """Create a directory with the provided permission.

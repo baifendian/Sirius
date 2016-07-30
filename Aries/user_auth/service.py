@@ -226,6 +226,21 @@ def spaceInfoGet(request,pk):
     result["data"] = data
     return result
 
+def userListPut(request,space):
+    user = getUser(request)
+    result = {}
+    try:
+        account = getObjByAttr(Account,"name",user.username)[0]
+        account.cur_space = space
+        account.save()
+        result["code"] = 200
+        result["data"] = "put success"
+    except Exception,e:
+        ac_logger.error(e)
+        result["code"] = 500
+        result["data"] = "put failed"
+    return result
+
 def user2Account(user):
     return getObjByAttr(Account,"name",user.username)[0]
 
