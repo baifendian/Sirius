@@ -9,16 +9,23 @@ import Fetch from 'bfd-ui/lib/Fetch'
 
 export default React.createClass({
   sliderDataSccuess(data){
-    data=[{"name":"bre","value":"300","tickValue":"50","start":0,"end":500},
-          {"name":"bae","value":"200","tickValue":"50","start":0,"end":500},
-          {"name":"space1","value":"250","tickValue":"50","start":0,"end":500},
-          {"name":"space2","value":"100","tickValue":"50","start":0,"end":500},
-          {"name":"space3","value":"150","tickValue":"50","start":0,"end":500}];
-    this.setState({"sliderData":data});
+    let percentData = data;
+    let slider_data=data.map((d,index)=>{
+      return {
+              "name":d.name,
+              "value":d.total_capacity,
+              "start":0,
+              "end":d.plan_capacity,
+              }
+    });
+    console.log(percentData);
+    console.log(slider_data);
+    this.setState({"sliderData":slider_data,"percentData":percentData});
   },
   getInitialState: function() {
     return {
-      "sliderData":[]
+      "sliderData":[],
+      "percentData":[],
     };
   },
   render() {
@@ -29,11 +36,11 @@ export default React.createClass({
             <Tab>配额监控</Tab>
             <Tab>配额管理</Tab>
           </TabList>
-          <TabPanel><TabMonitor sliderData={this.state.sliderData} /></TabPanel>
+          <TabPanel><TabMonitor percentData={this.state.percentData} /></TabPanel>
           <TabPanel><TabManager sliderData={this.state.sliderData} /></TabPanel>
         </Tabs>
         <div className="div-Fetch">
-          <Fetch style={{minHeight:100}} url="v1/hdfs/aaaa/?op=LISTSTATUS" onSuccess={this.sliderDataSccuess}>
+          <Fetch style={{minHeight:0}} url="v1/hdfs///?op=SUM" onSuccess={this.sliderDataSccuess}>
           </Fetch>
         </div>
         </div>

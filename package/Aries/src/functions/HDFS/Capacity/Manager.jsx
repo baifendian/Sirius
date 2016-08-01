@@ -2,24 +2,31 @@ import React from 'react'
 import Task from 'public/Task'
 import './index.less'
 import Slider from 'bfd-ui/lib/Slider'
-
+import xhr from 'bfd-ui/lib/xhr'
+import message from 'bfd-ui/lib/message'
 
 const TabMonitor = React.createClass({
   handleSliding(value){
     console.log('sliding'+value);
   },
-  handleSlid(value){
-    console.log('slid:'+value);
+  handleSlid(value,space_name){
+    console.log(`slid:${value}, space_name:${space_name}`);
+    let url = `v1/hdfs///?op=UPSET&space_name=${space_name}`;
+    xhr({type: 'PUT',url: url,data:{"capacity":value},
+      success(data) {
+        message.success(data);
+      }
+    });
+
   },
   render:function(){
-    let sliderData = this.props.sliderData.map((i,slider)=>{
-       return    <div className="row">
-                      <div className="col-sm-5 col-md-5 col-lg-5">
-                      <div>{slider.name}</div>
-                      <Slider defaultValue={300} tickValue={10} start={0} end={500} suffix="G"
-                      onSliding={this.handleSliding} onSlid={this.handleSlid} />
-                      </div>
+    let sliderData = this.props.sliderData.map((slider,i)=>{
+      return  <div >
+                  <div className="col-sm-5 col-md-5 col-lg-5">
+                  {slider.name}<Slider defaultValue={slider.value} tickValue={10} start={0} end={slider.end} suffix="G"
+                  onSlid={(value)=>{this.handleSlid(value,slider.name)}} />
                   </div>
+              </div>
     });
     return <div>{sliderData}</div>
   }
