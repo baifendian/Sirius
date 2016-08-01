@@ -102,6 +102,18 @@ def trashPath(space_path):
     trashPath =  os.path.realpath("/%s/%s/%s/%s" %(os.path.sep,space_path,"/.Trash/Current/",space_path))
     return trashPath 
 
+def unitTransform(size,index,unit):
+    if size/1024.0 > 1024:
+        b = size/1024.0
+        index = index+1
+        return unitTransform(b,index,unit)
+    elif size/1024.0 < 1:
+        return "{0} {1}".format(round(size,1),unit[index])
+    elif size/1024.0 >1 and size/1024.0 < 1024:
+        b = size/1024.0
+        index = index+1
+        return "{0} {1}".format(round(b,1),unit[index])
+
 @print_request
 def test(a,b):
   print a

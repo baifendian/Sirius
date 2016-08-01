@@ -442,12 +442,13 @@ class HDFS(object):
             self.returned['msg'] = "OK"
             # get custom file status
             # self.return['data'] = [{custom_key: item.get('expect_key')} for item in self.returned]
+            unit = ["KB","MB","GB","TB"]
             totalList = [
                 {
                     'name': item.get('pathSuffix'),
                     'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
                     'is_dir': 0 if item.get('type') == "FILE" else 1,
-                    'size': round(item.get('length')/(1024.0 * 1024.0), 1),
+                    'size': unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
                 } for item in result if item.get('pathSuffix') != ".Trash"
             ]
             self.returned['data'] = {"totalList":totalList,"totalPageNum":len(totalList),"currentPage":1}
@@ -483,14 +484,13 @@ class HDFS(object):
         else:
             self.returned['code'] = StatusCode["OK"]
             self.returned['msg'] = "OK"
-            # get custom file status
-            # self.return['data'] = [{custom_key: item.get('expect_key')} for item in self.returned]
+            unit = ["KB","MB","GB","TB"]
             totalList = [
                 {
                     'name': item.get('pathSuffix'),
                     'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
                     'is_dir': 0 if item.get('type') == "FILE" else 1,
-                    'size': round(item.get('length')/(1024.0 * 1024.0), 1),
+                    'size': unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
                 } for item in result if item.get('pathSuffix') != ".Trash"
             ]
             self.returned['data'] = {"totalList":totalList,"totalPageNum":len(totalList),"currentPage":1}
