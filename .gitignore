@@ -1,0 +1,36 @@
+# Windows:
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python:
+*.py[cod]
+*.pyc
+.idea/
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# My configurations:
+db.ini
+deploy_key_rsa
+log/
+*.log
+*.zip
+*.rar
+.svn
+
+
+.DS_Store
+.com.apple.timemachine.supported
+node_modules/
+build/
+dist/
+
+.eslintrc
+index.ejs
+index.jsp
+Aries.xml
+Aries.sh
