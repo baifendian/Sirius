@@ -65,22 +65,21 @@ export default React.createClass({
     })    
   },
 
-  // 通过遍历，使得表格实现隔行换色
-  componentDidUpdate( v ){
-    let table = ReactDOM.findDOMNode(this.refs.DataTable).childNodes[1]
-    let tbody = table.childNodes[1]
-    for (let i = 0 ; i < tbody.childNodes.length ; i ++ ){
-      tbody.childNodes[i].className += (i % 2 === 0) ? ' oddTr' : ' evenTr'
-    }
-    let heightArr = this.calcSplitPanelHeight()
-    this.onSplitPanelHeightChange(0,0,heightArr[0],heightArr[1])
-
+  checkToRequestData(){
     // 如果当前保存的namespace与实时获取的namespace相同，则不再重新请求
     // 否则，重新请求数据
     if ( this.curNameSpace !== CMDR.getCurNameSpace(this) ){
-      CMDR.getServiceList( this,this.xhrCallback )
+      CMDR.getPodList( this,this.xhrCallback )
       this.curNameSpace = CMDR.getCurNameSpace(this)
     }
+  },
+
+  componentDidMount(){
+    this.checkToRequestData()
+  },
+
+  componentDidUpdate(){
+    this.checkToRequestData()
   },
 
   calcSplitPanelHeight(){
