@@ -5,28 +5,17 @@ import Percentage from 'bfd-ui/lib/Percentage'
 
 const TabMonitor = React.createClass({
   render: function() {
+    let percentage = this.props.percentData.map((value,index)=>{
+        let percen = value.used_capacity/value.total_capacity*100;
+        console.log(percen);
+        return <div className="col-sm-6 col-md-4 col-lg-3">
+                <div className="thumbnail function-service-div-border" style={{width:'100px'}}><a href="javascript:">{value.name}</a></div>
+                <div className="caption"><Percentage percent={percen} style={{width: '150px'}}></Percentage></div>
+              </div>
+    });
     return (
         <div className="row">
-          <div className="col-sm-6 col-md-4 col-lg-3">
-            <div className="thumbnail function-service-div-border" style={{width:'100px'}}><a href="javascript:">space1</a></div>
-            <div className="caption"><Percentage percent={30} style={{width: '150px'}}></Percentage></div>
-          </div>
-          <div className="col-sm-6 col-md-4 col-lg-3">
-            <div className="thumbnail function-service-div-border" style={{width:'100px'}}><a href="javascript:">space2</a></div>
-            <div className="caption"><Percentage percent={30} style={{width: '150px'}}></Percentage></div>
-          </div>
-          <div className="col-sm-6 col-md-4 col-lg-3">
-            <div className="thumbnail function-service-div-border" style={{width:'100px'}}><a href="javascript:">space3</a></div>
-            <div className="caption"><Percentage percent={30} style={{width: '150px'}}></Percentage></div>
-          </div>
-          <div className="col-sm-6 col-md-4 col-lg-3">
-            <div className="thumbnail function-service-div-border" style={{width:'100px'}}><a href="javascript:">space4</a></div>
-            <div className="caption"><Percentage percent={30} style={{width: '150px'}}></Percentage></div>
-          </div>
-          <div className="col-sm-6 col-md-4 col-lg-3">
-            <div className="thumbnail function-service-div-border" style={{width:'100px'}}><a href="javascript:">space5</a></div>
-            <div className="caption"><Percentage percent={30} style={{width: '150px'}}></Percentage></div>
-          </div>
+          {percentage}
         </div>
       );
     }
