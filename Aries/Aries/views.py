@@ -9,6 +9,7 @@ from django.shortcuts import render,render_to_response,redirect
 import json
 from django.http import HttpResponse
 from user_auth.models import *
+from ldap_client import ldap_get_vaild
 
 def login(request):
     ac_logger.info("######################login#######")
@@ -16,6 +17,8 @@ def login(request):
         res = {}
         username = "pan.lu"
         password = "pan.lu"
+        #ldap_user = ldap_get_vaild(username=username,passwd=password)
+        #if ldap_user:
         user = authenticate(username=username, password=password)
         if user:
             auth_login(request, user)
@@ -74,10 +77,14 @@ def index(request):
     cur_space = request.GET.get("cur_space","")
     if user:
         username = user.username
-        account = Account.objects.get(name=username)
-        if not cur_space:
-            cur_space = account.cur_space
-        user = {"name":username,"type":1,"cur_space":cur_space}
+        try:
+            account = Account.objects.get(name=username)
+            if not cur_space:
+                cur_space = account.cur_space
+            user = {"name":username,"type":1,"cur_space":cur_space}
+        except Exception,e:
+            ac_logger.error(e)
+            user = ""
     else:
         user = ""
     user = json.dumps(user)

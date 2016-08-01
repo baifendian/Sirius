@@ -22,9 +22,9 @@ def main(my_args=None,user_name="hadoop",operator="ls",args=["/user/hadoop"]):
     )
     result = process.wait()
     if result != 0:
-        return  "{1} run error".format(cmd)
+        return  result,"{1} run error".format(cmd)
     else:
-        return  process.stdout.read()
+        return  result,process.stdout.read()
 
 def demote(user_uid, user_gid):
     def result():
@@ -33,14 +33,9 @@ def demote(user_uid, user_gid):
     return result
 
 if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        sys.exit(-1)
-    args= sys.argv[1:]
-    print args
-    username=args[0]
-    operator = args[1]
-    args = args[2:]
-    print username
-    print operator
-    print args
-    print main(user_name=username,operator=operator,args=args)
+    username = "hadoop"
+    operator = "du"
+    args=["/user/hadoop"]
+    result,data= main(user_name=username,operator=operator,args=args)
+    print result
+    print int(data)

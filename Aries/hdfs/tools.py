@@ -12,7 +12,7 @@ from user_auth.models import *
 from django.contrib.auth.models import *
 ac_logger = logging.getLogger("access_log")
 
-def run_hadoop(my_args=None,user_name="hadoop",operator="ls",args=["/user/hadoop"]):
+def run_hadoop(user_name="hadoop",operator="ls",args=["/user/hadoop",]):
     pw_record = pwd.getpwnam(user_name)
     user_name      = pw_record.pw_name
     user_home_dir  = pw_record.pw_dir
@@ -111,6 +111,7 @@ def test2(a,b):
   print a,b
 
 if __name__=="__main__":
+  pass
   #print "aaa"
   #test(3,4)
-  test2(3,4)
+  #test2(3,4)
