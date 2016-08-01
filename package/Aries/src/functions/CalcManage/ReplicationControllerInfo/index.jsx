@@ -71,7 +71,7 @@ export default React.createClass({
     // 如果当前保存的namespace与实时获取的namespace相同，则不再重新请求
     // 否则，重新请求数据
     if ( this.curNameSpace !== CMDR.getCurNameSpace(this) ){
-      CMDR.getPodList( this,this.xhrCallback )
+      CMDR.getRCList( this,this.xhrCallback )
       this.curNameSpace = CMDR.getCurNameSpace(this)
     }
   },
