@@ -248,7 +248,7 @@ def get_mytask_list(request):
         d = {}
         retu_data.append(d) 
     
-        d['task'] = str(record.task)
+        d['task'] = str(record.query_name)
         d['category'] = record.category
         d['ready_time'] = format_datetime_obj(record.ready_time)
         d['running_time'] = format_datetime_obj(record.running_time)
