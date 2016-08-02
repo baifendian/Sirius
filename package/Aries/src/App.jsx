@@ -109,6 +109,7 @@ const App = React.createClass({
             </div>
           </div>
           <div id="body" className="row">
+          {auth.user.cur_space != "" ? [
             <div className="sidebar col-md-2 col-sm-3">
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
@@ -137,6 +138,7 @@ const App = React.createClass({
                 ] : null}
               </Nav>
             </div>
+            ] : null}
             <div className="content col-md-10 col-sm-9">
               {Children}
             </div>
