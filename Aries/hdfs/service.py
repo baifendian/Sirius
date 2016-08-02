@@ -18,7 +18,7 @@ from django.http import HttpResponse
 from tools import *
 reload(sys)
 sys.setdefaultencoding('utf-8')
-hdfs_logger = logging.getLogger("hdfs_log")
+hdfs_logger = logging.getLogger("access_log")
 StatusCode={"GET_SUCCESS":200,
              "GET_FAILED":500,
              "PUT_SUCCESS":200,
@@ -191,7 +191,7 @@ def de_delete(request, path):
     isTrash = request.GET.get("isTrash",0)
     if isTrash != 0:
         space_path = trashPath(space_path)
-    path = os.path.realpath("%s%s%s" %(os.path.sep,space_path,path))
+    path = os.path.realpath("/%s/%s/%s" %(os.path.sep,space_path,path))
     ac_logger.info("path:%s" %path)
     op="DELETE"
     result={}
@@ -222,7 +222,7 @@ def delete(request, path):
         result["data"] = "FAILED"
     return result
 
-#回复文件（夹）
+#恢复文件（夹）
 def recovery(request, path):
     result={}
     try:
@@ -318,10 +318,10 @@ def renameDir(request, path):
     isTrash = request.GET.get("isTrash",0)
     exec_user,space_path = getSpaceExecUserPath(space_name)
     if isTrash != 0:
-        space_path = trashPath(space_path)
+        source_path = trashPath(space_path)
     destination = request.GET.get('destination','')
-    path = os.path.realpath("%s%s%s" % (os.path.sep,space_path,path))
-    destination = os.path.realpath("%s%s%s" % (os.path.sep,space_path,destination))
+    path = os.path.realpath("/%s/%s/%s" % (os.path.sep,source_path,path))
+    destination = os.path.realpath("/%s/%s/%s" % (os.path.sep,space_path,destination))
     hdfs_logger.info("path:{0},destination:{1}".format(path,destination))
     result = {}
     if len(destination)>0:
@@ -332,10 +332,10 @@ def renameDir(request, path):
                 o_type = FileOperatorType.objects.get(name='mv')
                 fileopt = DataOperator.objects.create(source_path=path, target_path=destination, o_type=o_type, o_user=nowuser)
                 result["code"] = StatusCode["PUT_SUCCESS"]
-                result["data"] = "move finished!"
+                result["data"] = "移动成功!"
             else:
-                result["code"] = StatusCode["PUT_SUCCESS"]
-                result["data"] = "rename failed"
+                result["code"] = StatusCode["PUT_FAILED"]
+                result["data"] = "移动失败!"
         except:
             hdfs_logger.debug(traceback.format_exc())
             result["code"] = StatusCode["PUT_FAILED"]
@@ -348,12 +348,12 @@ def renameDir(request, path):
     return result
 
 def list_status(request, path):
-    path = os.path.realpath("%s%s" % (os.path.sep, path))
+    path = os.path.realpath("/%s/%s" % (os.path.sep, path))
     hdfs = HDFS()
     return hdfs.list_status(path, request)
 
 def list_status_tree(request,path):
-    path = os.path.realpath("%s%s" % (os.path.sep, path))
+    path = os.path.realpath("/%s/%s" % (os.path.sep, path))
     hdfs = HDFS()
     baseData = hdfs.list_status(path, request)
     #filter is_dir 1
@@ -378,12 +378,12 @@ def list_status_tree(request,path):
 
 def make_dir(request, path):
     hdfs_logger.info("make_dir")
-    path = os.path.realpath("%s%s" % (os.path.sep, path))
+    path = os.path.realpath("/%s/%s" % (os.path.sep, path))
     hdfs = HDFS()
     return hdfs.make_dir(path, request)
 
 def copy_file(request, path):
-    path = os.path.realpath("%s%s" % (os.path.sep, path))
+    path = os.path.realpath("/%s/%s" % (os.path.sep, path))
     hdfs = HDFS()
     return hdfs.copy_file(path, request)
 

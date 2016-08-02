@@ -10,7 +10,7 @@ import sys
 from django.conf import settings
 from user_auth.models import *
 from django.contrib.auth.models import *
-ac_logger = logging.getLogger("access_log")
+ac_logger = logging.getLogger("cmd_log")
 
 def run_hadoop(user_name="hadoop",operator="ls",args=["/user/hadoop",]):
     pw_record = pwd.getpwnam(user_name)

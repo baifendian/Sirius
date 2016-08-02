@@ -145,6 +145,12 @@ LOGGING = {
             'formatter': 'complete',
             'filename' :'/opt/pan.lu/gitsource/Sirius/log/service.log'.replace('\\','/')
         },
+        'cmd_file': {
+            'level':'DEBUG',
+            'class':'logging.FileHandler',
+            'formatter': 'complete',
+            'filename' :'/opt/pan.lu/gitsource/Sirius/log/cmd.log'.replace('\\','/')
+        },
         'hdfs_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
@@ -170,6 +176,11 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers':['file'],
+            'propagate': False,
+            'level':'DEBUG',
+        },
+        'cmd_log': {
+            'handlers':['cmd_file', 'console'],
             'propagate': False,
             'level':'DEBUG',
         },
