@@ -10,7 +10,7 @@ import sys
 from django.conf import settings
 from django.contrib.auth.models import *
 from user_auth.models import *
-ac_logger = logging.getLogger("access_log")
+ac_logger = logging.getLogger("cmd_log")
 
 def run_hadoop(my_args=None,user_name="hadoop",operator="ls",args=["/user/hadoop"]):
     pw_record = pwd.getpwnam(user_name)
@@ -64,8 +64,9 @@ def print_args(argsv):
     return wrapper
 
 def getUser(request):
-    #user = request.user
-    user = User.objects.get(username="pan.lu")
+    user = request.user
+    ac_logger.info("user:{0}".format(user.username))
+    #user = User.objects.get(username="pan.lu")
     return user
 
 def getSpaceExecUserPath(space_name):

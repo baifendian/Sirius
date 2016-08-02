@@ -449,8 +449,8 @@ def OperateServicePOST(request, command, params):
     from requests.auth import HTTPBasicAuth
     result = {}
     url = '{0}requests'.format(settings.AMBARI_URL)
-    files = '{"RequestInfo":{"context":"Execute %s By Sirius","command":"ARCHIVE","parameters/path":"/%s"},"Requests/resource_filters":[{"service_name":"HDFS","component_name":"HDFS_CLIENT","hosts":"hlg3p64-lupan"}]}' %(command, params)
-    r = requests.post(url, files, auth=HTTPBasicAuth('admin','admin'))
+    files = '{"RequestInfo":{"context":"Execute %s By Sirius","command":"ARCHIVE","parameters/path":"/%s"},"Requests/resource_filters":[{"service_name":"HDFS","component_name":"HDFS_CLIENT","hosts":"%s"}]}' %(command, params,settings.HADOOP_CLIENT)
+    r = requests.post(url, files, auth=HTTPBasicAuth(settings.AMBARI_USER,settings.AMBARI_PASSWORD))
     a = eval(r.text.encode('ascii'))
     if a.has_key('Requests') and a['Requests']['status'] == 'Accepted':
         result["code"] = StatusCode["POST_SUCCESS"]
@@ -467,7 +467,7 @@ def OperateComponentPOST(request, host_name, component_name, operate):
     result = {}
     url = '{0}requests'.format(settings.AMBARI_URL)
     files = '{"RequestInfo":{"command":"RESTART","context":"Restart %s via Sirius","operation_level":{"level":"HOST","cluster_name":"hlg_ambari"}}, "Requests/resource_filters":[{"service_name":"HDFS","component_name":"%s","hosts":"%s"}]}' %(component_name, component_name, host_name)
-    r = requests.post(url, files, auth=HTTPBasicAuth('admin','admin'))
+    r = requests.post(url, files, auth=HTTPBasicAuth(settings.AMBARI_USER,settings.AMBARI_PASSWORD))
     a = eval(r.text.encode('ascii'))
     if a.has_key('Requests') and a['Requests']['status'] == 'Accepted':
         result["code"] = StatusCode["POST_SUCCESS"]
@@ -487,7 +487,7 @@ def OperateComponentPUT(request, host_name, component_name, operate):
         files = '{"RequestInfo": {"context" :"STOP %s via Sirius"}, "HostRoles": {"state": "INSTALLED"}}'%component_name
     else:
         files = '{"RequestInfo": {"context" :"START %s via Sirius"}, "HostRoles": {"state": "STARTED"}}'%component_name
-    r = requests.put(url, files, auth=HTTPBasicAuth('admin','admin'))
+    r = requests.put(url, files, auth=HTTPBasicAuth(settings.AMBARI_USER,settings.AMBARI_PASSWORD))
     a = eval(r.text.encode('ascii'))
     if a.has_key('Requests') and a['Requests']['status'] == 'Accepted':
         result["code"] = StatusCode["POST_SUCCESS"]
@@ -500,7 +500,7 @@ def OperateComponentPUT(request, host_name, component_name, operate):
 def req():
     import requests
     from requests.auth import HTTPBasicAuth
-    r = requests.get('%shosts?fields=host_components/HostRoles/state,host_components/HostRoles/service_name' %settings.AMBARI_URL, auth=HTTPBasicAuth('admin', 'admin'))
+    r = requests.get('%shosts?fields=host_components/HostRoles/state,host_components/HostRoles/service_name' %settings.AMBARI_URL, auth=HTTPBasicAuth(settings.AMBARI_USER,settings.AMBARI_PASSWORD))
     dic = eval(r.text)
     return dic
 

@@ -35,11 +35,11 @@ AUTH_LDAP_USER_ATTR_MAP = {
 
 REST_BASE_URI="172.24.3.64:10010"
 SHARE_PROXY_BASE_URI="http://172.24.3.64:10086"
-#which shell
-# HADOOP_RUN_SCRIPT = "/home/jinzhu.wang/Aries/Aries/hdfs/hadoop-run.sh"
-# WEBHDFS_USER = "hadoop"
 AMBARI_URL="http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/"
 HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
+HADOOP_CLIENT="hlg3p64-lupan"
+AMBARI_USER="admin"
+AMBARI_PASSWORD="admin"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 

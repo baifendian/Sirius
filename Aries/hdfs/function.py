@@ -466,8 +466,13 @@ class HDFS(object):
                                    }
             return self.returned
         #spaceName, hdfs path mapping
-        space = getObjByAttr(Space,"name",space_name)
-        space_path = space[0].address
+        try:
+            space = getObjByAttr(Space,"name",space_name)
+            space_path = space[0].address
+        except Exception,e:
+            self.returned['code'] = StatusCode["InternalServerError"]
+            self.returned['data'] = "不存在该space: {0}".format(space_name)
+            return self.returned
         isTrash = request.GET.get("isTrash",0)
         if isTrash != 0:
             #path =  os.path.realpath("/%s/%s/%s" % ("/.Trash/Current/",space_path, path))
@@ -478,7 +483,7 @@ class HDFS(object):
             result = self.hdfs.list_status(real_path)
         except HdfsException, e:
             hdfs_logger.error("%s列出文件夹%s发生异常: %s" % (getUser(request).username,space_path, str(e)))
-            self.returned['code'] = StatusCode["OK"]
+            self.returned['code'] = StatusCode["InternalServerError"]
             self.returned['data'] = {"totalList":[],"totalPageNum":0,"currentPage":1}
             return self.returned
         else:

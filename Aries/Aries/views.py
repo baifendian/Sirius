@@ -15,29 +15,60 @@ def login(request):
     ac_logger.info("######################login#######")
     if request.method == "POST":
         res = {}
-        username = "pan.lu"
-        password = "pan.lu"
-        #ldap_user = ldap_get_vaild(username=username,passwd=password)
-        #if ldap_user:
-        user = authenticate(username=username, password=password)
-        if user:
-            auth_login(request, user)
-            account = Account.objects.get(name=username)
-            cur_space = account.cur_space
-            if not cur_space:
-                spaceUserRole = SpaceUserRole.objects.filter(user=account)[0]
-                account.cur_space=spaceUserRole.space.name
-                account.save()     
-            res["code"] = 200
-            res["data"] = {"name":username,"type":"1","cur_space":cur_space}
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        email = username + "@baifendian.com"
+        #username = "pan.lu"
+        #password = "pan.lu"
+        ldap_user = ldap_get_vaild(username=username,passwd=password)
+        if ldap_user:
+            ac_logger.info("######################login####### %s" %ldap_user)
+            user = authenticate(username=username, password=password)
+            if not user:
+                userAdd=User.objects.create_user(username,email,password)  
+                userAdd.is_active=True  
+                userAdd.save
+                user = authenticate(username=username, password=password)
+            is_admin = "0"
+            cur_space = ""
+            if user:
+                ac_logger.info("######################user %s" %user)
+                auth_login(request, user)
+                account = Account.objects.filter(name=username)
+                ac_logger.info("######################logindddddddddd %s" %account)
+                if not account:
+                    account = Account(name=username,password=password,email=email,is_active=1)
+                    account.role = Role.objects.get(name="guest")
+                    account.save()   
+                else:  
+                    spaceUserRole = SpaceUserRole.objects.filter(user=account)
+                    if spaceUserRole:
+                        ac_logger.info("################### %s" %spaceUserRole)
+                        if SpaceUserRole[0].role.name == "spacedev" or SpaceUserRole[0].role.name ==  "spaceviewer" or SpaceUserRole[0].role.name == "guest":
+                            is_admin = 0
+                        else:
+                            is_admin = 1
+                        account[0].cur_space=spaceUserRole.space.name
+                        account[0].save()   
+                        cur_space = account.cur_space
+                res["code"] = 200
+                res["data"] = {"name":username,"type":is_admin,"cur_space":cur_space}
+            else:
+                res["code"] = 500
+                res["data"] = "username or password is error"
+            response = HttpResponse(content_type='application/json')
+            response.write(json.dumps(res))
+            response["Access-Control-Allow-Origin"] = "*"
+            response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
+            return response
         else:
             res["code"] = 500
             res["data"] = "username or password is error"
-        response = HttpResponse(content_type='application/json')
-        response.write(json.dumps(res))
-        response["Access-Control-Allow-Origin"] = "*"
-        response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
-        return response
+            response = HttpResponse(content_type='application/json')
+            response.write(json.dumps(res))
+            response["Access-Control-Allow-Origin"] = "*"
+            response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
+            return response
     else:
         user = request.user
         ac_logger.info("----------------user:%s" %user)
