@@ -32,37 +32,28 @@ export default React.createClass({
     }
     return state_dict
   },
-  xhrCallback:(_this,executedData) => {
-    _this.setState ( { 
-      'data': {
-        "totalList": executedData,
-        "totalPageNum":executedData.length
-      }
-    })
-    _this.oriData = executedData
-  },  
-  
-  /**
-   * 1：页面初始化时，该函数将不会被调用
-   * 2：当用户输出为空时，传入的 value 为''
-  */
-  onSearchByKey( value ){
-    let arr = []
-    if ( !value ){
-      arr = this.oriData
-    }else{
-      for ( let i = 0 ; i < this.oriData.length ; i ++ ){
-        if (Toolkit.checkSubStrInStr( this.oriData[i]['Name'],value )){
-          arr.push( this.oriData[i] )
-        }
-      }
-    }
-    this.setState ( { 
-      "data": {
-        "totalList": arr,
-        "totalPageNum":arr.length
-      }
-    })    
+
+  componentDidUpdate(){
+    this.checkToRequestData()
+  },
+
+  componentDidMount(){
+    this.checkToRequestData()
+    this.initSetSplitPanelHeight()
+  },
+
+  initSetSplitPanelHeight(){
+    let splitPanel = ReactDOM.findDOMNode( this.refs.SplitPanel )
+    let topHeight = splitPanel.childNodes[0].style.height
+    let bottomHeight = splitPanel.childNodes[2].style.height
+    topHeight = parseInt( topHeight )
+    bottomHeight = parseInt( bottomHeight )
+
+    let off = parseInt( topHeight/3 )
+    splitPanel.childNodes[0].style.height = (topHeight+off) + 'px'
+    splitPanel.childNodes[1].style.top = (topHeight+off) + 'px'
+    splitPanel.childNodes[2].style.height = (bottomHeight-off) + 'px'
+    this.onSplitPanelHeightChange( 0,0,topHeight+off,bottomHeight-off )
   },
 
   checkToRequestData(){
@@ -74,39 +65,84 @@ export default React.createClass({
     }
   },
 
-  componentDidMount(){
-    this.checkToRequestData()
+  xhrCallback:(_this,executedData) => {
+    _this.oriData = executedData
+    _this.resetPropData( executedData,_this )
+  },  
+
+  onSearchByKey( value ){
+    let arr = []
+    if ( !value ){
+      arr = this.oriData
+    }else{
+      for ( let i = 0 ; i < this.oriData.length ; i ++ ){
+        if (Toolkit.checkSubStrInStr( this.oriData[i]['Name'],value )){
+          arr.push( this.oriData[i] )
+        }
+      }
+    }
+    this.resetPropData( arr )
   },
 
-  componentDidUpdate(){
-    this.checkToRequestData()
+  resetPropData( dataArr,_this = undefined ){
+    _this = _this || this
+    _this.setState ( { 
+      'data': {
+        'totalList': dataArr,
+        'totalPageNum': dataArr.length
+      }
+    })
+
+    _this.clearOldHighlightItem()
   },
 
-  calcSplitPanelHeight(){
-    let splitPanel = ReactDOM.findDOMNode( this.refs.SplitPanel )
-    let topHeight = splitPanel.childNodes[0].style.height
-    let bottomHeight = splitPanel.childNodes[2].style.height
-    topHeight = parseInt( topHeight )
-    bottomHeight = parseInt( bottomHeight )
-    return [topHeight,bottomHeight]
-  },
-
-	onSplitPanelHeightChange( oldTopHeight,oldBottomHeight,newTopHeight,newBottomHeight ){
-    let dynamicTable = ReactDOM.findDOMNode( this.refs.DynamicTable )
-    dynamicTable.style.height = (newBottomHeight-41) + 'px'
-
-    let dataTable = ReactDOM.findDOMNode( this.refs.DataTable )
-    let tbodyHeight = newTopHeight-65
-    dataTable.childNodes[1].childNodes[1].style.height = tbodyHeight + 'px'
-  },
-  
   onTableRowClick( record ){
+    this.clearOldHighlightItem()
+    this.hightlightNewClickedItem( record )
+  },
+
+  clearOldHighlightItem(){
+    this.highlightTr( this.curSelectDataTableItem,false )
+    this.curSelectDataTableItem = undefined
+
+    this.setState( {'detailText':''} )
+  },
+
+  hightlightNewClickedItem( record ){
     let detail = record['DetailInfo']
     let detailInfoToShow = []
     for ( let k = 0 ; k < detail.length ; k ++ ){
       detailInfoToShow.push( [detail[k]] )
     }
     this.setState({ detailText:detailInfoToShow })
+    
+    let curTr = this.findDataTableItemByRecordName( record['Name'] )
+    this.highlightTr( curTr )
+    this.curSelectDataTableItem = curTr
+  },
+
+  highlightTr( tr,highlight = true ){
+    tr && ( tr.className = highlight ? 'selectedDataTableItem':'' )
+  },
+
+  findDataTableItemByRecordName( name ){
+    let dataTableNode = ReactDOM.findDOMNode( this.refs.DataTable )
+    let tbody = dataTableNode.childNodes[1].childNodes[1]
+    for ( let i = 0 ; i < tbody.childNodes.length ; i ++ ){
+      let tr = tbody.childNodes[i]
+      if ( tr.childNodes[0].innerHTML === name ){        
+        return tr
+      }
+    }
+    return undefined
+  },
+
+	onSplitPanelHeightChange( oldTopHeight,oldBottomHeight,newTopHeight,newBottomHeight ){
+    let dataTable = ReactDOM.findDOMNode( this.refs.DataTable )
+    dataTable.childNodes[1].childNodes[1].style.height = (newTopHeight-65) + 'px'
+
+    let dynamicTable = ReactDOM.findDOMNode( this.refs.DynamicTable )
+    dynamicTable.style.height = (newBottomHeight-47) + 'px'
   },
 
   render: function() {
@@ -114,10 +150,8 @@ export default React.createClass({
     let naviTexts = [{  'url':'/',   'text':'首页'   },
                      {  'url':'/CalcManage/Overview',     'text':'计算管理'   },
                      {  'url':'/CalcManage/ServiceInfo',  'text':'Service信息'   }]
-    let text = this.state.detailText
-    if ( !text ){
-      text = [['请选择Service']]
-    }
+    let text = this.state.detailText ? this.state.detailText : [['请选择Service']]
+
     return  (
       <div className="ServiceInfoChildRootDiv">
         <div className="SearchInputFatherDiv">
