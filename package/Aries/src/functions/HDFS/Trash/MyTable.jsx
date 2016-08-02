@@ -19,6 +19,7 @@ import message from 'bfd-ui/lib/message'
 
 const MyTable = React.createClass({
   confirm_handler(path,confirm_str,func,component){
+    this.component = component;
     confirm(<TextOverflow><p style={{width: '250px'}}>{confirm_str}</p></TextOverflow>,()=>{
         func(path,component);
     });
@@ -29,14 +30,7 @@ const MyTable = React.createClass({
     console.log("trash path"+path);
     xhr({ type: 'DELETE',url:url,
         success: data =>{
-          let dataTable = this.props.data;
-          let totalList = this.props.data.totalList;
-          let index = totalList.indexOf(component);
-          totalList.splice(index,1);
-          dataTable.totalList = totalList;
-          this.props.updateTableData(dataTable,-1);
-          console.log("-----trash-------");
-          message.success(data,2);
+          this.deleteRow();
         }
     });
   },
@@ -57,6 +51,16 @@ const MyTable = React.createClass({
         //message.success(data,2)
       }
     })
+  },
+  deleteRow(){
+    //删除表格
+    let dataTable = this.props.data;
+    let totalList = this.props.data.totalList;
+    let index = totalList.indexOf(this.component);
+    totalList.splice(index,1);
+    dataTable.totalList = totalList;
+    this.props.updateTableData(dataTable,-1);
+    console.log("-----delete row-------");
   },
   downLoad(path,component){
     console.log("down load...."+path);
@@ -96,10 +100,11 @@ const MyTable = React.createClass({
     let targetPath =this.selectPathTree;
     let sourcePath = this.tablePath;
     console.log(`${sourcePath} --> ${targetPath}`);
-    let url = `v1/hdfs/${sourcePath}/?op=RENAME&destination=${targetPath}&space_name=${this.props.cur_space}`;
+    let url = `v1/hdfs/${sourcePath}/?op=RENAME&destination=${targetPath}&space_name=${this.props.cur_space}&isTrash=1`;
     xhr({type: 'PUT',url: url,
         success:data =>  {
         message.success(data, 2);
+        this.deleteRow();
       }
     });
     this.closeModal();
