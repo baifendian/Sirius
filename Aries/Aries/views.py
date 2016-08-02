@@ -29,28 +29,29 @@ def login(request):
                 userAdd.is_active=True  
                 userAdd.save
                 user = authenticate(username=username, password=password)
-            is_admin = "0"
+            is_admin = 0
             cur_space = ""
             if user:
                 ac_logger.info("######################user %s" %user)
                 auth_login(request, user)
-                account = Account.objects.filter(name=username)
-                ac_logger.info("######################logindddddddddd %s" %account)
-                if not account:
-                    account = Account(name=username,password=password,email=email,is_active=1)
-                    account.role = Role.objects.get(name="guest")
-                    account.save()   
-                else:  
+                try:
+                    account = Account.objects.get(name=username)
                     spaceUserRole = SpaceUserRole.objects.filter(user=account)
                     if spaceUserRole:
                         ac_logger.info("################### %s" %spaceUserRole)
-                        if SpaceUserRole[0].role.name == "spacedev" or SpaceUserRole[0].role.name ==  "spaceviewer" or SpaceUserRole[0].role.name == "guest":
-                            is_admin = 0
-                        else:
+                        if spaceUserRole[0].role.name.upper() in ["superAdmin","spaceAdmin"]:
                             is_admin = 1
-                        account[0].cur_space=spaceUserRole.space.name
-                        account[0].save()   
+                        else:
+                            is_admin = 0
+                        account.cur_space=spaceUserRole[0].space.name
+                        account.save()
                         cur_space = account.cur_space
+                except Exception,e:
+                    ac_logger.error(e)
+                    account = Account(name=username,password=password,email=email,is_active=1)
+                    account.role = Role.objects.get(name="guest")
+                    account.save()
+                    
                 res["code"] = 200
                 res["data"] = {"name":username,"type":is_admin,"cur_space":cur_space}
             else:
