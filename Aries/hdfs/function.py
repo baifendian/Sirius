@@ -16,7 +16,7 @@ from tools import *
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-hdfs_logger = logging.getLogger("hdfs_log")
+hdfs_logger = logging.getLogger("access_log")
 StatusCode = {
     "OK": 200,
     "InternalServerError": 500,
@@ -109,7 +109,7 @@ class HDFS(object):
         f = request.FILES["files"]
         filename = f.name
         hdfs_logger.info("space_path:{0},path:{1}".format(space_path,path))
-        target_path = os.path.realpath("%s/%s/%s/%s/" % (os.path.sep,space_path, path,filename))
+        target_path = os.path.realpath("/%s/%s/%s/%s/" % (os.path.sep,space_path, path,filename))
         hdfs_logger.info("target_path:{0}".format(target_path))
         local_file = os.path.join(settings.FTP_LOCAL_DIR, filename)
         with open(local_file,"wb+") as info:
@@ -263,7 +263,7 @@ class HDFS(object):
         space_name = request.GET.get("space_name","")
         exec_user,space_path = getSpaceExecUserPath(space_name)
         hdfs_logger.info("space_path:{0},path:{1}".format(space_path,path))
-        path = os.path.realpath("%s/%s/%s" % (os.path.sep,space_path, path))
+        path = os.path.realpath("/%s/%s/%s" % (os.path.sep,space_path, path))
         hdfs_logger.info("target_path:{0}".format(path))
         result =  self.hdfs.open(path)
         hdfs_logger.info("download:{0}".format(result))
@@ -396,7 +396,7 @@ class HDFS(object):
         #     return self.returned
         space_name = request.GET.get("spaceName", '') 
         space_path = self.spaceNamePathMapping(space_name)
-        path = os.path.realpath("%s%s%s" %(os.path.sep,space_path,path))
+        path = os.path.realpath("/%s/%s/%s" %(os.path.sep,space_path,path))
         if self.hdfs.exists(path):
             return self.returned
 
@@ -472,7 +472,7 @@ class HDFS(object):
         if isTrash != 0:
             #path =  os.path.realpath("/%s/%s/%s" % ("/.Trash/Current/",space_path, path))
             space_path = trashPath(space_path)
-        real_path = os.path.realpath("%s%s" % (space_path, path))
+        real_path = os.path.realpath("/%s/%s" % (space_path, path))
         hdfs_logger.info("list_status: real_path:{0}".format(real_path))
         try:
             result = self.hdfs.list_status(real_path)
