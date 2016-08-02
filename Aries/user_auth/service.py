@@ -264,7 +264,7 @@ def isAdmin(user_name,space_id):
     # 1 yes 0 no 2 error
     try:
         #user__name__exact
-        user_name ="admin"
+        user_name ="pan.lu"
         spaceUserRole = SpaceUserRole.objects.get(user__name__exact=user_name,space__id__exact=space_id)
         role_name = spaceUserRole.role.name
         if role_name.lower() == "spaceadmin":

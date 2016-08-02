@@ -519,7 +519,6 @@ OP_DICT={
         "MKDIRS":make_dir,
     },
     "PUT":{
-        "RECOVERY":recovery,
         "UPSET":upSet,
         "RENAME":renameDir,
         "CP": copy_file,

@@ -31,6 +31,7 @@ def ldap_get_vaild(username=None,passwd=None):
     user = auth.authenticate(username=username,password=passwd)
     return user
 
+
 if __name__ == "__main__":
    print ldap_get_vaild(username="yatis2",passwd="1234ymf,./")
-   print ldap_get_vaild1(username="yatis2",passwd="1234ymf,./")
+#   print ldap_get_vaild1(username="yatis2",passwd="1234ymf,./")

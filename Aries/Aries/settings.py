@@ -24,7 +24,7 @@ CORS_ORIGIN_WHITELIST = (
 #import ldap
 #from django_auth_ldap.config import LDAPSearch
 AUTH_LDAP_SERVER_URI = 'ldap://172.24.3.170:389'
-AUTH_LDAP_USER_DN_TEMPLATE = 'uid=%(user)s,ou=wiki,dc=bfdabc,dc=com'
+AUTH_LDAP_USER_DN_TEMPLATE = 'uid=%(user)s,ou=temp,dc=baifendian,dc=com'
 AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = True
 AUTH_LDAP_CACHE_GROUPS = True
 AUTH_LDAP_GROUP_CACHE_TIMEOUT = 3600
