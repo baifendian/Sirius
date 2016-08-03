@@ -3,7 +3,7 @@
     "lint": "eslint --ext .jsx,.js src || true",
     "build": "cross-env NODE_ENV=production webpack -p --progress --colors",
     "start": "node-dev server.js",
-    "theme": "node bin/theme.js -#42a5f5:#ff7043 -#ff5722:#55a8fd -#1e88e5:#f4511e"
+    "theme": "node bin/theme.js -#ff7043:#42a5f5 -#ff5722:#55a8fd -#f4511e:#1e88e5"
   },
   "dependencies": {
     "bfd-ui": "^0.6.1",
