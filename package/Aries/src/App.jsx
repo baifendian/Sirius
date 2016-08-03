@@ -99,7 +99,7 @@ const App = React.createClass({
         <div id="wrapper" className="container-fluid">
           <div id="header" className="row">
             <Link to={env.basePath} className="logo">
-              <span>PROJECT NAME</span>
+              <img src={require('public/logo.png')} />
             </Link>
             <div className="pull-right">
               <span>space切换</span>
