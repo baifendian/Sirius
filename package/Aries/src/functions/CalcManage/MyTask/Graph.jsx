@@ -3,6 +3,9 @@ import './index.less'
 import './Graph.less'
 import Graph from 'public/Graph'
 
+import { Tag } from 'antd'
+
+
 const TabGraph = React.createClass({
 
 render() {
@@ -36,7 +39,11 @@ render() {
 
     return (
       <div className='GraphName'>
-         <p>BDMS任务运行网络图</p>
+         <Tag color="blue">执行中</Tag>
+         <Tag color="green">执行完成(成功)</Tag>
+         <Tag color="yellow">任务停止中</Tag>
+         <Tag color="red">执行完成(失败)</Tag>
+         <Tag color='black'>等待执行\未进入调度</Tag>
          <Graph graph={data}/>
       </div>
     )
