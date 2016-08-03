@@ -6,7 +6,7 @@ import CMDR from '../CalcManageDataRequester/requester.js'
 import './index.less'
 
 export default React.createClass({
-  
+
   getInitialState: function () {
     return { 
       dataTableDataArr:[]
@@ -54,8 +54,7 @@ export default React.createClass({
                          rootDivClassName={rootDivClassName}
                          naviTexts={naviTexts}
                          defaultDetailText={defaultDetailText}
-                         dataTableDataArr={this.state.dataTableDataArr}  
-                         dataHasChanged={ true } />
+                         dataTableDataArr={this.state.dataTableDataArr}  />
     ) 
   }
 });

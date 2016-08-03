@@ -120,12 +120,41 @@ var ClusterCommonInfo = React.createClass({
       naviTexts:config.naviTexts,
       defaultDetailText:config.defaultDetailText
     }
+    this.storeVarData = {
+      dataTableDataArr:this.props.dataTableDataArr
+    }
   },
 
   render: function (){
+    let naviTexts = this.storeConstData.naviTexts
+    if ( this.storeVarData.dataTableDataArr !== this.props.dataTableDataArr ){      
+      // 如果namespace发生切换，则会进入这个函数体内
+      this.storeVarData.dataTableDataArr = this.props.dataTableDataArr
+
+      this.state.detailText = ''
+      this.state.filteredData = undefined
+
+      // 如果namespace发生切换，则说明url后缀的cur_space的值发生了改变，因此需要动态调整NavigationInPage的链接
+      naviTexts = []
+      for ( let i = 0 ; i < this.storeConstData.naviTexts.length ; i ++ ){
+        naviTexts.push( {
+          url:this.storeConstData.naviTexts[i].url + location.search,
+          text:this.storeConstData.naviTexts[i].text
+        } )
+      }
+      console.log( naviTexts )
+
+      // 如果在render函数内获取某组件的dom节点或者更新节点的数据，将会引发warning
+      // 因此取巧使用setTimeout
+      // TODO: 这里仍有问题，就是当通过这种方式进行清空之后，如果点击了“搜索”按钮，则原来的值又会出现
+      setTimeout( () => {
+        ReactDOM.findDOMNode(this.refs.SearchInput).childNodes[0].childNodes[0].value = ''
+      }, 0);
+    }
+
     let text = this.state.detailText ? this.state.detailText : this.storeConstData.defaultDetailText
     
-    let d = this.state.filteredData===undefined ? this.props.dataTableDataArr : this.state.filteredData
+    let d = this.state.filteredData!==undefined ? this.state.filteredData : this.storeVarData.dataTableDataArr
     let data = {
       totalList: d,
       totalPageNum:d.length
@@ -134,12 +163,13 @@ var ClusterCommonInfo = React.createClass({
     return (      
       <div className={this.storeConstData.rootDivClassName} >
         <div className="SearchInputFatherDiv">
-          <SearchInput placeholder="请输入查询关键字" 
+          <SearchInput ref="SearchInput"
+                       placeholder="请输入查询关键字" 
                        onChange={function(){}} 
                        onSearch={this.onSearchByKey}
                        label="查询" />
         </div>
-        <NavigationInPage headText={this.storeConstData.headText} naviTexts={this.storeConstData.naviTexts} />
+        <NavigationInPage headText={this.storeConstData.headText} naviTexts={naviTexts} />
         <SplitPanel ref='SplitPanel'
                     onSplit={this.onSplitPanelHeightChange} 
                     className='SplitPanel' 
