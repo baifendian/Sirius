@@ -43,6 +43,7 @@ def spaceListGet(request):
                 data = {"space_id":spaces[0].id,"space_name":spaces[0].name}
             else:
                 result["code"]=StatusCode["GET_FAILED"]
+                data = "not space"
         else:
             data=[]
             for spaceUserRole in spaceUserRoles:
