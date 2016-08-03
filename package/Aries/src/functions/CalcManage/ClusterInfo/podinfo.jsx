@@ -11,7 +11,6 @@ import Toolkit from 'public/Toolkit/index.js'
 
 import CMDR from '../CalcManageDataRequester/requester.js'
 import './index.less'
-import '../PublicStyle/style.less'
 
 
 export default React.createClass({
