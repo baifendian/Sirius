@@ -21,23 +21,23 @@ var CalcManageDataRequester = {
     this.xhrGetData(url, _this, callback)
 
   },
-  getPodList(_this, callback) {
+  getPodList(_this, callback, nameSpace ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podlist'], {
-      'nameSpace': this.getCurNameSpace( _this )
+      'nameSpace': nameSpace
     })
     this.xhrGetData(url, _this, callback)
   },
 
-  getServiceList(_this, callback) {
+  getServiceList(_this, callback, nameSpace ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['serviceList'], {
-      'nameSpace': this.getCurNameSpace( _this )
+      'nameSpace': nameSpace
     })
     this.xhrGetData(url, _this, callback)
   },
 
-  getRCList(_this, callback) {
+  getRCList(_this, callback, nameSpace ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['rclist'], {
-      'nameSpace': this.getCurNameSpace( _this )
+      'nameSpace': nameSpace
     })
     this.xhrGetData(url, _this, callback)
   },
