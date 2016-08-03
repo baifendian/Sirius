@@ -6,6 +6,7 @@ import Fetch from 'bfd-ui/lib/Fetch'
 import SpaceInfo from './SpaceInfo'
 import SpaceManager from './SpaceManager'
 import { Select ,Option} from 'bfd-ui/lib/Select2'
+import auth from 'public/auth'
 
 export default React.createClass({
   getInitialState: function() {
@@ -35,7 +36,11 @@ export default React.createClass({
     this.setState({cur_space:cur_space,url:url});
   },
   render() {
-    let spaceInfoUrl=`v1/user_auth/spaces/info/${this.state.cur_space}/`
+    let spaceInfoUrl=`v1/user_auth/spaces/info/${this.state.cur_space}/`;
+    let filter = this.props.location.query.cur_space;
+    if(filter==undefined){
+      filter = auth.user.cur_space;
+    }
     return (
        <div>
         <Tabs>
@@ -52,7 +57,7 @@ export default React.createClass({
             <SpaceManager url={this.state.url} refreshTable={this.refreshTable} cur_space={this.state.cur_space} is_admin={this.state.is_admin} />
           </TabPanel>
         </Tabs>
-        <Fetch style={{minHeight:0}} url={`v1/user_auth/spaces/?filter=${this.props.location.query.cur_space}`} onSuccess={this.initCurSpace}>
+        <Fetch style={{minHeight:0}} url={`v1/user_auth/spaces/?filter=${filter}`} onSuccess={this.initCurSpace}>
         </Fetch>
         </div>
     )
