@@ -18,28 +18,24 @@ def login(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
         email = username + "@baifendian.com"
-        #username = "pan.lu"
-        #password = "pan.lu"
         ldap_user = ldap_get_vaild(username=username,passwd=password)
+        ac_logger.info("######################login####### %s" %ldap_user)
         if ldap_user:
-            ac_logger.info("######################login####### %s" %ldap_user)
             user = authenticate(username=username, password=password)
             if not user:
-                userAdd=User.objects.create_user(username,email,password)  
+                userAdd=User.objects.create_user(username, email, password)  
                 userAdd.is_active=True  
                 userAdd.save
                 user = authenticate(username=username, password=password)
             is_admin = 0
             cur_space = ""
             if user:
-                ac_logger.info("######################user %s" %user)
                 auth_login(request, user)
                 try:
                     account = Account.objects.get(name=username)
                     spaceUserRole = SpaceUserRole.objects.filter(user=account)
                     if spaceUserRole:
-                        ac_logger.info("################### %s" %spaceUserRole)
-                        if spaceUserRole[0].role.name.upper() in ["superAdmin","spaceAdmin"]:
+                        if spaceUserRole[0].role.name.upper() in ["SUPERADMIN","SPACEADMIN"]:
                             is_admin = 1
                         else:
                             is_admin = 0
@@ -51,6 +47,7 @@ def login(request):
                     account = Account(name=username,password=password,email=email,is_active=1)
                     account.role = Role.objects.get(name="guest")
                     account.save()
+                ac_logger.info("###login##return_data:is_admin=%s,cur_space=%s" %(is_admin,cur_space))
                     
                 res["code"] = 200
                 res["data"] = {"name":username,"type":is_admin,"cur_space":cur_space}
@@ -77,6 +74,10 @@ def login(request):
             username = user.username
             try:
                 account = Account.objects.get(name=username)
+                if not account.cur_space:
+                    spaceUserRole = SpaceUserRole.objects.filter(user=account)
+                    account.cur_space=spaceUserRole[0].space.name
+                    account.save()
                 user = {"name":username,"type":1,"cur_space":account.cur_space}
             except Exception,e:
                 ac_logger.error(e)
