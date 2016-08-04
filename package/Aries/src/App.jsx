@@ -122,12 +122,12 @@ const App = React.createClass({
                </NavItem>
 
                <NavItem key={1} href="CalcManage" icon="hand-right" title="计算管理">
-                  <NavItem icon="equalizer" href={`CalcManage/Overview?${params}`} title="概览" />
-                  <NavItem icon="equalizer" href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
-                  <NavItem icon="equalizer" href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
-                  <NavItem icon="equalizer" href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
-                  <NavItem icon="equalizer" href={`CalcManage/MyTask?${params}`} title="我的任务" />
-                  <NavItem icon="equalizer" href={`CalcManage/CreateCluster?${params}`} title="创建集群" />
+                  <NavItem href={`CalcManage/Overview?${params}`} title="概览" />
+                  <NavItem href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
+                  <NavItem href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
+                  <NavItem href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
+                  <NavItem href={`CalcManage/MyTask?${params}`} title="我的任务" />
+                  <NavItem href={`CalcManage/CreateCluster?${params}`} title="创建集群" />
                </NavItem>
 
                 {auth.user.type > 0 ? [

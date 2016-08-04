@@ -142,7 +142,6 @@ var ClusterCommonInfo = React.createClass({
           text:this.storeConstData.naviTexts[i].text
         } )
       }
-      console.log( naviTexts )
 
       // 如果在render函数内获取某组件的dom节点或者更新节点的数据，将会引发warning
       // 因此取巧使用setTimeout
