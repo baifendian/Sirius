@@ -23,6 +23,9 @@ from kd_agent.models import Schedule_Status
 kd_logger = logging.getLogger("kd_agent_log")
 kd_logger.setLevel(logging.INFO)
 
+RETU_INFO_SUCCESS = 200
+RETU_INFO_ERROR = 201
+
 
 # 一个装饰器，将原函数返回的json封装成response对象
 def return_http_json(func):
@@ -48,10 +51,10 @@ def generate_retu_info( code,msg,**ext_info ):
     return retu_data
 
 def generate_success(**ext_info):
-    return generate_retu_info( 200,'',**ext_info )
+    return generate_retu_info( RETU_INFO_SUCCESS,'',**ext_info )
 
 def generate_failure( msg,**ext_info ):
-    return generate_retu_info( 201,msg,**ext_info )
+    return generate_retu_info( RETU_INFO_ERROR,msg,**ext_info )
 
 # 去掉时间字符串 2016-07-15T14:38:02Z 中的T、Z
 def trans_time_str(time_str):
@@ -91,7 +94,7 @@ def restore_k8s_path(p):
 def get_pod_list(request,namespace):
     kd_logger.info( 'call get_pod_list request.path : %s , namespace : %s' % (request.path,namespace) )
     pod_detail_info = get_k8s_data( restore_k8s_path(request.path) )
-    if pod_detail_info['code'] == 0:
+    if pod_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_pod_list query k8s data error : %s' % pod_detail_info['msg'] )
         return generate_failure( pod_detail_info['msg'] )
 
@@ -136,7 +139,7 @@ def get_pod_list(request,namespace):
 def get_service_list(request,namespace):
     kd_logger.info( 'call get_service_list request.path : %s , namespace : %s' % (request.path,namespace) )
     service_detail_info = get_k8s_data( restore_k8s_path(request.path) )
-    if service_detail_info['code'] == 0:
+    if service_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_service_list query k8s data error : %s' % service_detail_info['msg'] )
         return generate_failure( service_detail_info['msg'] )
 
@@ -174,7 +177,7 @@ def get_service_list(request,namespace):
 def get_rc_list(request,namespace):
     kd_logger.info( 'call get_rc_list request.path : %s , namespace : %s' % (request.path,namespace) )
     rc_detail_info = get_k8s_data( restore_k8s_path(request.path) )
-    if rc_detail_info['code'] == 0:
+    if rc_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_rc_list query k8s data error : %s' % rc_detail_info['msg'] )
         return generate_failure( rc_detail_info['msg'] )
 
