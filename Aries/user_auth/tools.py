@@ -66,7 +66,7 @@ def print_args(argsv):
 def getUser(request):
     user = request.user
     ac_logger.info("user:{0}".format(user.username))
-    #user = User.objects.get(username="yatis2")
+    #user = User.objects.get(username="yi.wu")
     return user
 
 def getSpaceExecUserPath(space_name):
