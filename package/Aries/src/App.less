@@ -1,0 +1,74 @@
+html, body, #app {
+  height: 100%;
+}
+
+#wrapper {
+  position: relative;
+  min-height: 100%;
+  animation: fade .25s cubic-bezier(.455,.03,.515,.955);
+}
+
+#header {
+  background-color: #ff5722;
+  height: 50px;
+  line-height: 50px;
+  padding: 0 20px;
+  color: #fff;
+  a {
+    color: #fff;
+  }
+  .logo {
+    margin: 0;
+    font-size: 20px;
+    .glyphicon {
+      margin-right: 1em;
+    }
+    &:hover,
+    &:focus {
+      text-decoration: none;
+    }
+  }
+
+  .select-color{
+    color: black;
+    margin-left: 10px;
+  }
+}
+
+#body {
+  padding-bottom: 60px;
+  > .sidebar {
+    padding: 0;
+  }
+  > .content {
+    padding: 20px;
+    > div {
+      animation: fade .25s cubic-bezier(.455,.03,.515,.955);
+    }
+  }
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0 20px;
+  height: 60px;
+  line-height: 60px;
+  font-size: 12px;
+  background-color: #333;
+  color: #ccc;
+  a {
+    color: #fff;
+  }
+  .logo {
+    margin-right: 60px;
+  }
+}
