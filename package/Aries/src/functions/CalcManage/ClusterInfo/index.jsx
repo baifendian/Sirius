@@ -21,6 +21,22 @@ var ClusterCommonInfo = React.createClass({
     return state_dict
   },
 
+  // 该函数只会被调用一次
+  // this.storeConstData中存储的数据可认为是不会变更的（即父组件使用setState进行修改时组件不会响应修改）
+  componentWillMount(){
+    let config = this.props
+    this.storeConstData = {
+      headText:'我的集群',
+      dataTableConfigDict:config.dataTableConfigDict,
+      rootDivClassName:config.rootDivClassName,
+      naviTexts:config.naviTexts,
+      defaultDetailText:config.defaultDetailText
+    }
+    this.storeVarData = {
+      dataTableDataArr:this.props.dataTableDataArr
+    }
+  },
+
   componentDidMount(){
     this.calcDesiredHeight()
     window.onresize = ()=>{ this.onWindowResize() }
@@ -128,24 +144,15 @@ var ClusterCommonInfo = React.createClass({
     dynamicTable.style.height = (newBottomHeight-47) + 'px'
   },
 
-  // 该函数只会被调用一次
-  // this.storeConstData中存储的数据可认为是不会变更的（即父组件使用setState进行修改时组件不会响应修改）
-  componentWillMount(){
-    let config = this.props
-    this.storeConstData = {
-      headText:'我的集群',
-      dataTableConfigDict:config.dataTableConfigDict,
-      rootDivClassName:config.rootDivClassName,
-      naviTexts:config.naviTexts,
-      defaultDetailText:config.defaultDetailText
-    }
-    this.storeVarData = {
-      dataTableDataArr:this.props.dataTableDataArr
-    }
-  },
-
   render: function (){
-    let naviTexts = this.storeConstData.naviTexts
+    let naviTexts = []
+    for ( let i = 0 ; i < this.storeConstData.naviTexts.length ; i ++ ){
+      naviTexts.push( {
+        url:this.storeConstData.naviTexts[i].url + location.search,
+        text:this.storeConstData.naviTexts[i].text
+      } )
+    }
+
     if ( this.storeVarData.dataTableDataArr !== this.props.dataTableDataArr ){      
       // 如果namespace发生切换，则会进入这个函数体内
       this.storeVarData.dataTableDataArr = this.props.dataTableDataArr
@@ -153,15 +160,6 @@ var ClusterCommonInfo = React.createClass({
       this.state.detailText = ''
       this.state.filteredData = undefined
       this.state.searchInputKey = ''
-
-      // 如果namespace发生切换，则说明url后缀的cur_space的值发生了改变，因此需要动态调整NavigationInPage的链接
-      naviTexts = []
-      for ( let i = 0 ; i < this.storeConstData.naviTexts.length ; i ++ ){
-        naviTexts.push( {
-          url:this.storeConstData.naviTexts[i].url + location.search,
-          text:this.storeConstData.naviTexts[i].text
-        } )
-      }
     }
 
     let text = this.state.detailText ? this.state.detailText : this.storeConstData.defaultDetailText
