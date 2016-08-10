@@ -297,7 +297,7 @@ def get_mytask_graph(request):
 	    r2 = req.get(url2)
         if r1.status_code and r2.status_code == 200:
 	        kd_logger.debug( 'get my task graph data success ')
-		    dic = eval(r2.text)
+		    dic = json.loads(r2.text)
 			all_task = []
 			data = {}
 			nodes = []
@@ -312,6 +312,7 @@ def get_mytask_graph(request):
 			return generate_success( data=data )
 		else:
 			kd_logger.error('get my tsk graph data error ')
+            return generate_failure( 'get my tsk graph data error ' )
     except Exception, e:
     	s = "get mytask graph data occured exception : %s" % str(e)
     	kd_logger.error(s)
