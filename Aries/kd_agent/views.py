@@ -269,8 +269,8 @@ def format_datetime_obj(datetime_obj):
 @csrf_exempt
 @return_http_json
 def get_mytask_graph(request):
-	import requests
-	kd_logger.info( 'call get_mytask_graph' )
+    import requests
+    kd_logger.info( 'call get_mytask_graph' )
     url1 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/accounts/login/'  #模拟登陆BDMS
     url2 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/ide/schedule/directedgraphdata/?username=all&status=all&taskname=&env=0"  #任务运行网络图 rest api
     data={"username":settings.BDMS_USERNAME,"password": settings.BDMS_PASSWORD}
@@ -285,39 +285,28 @@ def get_mytask_graph(request):
             "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
             "X-Requested-With":"XMLHttpRequest"
             }
-	try:
-	    req = requests.Session()
-	    r1 = req.post(url1, data=data, headers=headers)
-	    r2 = req.get(url2)
+    try:
+        req = requests.Session()
+        r1 = req.post(url1, data=data, headers=headers)
+        r2 = req.get(url2)
         if r1.status_code and r2.status_code == 200:
-	        kd_logger.debug( 'get my task graph data success ')
-		    dic = eval(r2.text)
-			all_task = []
-			data = {}
-			nodes = []
-			for i in dic['task_info']:
-				for j in dic['task_process']:
-				  	if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 1:
-				   		nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#C2FABC"})
-				   	if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 2:
-				   		nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#FF0000"})
-			data["nodes"] = nodes
-			data["edges"] = [{}]
-			return generate_success( data=data )
-		else:
-			kd_logger.error('get my tsk graph data error ')
+            kd_logger.debug( 'get my task graph data success ')
+            dic = eval(r2.text)
+            all_task = []
+            data = {}
+            nodes = []
+            for i in dic['task_info']:
+                for j in dic['task_process']:
+                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 1:
+                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#C2FABC"})
+                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 2:
+                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#FF0000"})
+            data["nodes"] = nodes
+            data["edges"] = [{}]
+            return generate_success( data=data )
+        else:
+            kd_logger.error('get my tsk graph data error ')
     except Exception, e:
-    	s = "get mytask graph data occured exception : %s" % str(e)
-    	kd_logger.error(s)
-    	return generate_failure(s)
-
-
-
-
-
-
-
-
-    
-    
-    
+        s = "get mytask graph data occured exception : %s" % str(e)
+        kd_logger.error(s)
+        return generate_failure(s)
