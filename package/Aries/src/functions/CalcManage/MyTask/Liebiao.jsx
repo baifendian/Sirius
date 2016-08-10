@@ -1,6 +1,5 @@
 import React from 'react'
 import DataTable from 'bfd-ui/lib/DataTable'
-import GroupBoxWithDynamicTable from 'public/GroupBoxWithDynamicTable'
 import './Liebiao.less'
 
 import CMDR from '../CalcManageDataRequester/requester.js'

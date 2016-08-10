@@ -204,6 +204,10 @@ LOGGING = {
 # 提供k8s服务的地址
 K8S_IP = '172.24.3.150'
 K8S_PORT = 8080
+BDMS_IP = '172.24.2.114'
+BDMS_PORT = '10010'
+BDMS_USERNAME = 'aiping.liang'
+BDMS_PASSWORD = 'aiping.liang'
 
 DATABASES = {
     'default': {

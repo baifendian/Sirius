@@ -127,7 +127,10 @@ const App = React.createClass({
                   <NavItem icon="equalizer" href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
                   <NavItem icon="equalizer" href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
                   <NavItem icon="equalizer" href={`CalcManage/MyTask?${params}`} title="我的任务" />
-                  <NavItem icon="equalizer" href={`CalcManage/CreateCluster?${params}`} title="创建集群" />
+                  <NavItem icon="equalizer" href={`CalcManage/CreateCluster?${params}`} title="创建集群" >
+                      <NavItem  icon='equalizer' href={`CalcManage/CreateCluster/CC1?${params}`} title="开始使用 " />
+                      <NavItem  icon="equalizer" href={`CalcManage/CreateCluster/CC2?${params}`} title="云中心计算集群" />
+                  </NavItem>
                </NavItem>
 
                 {auth.user.type > 0 ? [
