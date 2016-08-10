@@ -3,7 +3,7 @@ import message from 'bfd/message'
 import Toolkit from 'public/Toolkit/index.js'
 
 var CalcManageDataRequester = {
-  getCurNameSpace( _this ) {
+  getCurNameSpace(_this) {
     return _this.props.location.query.cur_space
   },
   getUrlForm() {
@@ -12,15 +12,20 @@ var CalcManageDataRequester = {
       'serviceList': 'k8s/api/v1/namespaces/{nameSpace}/services',
       'rclist': 'k8s/api/v1/namespaces/{nameSpace}/replicationcontrollers',
       'mytasklist': 'k8s/api/v1/namespaces/mytasklist',
+      'mytaskgraph': 'k8s/api/v1/namespaces/mytaskgraph',
 
     }
+  },
+  getMytaskGraph(_this, callback) {
+    let url = this.getUrlForm()['mytaskgraph']
+    this.xhrGetData(url, _this, callback)
   },
 
   getMytaskList(_this, callback) {
     let url = this.getUrlForm()['mytasklist']
     this.xhrGetData(url, _this, callback)
-
   },
+
   getPodList(_this, callback, nameSpace ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podlist'], {
       'nameSpace': nameSpace
@@ -50,7 +55,7 @@ var CalcManageDataRequester = {
         callback(_this, retu_data)
       }
     })
-  
+
   },
 
 

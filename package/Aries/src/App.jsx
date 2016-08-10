@@ -113,21 +113,24 @@ const App = React.createClass({
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
                 <NavItem key={0} href="HDFS" icon="hand-right" defaultOpen title="存储管理">
-                  <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
-                  <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
-                  <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
-                  <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
-                  <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
-                  <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
+                  <NavItem icon="equalizer" href={`HDFS/Myfile?${params}`} title="我的文件" />
+                  <NavItem icon="equalizer" href={`HDFS/Share?${params}`} title="我的分享" />
+                  <NavItem icon="equalizer" href={`HDFS/Trash?${params}`} title="我的回收站" />
+                  <NavItem icon="equalizer" href={`HDFS/Service?${params}`} title="服务管理" />
+                  <NavItem icon="equalizer" href={`HDFS/Capacity?${params}`} title="配额管理" />
+                  <NavItem icon="equalizer" href={`HDFS/ShareCenter?${params}`} title="共享中心" />
                </NavItem>
 
                <NavItem key={1} href="CalcManage" icon="hand-right" title="计算管理">
-                  <NavItem href={`CalcManage/Overview?${params}`} title="概览" />
-                  <NavItem href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
-                  <NavItem href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
-                  <NavItem href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
-                  <NavItem href={`CalcManage/MyTask?${params}`} title="我的任务" />
-                  <NavItem href={`CalcManage/CreateCluster?${params}`} title="创建集群" />
+                  <NavItem icon="equalizer" href={`CalcManage/Overview?${params}`} title="概览" />
+                  <NavItem icon="equalizer" href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
+                  <NavItem icon="equalizer" href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
+                  <NavItem icon="equalizer" href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
+                  <NavItem icon="equalizer" href={`CalcManage/MyTask?${params}`} title="我的任务" />
+                  <NavItem icon="equalizer" href={`CalcManage/CreateCluster?${params}`} title="创建集群" >
+                      <NavItem  icon='equalizer' href={`CalcManage/CreateCluster/CC1?${params}`} title="开始使用 " />
+                      <NavItem  icon="equalizer" href={`CalcManage/CreateCluster/CC2?${params}`} title="云中心计算集群" />
+                  </NavItem>
                </NavItem>
 
                 {auth.user.type > 0 ? [

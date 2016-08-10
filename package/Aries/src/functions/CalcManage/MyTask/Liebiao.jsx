@@ -1,6 +1,5 @@
 import React from 'react'
 import DataTable from 'bfd-ui/lib/DataTable'
-import GroupBoxWithDynamicTable from 'public/GroupBoxWithDynamicTable'
 import './Liebiao.less'
 
 import CMDR from '../CalcManageDataRequester/requester.js'
@@ -13,13 +12,13 @@ const TabLiebiao = React.createClass({
 
     let state_dict = {
       // 表格信息
-      column: [{ title:'任务名称',  key:'task',			  order:true }, 
-               { title:'类型',      key:'category',			  order:true }, 
-               { title:'准备时间',  key:'ready_time',	  order:true }, 
-               { title:'开始时间',  key:'running_time',  order:true },
-               { title:'完成时间',  key:'leave_time',	order:true },
-               { title:'执行状态',  key:'status',		  order:true },
-               { title:'执行结果',  key:'result',		  order:true }],
+      column: [{ title:'任务名称',  key:'task',         order:true, width: '19%'}, 
+               { title:'类型',      key:'category',     order:true, width: '12.56%'}, 
+               { title:'准备时间',  key:'ready_time',   order:true, width: '14.28%'}, 
+               { title:'开始时间',  key:'running_time', order:true, width: '14.28%'},
+               { title:'完成时间',  key:'leave_time',   order:true, width: '13.28%'},
+               { title:'执行状态',  key:'status',       order:true, width: '13.28%'},
+               { title:'执行结果',  key:'result',       order:true, width: '13.28%'}],
       showPage:'false',
       data:{"totalList": [],"totalPageNum":0},
 

@@ -6,8 +6,10 @@
     "theme": "node bin/theme.js -#42a5f5:#ff7043 -#2196f3:#ff5722 -#1e88e5:#f4511e"
   },
   "dependencies": {
-    "bfd-ui": "^0.7.0",
+    "antd": "^1.8.0",
+    "bfd-ui": "^0.7.1",
     "react-copy-to-clipboard": "^4.2.2",
+    "react-markdown": "^2.4.2",
     "uuid": "^2.0.2",
     "vis": "^4.16.1"
   },
@@ -15,6 +17,7 @@
     "autoprefixer": "^6.3.6",
     "babel-cli": "^6.3.17",
     "babel-loader": "^6.2.0",
+    "babel-plugin-antd": "^0.4.1",
     "babel-plugin-transform-runtime": "~6.4.3",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",

@@ -1,12 +1,26 @@
 import React from 'react'
-import './index.less'
 import './Graph.less'
 import Graph from 'public/Graph'
+import { Tag } from 'antd'
+
+import CMDR from '../CalcManageDataRequester/requester.js'
 
 const TabGraph = React.createClass({
+  getInitialState: function () {
+    setTimeout( () => { CMDR.getMytaskList( this,this.xhrCallback ) }, 0);
+    this.oriData = []
 
+  xhrCallback:(_this,executedData) => {
+    _this.setState ( { 
+      'data': {
+        "totalList": executedData,
+        "totalPageNum":executedData.length
+      }
+    })
+    _this.oriData = executedData
+  }, 
 render() {
-  var data = {
+  /**var data = {
   nodes: [
       {id: 1, label: 'task 1', color:'#97C2FC'},
       {id: 2, label: 'task 2', color:'#6E6EFD'},
@@ -32,12 +46,16 @@ render() {
       {from: 3, to: 8},
       {from: 3, to: 9},
     ]
-};
+};**/
 
     return (
       <div className='GraphName'>
-         <p>BDMS任务运行网络图</p>
-         <Graph graph={data}/>
+         <Tag color="blue">执行中</Tag>
+         <Tag color="green">执行完成(成功)</Tag>
+         <Tag color="yellow">任务停止中</Tag>
+         <Tag color="red">执行完成(失败)</Tag>
+         <Tag color='black'>等待执行\未进入调度</Tag>
+         <Graph graph={this.state.data}/>
       </div>
     )
   }

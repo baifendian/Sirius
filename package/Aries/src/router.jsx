@@ -105,13 +105,20 @@ export default render((
             cb(null, require('./functions/CalcManage/MyTask').default)
           })
         }}/>
-        <Route path="CreateCluster" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/CreateCluster').default)
-          })
-        }}/>
-      </Route>
-
+        <Route path="CreateCluster">
+          <Route path='CC1' getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/CreateCluster/CC1').default)
+              })
+          }}/>
+          <Route path='CC2' getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/CreateCluster/CC2').default)
+              })
+          }}/>
+        </Route>
+       </Route>
+       
       <Route path="login" getComponent={(location, cb) => {
         require.ensure([], require => {
           cb(null, require('./functions/Login').default)
