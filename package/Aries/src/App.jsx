@@ -113,12 +113,12 @@ const App = React.createClass({
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
                 <NavItem key={0} href="HDFS" icon="hand-right" defaultOpen title="存储管理">
-                  <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
-                  <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
-                  <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
-                  <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
-                  <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
-                  <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
+                  <NavItem icon="equalizer" href={`HDFS/Myfile?${params}`} title="我的文件" />
+                  <NavItem icon="equalizer" href={`HDFS/Share?${params}`} title="我的分享" />
+                  <NavItem icon="equalizer" href={`HDFS/Trash?${params}`} title="我的回收站" />
+                  <NavItem icon="equalizer" href={`HDFS/Service?${params}`} title="服务管理" />
+                  <NavItem icon="equalizer" href={`HDFS/Capacity?${params}`} title="配额管理" />
+                  <NavItem icon="equalizer" href={`HDFS/ShareCenter?${params}`} title="共享中心" />
                </NavItem>
 
                <NavItem key={1} href="CalcManage" icon="hand-right" title="计算管理">

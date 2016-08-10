@@ -2,14 +2,7 @@ import React from 'react'
 import Toolkit from 'public/Toolkit/index.js'
 import './index.less'
 
-/**
- * 动态生成table的一行
- * <tr> 
- *    <td></td>  
- *    <td></td>  
- *    ...
- * </tr>
- * */  
+
 var DynamicTableLine = React.createClass({
   render: function (){
     let restTdNumber = this.props.maxTdNumberInOneline - this.props.oneLineKeys.length
@@ -19,11 +12,25 @@ var DynamicTableLine = React.createClass({
     for (let i = 0 ; i < restTdNumber ; i ++){
       this.props.oneLineKeys.push( '' )
     }
-
     return(
       <tr>
-        {this.props.oneLineKeys.map( (text) => {
-          return <td key={Toolkit.generateGUID()}>{text}</td>
+        {this.props.oneLineKeys.map( (lineText) => {
+          // 首先计算空格的个数
+          let spaceNumber = 0
+          for ( let i = 0 ; i < lineText.length ; i ++ ){
+            if (lineText[i] !== ' ')
+              break
+            spaceNumber += 1
+          }
+
+          // 然后根据每个空格向右偏移 15px ，即可渲染出来较为方便查看的显示
+          return (
+            <td key={Toolkit.generateGUID()}  >
+              <div style={{ 'marginLeft':spaceNumber*15+'px' }}>
+                {lineText}
+              </div>
+            </td>
+          )
         })}
       </tr>
     )
@@ -60,6 +67,7 @@ var DynamicTableLine = React.createClass({
  *   </tbody>
  * </table>
  * 注意，它会保证每行的td个数相同，没有提供数据的会以 <td></td> 填充
+ * 
  * */
 var DynamicTable = React.createClass({
   render:function (){
@@ -70,7 +78,7 @@ var DynamicTable = React.createClass({
         maxTdNumberInOneline = l
       }
     }
-
+    
     return (
       <div className="DynamicTableClass">
 	      <table>
