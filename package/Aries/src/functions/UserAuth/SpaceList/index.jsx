@@ -54,7 +54,9 @@ export default React.createClass({
           </Fetch>
           </TabPanel>
           <TabPanel>
+          <Fetch style={{minHeight:100}} url={spaceInfoUrl} onSuccess={this.getSpaceInfo}>
             <SpaceManager url={this.state.url} refreshTable={this.refreshTable} cur_space={this.state.cur_space} is_admin={this.state.is_admin} />
+          </Fetch>
           </TabPanel>
         </Tabs>
         <Fetch style={{minHeight:0}} url={`v1/user_auth/spaces/?filter=${filter}`} onSuccess={this.initCurSpace}>
