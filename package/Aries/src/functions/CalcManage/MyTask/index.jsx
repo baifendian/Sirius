@@ -1,9 +1,12 @@
 import React from 'react'
-//import { Tabs, TabList, Tab, TabPanel } from 'bfd-ui/lib/Tabs'
+import { Tabs, TabList, Tab, TabPanel } from 'bfd-ui/lib/Tabs'
 import TabGraph from './Graph'
 import TabLiebiao from './Liebiao'
 import NavigationInPage from 'public/NavigationInPage'
-import { Tabs, Icon } from 'antd'
+import Icon from 'bfd-ui/lib/Icon'
+
+//import { Tabs, Icon } from 'antd'
+
 
 export default React.createClass({
   render() {
@@ -23,9 +26,13 @@ export default React.createClass({
           </div>
           <div className='cTabs'>
  
-            <Tabs defaultActiveKey="1">
-              <TabPane tab={<span><Icon type="picture" /></span>} key="1"><TabGraph /></TabPane>
-              <TabPane tab={<span><Icon type="bars" /></span>} key="2"><TabLiebiao /></TabPane>
+            <Tabs>
+              <TabList>
+                <Tab><img src='../../../data/picture.png' /></Tab>
+                <Tab><img src='../../../data/bars.png' /></Tab>
+              </TabList>
+              <TabPanel><TabGraph /></TabPanel>
+              <TabPanel><TabLiebiao /></TabPanel>
             </Tabs>
 
           </div>

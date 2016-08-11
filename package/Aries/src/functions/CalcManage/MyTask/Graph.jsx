@@ -2,6 +2,7 @@ import React from 'react'
 import './Graph.less'
 import Graph from 'public/Graph'
 import { Tag } from 'antd'
+import Button from 'bfd-ui/lib/Button'
 
 import CMDR from '../CalcManageDataRequester/requester.js'
 
@@ -56,12 +57,16 @@ const TabGraph = React.createClass({
 
     return (
       <div className='GraphName'>
-         <Tag color="blue">执行中</Tag>
-         <Tag color="green">执行完成(成功)</Tag>
-         <Tag color="yellow">任务停止中</Tag>
-         <Tag color="red">执行完成(失败)</Tag>
-         <Tag color='blank'>等待执行\未进入调度</Tag>
-         <Graph graph={this.state.data}/>
+        <div className='btn-name'>
+          <Button className='btn-1' size='sm'>执行中</Button>
+          <Button className='btn-2' size='sm'>执行完成(成功)</Button>
+          <Button className='btn-3' size='sm'>任务停止中</Button>
+          <Button className='btn-4' size='sm'>执行完成(失败)</Button>
+          <Button className='btn-5' size='sm'>等待执行/未进入调度</Button>
+        </div>
+        <div>
+           <Graph graph={this.state.data}/>
+        </div>
       </div>
     )
   }
