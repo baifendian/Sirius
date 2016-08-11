@@ -56,6 +56,6 @@ xhr.success = (res, option) => {
       }, '/login')
       break
     default:
-      message.danger(res.msg || 'unknown error')
+      message.danger(res.data || 'unknown error')
   }
 }
