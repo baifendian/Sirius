@@ -100,6 +100,19 @@ var ClusterCommonInfo = React.createClass({
     this.hightlightNewClickedItemAndShowDetailInfo( record )
   },
 
+  onTableHeadOrder(name, sort){
+    let oriArr = this.state.filteredData !== undefined ? this.state.filteredData : this.props.dataTableDataArr
+
+    // 从oriArr克隆一个数组出来（因为slice不会在原数组上进行操作，因此可以直接slice(0)来实现克隆）
+    let sortedArr = oriArr.slice(0)
+
+    sortedArr.sort( function(r1,r2){
+      let comparedStr = Toolkit.calcValueSort( r1[name],r2[name],'asc','desc' )
+      return comparedStr === sort ? -1 : 1
+    } )
+    this.setState({ filteredData:sortedArr })
+  },
+
   clearOldHighlightItem(){
     this.highlightTr( this.curSelectDataTableItem,false )
     this.curSelectDataTableItem = undefined
@@ -190,6 +203,7 @@ var ClusterCommonInfo = React.createClass({
             <div className="DataTableFatherDiv">
               <DataTable ref="DataTable" data={data} 
                          onRowClick={this.onTableRowClick}
+                         onOrder={this.onTableHeadOrder}
                          showPage={this.storeConstData.dataTableConfigDict.showPage} 
                          column={this.storeConstData.dataTableConfigDict.column } />
             </div>
