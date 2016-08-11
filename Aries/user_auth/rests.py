@@ -16,7 +16,6 @@ from rest_framework import generics
 import logging
 ac_logger = logging.getLogger("access_log")
 from django.contrib.auth.models import User
-#from django.shortcuts import render,render_to_response
 from django.http import HttpResponseRedirect
 from user_auth.models import Account,Role
 import json
@@ -126,6 +125,4 @@ class spaceInfo(APIView):
     def patch(self,request,pk,format=None):
         result = {"error":"该接口尚未开发"}
         return packageResponse(result,status=status.HTTP_204_NO_CONTENT)
- 
-#return render(request,'user_auth/login.html',locals())
 

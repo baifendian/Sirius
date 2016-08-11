@@ -10,8 +10,11 @@ import json
 from django.http import HttpResponse
 from user_auth.models import *
 from ldap_client import ldap_get_vaild
+from django.views.decorators.csrf import ensure_csrf_cookie
 
+#@ensure_csrf_cookie
 def login(request):
+    ac_logger.info("######################cookie: {0}#######".format(request.COOKIES.get('csrftoken')))
     ac_logger.info("######################login#######")
     if request.method == "POST":
         res = {}
@@ -56,6 +59,7 @@ def login(request):
                 res["data"] = "username or password is error"
             response = HttpResponse(content_type='application/json')
             response.write(json.dumps(res))
+            response.set_cookie('csrftoken',request.COOKIES.get('csrftoken'))
             response["Access-Control-Allow-Origin"] = "*"
             response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
             return response
@@ -86,7 +90,10 @@ def login(request):
             user = ""
         user = json.dumps(user)
         ac_logger.info("##########user:%s" %user)   
-        return render_to_response('index/index.html',locals())
+        response =  render_to_response('index/index.html',locals())
+        # set default cookie value
+        response.set_cookie('csrftoken',request.COOKIES.get('csrftoken','S6ouKsk1kRrp5qsHlmd5fupVJewYitW3'))
+        return response
 
 def logout(request):
     result = {}
@@ -104,7 +111,9 @@ def logout(request):
     response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
     return response
 
+@ensure_csrf_cookie
 def index(request):
+    ac_logger.info("######################cookie: {0}#######".format(request.COOKIES.get('csrftoken')))
     #save cur_space
     user = request.user
     cur_space = request.GET.get("cur_space","")
