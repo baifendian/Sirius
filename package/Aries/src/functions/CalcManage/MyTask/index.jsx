@@ -13,12 +13,20 @@ export default React.createClass({
     const TabPane = Tabs.TabPane;
     let headText = '我的任务'
     let navigationTexts = [{
+      'url':'/',
+      'text':'首页'
+    },{
       'url':'/CalcManage/Overview',
       'text':'计算管理'
     },{
       'url':'/CalcManage/MyTask',
       'text':'我的任务'
     }]
+
+    for ( let i = 0 ; i < navigationTexts.length ; i ++ ){
+      navigationTexts[i]['url'] += location.search
+    }
+
     return (
         <div className='MyTaskRootDiv'>
           <div className='NavigationInPage'>
