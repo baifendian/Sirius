@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <link rel="icon" href="{% static 'images/bitbug_favicon_whit.ico' %}" type="image/x-icon"> 
+  <link rel="shortcut icon" href="{% static 'images/bitbug_favicon_whit.ico' %}" type="image/x-icon">
+  <title>百分点云中心</title>
+</head>
+<body>
+  <script>
+   {% autoescape off %}
+    window.user = {{user}};
+    //console.log({{request.user}})
+  {% endautoescape %}
+  </script>
+  <div id="app"></div>
+  <script src="{% static 'aries/app.6fef560e70b89933c1fb.js' %}" > </script>
+</body>
+</html>

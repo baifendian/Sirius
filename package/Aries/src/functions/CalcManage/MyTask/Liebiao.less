@@ -1,0 +1,60 @@
+div.RootDiv > div.DataTableDiv {
+  margin-top:20px;
+  padding-top:13px;   // DataTable的表头文本距离上边框为17px
+  padding-left:20px;
+  padding-right:8px;
+  padding-bottom: 10px;
+  border: 1px solid #ECECEC;
+}
+
+div.RootDiv > div.DataTableDiv table {
+  th,td{
+    font-family: '微软雅黑';
+    font-size: 12px;
+    color:#333333;
+  }
+
+
+  thead{
+	  tr{
+      display: block;
+      width: 100%;
+
+      th{
+        display: inline-block;
+        width: 14.28%;
+
+        border-bottom: 3px solid #DDEEFD;
+      }
+    }
+  }
+
+  tbody {
+    display: block;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    height:240px;
+    max-height:240px;
+    min-height:240px;
+
+    tr{
+      display: block;
+      width: 100%;
+
+      height: 40px;
+      border-bottom: 1px solid #EFF3F8;
+
+      td{
+        display: inline-block;
+        width: 14.28%;
+        height: 40px;
+        border-top: 0px;
+      }
+    }
+
+    tr.oddTr{   background-color: #FFFFFF; }
+    tr.evenTr{  background-color: #FCFCFC; }
+  }
+}
