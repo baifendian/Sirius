@@ -7,7 +7,6 @@ import CMDR from '../CalcManageDataRequester/requester.js'
 
 const TabGraph = React.createClass({
   getInitialState: function () {
-    setTimeout( () => { CMDR.getMytaskGraph( this,this.xhrCallback ) }, 0);
     return {
       'data': {
         'nodes':[],
@@ -15,6 +14,11 @@ const TabGraph = React.createClass({
       }
     }
   },
+
+  componentDidMount:function(){
+    CMDR.getMytaskGraph( this,this.xhrCallback )
+  },
+
   xhrCallback:(_this,executedData) => {
     _this.setState ( { 
       'data': executedData,
