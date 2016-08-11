@@ -46,13 +46,21 @@ def spaceListGet(request):
                 data = "not space"
         else:
             data=[]
-            for spaceUserRole in spaceUserRoles:
-                sur_dict = {}
-                sur_dict["space_id"]=spaceUserRole.space.id
-                sur_dict["space_name"]=spaceUserRole.space.name
-                sur_dict["href_info"] = url.format(REST_BASE_URI,spaceUserRole.space.id)
-                sur_dict["href_members"] = url_member.format(REST_BASE_URI,spaceUserRole.space.id)
-                data.append(sur_dict)
+            if accounts[0].role.name.upper() in ["SUPERADMIN","ROOT"]:
+                spaces = Space.objects.all()
+                data = [{"space_id":space.id,
+                         "space_name":space.name,
+                         "href_info":"",
+                         "href_members":"",
+                        } for space in spaces ]
+            else:
+                for spaceUserRole in spaceUserRoles:
+                    sur_dict = {}
+                    sur_dict["space_id"]=spaceUserRole.space.id
+                    sur_dict["space_name"]=spaceUserRole.space.name
+                    sur_dict["href_info"] = url.format(REST_BASE_URI,spaceUserRole.space.id)
+                    sur_dict["href_members"] = url_member.format(REST_BASE_URI,spaceUserRole.space.id)
+                    data.append(sur_dict)
         result["data"] = data
     else:
         result["code"]=StatusCode["GET_FAILED"]

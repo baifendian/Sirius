@@ -57,7 +57,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 APPEND_SLASH=False
-
 # Application definition
 INSTALLED_APPS = (
     'django_admin_bootstrapped.bootstrap3',
@@ -285,3 +284,4 @@ FTP_ACCT = ""
 FTP_KEYFILE = None
 FTP_CERTFILE = None
 SESSION_COOKIE_AGE=60*30
+
