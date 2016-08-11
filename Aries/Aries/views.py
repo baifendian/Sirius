@@ -12,6 +12,38 @@ from user_auth.models import *
 from ldap_client import ldap_get_vaild
 from django.views.decorators.csrf import ensure_csrf_cookie
 
+def is_admin(account,cur_space):
+    flag = True
+    if account.role.name.upper() in ["SUPERADMIN","ROOT"]:
+        is_admin =1
+        if not cur_space:
+            spaces = Space.objects.all()
+            if spaces:
+                account.cur_space = spaces[0].name
+                account.save()
+                cur_space = account.cur_space
+            else:
+                flag = False
+    else:
+        is_admin = 0
+        if cur_space:
+            spaceUserRole = SpaceUserRole.objects.get(user=account,space=Space.objects.get(name=cur_space))
+            if spaceUserRole.role.name.upper() in ["SPACEADMIN"]:
+                is_admin =1
+        else:
+            spaceUserRole = SpaceUserRole.objects.filter(user=account)
+            if spaceUserRole:
+                if spaceUserRole[0].role.name.upper() in ["SPACEADMIN"]:
+                    is_admin = 1
+                account.cur_space=spaceUserRole[0].space.name
+                account.save()
+                cur_space = account.cur_space
+            else:
+                flag = False
+    if flag:
+        return {"name":account.name,"cur_space":cur_space,"type":is_admin}
+    else:
+        return ""
 #@ensure_csrf_cookie
 def login(request):
     ac_logger.info("######################cookie: {0}#######".format(request.COOKIES.get('csrftoken')))
@@ -30,30 +62,20 @@ def login(request):
                 userAdd.is_active=True  
                 userAdd.save
                 user = authenticate(username=username, password=password)
-            is_admin = 0
-            cur_space = ""
             if user:
                 auth_login(request, user)
                 try:
                     account = Account.objects.get(name=username)
-                    spaceUserRole = SpaceUserRole.objects.filter(user=account)
-                    if spaceUserRole:
-                        if spaceUserRole[0].role.name.upper() in ["SUPERADMIN","SPACEADMIN"]:
-                            is_admin = 1
-                        else:
-                            is_admin = 0
-                        account.cur_space=spaceUserRole[0].space.name
-                        account.save()
-                        cur_space = account.cur_space
+                    data = is_admin(account,account.cur_space)
                 except Exception,e:
                     ac_logger.error(e)
                     account = Account(name=username,password=password,email=email,is_active=1)
                     account.role = Role.objects.get(name="guest")
                     account.save()
-                ac_logger.info("###login##return_data:is_admin=%s,cur_space=%s" %(is_admin,cur_space))
-                    
+                    data = ""
+                ac_logger.info("user:{0}".format(data))
                 res["code"] = 200
-                res["data"] = {"name":username,"type":is_admin,"cur_space":cur_space}
+                res["data"] = data
             else:
                 res["code"] = 500
                 res["data"] = "username or password is error"
@@ -78,11 +100,12 @@ def login(request):
             username = user.username
             try:
                 account = Account.objects.get(name=username)
-                if not account.cur_space:
-                    spaceUserRole = SpaceUserRole.objects.filter(user=account)
-                    account.cur_space=spaceUserRole[0].space.name
-                    account.save()
-                user = {"name":username,"type":1,"cur_space":account.cur_space}
+                user = is_admin(account,account.cur_space)
+                #if not account.cur_space:
+                #    spaceUserRole = SpaceUserRole.objects.filter(user=account)
+                #    account.cur_space=spaceUserRole[0].space.name
+                #    account.save()
+                #user = {"name":username,"type":1,"cur_space":account.cur_space}
             except Exception,e:
                 ac_logger.error(e)
                 user = ""
@@ -121,9 +144,7 @@ def index(request):
         username = user.username
         try:
             account = Account.objects.get(name=username)
-            if not cur_space:
-                cur_space = account.cur_space
-            user = {"name":username,"type":1,"cur_space":cur_space}
+            user = is_admin(account,cur_space)
         except Exception,e:
             ac_logger.error(e)
             user = ""
