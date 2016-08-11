@@ -135,8 +135,7 @@ const App = React.createClass({
                   <NavItem icon="equalizer" href={`CalcManage/CreateCluster?${params}`} title="创建集群" />
                </NavItem>
 
-
-              <NavItem key={0} href="UserAuth" icon="th-large" title="用户管理">
+              <NavItem key={2} href="UserAuth" icon="th-large" title="用户管理">
                 <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
               </NavItem>
 
