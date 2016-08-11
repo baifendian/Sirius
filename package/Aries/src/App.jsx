@@ -51,6 +51,10 @@ const App = React.createClass({
     //更新用户默认cur_space
     let url = `v1/user_auth/user/${value}/`
     xhr({type: 'PUT',url: url,success:data=> {
+        //需要切换space的权限
+        console.log("switchSpace:"+data);
+        auth.user.type = data;
+        console.log(auth);
         this.setState({cur_space:value});
         this.props.history.push({
           pathname:this.props.location.pathname,
@@ -99,7 +103,7 @@ const App = React.createClass({
         <div id="wrapper" className="container-fluid">
           <div id="header" className="row">
             <Link to={env.basePath} className="logo">
-              <span>PROJECT NAME</span>
+              <img src={require('public/logo.png')} />
             </Link>
             <div className="pull-right">
               <span>space切换</span>
@@ -109,6 +113,7 @@ const App = React.createClass({
             </div>
           </div>
           <div id="body" className="row">
+          {auth.user.cur_space != "" ? [
             <div className="sidebar col-md-2 col-sm-3">
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
@@ -130,13 +135,13 @@ const App = React.createClass({
                   <NavItem icon="equalizer" href={`CalcManage/CreateCluster?${params}`} title="创建集群" />
                </NavItem>
 
-                {auth.user.type > 0 ? [
-                  <NavItem key={0} href="UserAuth" icon="th-large" title="用户管理">
-                    <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
-                  </NavItem>
-                ] : null}
+              <NavItem key={2} href="UserAuth" icon="th-large" title="用户管理">
+                <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
+              </NavItem>
+
               </Nav>
             </div>
+            ] : null}
             <div className="content col-md-10 col-sm-9">
               {Children}
             </div>

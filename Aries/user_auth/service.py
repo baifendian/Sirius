@@ -43,15 +43,24 @@ def spaceListGet(request):
                 data = {"space_id":spaces[0].id,"space_name":spaces[0].name}
             else:
                 result["code"]=StatusCode["GET_FAILED"]
+                data = "not space"
         else:
             data=[]
-            for spaceUserRole in spaceUserRoles:
-                sur_dict = {}
-                sur_dict["space_id"]=spaceUserRole.space.id
-                sur_dict["space_name"]=spaceUserRole.space.name
-                sur_dict["href_info"] = url.format(REST_BASE_URI,spaceUserRole.space.id)
-                sur_dict["href_members"] = url_member.format(REST_BASE_URI,spaceUserRole.space.id)
-                data.append(sur_dict)
+            if accounts[0].role.name.upper() in ["SUPERADMIN","ROOT"]:
+                spaces = Space.objects.all()
+                data = [{"space_id":space.id,
+                         "space_name":space.name,
+                         "href_info":"",
+                         "href_members":"",
+                        } for space in spaces ]
+            else:
+                for spaceUserRole in spaceUserRoles:
+                    sur_dict = {}
+                    sur_dict["space_id"]=spaceUserRole.space.id
+                    sur_dict["space_name"]=spaceUserRole.space.name
+                    sur_dict["href_info"] = url.format(REST_BASE_URI,spaceUserRole.space.id)
+                    sur_dict["href_members"] = url_member.format(REST_BASE_URI,spaceUserRole.space.id)
+                    data.append(sur_dict)
         result["data"] = data
     else:
         result["code"]=StatusCode["GET_FAILED"]
@@ -72,6 +81,7 @@ def spaceListPost(request,id):
 def spaceMemberGet(request,pk):
     space_id = pk
     is_admin = isAdmin(getUser(request).username,space_id)
+    ac_logger.info("spaceMemberGet: is_admin {0}".format(is_admin))
     pk = request.GET.get("inspace","1")
     space_user_role = SpaceUserRole.objects.filter(space__id__exact = space_id)
     ac_logger.info(space_user_role)
@@ -92,8 +102,7 @@ def spaceMemberGet(request,pk):
         one_dict["user_id"] = one.id
         one_dict["user_name"] = one.name
         no_user_list.append(one_dict)
-    #else:
-    #属于space的用户
+
     for one in space_user_role:
         one_dict = {}
         one_dict["id"] = one.id
@@ -112,9 +121,7 @@ def spaceMemberGet(request,pk):
         ac_logger.info("############")
         #将存在和不存在的用户分类返回
         data["totalList"] = {"no_user_list":no_user_list,"user_list":user_list}
-
     result["code"] = StatusCode["GET_SUCCESS"]
-    result["msg"]="OK"
     data["is_admin"] = is_admin
     data["currentPage"] = 1
     data["totalPageNum"] = 500
@@ -213,6 +220,7 @@ def spaceInfoGet(request,pk):
     result ={}
     space_id = pk
     is_admin = isAdmin(getUser(request).username,space_id)
+    ac_logger.info("spaceInfoGet: is_admin: %s" %is_admin)
     result["code"] = StatusCode["GET_SUCCESS"]
     result["msg"] = "OK"
     if is_admin == 2:
@@ -233,8 +241,10 @@ def userListPut(request,space):
         account = getObjByAttr(Account,"name",user.username)[0]
         account.cur_space = space
         account.save()
+        space_id = getObjByAttr(Space,"name",space)[0].id
+        is_admin = isAdmin(account.name,space_id)  
         result["code"] = 200
-        result["data"] = "put success"
+        result["data"] = is_admin
     except Exception,e:
         ac_logger.error(e)
         result["code"] = 500
@@ -263,11 +273,12 @@ def saveOrUpdateSpaeceUserRole(user_id,space_id,role_id):
 def isAdmin(user_name,space_id):
     # 1 yes 0 no 2 error
     try:
-        #user__name__exact
-        user_name ="admin"
+        account = Account.objects.get(name=user_name)
+        if account.role.name.upper() in ["ROOT","SUPERADMIN"]:
+            return 1
         spaceUserRole = SpaceUserRole.objects.get(user__name__exact=user_name,space__id__exact=space_id)
         role_name = spaceUserRole.role.name
-        if role_name.lower() == "spaceadmin":
+        if role_name.upper() in  ["SPACEADMIN"]:
             return 1
         else:
             return 0

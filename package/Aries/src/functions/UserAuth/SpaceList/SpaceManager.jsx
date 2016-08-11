@@ -47,14 +47,12 @@ const SpaceManager = React.createClass({
     let space_id = this.props.cur_space;
     let url = `v1/user_auth/spaces/member/${space_id}/`;
     console.log(`uid: ${user_id}, r_id: ${role_id}`);
-    //$.ajax({url:"http://172.24.3.64:10086/v1/user_auth/spaces/member/2/",type:"PUT",data:{"aaaa":[{"aaa":"aaa1"},{"aaaa":"bbb1"}]},async:false});
     xhr({type: 'PUT',url: url,data:{"key":[{"user_id":user_id,"role_id":role_id}]},
-      success(data) {
+      success:data => {
         message.success("成员角色更新成功!", 2);
+        this.props.refreshTable();
       }
     });
-
-
   },
   is_admin_button:{
     1:function(){return <div className="function-UserAuth-SpaceManager-Div"><Button onClick={()=>{this.addMember()}}>添加成员</Button></div>},

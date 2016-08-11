@@ -23,8 +23,8 @@ CORS_ORIGIN_WHITELIST = (
 
 #import ldap
 #from django_auth_ldap.config import LDAPSearch
-AUTH_LDAP_SERVER_URI = 'ldap://172.24.3.170:389'
-AUTH_LDAP_USER_DN_TEMPLATE = 'uid=%(user)s,ou=wiki,dc=bfdabc,dc=com'
+AUTH_LDAP_SERVER_URI = 'ldap://192.168.49.241:389'
+AUTH_LDAP_USER_DN_TEMPLATE = 'uid=%(user)s,ou=mrbs,dc=baifendian,dc=com'
 AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = True
 AUTH_LDAP_CACHE_GROUPS = True
 AUTH_LDAP_GROUP_CACHE_TIMEOUT = 3600
@@ -35,11 +35,11 @@ AUTH_LDAP_USER_ATTR_MAP = {
 
 REST_BASE_URI="172.24.3.64:10010"
 SHARE_PROXY_BASE_URI="http://172.24.3.64:10086"
-#which shell
-# HADOOP_RUN_SCRIPT = "/home/jinzhu.wang/Aries/Aries/hdfs/hadoop-run.sh"
-# WEBHDFS_USER = "hadoop"
 AMBARI_URL="http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/"
 HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
+HADOOP_CLIENT="hlg3p64-lupan"
+AMBARI_USER="admin"
+AMBARI_PASSWORD="admin"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 
@@ -57,7 +57,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 APPEND_SLASH=False
-
 # Application definition
 INSTALLED_APPS = (
     'django_admin_bootstrapped.bootstrap3',
@@ -145,6 +144,12 @@ LOGGING = {
             'formatter': 'complete',
             'filename' :'/opt/pan.lu/gitsource/Sirius/log/service.log'.replace('\\','/')
         },
+        'cmd_file': {
+            'level':'DEBUG',
+            'class':'logging.FileHandler',
+            'formatter': 'complete',
+            'filename' :'/opt/pan.lu/gitsource/Sirius/log/cmd.log'.replace('\\','/')
+        },
         'hdfs_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
@@ -170,6 +175,11 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers':['file'],
+            'propagate': False,
+            'level':'DEBUG',
+        },
+        'cmd_log': {
+            'handlers':['cmd_file', 'console'],
             'propagate': False,
             'level':'DEBUG',
         },
@@ -274,3 +284,4 @@ FTP_ACCT = ""
 FTP_KEYFILE = None
 FTP_CERTFILE = None
 SESSION_COOKIE_AGE=60*30
+
