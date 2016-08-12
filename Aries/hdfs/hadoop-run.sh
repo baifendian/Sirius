@@ -2,7 +2,7 @@
 operator=$1
 shift
 base_command="/opt/hadoop/hadoop/bin/hadoop fs"
-case $operator in mv|cp|rmr|ls|put|get|du|chmod|chown|rmr)
+case $operator in mv|cp|rmr|ls|put|get|du|chmod|chown)
 target_path=$1
 if [ "$operator" = "du" ] ; then
        #统计某个目录下面的所有文件或文件夹的大小

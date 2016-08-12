@@ -33,15 +33,14 @@ class pathOp(APIView):
             return packageResponse(result)
         else:
             result = OP_DICT.get("GET").get(op)(request,path)            
+            filename = path.split("/")[-1]
             response = StreamingHttpResponse(result.iter_content(1024))
             response['Content-Type'] = 'application/octet-stream'
- 	    response['Content-Disposition'] = 'attachment;filename="{0}"'.format("test1.txt")
+ 	    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(filename)
             response["Access-Control-Allow-Origin"] = "*"
             response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
             return response
-            #for chunk in result.iter_content(1024):
-                
-            #return HttpResponse(result)
+
   #  @print_request
     def post(self,request,path,format=None):
         op = request.GET.get("op","")

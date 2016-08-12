@@ -10,9 +10,9 @@ import sys
 from django.conf import settings
 from user_auth.models import *
 from django.contrib.auth.models import *
-ac_logger = logging.getLogger("access_log")
+ac_logger = logging.getLogger("cmd_log")
 
-def run_hadoop(my_args=None,user_name="hadoop",operator="ls",args=["/user/hadoop"]):
+def run_hadoop(user_name="hadoop",operator="ls",args=["/user/hadoop",]):
     pw_record = pwd.getpwnam(user_name)
     user_name      = pw_record.pw_name
     user_home_dir  = pw_record.pw_dir
@@ -64,8 +64,9 @@ def print_args(argsv):
     return wrapper
 
 def getUser(request):
-    #user = request.user
-    user = User.objects.get(username="pan.lu")
+    user = request.user
+    #user = User.objects.get(username="pan.lu")
+    ac_logger.info("user:%s" %user.username)
     return user
 
 def getSpaceExecUserPath(space_name):
@@ -102,6 +103,18 @@ def trashPath(space_path):
     trashPath =  os.path.realpath("/%s/%s/%s/%s" %(os.path.sep,space_path,"/.Trash/Current/",space_path))
     return trashPath 
 
+def unitTransform(size,index,unit):
+    if size/1024.0 > 1024:
+        b = size/1024.0
+        index = index+1
+        return unitTransform(b,index,unit)
+    elif size/1024.0 < 1:
+        return "{0} {1}".format(round(size,1),unit[index])
+    elif size/1024.0 >1 and size/1024.0 < 1024:
+        b = size/1024.0
+        index = index+1
+        return "{0} {1}".format(round(b,1),unit[index])
+
 @print_request
 def test(a,b):
   print a
@@ -111,6 +124,7 @@ def test2(a,b):
   print a,b
 
 if __name__=="__main__":
+  pass
   #print "aaa"
   #test(3,4)
-  test2(3,4)
+  #test2(3,4)
