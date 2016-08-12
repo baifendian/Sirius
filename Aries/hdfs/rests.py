@@ -29,7 +29,7 @@ class pathOp(APIView):
                 result = OP_DICT.get("GET").get(op)(request,path)
             except Exception,e:
                 ac_logger.error(traceback.format_exc())
-                result = {"code":"500","msg":"interval error"}
+                result = {"code":"500","data":"interval error"}
             return packageResponse(result)
         else:
             result = OP_DICT.get("GET").get(op)(request,path)            
