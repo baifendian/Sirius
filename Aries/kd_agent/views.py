@@ -5,7 +5,6 @@ import time
 import logging
 import httplib
 import traceback
-import json
 
 from django.conf import settings
 from django.utils import timezone
@@ -22,6 +21,9 @@ from kd_agent.models import Schedule_Status
 
 kd_logger = logging.getLogger("kd_agent_log")
 kd_logger.setLevel(logging.INFO)
+
+RETU_INFO_SUCCESS = 200
+RETU_INFO_ERROR = 201
 
 
 # 一个装饰器，将原函数返回的json封装成response对象
@@ -48,10 +50,10 @@ def generate_retu_info( code,msg,**ext_info ):
     return retu_data
 
 def generate_success(**ext_info):
-    return generate_retu_info( 200,'',**ext_info )
+    return generate_retu_info( RETU_INFO_SUCCESS,'',**ext_info )
 
 def generate_failure( msg,**ext_info ):
-    return generate_retu_info( 201,msg,**ext_info )
+    return generate_retu_info( RETU_INFO_ERROR,msg,**ext_info )
 
 # 去掉时间字符串 2016-07-15T14:38:02Z 中的T、Z
 def trans_time_str(time_str):
@@ -91,7 +93,7 @@ def restore_k8s_path(p):
 def get_pod_list(request,namespace):
     kd_logger.info( 'call get_pod_list request.path : %s , namespace : %s' % (request.path,namespace) )
     pod_detail_info = get_k8s_data( restore_k8s_path(request.path) )
-    if pod_detail_info['code'] == 0:
+    if pod_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_pod_list query k8s data error : %s' % pod_detail_info['msg'] )
         return generate_failure( pod_detail_info['msg'] )
 
@@ -102,7 +104,7 @@ def get_pod_list(request,namespace):
         record['Name'] = item['metadata']['name']
         record['CreationTime'] = trans_time_str(item['metadata']['creationTimestamp'])
         record['Node'] = item['spec']['nodeName']
-        record['DetailInfo'] = trans_obj_to_easy_dis(item,'PodConfig')
+        record['DetailInfo'] = trans_obj_to_easy_dis(item)
 
         containerStatuses = item['status']['containerStatuses']
         total = len(containerStatuses)
@@ -136,7 +138,7 @@ def get_pod_list(request,namespace):
 def get_service_list(request,namespace):
     kd_logger.info( 'call get_service_list request.path : %s , namespace : %s' % (request.path,namespace) )
     service_detail_info = get_k8s_data( restore_k8s_path(request.path) )
-    if service_detail_info['code'] == 0:
+    if service_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_service_list query k8s data error : %s' % service_detail_info['msg'] )
         return generate_failure( service_detail_info['msg'] )
 
@@ -149,7 +151,7 @@ def get_service_list(request,namespace):
         record['ClusterIP'] = item['spec']['clusterIP']
         record['ExternalIP'] = '<None-IP>'      #TODO:mini的测试暂时没有这个东西，这里暂时填充 <none-IP>
         record['CreationTime'] = trans_time_str( item['metadata']['creationTimestamp'] )
-        record['DetailInfo'] = trans_obj_to_easy_dis(item,'ServiceConfig')
+        record['DetailInfo'] = trans_obj_to_easy_dis(item)
 
         ports_info_arr = []
         for cItem in item['spec']['ports']:
@@ -174,7 +176,7 @@ def get_service_list(request,namespace):
 def get_rc_list(request,namespace):
     kd_logger.info( 'call get_rc_list request.path : %s , namespace : %s' % (request.path,namespace) )
     rc_detail_info = get_k8s_data( restore_k8s_path(request.path) )
-    if rc_detail_info['code'] == 0:
+    if rc_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_rc_list query k8s data error : %s' % rc_detail_info['msg'] )
         return generate_failure( rc_detail_info['msg'] )
 
@@ -187,7 +189,7 @@ def get_rc_list(request,namespace):
         record['Desired'] = item['spec']['replicas']
         record['Current'] = item['status']['replicas']      #TODO:Current暂时这样取值
         record['CreationTime'] = trans_time_str( item['metadata']['creationTimestamp'] )
-        record['DetailInfo'] = trans_obj_to_easy_dis(item,'RCConfig')
+        record['DetailInfo'] = trans_obj_to_easy_dis(item)
 
         container_arr = []
         image_arr = []
@@ -209,10 +211,13 @@ def get_rc_list(request,namespace):
     kd_logger.info( 'call get_rc_list query k8s data successful' )
     return generate_success( data = retu_data )
 
+def trans_obj_to_easy_dis(obj_info):
+    return json.dumps(obj_info, indent=1).split('\n')
 
-
-def trans_obj_to_easy_dis(obj_info,head_str = 'obj'):
-    '''
+'''
+由于Pod、Service、RC的详情信息的展示方式暂时不确定，因此暂时使用最简单的json展示格式来展示
+def __trans_obj_to_easy_dis(obj_info,head_str = 'obj'):
+    
     将一个对象的所有属性转换成一种方便显示的方式，只支持dict、list这两种复合类型
     exam = { 'a':123,'b':[1,2,3] }
     将会被转换成：
@@ -222,7 +227,7 @@ def trans_obj_to_easy_dis(obj_info,head_str = 'obj'):
         'b[1] = 2',
         'b[3] = 3'
     ]
-    '''
+    
     def trans_func( obj,head_str = 'obj' ):
         if isinstance( obj,dict ):
             temp = []
@@ -238,6 +243,7 @@ def trans_obj_to_easy_dis(obj_info,head_str = 'obj'):
             return [ '%s = %s' % ( head_str,str(obj) ) ]
     retu_list = trans_func( obj_info,head_str )
     return retu_list
+'''
 
 @csrf_exempt
 @return_http_json
@@ -248,7 +254,7 @@ def get_mytask_list(request):
         d = {}
         retu_data.append(d) 
     
-        d['task'] = str(record.task)
+        d['task'] = str(record.query_name)
         d['category'] = record.category
         d['ready_time'] = format_datetime_obj(record.ready_time)
         d['running_time'] = format_datetime_obj(record.running_time)
@@ -266,11 +272,48 @@ def format_datetime_obj(datetime_obj):
     else:
         return '<None>'
 
-
-
-
-
-
-    
-    
-    
+@csrf_exempt
+@return_http_json
+def get_mytask_graph(request):
+    import requests
+    kd_logger.info( 'call get_mytask_graph' )
+    url1 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/accounts/login/'  #模拟登陆BDMS
+    url2 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/ide/schedule/directedgraphdata/?username=all&status=all&taskname=&env=0"  #任务运行网络图 rest api
+    data={"username":settings.BDMS_USERNAME,"password": settings.BDMS_PASSWORD}
+    headers = { "Accept":"*/*",
+            "Accept-Encoding":"gzip, deflate, sdch",
+            "Accept-Language":"zh-CN,zh;q=0.8",
+            "Cache-Control":"no-cache",
+            "Connection":"keep-alive",
+            "Host":"172.24.2.114:10010",
+            "Pragma":"no-cache",
+            "Referer":"http://172.24.2.114:10010/ide/schedule/directedgraph/",
+            "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
+            "X-Requested-With":"XMLHttpRequest"
+            }
+    try:
+        req = requests.Session()
+        r1 = req.post(url1, data=data, headers=headers)
+        r2 = req.get(url2)
+        if r1.status_code and r2.status_code == 200:
+            kd_logger.debug( 'get my task graph data success ')
+            dic = eval(r2.text)
+            all_task = []
+            data = {}
+            nodes = []
+            for i in dic['task_info']:
+                for j in dic['task_process']:
+                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 1:
+                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#C2FABC"})
+                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 2:
+                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#FF0000"})
+            data["nodes"] = nodes
+            data["edges"] = [{}]
+            return generate_success( data=data )
+        else:
+            kd_logger.error('get my tsk graph data error ')
+            return generate_failure( 'get my tsk graph data error ' )
+    except Exception, e:
+        s = "get mytask graph data occured exception : %s" % str(e)
+        kd_logger.error(s)
+        return generate_failure(s)

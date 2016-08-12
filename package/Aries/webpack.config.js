@@ -22,8 +22,8 @@ var config = {
     filename: '[name]' + (isProduction ? '.[hash]' : '') + '.js',
     chunkFilename: '[id]' + (isProduction ? '.[hash]' : '') + '.js',
     //静态资源全路径
-    //publicPath: ((isProduction ? env.basePath : '') + '/build/').replace(/\/\//, '/')
-    publicPath: ((isProduction ? env.basePath : '') + '/static/aries/').replace(/\/\//, '/')
+    publicPath: ((isProduction ? env.basePath : '') + '/build/').replace(/\/\//, '/')
+    //publicPath: ((isProduction ? env.basePath : '') + '/static/aries/').replace(/\/\//, '/')
   },
   module: {
     noParse: [],
@@ -33,7 +33,8 @@ var config = {
       exclude: /node_modules/,
       query: {
         presets: ["es2015", "stage-0", "react"],
-        plugins: ['transform-runtime']
+        //解决使用antd库报‘failed to parse sourcemap’错误
+        plugins: ['transform-runtime', ["antd", {"style": true}], "antd", ["antd", {"style": "css"}]]
       }
     }, {
       test: /\.css$/,
@@ -49,7 +50,9 @@ var config = {
       loader: 'style!css!less'
     }]
   },
-  postcss: [autoprefixer({ browsers: ['last 3 versions'] })],
+  postcss: [autoprefixer({
+    browsers: ['last 3 versions']
+  })],
   resolve: {
     extensions: ['', '.js', '.jsx'],
     alias: {
@@ -73,7 +76,7 @@ if (isProduction) {
 }
 
 _.templateSettings = {
-  evaluate:    /<#([\s\S]+?)#>/g,
+  evaluate: /<#([\s\S]+?)#>/g,
   interpolate: /<#=([\s\S]+?)#>/g
 }
 
