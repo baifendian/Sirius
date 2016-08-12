@@ -105,8 +105,9 @@ const Head = React.createClass({
         <button type="button" style={{marginLeft:'50px'}} onClick={this.mkdir} className="btn btn-primary" >新建文件夹</button>
       </div>
        <div className="table-div">
-          <button type="button" style={{marginLeft:'50px'}} onClick={this.uploadModal} className="btn btn-primary" >文件上传</button>
+          {/*<button type="button" style={{marginLeft:'50px'}} onClick={this.uploadModal} className="btn btn-primary" >文件上传</button>*/}
            {/*<Upload  {...this.uploadProps} />*/}
+           {this.operate_type[this.state.operate_type].call(this)}
        </div>
 
        <Modal ref="modal">
