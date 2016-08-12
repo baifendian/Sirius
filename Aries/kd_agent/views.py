@@ -278,7 +278,7 @@ def get_mytask_graph(request):
     import requests
     kd_logger.info( 'call get_mytask_graph' )
     url1 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/accounts/login/'  #模拟登陆BDMS
-    url2 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/ide/schedule/directedgraphdata/?username=all&status=all&taskname=&env=0"  #任务运行网络图 rest api
+    url2 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/ide/schedule/directedgraphdata/?username=all&status=all&taskname=&env=0'  #任务运行网络图 rest api
     data={"username":settings.BDMS_USERNAME,"password": settings.BDMS_PASSWORD}
     headers = { "Accept":"*/*",
             "Accept-Encoding":"gzip, deflate, sdch",

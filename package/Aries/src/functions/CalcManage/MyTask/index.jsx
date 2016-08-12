@@ -36,8 +36,8 @@ export default React.createClass({
  
             <Tabs>
               <TabList>
-                <Tab><img src='../../../data/picture.png' /></Tab>
-                <Tab><img src='../../../data/bars.png' /></Tab>
+                <Tab><img src={require('public/TabBar/picture.png')} /></Tab>
+                <Tab><img src={require('public/TabBar/bars.png')} /></Tab>
               </TabList>
               <TabPanel><TabGraph /></TabPanel>
               <TabPanel><TabLiebiao /></TabPanel>
