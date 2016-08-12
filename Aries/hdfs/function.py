@@ -106,6 +106,8 @@ class HDFS(object):
     def upload_file_by_http(self, path, request):
         space_name = request.GET.get("space_name","")
         exec_user,space_path = getSpaceExecUserPath(space_name)
+        ac_logger.info("request.FILES:{0}".format(request.FILES))
+        ac_logger.info("request:{0}".format(request))
         f = request.FILES["files"]
         filename = f.name
         hdfs_logger.info("space_path:{0},path:{1}".format(space_path,path))
