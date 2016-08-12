@@ -484,8 +484,8 @@ class HDFS(object):
         except HdfsException, e:
             hdfs_logger.error("%s列出文件夹%s发生异常: %s" % (getUser(request).username,space_path, str(e)))
             self.returned['code'] = StatusCode["InternalServerError"]
-            #self.returned['data'] = {"totalList":[],"totalPageNum":0,"currentPage":1}
-            self.returned['data'] = "暂无数据"
+            self.returned['data'] = {"totalList":[],"totalPageNum":0,"currentPage":1}
+            #self.returned['data'] = "暂无数据"
             return self.returned
         else:
             self.returned['code'] = StatusCode["OK"]
