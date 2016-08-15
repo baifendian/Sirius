@@ -6,3 +6,6 @@ django-auth-ldap-1.2.1
 django-bootstrap-tags-1.2.0
 djangorestframework-3.3.0
 Django-1.8.6
+djangorestframework-jsonp
+requests
+uWSGI
