@@ -1,6 +1,6 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import DataTable from 'bfd-ui/lib/DataTable'
-import GroupBoxWithDynamicTable from 'public/GroupBoxWithDynamicTable'
 import './Liebiao.less'
 
 import CMDR from '../CalcManageDataRequester/requester.js'
@@ -9,17 +9,16 @@ import './index.less'
 const TabLiebiao = React.createClass({
 	getInitialState: function () {
     setTimeout( () => { CMDR.getMytaskList( this,this.xhrCallback ) }, 0);
-    this.oriData = []
 
     let state_dict = {
       // 表格信息
-      column: [{ title:'任务名称',  key:'task',			  order:true }, 
-               { title:'类型',      key:'category',			  order:true }, 
-               { title:'准备时间',  key:'ready_time',	  order:true }, 
-               { title:'开始时间',  key:'running_time',  order:true },
-               { title:'完成时间',  key:'leave_time',	order:true },
-               { title:'执行状态',  key:'status',		  order:true },
-               { title:'执行结果',  key:'result',		  order:true }],
+      column: [{ title:'任务名称',  key:'task',         order:true }, 
+               { title:'类型',      key:'category',     order:true }, 
+               { title:'准备时间',  key:'ready_time',   order:true }, 
+               { title:'开始时间',  key:'running_time', order:true },
+               { title:'完成时间',  key:'leave_time',   order:true },
+               { title:'执行状态',  key:'status',       order:true },
+               { title:'执行结果',  key:'result',       order:true }],
       showPage:'false',
       data:{"totalList": [],"totalPageNum":0},
 
@@ -34,8 +33,39 @@ const TabLiebiao = React.createClass({
         "totalPageNum":executedData.length
       }
     })
-    _this.oriData = executedData
   },  
+
+  componentDidMount:function(){
+    this.resizeThWidth()
+  },
+
+  componentDidUpdate:function(){
+    this.resizeTdWidth()
+  },
+
+  resizeThWidth:function(){
+    let dataTableNode = ReactDOM.findDOMNode( this.refs.DataTable )
+    let thead = dataTableNode.childNodes[1].childNodes[0]
+    let tr = thead.childNodes[0]
+    for( let j = 0 ; j < tr.childNodes.length ; j ++ ){
+      tr.childNodes[j].className += ' width_' + j
+    }
+  },
+
+  resizeTdWidth:function(){
+    let dataTableNode = ReactDOM.findDOMNode( this.refs.DataTable )
+    let tbody = dataTableNode.childNodes[1].childNodes[1]
+    for ( let i = 0 ; i < tbody.childNodes.length ; i ++ ){
+      let tr = tbody.childNodes[i]
+
+      if (tr.childNodes.length !== this.state.column.length)
+        break
+
+      for( let j = 0 ; j < tr.childNodes.length ; j ++ ){
+        tr.childNodes[j].className = 'width_' + j
+      }
+    }
+  },
 
   /**(loadData:function(){
     function GetRandomNum(Min,Max)
@@ -61,9 +91,9 @@ const TabLiebiao = React.createClass({
   },**/
 
   render: function() {
-    return  <div className="RootDiv">
+    return  <div className="LiebiaoRootDiv">
               <div className='DataTableDiv'>
-                <DataTable data={this.state.data} showPage={this.state.showPage} 
+                <DataTable ref="DataTable" data={this.state.data} showPage={this.state.showPage} 
               	           column= { this.state.column } ></DataTable>
               </div>
             </div>

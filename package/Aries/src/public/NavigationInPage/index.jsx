@@ -36,9 +36,11 @@ var NavigationInPage = React.createClass({
   
   render: function (){
     let headText = this.props.headText
-    let firstPropNaviText = this.props.naviTexts.shift()   // 去掉最后一个元素
-    let theRestPropNaviTexts = this.props.naviTexts
-    
+    let firstPropNaviText = this.props.naviTexts[0]
+    let theRestPropNaviTexts = []
+    for ( let i = 1 ; i < this.props.naviTexts.length ; i ++ ){
+      theRestPropNaviTexts.push( this.props.naviTexts[i] )
+    }    
     return(
       <div className="NavigationInPageRootDiv">
         <div className="HeadTextDiv">

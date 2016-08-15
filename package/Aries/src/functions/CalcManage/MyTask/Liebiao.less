@@ -1,4 +1,4 @@
-div.RootDiv > div.DataTableDiv {
+div.LiebiaoRootDiv > div.DataTableDiv {
   margin-top:20px;
   padding-top:13px;   // DataTable的表头文本距离上边框为17px
   padding-left:20px;
@@ -7,7 +7,18 @@ div.RootDiv > div.DataTableDiv {
   border: 1px solid #ECECEC;
 }
 
-div.RootDiv > div.DataTableDiv table {
+div.LiebiaoRootDiv > div.DataTableDiv table {
+  .width_0 {
+    width: 22%;
+  }
+  .width_1 , .width_2 , .width_3 , .width_4 , .width_5 , .width_6  {
+    width: 13%;
+  }
+
+}
+
+
+div.LiebiaoRootDiv > div.DataTableDiv table {
   th,td{
     font-family: '微软雅黑';
     font-size: 12px;
@@ -22,8 +33,6 @@ div.RootDiv > div.DataTableDiv table {
 
       th{
         display: inline-block;
-        width: 14.28%;
-
         border-bottom: 3px solid #DDEEFD;
       }
     }
@@ -48,13 +57,10 @@ div.RootDiv > div.DataTableDiv table {
 
       td{
         display: inline-block;
-        width: 14.28%;
         height: 40px;
         border-top: 0px;
       }
     }
 
-    tr.oddTr{   background-color: #FFFFFF; }
-    tr.evenTr{  background-color: #FCFCFC; }
   }
 }

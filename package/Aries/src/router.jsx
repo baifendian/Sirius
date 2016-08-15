@@ -87,17 +87,17 @@ export default render((
         }}/>
         <Route path="PodInfo" getComponent={(location, cb) => {
           require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/PodInfo').default)
+            cb(null, require('./functions/CalcManage/ClusterInfo/podinfo').default)
           })
         }}/>
         <Route path="ServiceInfo" getComponent={(location, cb) => {
           require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/ServiceInfo').default)
+            cb(null, require('./functions/CalcManage/ClusterInfo/serviceinfo').default)
           })
         }}/>
         <Route path="ReplicationControllerInfo" getComponent={(location, cb) => {
           require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/ReplicationControllerInfo').default)
+            cb(null, require('./functions/CalcManage/ClusterInfo/rcinfo').default)
           })
         }}/>
         <Route path="MyTask" getComponent={(location, cb) => {
@@ -105,13 +105,20 @@ export default render((
             cb(null, require('./functions/CalcManage/MyTask').default)
           })
         }}/>
-        <Route path="CreateCluster" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/CreateCluster').default)
-          })
-        }}/>
-      </Route>
-
+        <Route path="CreateCluster">
+          <Route path='CC1' getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/CreateCluster/CC1').default)
+              })
+          }}/>
+          <Route path='CC2' getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/CreateCluster/CC2').default)
+              })
+          }}/>
+        </Route>
+       </Route>
+       
       <Route path="login" getComponent={(location, cb) => {
         require.ensure([], require => {
           cb(null, require('./functions/Login').default)
