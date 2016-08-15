@@ -34,3 +34,5 @@ index.ejs
 index.jsp
 Aries.xml
 Aries.sh
+env.js
+webpack.config.js
