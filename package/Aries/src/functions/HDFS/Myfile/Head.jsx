@@ -23,7 +23,7 @@ const Head = React.createClass({
   },
   uploadProps:{
     action:"",
-    multiple: true,
+    multiple: false,
   },
   changeAddess(path){
     console.log(path);
@@ -96,14 +96,20 @@ const Head = React.createClass({
     this.refs.modal.close();
   },
   render() {
+  let action = `v1/hdfs/${this.props.cur_path}/?type=http&op=UPLOAD&space_name=${this.props.cur_space}`;
+  this.uploadProps.action = action;
+
     return (
       <div className="head">
+      <div className="table-div">
+        <button type="button" style={{marginLeft:'50px'}} onClick={this.mkdir} className="btn btn-primary" >新建文件夹</button>
+      </div>
        <div className="table-div">
-         <button type="button" style={{marginLeft:'50px'}} onClick={this.uploadModal} className="btn btn-primary" >文件上传</button>
+          {/* <button type="button" style={{marginLeft:'50px'}} onClick={this.uploadModal} className="btn btn-primary" >文件上传</button>*/}
+           {/*<Upload  {...this.uploadProps} />*/}
+           {/* */}{this.operate_type[this.state.operate_type].call(this)}
        </div>
-       <div className="table-div">
-         <button type="button" style={{marginLeft:'50px'}} onClick={this.mkdir} className="btn btn-primary" >新建文件夹</button>
-       </div>
+
        <Modal ref="modal">
          <ModalHeader>
            <h4 className="modal-title">{this.modalTitle[this.state.modalTitle].call(this)}</h4>

@@ -16,7 +16,7 @@ from tools import *
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-hdfs_logger = logging.getLogger("hdfs_log")
+hdfs_logger = logging.getLogger("access_log")
 StatusCode = {
     "OK": 200,
     "InternalServerError": 500,
@@ -106,10 +106,12 @@ class HDFS(object):
     def upload_file_by_http(self, path, request):
         space_name = request.GET.get("space_name","")
         exec_user,space_path = getSpaceExecUserPath(space_name)
+        ac_logger.info("request.FILES:{0}".format(request.FILES))
+        ac_logger.info("request:{0}".format(request))
         f = request.FILES["files"]
         filename = f.name
         hdfs_logger.info("space_path:{0},path:{1}".format(space_path,path))
-        target_path = os.path.realpath("%s/%s/%s/%s/" % (os.path.sep,space_path, path,filename))
+        target_path = os.path.realpath("/%s/%s/%s/%s/" % (os.path.sep,space_path, path,filename))
         hdfs_logger.info("target_path:{0}".format(target_path))
         local_file = os.path.join(settings.FTP_LOCAL_DIR, filename)
         with open(local_file,"wb+") as info:
@@ -263,7 +265,7 @@ class HDFS(object):
         space_name = request.GET.get("space_name","")
         exec_user,space_path = getSpaceExecUserPath(space_name)
         hdfs_logger.info("space_path:{0},path:{1}".format(space_path,path))
-        path = os.path.realpath("%s/%s/%s" % (os.path.sep,space_path, path))
+        path = os.path.realpath("/%s/%s/%s" % (os.path.sep,space_path, path))
         hdfs_logger.info("target_path:{0}".format(path))
         result =  self.hdfs.open(path)
         hdfs_logger.info("download:{0}".format(result))
@@ -396,7 +398,7 @@ class HDFS(object):
         #     return self.returned
         space_name = request.GET.get("spaceName", '') 
         space_path = self.spaceNamePathMapping(space_name)
-        path = os.path.realpath("%s%s%s" %(os.path.sep,space_path,path))
+        path = os.path.realpath("/%s/%s/%s" %(os.path.sep,space_path,path))
         if self.hdfs.exists(path):
             return self.returned
 
@@ -442,12 +444,13 @@ class HDFS(object):
             self.returned['msg'] = "OK"
             # get custom file status
             # self.return['data'] = [{custom_key: item.get('expect_key')} for item in self.returned]
+            unit = ["KB","MB","GB","TB"]
             totalList = [
                 {
                     'name': item.get('pathSuffix'),
                     'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
                     'is_dir': 0 if item.get('type') == "FILE" else 1,
-                    'size': round(item.get('length')/(1024.0 * 1024.0), 1),
+                    'size': unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
                 } for item in result if item.get('pathSuffix') != ".Trash"
             ]
             self.returned['data'] = {"totalList":totalList,"totalPageNum":len(totalList),"currentPage":1}
@@ -465,32 +468,36 @@ class HDFS(object):
                                    }
             return self.returned
         #spaceName, hdfs path mapping
-        space = getObjByAttr(Space,"name",space_name)
-        space_path = space[0].address
+        try:
+            space = getObjByAttr(Space,"name",space_name)
+            space_path = space[0].address
+        except Exception,e:
+            self.returned['code'] = StatusCode["InternalServerError"]
+            self.returned['data'] = "不存在该space: {0}".format(space_name)
+            return self.returned
         isTrash = request.GET.get("isTrash",0)
         if isTrash != 0:
             #path =  os.path.realpath("/%s/%s/%s" % ("/.Trash/Current/",space_path, path))
             space_path = trashPath(space_path)
-        real_path = os.path.realpath("%s%s" % (space_path, path))
+        real_path = os.path.realpath("/%s/%s" % (space_path, path))
         hdfs_logger.info("list_status: real_path:{0}".format(real_path))
         try:
             result = self.hdfs.list_status(real_path)
         except HdfsException, e:
             hdfs_logger.error("%s列出文件夹%s发生异常: %s" % (getUser(request).username,space_path, str(e)))
-            self.returned['code'] = StatusCode["OK"]
+            self.returned['code'] = StatusCode["InternalServerError"]
             self.returned['data'] = {"totalList":[],"totalPageNum":0,"currentPage":1}
+            #self.returned['data'] = "暂无数据"
             return self.returned
         else:
             self.returned['code'] = StatusCode["OK"]
-            self.returned['msg'] = "OK"
-            # get custom file status
-            # self.return['data'] = [{custom_key: item.get('expect_key')} for item in self.returned]
+            unit = ["KB","MB","GB","TB"]
             totalList = [
                 {
                     'name': item.get('pathSuffix'),
                     'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
                     'is_dir': 0 if item.get('type') == "FILE" else 1,
-                    'size': round(item.get('length')/(1024.0 * 1024.0), 1),
+                    'size': unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
                 } for item in result if item.get('pathSuffix') != ".Trash"
             ]
             self.returned['data'] = {"totalList":totalList,"totalPageNum":len(totalList),"currentPage":1}

@@ -52,7 +52,7 @@ export default React.createClass({
         <div className="body">
           <Form ref="form" action="login" onSuccess={this.handleSuccess} data={this.state.user} onChange={this.handleChange} labelWidth={0} rules={this.rules}>
             <div className="logo">
-              <h2>ARIES</h2>
+              <h2>百分点云中心</h2>
             </div>
             <FormItem name="username">
               <FormInput placeholder="ming.xiao"></FormInput>

@@ -1,8 +1,9 @@
 #-*- coding: UTF-8 -*- 
-import sys,ldap 
+import sys,ldap,os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE","settings")
 LDAP_HOST = 'ldap://172.24.3.170:389'
 #BASE_DN = 'uid=administrator,ou=wiki,dc=bfdabc,dc=com'
-BASE_DN = 'ou=wiki,dc=bfdabc,dc=com'
+BASE_DN = 'ou=temp,dc=baifendian,dc=com'
 #用户验证，根据传递来的用户名和密码，搜索LDAP，返回boolean值 
 def ldap_get_vaild1(username=None,passwd=None): 
     try:
@@ -28,4 +29,9 @@ def ldap_get_vaild(username=None,passwd=None):
     from django_auth_ldap.backend import LDAPBackend
     auth = LDAPBackend()
     user = auth.authenticate(username=username,password=passwd)
-    return user 
+    return user
+
+
+if __name__ == "__main__":
+   print ldap_get_vaild(username="yatis2",passwd="1234ymf,./")
+#   print ldap_get_vaild1(username="yatis2",passwd="1234ymf,./")

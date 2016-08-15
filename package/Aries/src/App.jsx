@@ -51,6 +51,10 @@ const App = React.createClass({
     //更新用户默认cur_space
     let url = `v1/user_auth/user/${value}/`
     xhr({type: 'PUT',url: url,success:data=> {
+        //需要切换space的权限
+        console.log("switchSpace:"+data);
+        auth.user.type = data;
+        console.log(auth);
         this.setState({cur_space:value});
         this.props.history.push({
           pathname:this.props.location.pathname,
@@ -99,7 +103,7 @@ const App = React.createClass({
         <div id="wrapper" className="container-fluid">
           <div id="header" className="row">
             <Link to={env.basePath} className="logo">
-              <span>PROJECT NAME</span>
+              <img src={require('public/logo.png')} />
             </Link>
             <div className="pull-right">
               <span>space切换</span>
@@ -109,10 +113,11 @@ const App = React.createClass({
             </div>
           </div>
           <div id="body" className="row">
+          {auth.user.cur_space != "" ? [
             <div className="sidebar col-md-2 col-sm-3">
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
-                <NavItem key={0} href="HDFS" icon="hand-right" defaultOpen title="存储管理">
+                <NavItem key={0} href="HDFS" icon="cubes" defaultOpen title="存储管理">
                   <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
                   <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
                   <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
@@ -121,7 +126,7 @@ const App = React.createClass({
                   <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
                </NavItem>
 
-               <NavItem key={1} href="CalcManage" icon="hand-right" title="计算管理">
+               <NavItem key={1} href="CalcManage" icon="desktop" title="计算管理">
                   <NavItem icon="equalizer" href={`CalcManage/Overview?${params}`} title="概览" />
                   <NavItem icon="equalizer" href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
                   <NavItem icon="equalizer" href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
@@ -130,13 +135,13 @@ const App = React.createClass({
                   <NavItem icon="equalizer" href={`CalcManage/CreateCluster?${params}`} title="创建集群" />
                </NavItem>
 
-                {auth.user.type > 0 ? [
-                  <NavItem key={0} href="UserAuth" icon="th-large" title="用户管理">
-                    <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
-                  </NavItem>
-                ] : null}
+              <NavItem key={2} href="UserAuth" icon="th-large" title="用户管理">
+                <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
+              </NavItem>
+
               </Nav>
             </div>
+            ] : null}
             <div className="content col-md-10 col-sm-9">
               {Children}
             </div>
@@ -147,7 +152,8 @@ const App = React.createClass({
                 <img src={require('public/bfd.png')} />
               </a>
               <a href="http://www.baifendian.com/list.php?catid=32">公司简介</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-              <a href="http://www.baifendian.com/list.php?catid=43">联系我们</a>
+              <a href="http://www.baifendian.com/list.php?catid=43">联系我们</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+              <a href="https://github.com/baifendian/Sirius/issues/new" target="_blank">提交issues</a>
             </div>
             <div className="pull-right">Copyright©2016 Baifendian Corporation All Rights Reserved.&nbsp;&nbsp;|&nbsp;&nbsp;京ICP备09109727号&nbsp;&nbsp;|&nbsp;&nbsp;京公网安备11010802010283号</div>
           </div>
