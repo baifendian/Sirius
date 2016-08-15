@@ -117,7 +117,7 @@ const App = React.createClass({
             <div className="sidebar col-md-2 col-sm-3">
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
-                <NavItem key={0} href="HDFS" icon="hand-right" defaultOpen title="存储管理">
+                <NavItem key={0} href="HDFS" icon="cubes" defaultOpen title="存储管理">
                   <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
                   <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
                   <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
@@ -126,7 +126,7 @@ const App = React.createClass({
                   <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
                </NavItem>
 
-               <NavItem key={1} href="CalcManage" icon="hand-right" title="计算管理">
+               <NavItem key={1} href="CalcManage" icon="desktop" title="计算管理">
                   <NavItem icon="equalizer" href={`CalcManage/Overview?${params}`} title="概览" />
                   <NavItem icon="equalizer" href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
                   <NavItem icon="equalizer" href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
@@ -152,7 +152,8 @@ const App = React.createClass({
                 <img src={require('public/bfd.png')} />
               </a>
               <a href="http://www.baifendian.com/list.php?catid=32">公司简介</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-              <a href="http://www.baifendian.com/list.php?catid=43">联系我们</a>
+              <a href="http://www.baifendian.com/list.php?catid=43">联系我们</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+              <a href="https://github.com/baifendian/Sirius/issues/new" target="_blank">提交issues</a>
             </div>
             <div className="pull-right">Copyright©2016 Baifendian Corporation All Rights Reserved.&nbsp;&nbsp;|&nbsp;&nbsp;京ICP备09109727号&nbsp;&nbsp;|&nbsp;&nbsp;京公网安备11010802010283号</div>
           </div>
