@@ -90,6 +90,35 @@ def restore_k8s_path(p):
 
 @csrf_exempt
 @return_http_json
+def get_overview_info(request,namespace):
+    kd_logger.info( 'call get_overview_info request.path : %s , namespace : %s' % (request.path,namespace) )
+    retu_dict = {
+        'pod_used':0,
+        'pod_total':100,
+        'service_used':0,
+        'service_total':100,
+        'rc_used':0,
+        'rc_total':100
+    }
+    url_template = '/api/v1/namespaces/%s/%s'
+    key_dict = {
+        'pods':'pod_used',
+        'services':'service_used',
+        'replicationcontrollers':'rc_used'
+    }
+    for key,value in key_dict.items():
+        u = url_template % ( namespace,key )
+        l = get_k8s_data( u )
+        if l['code'] == RETU_INFO_ERROR:
+            kd_logger.error( 'call %s query k8s data error : %s' % (u,l['msg']) )
+            return generate_failure( l['msg'] )
+        retu_dict[value] = len(l['data']['items'])
+
+    return generate_success( data=retu_dict )
+
+
+@csrf_exempt
+@return_http_json
 def get_pod_list(request,namespace):
     kd_logger.info( 'call get_pod_list request.path : %s , namespace : %s' % (request.path,namespace) )
     pod_detail_info = get_k8s_data( restore_k8s_path(request.path) )
