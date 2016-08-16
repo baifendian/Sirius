@@ -95,24 +95,20 @@ def get_overview_info(request,namespace):
     retu_dict = {
         'pod_used':0,
         'pod_total':100,
-        'service_used':0,
-        'service_total':100,
-        'rc_used':0,
-        'rc_total':100
+        'task_used':0,
+        'task_total':100,
+        'memory_used':0,
+        'memory_total':100
     }
-    url_template = '/api/v1/namespaces/%s/%s'
-    key_dict = {
-        'pods':'pod_used',
-        'services':'service_used',
-        'replicationcontrollers':'rc_used'
-    }
-    for key,value in key_dict.items():
-        u = url_template % ( namespace,key )
-        l = get_k8s_data( u )
-        if l['code'] == RETU_INFO_ERROR:
-            kd_logger.error( 'call %s query k8s data error : %s' % (u,l['msg']) )
-            return generate_failure( l['msg'] )
-        retu_dict[value] = len(l['data']['items'])
+
+    # 获取pod个数
+    url = '/api/v1/namespaces/%s/pods' % namespace
+    pod_list = get_k8s_data( url )
+    if pod_list['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call %s query k8s pod info error : %s' % ( url,pod_list['msg']) )
+        return generate_failure( pod_list['msg'] )
+    retu_dict['pod_used'] = len( pod_list['data']['items'] )
+
 
     return generate_success( data=retu_dict )
 
