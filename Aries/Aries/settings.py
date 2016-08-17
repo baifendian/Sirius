@@ -278,3 +278,6 @@ FTP_ACCT = ""
 FTP_KEYFILE = None
 FTP_CERTFILE = None
 
+#kubectl_file
+KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx__1_2_4')
+KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')

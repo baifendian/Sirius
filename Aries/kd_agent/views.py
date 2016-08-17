@@ -317,3 +317,29 @@ def get_mytask_graph(request):
         s = "get mytask graph data occured exception : %s" % str(e)
         kd_logger.error(s)
         return generate_failure(s)
+
+
+from django.http import StreamingHttpResponse
+def download(request):
+    sys = request.GET.get('sys')
+    def readfile(file_name, chunk_size=262144):
+        with open(file_name) as f:
+            while True:
+                c = f.read(chunk_size)
+                if c:
+                    yield c
+                else:
+                    break
+    osx_file = settings.KUBECTL_OSX
+    linux_file = settings.KUBECTL_LINUX
+    if sys == 'osx':
+        response = StreamingHttpResponse(readfile(osx_file))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(osx_file)
+    elif sys == 'linux':
+        response = StreamingHttpResponse(readfile(linux_file))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(linux_file)
+    else:
+        kd_logger.error('Download Error')
+    return response

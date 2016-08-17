@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import './Graph.less'
 import Graph from 'public/Graph'
 import { Tag } from 'antd'
@@ -26,6 +27,14 @@ const TabGraph = React.createClass({
     })
   }, 
   render() {
+    console.log( '///////////////' + this.props.height);
+    if ( this.height !== this.props.height ){
+      setTimeout( ()=>{
+        let graphPanel = ReactDOM.findDOMNode( this.refs.Graph2Name )
+        graphPanel.childNodes[0].style.height = this.props.height  + 'px'
+      } )
+      this.height = this.props.height
+    }
   /**
     let data = {
       nodes: [
@@ -64,7 +73,7 @@ const TabGraph = React.createClass({
           <Button className='btn-4' size='sm'>执行完成(失败)</Button>
           <Button className='btn-5' size='sm'>等待执行/未进入调度</Button>
         </div>
-        <div>
+        <div ref='Graph2Name' className='Graph2Name'>
            <Graph graph={this.state.data}/>
         </div>
       </div>
