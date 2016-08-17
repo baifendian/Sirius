@@ -64,8 +64,7 @@ def print_args(argsv):
     return wrapper
 
 def getUser(request):
-    #user = request.user
-    user = User.objects.get(username="pan.lu")
+    user = request.user
     return user
 
 def getSpaceExecUserPath(space_name):
