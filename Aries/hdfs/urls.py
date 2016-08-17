@@ -9,6 +9,7 @@ urlpatterns = format_suffix_patterns(patterns('hdfs.views',
     url(r'^(?P<host_name>[\w|\-.\d-]+)/(?P<component_name>[A-Z]+)/(?P<operate>[A-Z]+)/$', rests.OperateComponent.as_view(),name="operate-component"),
     url(r'^capacity/(?P<space_name>.*)/$',rests.capacityRecovery.as_view()),
     url(r'^share/(?P<path>.*)/$',rests.share.as_view()),
+    url(r'^upload/(?P<path>.*)/$',rests.upload),
     url(r'^(?P<path>.*)/$',rests.pathOp.as_view()),
  ))
 

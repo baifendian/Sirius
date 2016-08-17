@@ -65,7 +65,6 @@ def print_args(argsv):
 
 def getUser(request):
     user = request.user
-    ac_logger.info("user:{0}".format(user.username))
     return user
 
 def getSpaceExecUserPath(space_name):

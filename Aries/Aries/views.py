@@ -44,17 +44,15 @@ def is_admin(account,cur_space):
         return {"name":account.name,"cur_space":cur_space,"type":is_admin}
     else:
         return ""
-#@ensure_csrf_cookie
+
+@ensure_csrf_cookie
 def login(request):
-    ac_logger.info("######################cookie: {0}#######".format(request.COOKIES.get('csrftoken')))
-    ac_logger.info("######################login#######")
     if request.method == "POST":
         res = {}
         username = request.POST.get("username")
         password = request.POST.get("password")
         email = username + "@baifendian.com"
         ldap_user = ldap_get_vaild(username=username,passwd=password)
-        ac_logger.info("######################login####### %s" %ldap_user)
         if ldap_user:
             user = authenticate(username=username, password=password)
             if not user:
