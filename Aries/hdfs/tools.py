@@ -124,7 +124,7 @@ def test2(a,b):
   print a,b
 
 if __name__=="__main__":
-  pass
+  unitTransform(1025,0,["KB","MB","GB","TB"])
   #print "aaa"
   #test(3,4)
   #test2(3,4)
