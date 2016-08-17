@@ -31,10 +31,10 @@ const Head = React.createClass({
   },
   operate_type:{
     HTTP:function(){
-            let action = `v1/hdfs/${this.props.cur_path}/?type=http&op=UPLOAD&space_name=${this.props.cur_space}`;
+            let action = `v1/hdfs/upload/${this.props.cur_path}/?type=http&space_name=${this.props.cur_space}`;
             this.uploadProps.action = action;
             return <div className="table-div">
-                    <Upload className="table-div" {...this.uploadProps} />
+                    {/* */}<Upload className="table-div" {...this.uploadProps} />
                    </div>},
     FTP:function(){return <div className="table-div"><ClearableInput inline placeholder="请输入FTP地址" onChange={this.changeAddess} /></div>},
     CLIENT:function(){return <div className="table-div"><ClearableInput inline placeholder="请输入CLIENT地址" onChange={this.changeAddess} /></div> }
