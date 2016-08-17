@@ -10,10 +10,12 @@ import Icon from 'bfd-ui/lib/Icon'
 import confirm from 'bfd-ui/lib/confirm'
 import Fetch from 'bfd-ui/lib/Fetch'
 import { Select ,Option} from 'bfd-ui/lib/Select2'
+import message from 'bfd-ui/lib/message'
 
 const Head = React.createClass({
   getInitialState:function() {
-   return {modalTitle:"upload",
+   return {
+           modalTitle:"upload",
            operate_type:"HTTP",
     };
   },
@@ -21,9 +23,11 @@ const Head = React.createClass({
   selectChange(value){
     this.setState({operate_type:value});
   },
-  uploadProps:{
-    action:"",
-    multiple: false,
+  handleComplete(data){
+    //上传完成处理
+    message.success(data,2)
+    let random = Math.floor(Math.random()*10000000000);
+    this.props.updateRandom(random);
   },
   changeAddess(path){
     console.log(path);
@@ -32,9 +36,8 @@ const Head = React.createClass({
   operate_type:{
     HTTP:function(){
             let action = `v1/hdfs/upload/${this.props.cur_path}/?type=http&space_name=${this.props.cur_space}`;
-            this.uploadProps.action = action;
             return <div className="table-div">
-                    {/* */}<Upload className="table-div" {...this.uploadProps} />
+                    {/* <Upload className="table-div" {...this.uploadProps} />*/}
                    </div>},
     FTP:function(){return <div className="table-div"><ClearableInput inline placeholder="请输入FTP地址" onChange={this.changeAddess} /></div>},
     CLIENT:function(){return <div className="table-div"><ClearableInput inline placeholder="请输入CLIENT地址" onChange={this.changeAddess} /></div> }
@@ -96,8 +99,12 @@ const Head = React.createClass({
     this.refs.modal.close();
   },
   render() {
-  let action = `v1/hdfs/${this.props.cur_path}/?type=http&op=UPLOAD&space_name=${this.props.cur_space}`;
-  this.uploadProps.action = action;
+    let action = `v1/hdfs/upload/${this.props.cur_path}/?type=http&space_name=${this.props.cur_space}`;
+    let props={
+      action:action,
+      multiple: false,
+      onComplete:this.handleComplete
+    }
 
     return (
       <div className="head">
@@ -105,9 +112,8 @@ const Head = React.createClass({
         <button type="button" style={{marginLeft:'50px'}} onClick={this.mkdir} className="btn btn-primary" >新建文件夹</button>
       </div>
        <div className="table-div">
-          {/* <button type="button" style={{marginLeft:'50px'}} onClick={this.uploadModal} className="btn btn-primary" >文件上传</button>*/}
-           {/*<Upload  {...this.uploadProps} />*/}
-           {/* */}{this.operate_type[this.state.operate_type].call(this)}
+           {/**/}<Upload className="table-div" {...props} />
+           {/* {this.operate_type[this.state.operate_type].call(this)} */}
        </div>
 
        <Modal ref="modal">
