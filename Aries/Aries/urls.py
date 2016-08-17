@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^login$',views.login),
     url(r'^logout$',views.logout),
     url(r'^HDFS/.*$',views.index),
+    url(r'^UserAuth/.*$',views.index),
     url(r'^CalcManage/.*$',views.index)
 ]
 

@@ -214,13 +214,13 @@ const MyTable = React.createClass({
               <div className="table-div-icon div-float">
                 <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要分享 ${cur_path} 吗?`,this.share,component)}}> <Icon type="share-alt" /></a>
                 <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定删除 ${cur_path} 吗?`,this.trash,component)}}> <Icon type="trash" /> </a>
+                <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要压缩 ${cur_path} 吗?`,this.compress,component)}}> <Icon type="compress" /> </a>
+                <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.move(cur_path)}}> <Icon type="arrows" /> </a>
                 {component.is_dir < 1 ? [
                   <a href={`/v1/hdfs/${this.props.cur_path}/${cur_path}/?type=http&op=DOWNLOAD&space_name=${this.props.cur_space}`}
                     style={{marginRight: '20px'}}> <Icon type="download" /> </a>
 
                 ] : null}
-                <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要压缩 ${cur_path} 吗?`,this.compress,component)}}> <Icon type="compress" /> </a>
-                <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.move(cur_path)}}> <Icon type="arrows" /> </a>
               </div>
             </div>
       },

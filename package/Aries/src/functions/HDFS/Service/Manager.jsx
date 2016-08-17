@@ -17,14 +17,6 @@ const TabManager = React.createClass({
                           return {"hostname":hostname,"status":"except"}
                       });
     let allHost = healthyHost.concat(exceptHost);
-
-    /*
-    let componentData=[
-        {"component":"DATANODE","status":"STOP"},
-        {"component":"NAMENODE","status":"START"},
-        {"component":"ZKFC","status":"STOP"}
-          ];
-    */
     this.setState({"statusAllData":allHost,"filterData":allHost});
   },
   statusFilter(status){
@@ -86,6 +78,6 @@ const TabManager = React.createClass({
         </div>
       </div>
     );
-    }
+  }
 });
 export default TabManager

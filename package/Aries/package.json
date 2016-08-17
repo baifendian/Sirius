@@ -3,11 +3,12 @@
     "lint": "eslint --ext .jsx,.js src || true",
     "build": "cross-env NODE_ENV=production webpack -p --progress --colors",
     "start": "node-dev server.js",
-    "theme": "node bin/theme.js -#42a5f5:#ff7043 -#2196f3:#ff5722 -#1e88e5:#f4511e"
+    "theme": "node bin/theme.js -#ff7043:#42a5f5 -#ff5722:#55a8fd -#f4511e:#1e88e5"
   },
   "dependencies": {
     "antd": "^1.8.0",
     "bfd-ui": "^0.7.1",
+    "js-cookie": "^2.1.2",
     "react-copy-to-clipboard": "^4.2.2",
     "react-markdown": "^2.4.2",
     "uuid": "^2.0.2",

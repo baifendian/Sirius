@@ -28,4 +28,7 @@ def ldap_get_vaild(username=None,passwd=None):
     from django_auth_ldap.backend import LDAPBackend
     auth = LDAPBackend()
     user = auth.authenticate(username=username,password=passwd)
-    return user 
+    return user
+
+if __name__ == "__main__": 
+    print ldap_get_vaild(username="administrator",passwd="redhat")

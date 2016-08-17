@@ -3,29 +3,48 @@ import Task from 'public/Task'
 import './index.less'
 import { Select, Option } from 'bfd-ui/lib/Select2'
 import Button from 'bfd-ui/lib/Button'
+import xhr from 'bfd-ui/lib/xhr'
+import message from 'bfd-ui/lib/message'
 
 const Bottom = React.createClass({
+  componentState:{
+    STARTED:function(){
+        return <Select defaultValue="STARTED" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
+          <Option value="STARTED">START</Option>
+          <Option value="STOP">STOP</Option>
+          <Option value="RESTART">RESTART</Option>
+        </Select>
+    },
+    STOPED:function(){
+        return <Select defaultValue="STOPED" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
+                  <Option value="STOP">STOP</Option>
+                  <Option value="START">START</Option>
+              </Select>
+    },
+    INSTALLED:function(){
+        return <Select defaultValue="INSTALLED" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
+                  <Option value="INSTALLED">INSTALLED</Option>
+                  <Option value="START">START</Option>
+              </Select>
+    }
+  },
   operatorType:{
     SERVICE:function(){
       return <div className="service">
-                <Button className="service-bt">rebalance</Button>
-                <Button className="service-bt">rebalance1</Button>
-
+                <Button className="service-bt" >rebalance</Button>
             </div>;
     },
     COMPONENT:function(){
       //组件相关信息
       let selectData = this.props.data;
       let selectComponents = selectData.map((data)=>{
+          this.componentData = data;
           let component =<div className="component">
-                  <div className="left">{data.component}</div>
+                  <div className="left">
+                    {data.component}
+                  </div>
                   <div className="right">
-                    <Select defaultValue={data.state} onChange={(state)=>{this.handleChange(state,data.component)}}>
-                      <Option value="STARTED">START</Option>
-                      <Option value="STOPED">STOP</Option>
-                      <Option value="RESTART">RESTART</Option>
-                      <Option value="INSTALLED">INSTALLED</Option>
-                    </Select>
+                    {this.componentState[data.state].call(this)}
                   </div>
                 </div>
            return component;
@@ -34,7 +53,15 @@ const Bottom = React.createClass({
     }
   },
   handleChange(select,text){
-    console.log(select,text);
+    let hostName = this.props.selectHost;
+    //启动,停止
+    let url = `v1/hdfs/${hostName}/${text}/${select}/`;
+    console.log(select,text,hostName,url);
+    xhr({type: 'POST',url: url,
+      success(data) {
+        message.success(data)
+      }
+    })
   },
   render:function(){
     return <div className="bottom">
