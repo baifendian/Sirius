@@ -214,8 +214,8 @@ LOGGING = {
 # 提供k8s服务的地址
 K8S_IP = '172.24.3.150'
 K8S_PORT = 8080
-BDMS_IP = '172.24.2.114'
-BDMS_PORT = '10010'
+BDMS_IP = '172.24.100.40'
+BDMS_PORT = '10001'
 BDMS_USERNAME = 'aiping.liang'
 BDMS_PASSWORD = 'aiping.liang'
 
@@ -231,10 +231,10 @@ DATABASES = {
     # used by app : kd_agent 
     'kd_agent_bdms': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'bdms_web',                   # Or path to database file if using sqlite3.
+        'NAME': 'bdms_web10010',                   # Or path to database file if using sqlite3.
         'USER': 'bdms',                       # Not used with sqlite3.
         'PASSWORD': 'bdms',                   # Not used with sqlite3.
-        'HOST': '172.24.2.114',             # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': '172.24.100.40',             # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '3306',                       # Set to empty string for default. Not used with sqlite3.
     }
 }
