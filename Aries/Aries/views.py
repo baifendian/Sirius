@@ -116,6 +116,7 @@ def login(request):
         response.set_cookie('csrftoken',request.COOKIES.get('csrftoken','S6ouKsk1kRrp5qsHlmd5fupVJewYitW3'))
         return response
 
+@ensure_csrf_cookie
 def logout(request):
     result = {}
     try:
