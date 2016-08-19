@@ -42,6 +42,15 @@ const MyTable = React.createClass({
   },
   compress(path,component){
     console.log("compress....."+path);
+    let cur_path = `${this.props.cur_path}/${path}`;
+    let url = `v1/hdfs/${cur_path}/?op=COMPRESS&space_name=${this.props.cur_space}`;
+    xhr({
+      type: 'POST',url:url,
+      success:data =>{
+        //弹框提示数据正在压缩
+        message.success(data,2);
+      }
+    })
   },
   share(path,component){
     let cur_path = `${this.props.cur_path}/${path}`
