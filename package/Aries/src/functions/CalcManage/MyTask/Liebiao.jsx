@@ -91,12 +91,21 @@ const TabLiebiao = React.createClass({
   },**/
 
   render: function() {
-    return  <div className="LiebiaoRootDiv">
-              <div className='DataTableDiv'>
-                <DataTable ref="DataTable" data={this.state.data} showPage={this.state.showPage} 
-              	           column= { this.state.column } ></DataTable>
-              </div>
-            </div>
-	}
+    if ( this.height !== this.props.height ){
+      setTimeout( ()=>{
+        let tablePanel = ReactDOM.findDOMNode( this.refs.DataTableDiv )
+        tablePanel.style.height = this.props.height - 20 + 'px'
+      } )
+      this.height = this.props.height
+    }
+    return  (
+      <div className="LiebiaoRootDiv">
+        <div className='DataTableDiv' ref='DataTableDiv'>
+          <DataTable ref="DataTable" data={this.state.data} showPage={this.state.showPage} 
+            column= { this.state.column } ></DataTable>
+          </div>
+      </div>
+    )
+  }
 });
 export default TabLiebiao

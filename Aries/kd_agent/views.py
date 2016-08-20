@@ -90,6 +90,31 @@ def restore_k8s_path(p):
 
 @csrf_exempt
 @return_http_json
+def get_overview_info(request,namespace):
+    kd_logger.info( 'call get_overview_info request.path : %s , namespace : %s' % (request.path,namespace) )
+    retu_dict = {
+        'pod_used':0,
+        'pod_total':100,
+        'task_used':0,
+        'task_total':100,
+        'memory_used':0,
+        'memory_total':100
+    }
+
+    # 获取pod个数
+    url = '/api/v1/namespaces/%s/pods' % namespace
+    pod_list = get_k8s_data( url )
+    if pod_list['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call %s query k8s pod info error : %s' % ( url,pod_list['msg']) )
+        return generate_failure( pod_list['msg'] )
+    retu_dict['pod_used'] = len( pod_list['data']['items'] )
+
+
+    return generate_success( data=retu_dict )
+
+
+@csrf_exempt
+@return_http_json
 def get_pod_list(request,namespace):
     kd_logger.info( 'call get_pod_list request.path : %s , namespace : %s' % (request.path,namespace) )
     pod_detail_info = get_k8s_data( restore_k8s_path(request.path) )
@@ -285,9 +310,9 @@ def get_mytask_graph(request):
             "Accept-Language":"zh-CN,zh;q=0.8",
             "Cache-Control":"no-cache",
             "Connection":"keep-alive",
-            "Host":"172.24.2.114:10010",
+            "Host":"172.24.100.40:10001",
             "Pragma":"no-cache",
-            "Referer":"http://172.24.2.114:10010/ide/schedule/directedgraph/",
+            "Referer":"http://172.24.100.40:10001/ide/schedule/directedgraph/",
             "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
             "X-Requested-With":"XMLHttpRequest"
             }
@@ -301,14 +326,27 @@ def get_mytask_graph(request):
             all_task = []
             data = {}
             nodes = []
+            edges = []
+            #处理节点数据及颜色信息
             for i in dic['task_info']:
                 for j in dic['task_process']:
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 1:
-                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#C2FABC"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 2:
-                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#FF0000"})
+                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 1:  #执行完成(成功)
+                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#87d068"})
+                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 2:  #执行完成(失败)
+                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#F50"})
+                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 2:  #等待执行
+                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#2db7f5"})
+                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 3:  #执行中
+                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#0000FF"})
+                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 1:  #等待调度
+                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#A9A9A9"})
+            # 处理依赖关系
+            for depen in dic['task_info']:
+                if depen['input']:
+                    for detal in depen['input']:
+                        edges.append({"from": detal, "to": depen['id']})                 
             data["nodes"] = nodes
-            data["edges"] = [{}]
+            data["edges"] = edges
             return generate_success( data=data )
         else:
             kd_logger.error('get my tsk graph data error ')
@@ -317,3 +355,29 @@ def get_mytask_graph(request):
         s = "get mytask graph data occured exception : %s" % str(e)
         kd_logger.error(s)
         return generate_failure(s)
+
+
+from django.http import StreamingHttpResponse
+def download(request):
+    sys = request.GET.get('sys')
+    def readfile(file_name, chunk_size=262144):
+        with open(file_name) as f:
+            while True:
+                c = f.read(chunk_size)
+                if c:
+                    yield c
+                else:
+                    break
+    osx_file = settings.KUBECTL_OSX
+    linux_file = settings.KUBECTL_LINUX
+    if sys == 'osx':
+        response = StreamingHttpResponse(readfile(osx_file))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(osx_file)
+    elif sys == 'linux':
+        response = StreamingHttpResponse(readfile(linux_file))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(linux_file)
+    else:
+        kd_logger.error('Download Error')
+    return response
