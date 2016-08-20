@@ -40,6 +40,7 @@ HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
 HADOOP_CLIENT="hlg3p64-lupan"
 AMBARI_USER="admin"
 AMBARI_PASSWORD="admin"
+LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 
@@ -136,31 +137,31 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'online',
-            'filename' : '/opt/pan.lu/gitsource/Sirius-dev/Sirius/log/error.log'.replace('\\','/')
+            'filename' : '{0}/error.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
         'ac_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius-dev/Sirius/log/service.log'.replace('\\','/')
+            'filename' :'{0}/service.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
         'cmd_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius-dev/Sirius/log/cmd.log'.replace('\\','/')
+            'filename' :'{0}/cmd.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
         'hdfs_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius-dev/Sirius/log/hdfs.log'.replace('\\','/')
+            'filename' :'{0}/hdfs.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
         'kd_agent_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius-dev/Sirius/log/service.log'.replace('\\','/')
+            'filename' :'{0}/service.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
         'console':{
             'level':'DEBUG',
