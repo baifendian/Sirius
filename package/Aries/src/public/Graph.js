@@ -8,8 +8,8 @@ var Graph = React.createClass({
       graph: {},
       identifier: uuid.v4(),
       style: {
-        width: "1100px",
-        height: "400px"
+        width: "100%",
+
       }
     };
   },

@@ -1,9 +1,36 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import ReactMarkdown from 'react-markdown'
 import './index.less'
 import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
+   //动态计算组件高度
+    componentDidMount(){
+      this.calcDesiredHeight()
+      window.onresize = ()=>{ this.onWindowResize() }
+    },
+
+    onWindowResize(){
+      window.onresize = undefined
+      this.calcDesiredHeight()
+      window.onresize = ()=>{ this.onWindowResize() }
+    },
+
+    calcRootDivHeight(){
+      let totalHeight = document.body.clientHeight
+      totalHeight -= document.getElementById('header').clientHeight
+      totalHeight -= document.getElementById('footer').clientHeight
+      totalHeight -= 20*2               // 去掉设置的子页面padding
+      return totalHeight
+    },
+    calcDesiredHeight(){
+      let rootDivHeight = this.calcRootDivHeight()
+      ReactDOM.findDOMNode(this.refs.mdRootDiv).style.height = (rootDivHeight+'px')
+      let BigHeight = rootDivHeight - ReactDOM.findDOMNode(this.refs.NavigationInPage).clientHeight
+      ReactDOM.findDOMNode( this.refs.Big ).style.height = BigHeight + 'px'
+    },
+
   render(){
     let headText = '创建集群'
     let naviTexts = [{  'url':'/',   'text':'首页'   },
@@ -15,9 +42,10 @@ export default React.createClass({
     }
 
     return (
-      <div className='mdRootDiv'>
+      <div className='mdRootDiv' ref='mdRootDiv'>
          <NavigationInPage ref="NavigationInPage" headText={headText} naviTexts={naviTexts} />
-         <ReactMarkdown className='mdChildDiv' source='## 入门
+         <div className='Big' ref='Big' >
+           <ReactMarkdown className='mdChildDiv' source='## 入门
 云中心计算服务，是基于kubernetes的通用计算平台。可以轻松的调度Web服务，计算框架如storm, hadoop, tensorflow，中间件如redis, memcache, mongodb。任意可以作为docker镜像运行的程序或应用都可以呗调度在kubernetes之上，享受强大通用计算集群的能力。
 
 本文档将快速引导云中心计算服务的使用方法，并指导用户如何快速的在云端启动一个Hello World的Web应用
@@ -25,12 +53,12 @@ export default React.createClass({
 
 ### 下载kubectl客户端
 可以选择从以下链接下载对应的版本
-* OSX
+#### OSX
     * [官方v1.2.4](https://storage.googleapis.com/kubernetes-release/release/v1.2.4/bin/darwin/amd64/kubectl)
-    * [百分点镜像v1.2.4](http://127.0.0.1/更新这个链接)
-* Linux
-  * [官方v1.2.4](https://storage.googleapis.com/kubernetes-release/release/v1.2.4/bin/linux/amd64/kubectl)
-  * [百分点镜像v1.2.4](http://127.0.0.1/更新这个链接)
+    * [百分点镜像v1.2.4](http://172.24.100.40:10086/k8s/download/?sys=osx)
+#### Linux
+    * [官方v1.2.4](https://storage.googleapis.com/kubernetes-release/release/v1.2.4/bin/linux/amd64/kubectl)
+    * [百分点镜像v1.2.4](http://172.24.100.40:10086/k8s/download/?sys=linux)
 
 ### 配置kubectl客户端
 * 替换 ${MASTER_HOST} 到百分点云中心的kubernetes服务地址:```k8s.bfdcloud.com```
@@ -99,7 +127,7 @@ $ kubectl create -f helloweb.yaml
 ```
 等待执行成功，就可以通过访问http://hellos.bfdcloud.com看到结果
 ' />
-
+        </div>
       </div>
     )
   }
