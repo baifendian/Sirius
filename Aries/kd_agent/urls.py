@@ -10,5 +10,5 @@ urlpatterns = patterns('',
     url(r'^api/v1/namespaces/(?P<namespace>\w{1,64})/replicationcontrollers$',views.get_rc_list),
     url(r'^api/v1/namespaces/mytasklist$', views.get_mytask_list),
     url(r'^api/v1/namespaces/mytaskgraph$', views.get_mytask_graph),
-
+    url(r'^download/$', views.download),
 )

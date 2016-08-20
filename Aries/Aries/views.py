@@ -43,7 +43,7 @@ def is_admin(account,cur_space):
     if flag:
         return {"name":account.name,"cur_space":cur_space,"type":is_admin}
     else:
-        return ""
+        return {"cur_space":"","type":0}
 
 #@ensure_csrf_cookie
 def login(request):
