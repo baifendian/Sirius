@@ -23,6 +23,7 @@ export default React.createClass({
       is_first:0,
       num:10,
       treePath:"/",
+      random:0,
     };
   },
   updateTableList(data,num){
@@ -55,6 +56,10 @@ export default React.createClass({
     let cur_relative_path1 = cur1_relative_path.replace("//","/");
     this.setState({cur_relative_path:cur_relative_path1,is_first:1});
   },
+  updateRandom(random){
+    //修改random信息,让页面刷新
+    this.setState({random:random});
+  },
   updateTableData(data,num){
     //data: new data array, num: num operator
     let old_num  = this.state.num;
@@ -74,10 +79,10 @@ export default React.createClass({
     console.log("#####"+this.state.cur_relative_path);
     return (
       <div className="hdfs-myfile">
-        <Head updateTableList={this.updateTableList} cur_path={this.state.cur_relative_path} updateSpace={this.updateSpace}  spaceData={this.state.spaceData}  cur_space={this.props.location.query.cur_space}  addTableData={this.addTableData}/>
+        <Head updateTableList={this.updateTableList} updateRandom={this.updateRandom} cur_path={this.state.cur_relative_path} updateSpace={this.updateSpace}  spaceData={this.state.spaceData}  cur_space={this.props.location.query.cur_space}  addTableData={this.addTableData}/>
         <Navigate cur_path={this.state.cur_relative_path} is_first={this.state.is_first} num={this.state.num} updateSkipUrl={this.updateSkipUrl} />
         <MyTable data={this.state.tableData} cur_path={this.state.cur_relative_path} cur_space={this.props.location.query.cur_space} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
-        <Fetch style={{minHeight:100}} url={`v1/hdfs/${this.state.cur_relative_path}/?op=LISTSTATUS&spaceName=${this.props.location.query.cur_space}`} onSuccess={this.getTableSuccess}>
+        <Fetch style={{minHeight:100}} url={`v1/hdfs/${this.state.cur_relative_path}/?op=LISTSTATUS&spaceName=${this.props.location.query.cur_space}&random=${this.state.random}`} onSuccess={this.getTableSuccess}>
         </Fetch>
       </div>
     )

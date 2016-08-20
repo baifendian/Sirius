@@ -19,6 +19,7 @@ from django.http import StreamingHttpResponse
 import json
 from user_auth.tools import *
 from service import *
+from django.views.decorators.csrf import ensure_csrf_cookie
 class pathOp(APIView):
 #   @print_request
     def get(self,request,path,format=None):
@@ -140,3 +141,14 @@ class OperateComponent(APIView):
         else:
             ac_logger.error('operate error')
         return packageResponse(result)
+@ensure_csrf_cookie
+def upload(request,path):
+    '''
+       文件上传暂时不过django rest frame work 这个框架
+    '''
+    try:
+        result = OP_DICT.get("POST").get("UPLOAD")(request,path)
+    except Exception,e:
+        ac_logger.error(traceback.format_exc())
+        result = {"code":"500","msg":"interval error"}
+    return packageResponse(result)
