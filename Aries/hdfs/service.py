@@ -320,6 +320,8 @@ def renameDir(request, path):
     exec_user,space_path = getSpaceExecUserPath(space_name)
     if isTrash != 0:
         source_path = trashPath(space_path)
+    else:
+        source_path = space_path
     destination = request.GET.get('destination','')
     path = os.path.realpath("/%s/%s/%s" % (os.path.sep,source_path,path))
     destination = os.path.realpath("/%s/%s/%s" % (os.path.sep,space_path,destination))

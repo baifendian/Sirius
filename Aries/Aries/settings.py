@@ -33,8 +33,8 @@ AUTH_LDAP_USER_ATTR_MAP = {
 "password": "password"
 }
 
-REST_BASE_URI="172.24.3.64:10010"
-SHARE_PROXY_BASE_URI="http://172.24.3.64:10086"
+REST_BASE_URI="172.24.3.64:10012"
+SHARE_PROXY_BASE_URI="http://172.24.3.64:10012"
 AMBARI_URL="http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/"
 HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
 HADOOP_CLIENT="hlg3p64-lupan"
@@ -136,31 +136,31 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'online',
-            'filename' : '/opt/pan.lu/gitsource/Sirius/log/error.log'.replace('\\','/')
+            'filename' : '/opt/pan.lu/gitsource/Sirius-dev/Sirius/log/error.log'.replace('\\','/')
         },
         'ac_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius/log/service.log'.replace('\\','/')
+            'filename' :'/opt/pan.lu/gitsource/Sirius-dev/Sirius/log/service.log'.replace('\\','/')
         },
         'cmd_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius/log/cmd.log'.replace('\\','/')
+            'filename' :'/opt/pan.lu/gitsource/Sirius-dev/Sirius/log/cmd.log'.replace('\\','/')
         },
         'hdfs_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius/log/hdfs.log'.replace('\\','/')
+            'filename' :'/opt/pan.lu/gitsource/Sirius-dev/Sirius/log/hdfs.log'.replace('\\','/')
         },
         'kd_agent_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius/log/service.log'.replace('\\','/')
+            'filename' :'/opt/pan.lu/gitsource/Sirius-dev/Sirius/log/service.log'.replace('\\','/')
         },
         'console':{
             'level':'DEBUG',
