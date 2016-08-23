@@ -185,7 +185,6 @@ const MyTable = React.createClass({
           totalList.unshift(new_ele);
           data.totalList = totalList;
           this.props.updateTableData(data,-1);
-          console.log("----------saveEdit------------");
           message.success(data,2);
         }
     });

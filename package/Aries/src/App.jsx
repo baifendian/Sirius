@@ -52,9 +52,7 @@ const App = React.createClass({
     let url = `v1/user_auth/user/${value}/`
     xhr({type: 'PUT',url: url,success:data=> {
         //需要切换space的权限
-        console.log("switchSpace:"+data);
         auth.user.type = data;
-        console.log(auth);
         this.setState({cur_space:value});
         this.props.history.push({
           pathname:this.props.location.pathname,

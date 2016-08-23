@@ -22,7 +22,6 @@ export default React.createClass({
     let url_old = this.state.url;
     let url_start = url_old.split("?")[0];
     let url_new = `${url_start}?date=${url_end}`;
-    console.log(`url_new:${url_new}`)
     this.setState({url:url_new});
   },
   getSpaceInfo(data){

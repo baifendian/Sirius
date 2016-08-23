@@ -59,19 +59,17 @@ const MyTable = React.createClass({
     xhr({
       type: 'POST',url:url,
       success:data =>{
-        //弹框
         this.proxy_path = data;
         this.setState({modalTitle:"share"});
         this.openModal();
-        //message.success(data,2)
       }
     })
   },
   downLoad(path,component){
-    //http download
     path = `${this.props.cur_path}/${path}`;
     let url = `v1/hdfs/${path}/?type=http&op=DOWNLOAD&space_name=${this.props.cur_space}`;
-    //使用表单的形式进行数据下载. xhr({type: 'GET',url: url,success(data) {console.log(data)}});
+    //使用表单的形式进行数据下载.
+    xhr({type: 'GET',url: url,success(data) {console.log(data)}});
     console.log(component);
   },
   move(path){
@@ -109,7 +107,9 @@ const MyTable = React.createClass({
     let url = `v1/hdfs/${sourcePath}/?op=RENAME&destination=${targetPath}&space_name=${this.props.cur_space}`;
     xhr({type: 'PUT',url: url,
         success:data =>  {
-        message.success(data, 2);
+          message.success(data, 2);
+          let random = Math.floor(Math.random()*10000000000);
+          this.props.updateRandom(random);
       }
     });
     this.closeModal();

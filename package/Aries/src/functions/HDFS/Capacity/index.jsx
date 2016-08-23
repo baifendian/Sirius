@@ -18,8 +18,6 @@ export default React.createClass({
               "end":d.plan_capacity,
               }
     });
-    console.log(percentData);
-    console.log(slider_data);
     this.setState({"sliderData":slider_data,"percentData":percentData});
   },
   getInitialState: function() {

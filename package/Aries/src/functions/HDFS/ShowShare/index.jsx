@@ -70,7 +70,6 @@ export default React.createClass({
     this.setState({tableData:data,num:num});
   },
   render(){
-    console.log("#####"+this.state.cur_relative_path);
     return (
       <div className="hdfs-myfile">
         <Navigate cur_path={this.state.cur_relative_path} is_first={this.state.is_first} num={this.state.num} updateSkipUrl={this.updateSkipUrl} />

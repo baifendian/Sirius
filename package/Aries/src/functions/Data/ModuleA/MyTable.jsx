@@ -23,10 +23,8 @@ const MyTable = React.createClass({
     });
   },
   downLoad(path,component){
-    console.log("down load...."+path);
     path = `${this.props.cur_path}/${path}`;
     let url = `/v1/hdfs/${path}/?type=http&op=DOWNLOAD`
-    console.log(component);
   },
   copy(path){
     this.tablePath = `${this.props.cur_path}/${path}`;
@@ -58,7 +56,6 @@ const MyTable = React.createClass({
     //原,目标路径
     let targetPath =this.selectPathTree;
     let sourcePath = this.tablePath;
-    console.log(`${sourcePath} --> ${targetPath}`);
     let url = `/hdfs/${sourcePath}/?op=RENAME&destination=${targetPath}&space_name=${this.props.cur_space}`;
     xhr({type: 'PUT',url: url,
       success(data) {
@@ -70,18 +67,14 @@ const MyTable = React.createClass({
   handleActive(value){
     let selectPathTree = value.map((i,j)=>{return i.name}).join("/");
     if(selectPathTree==""){
-      console.log("handleActive is not select element");
       message.success("请选择复制的目标目录!",2);
     }else{
       selectPathTree = `/${selectPathTree}`;
       this.selectPathTree = selectPathTree;
-      console.log(`selectPathTree: ${selectPathTree}`);
     }
   },
   getUrl(value,pathData){
-    console.log(pathData);
     let treePath = pathData.map((i,j)=>{return i.name}).join("/");
-    console.log(treePath);
     let url = `/hdfs//${treePath}/?op=LISTSTATUSTREE&spaceName=${this.props.cur_space}`;
     this.treePath=treePath;
     return url;
@@ -104,7 +97,6 @@ const MyTable = React.createClass({
   },
   skip(item,is_file=1){
     if(Number(is_file)==0){
-      console.log("this is a file");
       return ;
     }
     this.props.updateCurRelativePath(item);

@@ -6,9 +6,6 @@ import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd-ui/lib/message'
 
 const TabMonitor = React.createClass({
-  handleSliding(value){
-    console.log('sliding'+value);
-  },
   handleSlid(value,space_name){
     console.log(`slid:${value}, space_name:${space_name}`);
     let url = `v1/hdfs///?op=UPSET&space_name=${space_name}`;
