@@ -32,6 +32,8 @@ const TabGraph = React.createClass({
       setTimeout( ()=>{
         let graphPanel = ReactDOM.findDOMNode( this.refs.Graph2Name )
         graphPanel.childNodes[0].style.height = this.props.height  + 'px'
+        graphPanel.childNodes[0].style.background = '#FAFAFA'
+
       } )
       this.height = this.props.height
     }
