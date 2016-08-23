@@ -1,11 +1,9 @@
 #encoding=utf8
-from django.db.models import Q
 import logging
 ac_logger = logging.getLogger("access_log")
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login,logout as auth_logout,authenticate
-from django import forms
-from django.shortcuts import render,render_to_response,redirect
+from django.shortcuts import render_to_response
 import json
 from django.http import HttpResponse
 from user_auth.models import *

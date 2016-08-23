@@ -17,7 +17,7 @@ done
 shift $(($OPTIND - 1))
 
 case $1 in
-start) /opt/Python-2.7/bin/uwsgi --python-path $HOME --pidfile /opt/pan.lu/gitsource/Sirius-dev/Sirius/log/uwsgi.pid -x $HOME/sbin/Aries.xml ;;
-reload) /opt/Python-2.7/bin/uwsgi --reload /opt/pan.lu/gitsource/Sirius-dev/Sirius/log/uwsgi.pid;;
-stop) /opt/Python-2.7/bin/uwsgi --stop /opt/pan.lu/gitsource/Sirius-dev/Sirius/log/uwsgi.pid; rm -f /opt/pan.lu/gitsource/Sirius-dev/Sirius/log/uwsgi.pid;;
+start) /opt/Python-2.7/bin/uwsgi --python-path $HOME --pidfile /opt/pan.lu/gitsource/Sirius-patch/Sirius/log/uwsgi.pid -x $HOME/sbin/Aries.xml ;;
+reload) /opt/Python-2.7/bin/uwsgi --reload /opt/pan.lu/gitsource/Sirius-patch/Sirius/log/uwsgi.pid;;
+stop) /opt/Python-2.7/bin/uwsgi --stop /opt/pan.lu/gitsource/Sirius-patch/Sirius/log/uwsgi.pid; rm -f /opt/pan.lu/gitsource/Sirius-patch/Sirius/log/uwsgi.pid;;
 esac

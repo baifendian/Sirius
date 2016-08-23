@@ -12,12 +12,8 @@ from rest_framework.reverse import reverse
 from rest_framework import generics
 import logging
 ac_logger = logging.getLogger("access_log")
-from django.contrib.auth.models import User
-from django.shortcuts import render,render_to_response
-from django.http import HttpResponseRedirect
 from django.http import StreamingHttpResponse
-import json
-from user_auth.tools import *
+from tools import *
 from service import *
 from django.views.decorators.csrf import ensure_csrf_cookie
 class pathOp(APIView):
@@ -37,7 +33,7 @@ class pathOp(APIView):
             filename = path.split("/")[-1]
             response = StreamingHttpResponse(result.iter_content(1024))
             response['Content-Type'] = 'application/octet-stream'
- 	    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(filename)
+            response['Content-Disposition'] = 'attachment;filename="{0}"'.format(filename)
             response["Access-Control-Allow-Origin"] = "*"
             response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
             return response

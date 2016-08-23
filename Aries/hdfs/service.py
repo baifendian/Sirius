@@ -11,9 +11,7 @@ import traceback
 import datetime,time
 import os,sys,json
 import threading
-#from Aries.settings import HDFS_URL,HADOOP_RUN_SCRIPT,WEBHDFS_USER
 from django.conf import settings
-# use webhdfs rest api
 from hdfs.function import HDFS
 from django.http import HttpResponse
 from tools import *
@@ -550,7 +548,6 @@ OP_DICT={
         "UPSET":upSet,
         "RENAME":renameDir,
         "CP": copy_file,
-        "MKDIRS": make_dir,
     },
     "DELETE":{
         "DELETE":delete,

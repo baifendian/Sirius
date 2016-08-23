@@ -21,8 +21,6 @@ CORS_ORIGIN_WHITELIST = (
     '192.168.164.120:4001'
 )
 
-#import ldap
-#from django_auth_ldap.config import LDAPSearch
 AUTH_LDAP_SERVER_URI = 'ldap://192.168.49.241:389'
 AUTH_LDAP_USER_DN_TEMPLATE = 'uid=%(user)s,ou=mrbs,dc=baifendian,dc=com'
 AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = True
@@ -40,7 +38,7 @@ HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
 HADOOP_CLIENT="hlg3p64-lupan"
 AMBARI_USER="admin"
 AMBARI_PASSWORD="admin"
-LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
+LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-patch/Sirius/log"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 
@@ -72,7 +70,6 @@ INSTALLED_APPS = (
     'user_auth',
     'hdfs',
     'kd_agent',
-    #'Aries',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -277,17 +274,8 @@ WEBHDFS_TIMEOUT = 10
 WEBHDFS_MAX_TRIES = 2
 WEBHDFS_RETRY_DELAY = 3
 # HADOOP_RUN_SCRIPT = os.path.join(BASE_DIR, os.path.pardir, 'sbin/hadoop-run.sh')
-HADOOP_RUN_SCRIPT = "/opt/pan.lu/gitsource/Aries/Aries/hdfs/hadoop-run.sh"
+#HADOOP_RUN_SCRIPT = "/opt/pan.lu/gitsource/Aries/Aries/hdfs/hadoop-run.sh"
 
-# ftp settings
-FTP_SERVER = "117.121.7.29"
-FTP_PORT = 990
-FTP_BUFFER_SIZE = 1024
-FTP_TIMEOUT = 10
-FTP_LOCAL_DIR = "/tmp/Aries/ftp/"
-FTP_ACCT = ""
-FTP_KEYFILE = None
-FTP_CERTFILE = None
 SESSION_COOKIE_AGE=60*30
 
 #kubectl_file
