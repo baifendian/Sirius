@@ -4,12 +4,11 @@ import './index.less'
 import DataTable from 'bfd-ui/lib/DataTable'
 import confirm from 'bfd-ui/lib/confirm'
 import Fetch from 'bfd-ui/lib/Fetch'
-import { Select, Option } from 'bfd-ui/lib/Select2'
 import TextOverflow from 'bfd-ui/lib/TextOverflow'
 import Icon from 'bfd-ui/lib/Icon'
-import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd-ui/lib/message'
 import {Link} from 'react-router'
+import HdfsConf from '../Conf/Conf'
 
 export default React.createClass({
   handleSuccess(data){
@@ -65,10 +64,23 @@ export default React.createClass({
              }]
             };
   },
+  requestArgs:{
+    moduleName : "ShareCenter",
+    type : "",
+    spaceName : "",
+  },
+  getUrlData({type="",spaceName=""}){
+    this.requestArgs.type = type;
+    this.requestArgs.spaceName = spaceName;
+    return HdfsConf.getUrlData(this.requestArgs);
+  },
   render() {
+    let shareUrl = this.getUrlData({ type : "SHARE",
+                                     spaceName : this.props.location.query.cur_space
+                                    });
     return (
         <div>
-          <Fetch style={{minHeight:0}} url={`v1/hdfs///?space_name=${this.props.location.query.cur_space}&op=SHARE`} onSuccess={this.handleSuccess}>
+          <Fetch style={{minHeight:0}} url={shareUrl} onSuccess={this.handleSuccess}>
             <DataTable data={this.state.data} column={this.state.column}></DataTable>
           </Fetch>
         </div>
