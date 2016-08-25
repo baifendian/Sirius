@@ -274,7 +274,7 @@ WEBHDFS_TIMEOUT = 10
 WEBHDFS_MAX_TRIES = 2
 WEBHDFS_RETRY_DELAY = 3
 # HADOOP_RUN_SCRIPT = os.path.join(BASE_DIR, os.path.pardir, 'sbin/hadoop-run.sh')
-#HADOOP_RUN_SCRIPT = "/opt/pan.lu/gitsource/Aries/Aries/hdfs/hadoop-run.sh"
+HADOOP_RUN_SCRIPT = "/opt/pan.lu/gitsource/Aries/Aries/hdfs/hadoop-run.sh"
 
 SESSION_COOKIE_AGE=60*30
 
