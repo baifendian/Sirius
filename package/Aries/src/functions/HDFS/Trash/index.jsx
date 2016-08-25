@@ -1,16 +1,11 @@
 import React from 'react'
 import Task from 'public/Task'
 import './index.less'
-import { Select, Option } from 'bfd-ui/lib/Select2'
-import Upload from 'bfd-ui/lib/Upload'
-import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
-import ClearableInput from 'bfd-ui/lib/ClearableInput'
-import xhr from 'bfd-ui/lib/xhr'
-import Icon from 'bfd-ui/lib/Icon'
 import confirm from 'bfd-ui/lib/confirm'
 import Fetch from 'bfd-ui/lib/Fetch'
-import MyTable from './MyTable'
-import Navigate from './Navigate'
+import MyTable from '../Myfile/MyTable'
+import Navigate from '../Myfile/Navigate'
+import HdfsConf from '../Conf/Conf'
 
 export default React.createClass({
   getInitialState:function(){
@@ -68,12 +63,30 @@ export default React.createClass({
     let num = this.state.num+1;
     this.setState({tableData:data,num:num});
   },
+  requestArgs:{
+    moduleName:"Trash",
+    type:"",
+    spaceName:"",
+    relativePath:"",
+    targetPath:"",
+  },
+  getUrlData({type="",spaceName="",relativePath="",targetPath=""}){
+    this.requestArgs.type = type;
+    this.requestArgs.spaceName = spaceName;
+    this.requestArgs.relativePath = relativePath;
+    this.requestArgs.targetPath = targetPath;
+    return HdfsConf.getUrlData(this.requestArgs);
+  },
   render(){
+    let listStatusUrl = this.getUrlData({ type : "LIST_STATUS",
+                                          relativePath : this.state.cur_relative_path,
+                                          spaceName : this.props.location.query.cur_space
+                                        });
     return (
       <div className="hdfs-myfile">
         <Navigate cur_path={this.state.cur_relative_path} is_first={this.state.is_first} num={this.state.num} updateSkipUrl={this.updateSkipUrl} />
-        <MyTable data={this.state.tableData} cur_path={this.state.cur_relative_path} cur_space={this.props.location.query.cur_space} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
-        <Fetch style={{minHeight:100}} url={`v1/hdfs/${this.state.cur_relative_path}/?op=LISTSTATUS&spaceName=${this.props.location.query.cur_space}&isTrash=1`} onSuccess={this.getTableSuccess}>
+        <MyTable list="" data={this.state.tableData} getUrlData={this.getUrlData} cur_path={this.state.cur_relative_path} cur_space={this.props.location.query.cur_space} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
+        <Fetch style={{minHeight:100}} url={listStatusUrl} onSuccess={this.getTableSuccess}>
         </Fetch>
       </div>
     )

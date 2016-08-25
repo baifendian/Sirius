@@ -22,8 +22,10 @@ const SpaceManager = React.createClass({
     let newMember = this.state.newMember;
     let space_id = this.props.cur_space;
     if(newMember.length>0){
-      let url = `v1/user_auth/spaces/member/${space_id}/`;
-      xhr({type: 'POST',url: url,data:{"key":newMember},
+      let addMemberUrl = this.props.getUrlData({ type : "SPACE_MEMBER_POST",
+                                                 spaceId : space_id
+                                                });
+      xhr({type: 'POST',url: addMemberUrl,data:{"key":newMember},
         success:data =>{
           message.success("成员更新成功!", 2);
           this.modalClose();
@@ -45,9 +47,11 @@ const SpaceManager = React.createClass({
   },
   updateRole(user_id,role_id){
     let space_id = this.props.cur_space;
-    let url = `v1/user_auth/spaces/member/${space_id}/`;
+    let updateMemberUrl = this.props.getUrlData({ type : "SPACE_MEMBER_PUT",
+                                                  spaceId : space_id
+    });
     console.log(`uid: ${user_id}, r_id: ${role_id}`);
-    xhr({type: 'PUT',url: url,data:{"key":[{"user_id":user_id,"role_id":role_id}]},
+    xhr({type: 'PUT',url: updateMemberUrl,data:{"key":[{"user_id":user_id,"role_id":role_id}]},
       success:data => {
         message.success("成员角色更新成功!", 2);
         this.props.refreshTable();
@@ -90,7 +94,9 @@ const SpaceManager = React.createClass({
     };
   },
   render: function() {
-    let TransferUrl = `v1/user_auth/spaces/member/${this.props.cur_space}/?inspace=2`;
+    let TransferUrl = this.props.getUrlData({ type : "SPACE_MEMBER",
+                                              spaceName : this.props.cur_space,
+                                            });
     return  (
         <div>
           {this.is_admin_button[this.props.is_admin].call(this)}

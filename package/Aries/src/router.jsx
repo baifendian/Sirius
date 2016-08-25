@@ -18,18 +18,6 @@ export default render((
           cb(null, require('./functions/Overview').default)
         })
       }}/>
-      <Route path="data">
-        <Route path="moduleA" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/Data/ModuleA').default)
-          })
-        }}/>
-        <Route path="moduleB" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/Data/ModuleB').default)
-          })
-        }}/>
-      </Route>
       <Route path="UserAuth">
         <Route path="SpaceList" getComponent={(location, cb) => {
           require.ensure([], require => {
@@ -57,11 +45,6 @@ export default render((
           require.ensure([], require => {
             cb(null, require('./functions/HDFS/ShareCenter').default)
           })
-        }}/>
-        <Route path="Other" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/HDFS/Other').default)
-            })
         }}/>
         <Route path="Trash" getComponent={(location, cb) => {
           require.ensure([], require => {
@@ -118,7 +101,7 @@ export default render((
           }}/>
         </Route>
        </Route>
-       
+
       <Route path="login" getComponent={(location, cb) => {
         require.ensure([], require => {
           cb(null, require('./functions/Login').default)

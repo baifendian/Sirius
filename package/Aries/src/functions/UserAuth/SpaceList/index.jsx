@@ -7,6 +7,7 @@ import SpaceInfo from './SpaceInfo'
 import SpaceManager from './SpaceManager'
 import { Select ,Option} from 'bfd-ui/lib/Select2'
 import auth from 'public/auth'
+import UserAuthConf from '../Conf/Conf'
 
 export default React.createClass({
   getInitialState: function() {
@@ -31,15 +32,37 @@ export default React.createClass({
   },
   initCurSpace(data){
     let cur_space = data.space_id;
-    let url = `v1/user_auth/spaces/member/${cur_space}/`;
+    let url = this.getUrlData({ type : SPACE_MEMBER_NO,
+                                spaceName : cur_space
+                    });
     this.setState({cur_space:cur_space,url:url});
   },
+  requestArgs:{
+    moduleName:"SpaceList",
+    type:"",
+    spaceName:"",
+    spaceId:"",
+    filter:""
+  },
+  getUrlData({type="",spaceName="",relativePath="",targetPath="",shareId=""}){
+    this.requestArgs.type = type;
+    this.requestArgs.spaceName = spaceName;
+    this.requestArgs.relativePath = relativePath;
+    this.requestArgs.targetPath = targetPath;
+    this.requestArgs.shareId = shareId;
+    return UserAuthConf.getUrlData(this.requestArgs);
+  },
   render() {
-    let spaceInfoUrl=`v1/user_auth/spaces/info/${this.state.cur_space}/`;
+    let spaceInfoUrl = this.getUrlData({ type : "SPACE_INFO",
+                                         spaceName : this.state.cur_space
+                                        });
     let filter = this.props.location.query.cur_space;
     if(filter==undefined){
       filter = auth.user.cur_space;
     }
+    let spaceCurUrl = this.getUrlData({ type : "SPACE_CUR",
+                                        filter : filter
+                                      });
     return (
        <div>
         <Tabs>
@@ -48,11 +71,11 @@ export default React.createClass({
           </TabList>
           <TabPanel>
           <Fetch style={{minHeight:100}} url={spaceInfoUrl} onSuccess={this.getSpaceInfo}>
-            <SpaceManager url={this.state.url} refreshTable={this.refreshTable} cur_space={this.state.cur_space} is_admin={this.state.is_admin} />
+            <SpaceManager getUrlData={this.getUrlData} url={this.state.url} refreshTable={this.refreshTable} cur_space={this.state.cur_space} is_admin={this.state.is_admin} />
           </Fetch>
           </TabPanel>
         </Tabs>
-        <Fetch style={{minHeight:0}} url={`v1/user_auth/spaces/?filter=${filter}`} onSuccess={this.initCurSpace}>
+        <Fetch style={{minHeight:0}} url={spaceCurUrl} onSuccess={this.initCurSpace}>
         </Fetch>
         </div>
     )

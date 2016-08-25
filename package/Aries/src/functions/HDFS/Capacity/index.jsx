@@ -5,7 +5,7 @@ import { Tabs, TabList, Tab, TabPanel } from 'bfd-ui/lib/Tabs'
 import TabManager from './Manager'
 import TabMonitor from './Monitor'
 import Fetch from 'bfd-ui/lib/Fetch'
-
+import HdfsConf from '../Conf/Conf'
 
 export default React.createClass({
   sliderDataSccuess(data){
@@ -26,7 +26,19 @@ export default React.createClass({
       "percentData":[],
     };
   },
+  requestArgs:{
+    moduleName:"Capacity",
+    type:"",
+    spaceName:"",
+  },
+  getUrlData({type="",spaceName=""}){
+    this.requestArgs.type = type;
+    this.requestArgs.spaceName = spaceName;
+    return HdfsConf.getUrlData(this.requestArgs);
+  },
   render() {
+    let sumUrl = this.getUrlData({ type : "SUM",
+                                 });
     return (
        <div>
         <Tabs>
@@ -35,11 +47,11 @@ export default React.createClass({
             <Tab>配额管理</Tab>
           </TabList>
           <TabPanel><TabMonitor percentData={this.state.percentData} /></TabPanel>
-          <TabPanel><TabManager sliderData={this.state.sliderData} /></TabPanel>
+          <TabPanel><TabManager getUrlData={this.getUrlData} sliderData={this.state.sliderData} /></TabPanel>
         </Tabs>
         <div className="div-Fetch">
-          <Fetch style={{minHeight:0}} url="v1/hdfs///?op=SUM" onSuccess={this.sliderDataSccuess}>
-          </Fetch>
+        <Fetch style={{minHeight:0}} url={sumUrl} onSuccess={this.sliderDataSccuess}>
+        </Fetch>
         </div>
         </div>
     )
