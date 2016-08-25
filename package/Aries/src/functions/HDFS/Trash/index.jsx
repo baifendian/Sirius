@@ -5,7 +5,8 @@ import confirm from 'bfd-ui/lib/confirm'
 import Fetch from 'bfd-ui/lib/Fetch'
 import MyTable from '../Myfile/MyTable'
 import Navigate from '../Myfile/Navigate'
-import HdfsConf from '../Conf/Conf'
+import HdfsConf from '../Conf/HdfsConf'
+import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
   getInitialState:function(){
@@ -64,7 +65,7 @@ export default React.createClass({
     this.setState({tableData:data,num:num});
   },
   requestArgs:{
-    moduleName:"Trash",
+    pageName:"Trash",
     type:"",
     spaceName:"",
     relativePath:"",
@@ -78,14 +79,16 @@ export default React.createClass({
     return HdfsConf.getUrlData(this.requestArgs);
   },
   render(){
+    let spaceName = HdfsConf.getCurSpace(this);
     let listStatusUrl = this.getUrlData({ type : "LIST_STATUS",
                                           relativePath : this.state.cur_relative_path,
-                                          spaceName : this.props.location.query.cur_space
+                                          spaceName : spaceName
                                         });
     return (
       <div className="hdfs-myfile">
+        <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <Navigate cur_path={this.state.cur_relative_path} is_first={this.state.is_first} num={this.state.num} updateSkipUrl={this.updateSkipUrl} />
-        <MyTable list="" data={this.state.tableData} getUrlData={this.getUrlData} cur_path={this.state.cur_relative_path} cur_space={this.props.location.query.cur_space} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
+        <MyTable list="" data={this.state.tableData} getUrlData={this.getUrlData} cur_path={this.state.cur_relative_path} cur_space={spaceName} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
         <Fetch style={{minHeight:100}} url={listStatusUrl} onSuccess={this.getTableSuccess}>
         </Fetch>
       </div>

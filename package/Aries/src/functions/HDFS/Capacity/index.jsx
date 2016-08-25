@@ -5,7 +5,8 @@ import { Tabs, TabList, Tab, TabPanel } from 'bfd-ui/lib/Tabs'
 import TabManager from './Manager'
 import TabMonitor from './Monitor'
 import Fetch from 'bfd-ui/lib/Fetch'
-import HdfsConf from '../Conf/Conf'
+import HdfsConf from '../Conf/HdfsConf'
+import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
   sliderDataSccuess(data){
@@ -27,7 +28,7 @@ export default React.createClass({
     };
   },
   requestArgs:{
-    moduleName:"Capacity",
+    pageName:"Capacity",
     type:"",
     spaceName:"",
   },
@@ -37,10 +38,12 @@ export default React.createClass({
     return HdfsConf.getUrlData(this.requestArgs);
   },
   render() {
+    let spaceName = HdfsConf.getCurSpace(this);
     let sumUrl = this.getUrlData({ type : "SUM",
                                  });
     return (
        <div>
+       <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <Tabs>
           <TabList>
             <Tab>配额监控</Tab>

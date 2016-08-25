@@ -8,7 +8,8 @@ import TextOverflow from 'bfd-ui/lib/TextOverflow'
 import Icon from 'bfd-ui/lib/Icon'
 import message from 'bfd-ui/lib/message'
 import {Link} from 'react-router'
-import HdfsConf from '../Conf/Conf'
+import HdfsConf from '../Conf/HdfsConf'
+import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
   handleSuccess(data){
@@ -43,7 +44,8 @@ export default React.createClass({
                 proxy_arr.pop();
                 let hash = proxy_arr.pop();
                 console.log(hash);
-                let url = `/HDFS/ShowShare/${hash}?cur_space=${this.props.location.query.cur_space}`;
+                let spaceName = HdfsConf.getCurSpace(this);
+                let url = `/HDFS/ShowShare/${hash}?cur_space=${spaceName}`;
                 return <Link to={url}>{component.proxy_path}</Link>
               },
              },{
@@ -65,7 +67,7 @@ export default React.createClass({
             };
   },
   requestArgs:{
-    moduleName : "ShareCenter",
+    pageName : "ShareCenter",
     type : "",
     spaceName : "",
   },
@@ -75,11 +77,13 @@ export default React.createClass({
     return HdfsConf.getUrlData(this.requestArgs);
   },
   render() {
+    let spaceName = HdfsConf.getCurSpace(this);
     let shareUrl = this.getUrlData({ type : "SHARE",
-                                     spaceName : this.props.location.query.cur_space
+                                     spaceName : spaceName
                                     });
     return (
         <div>
+          <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
           <Fetch style={{minHeight:0}} url={shareUrl} onSuccess={this.handleSuccess}>
             <DataTable data={this.state.data} column={this.state.column}></DataTable>
           </Fetch>

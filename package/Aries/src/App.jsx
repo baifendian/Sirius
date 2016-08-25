@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { Nav, NavItem } from 'bfd/Nav'
 import xhr from 'bfd/xhr'
 import auth from 'public/auth'
+import conf from 'public/Conf/Conf'
 import env from './env'
 import './App.less'
 import { Select ,Option} from 'bfd-ui/lib/Select2'
@@ -49,8 +50,9 @@ const App = React.createClass({
   //space切换
   switchSpace(value){
     //更新用户默认cur_space
-    let url = `v1/user_auth/user/${value}/`
-    xhr({type: 'PUT',url: url,success:data=> {
+    let switchUrl = conf.getUrlData({ moduleName : "COMMON", pageName : "Head",
+                                      type : "SPACE_SWITCH", spaceName : value });
+    xhr({type: 'PUT',url: switchUrl,success:data=> {
         //需要切换space的权限
         auth.user.type = data;
         this.setState({cur_space:value});
@@ -92,10 +94,7 @@ const App = React.createClass({
       if (!this.hasPermission()) {
         Children = <div>您无权访问该页面</div>
       }
-      let cur_space = this.props.location.query.cur_space;
-      if(cur_space==undefined){
-        cur_space = auth.user.cur_space;
-      }
+      let cur_space = conf.getCurSpace(this);
       let params=`cur_space=${cur_space}`;
       return (
         <div id="wrapper" className="container-fluid">

@@ -12,7 +12,7 @@ import Head from './Head'
 import MyTable from './MyTable'
 import Navigate from './Navigate'
 import NavigationInPage from 'public/NavigationInPage'
-import HdfsConf from '../Conf/Conf'
+import HdfsConf from '../Conf/HdfsConf'
 
 export default React.createClass({
   getInitialState:function(){
@@ -76,7 +76,7 @@ export default React.createClass({
     this.setState({tableData:data,num:num});
   },
   requestArgs:{
-    moduleName:"MyFile",
+    pageName:"MyFile",
     type:"",
     spaceName:"",
     relativePath:"",
@@ -90,15 +90,21 @@ export default React.createClass({
     return HdfsConf.getUrlData(this.requestArgs);
   },
   render(){
+    let spaceName = HdfsConf.getCurSpace(this);
     let listStatusUrl = this.getUrlData({ type : "LIST_STATUS",
-                                          spaceName : this.props.location.query.cur_space,
+                                          spaceName : spaceName,
                                           relativePath : this.state.cur_relative_path
                                         });
     return (
       <div className="hdfs-myfile">
-        <Head updateTableList={this.updateTableList} getUrlData={this.getUrlData} updateRandom={this.updateRandom} cur_path={this.state.cur_relative_path} updateSpace={this.updateSpace}  spaceData={this.state.spaceData}  cur_space={this.props.location.query.cur_space}  addTableData={this.addTableData}/>
+        <NavigationInPage headText={HdfsConf.getNavigationData({ pageName : this.requestArgs.pageName,
+                                                                 type : "headText"})}
+                          naviTexts={HdfsConf.getNavigationData({ pageName : this.requestArgs.pageName,
+                                                                  type : "navigationTexts",
+                                                                  spaceName : spaceName})} />
+        <Head updateTableList={this.updateTableList} getUrlData={this.getUrlData} updateRandom={this.updateRandom} cur_path={this.state.cur_relative_path} updateSpace={this.updateSpace}  spaceData={this.state.spaceData}  cur_space={spaceName}  addTableData={this.addTableData}/>
         <Navigate cur_path={this.state.cur_relative_path} is_first={this.state.is_first} num={this.state.num} updateSkipUrl={this.updateSkipUrl} />
-        <MyTable list="ALL" data={this.state.tableData} getUrlData={this.getUrlData} updateRandom={this.updateRandom} cur_path={this.state.cur_relative_path} cur_space={this.props.location.query.cur_space} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
+        <MyTable list="ALL" data={this.state.tableData} getUrlData={this.getUrlData} updateRandom={this.updateRandom} cur_path={this.state.cur_relative_path} cur_space={spaceName} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
         <Fetch style={{minHeight:100}} url={`${listStatusUrl}&random=${this.state.random}`} onSuccess={this.getTableSuccess}>
         </Fetch>
       </div>

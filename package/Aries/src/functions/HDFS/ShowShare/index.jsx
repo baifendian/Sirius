@@ -4,7 +4,8 @@ import './index.less'
 import Fetch from 'bfd-ui/lib/Fetch'
 import MyTable from '../Myfile/MyTable'
 import Navigate from '../Myfile/Navigate'
-import HdfsConf from '../Conf/Conf'
+import HdfsConf from '../Conf/HdfsConf'
+import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
   getInitialState:function(){
@@ -64,30 +65,28 @@ export default React.createClass({
     this.setState({tableData:data,num:num});
   },
   requestArgs:{
-    moduleName:"ShowShare",
+    pageName:"ShowShare",
     type:"",
     spaceName:"",
-    relativePath:"",
-    targetPath:"",
     shareId:""
   },
-  getUrlData({type="",spaceName="",relativePath="",targetPath="",shareId=""}){
+  getUrlData({type="",spaceName="",shareId=""}){
     this.requestArgs.type = type;
     this.requestArgs.spaceName = spaceName;
-    this.requestArgs.relativePath = relativePath;
-    this.requestArgs.targetPath = targetPath;
     this.requestArgs.shareId = shareId;
     return HdfsConf.getUrlData(this.requestArgs);
   },
   render(){
+    let spaceName = HdfsConf.getCurSpace(this);
     let shareUrl = this.getUrlData({ type : "SHARE_LIST_STATUS",
                                      relativePath : this.state.cur_relative_path,
                                      shareId : this.props.params.hash
                                   });
     return (
       <div className="hdfs-myfile">
+        <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <Navigate cur_path={this.state.cur_relative_path} is_first={this.state.is_first} num={this.state.num} updateSkipUrl={this.updateSkipUrl} />
-        <MyTable  list="" data={this.state.tableData} getUrlData={this.getUrlData} cur_path={this.state.cur_relative_path} cur_space={this.props.location.query.cur_space} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
+        <MyTable  list="" data={this.state.tableData} getUrlData={this.getUrlData} cur_path={this.state.cur_relative_path} cur_space={spaceName} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
         <Fetch style={{minHeight:100}} url={shareUrl} onSuccess={this.getTableSuccess}>
         </Fetch>
       </div>

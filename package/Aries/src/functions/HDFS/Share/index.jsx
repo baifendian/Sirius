@@ -8,7 +8,8 @@ import TextOverflow from 'bfd-ui/lib/TextOverflow'
 import Icon from 'bfd-ui/lib/Icon'
 import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd-ui/lib/message'
-import HdfsConf from '../Conf/Conf'
+import HdfsConf from '../Conf/HdfsConf'
+import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
   confirm_handler(id,confirm_str,func,component){
@@ -80,7 +81,7 @@ export default React.createClass({
             };
   },
   requestArgs:{
-    moduleName : "Share",
+    pageName : "Share",
     type : "",
     spaceName : "",
     shareId : ""
@@ -92,11 +93,13 @@ export default React.createClass({
     return HdfsConf.getUrlData(this.requestArgs);
   },
   render() {
+    let spaceName = HdfsConf.getCurSpace(this);
     let shareUrl = this.getUrlData({ type : "SHARE_GET",
-                                     spaceName : this.props.location.query.cur_space,
+                                     spaceName : spaceName,
                                     });
     return (
         <div>
+          <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
           <Fetch style={{minHeight:0}} url={shareUrl} onSuccess={this.handleSuccess}>
             <DataTable data={this.state.data} column={this.state.column}></DataTable>
           </Fetch>

@@ -14,7 +14,6 @@ import Tree from 'bfd-ui/lib/Tree/Tree'
 import { Form, FormItem } from 'bfd-ui/lib/Form'
 import Editable from 'bfd-ui/lib/Editable'
 import message from 'bfd-ui/lib/message'
-import HdfsConf from '../Conf/Conf'
 
 const MyTable = React.createClass({
   confirm_handler(path,confirm_str,func,component){
