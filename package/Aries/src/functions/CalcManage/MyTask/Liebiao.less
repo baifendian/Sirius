@@ -9,14 +9,33 @@ div.LiebiaoRootDiv > div.DataTableDiv {
 
 div.LiebiaoRootDiv > div.DataTableDiv table {
   .width_0 {
-    width: 22%;
+    width: 10%;
   }
-  .width_1 , .width_2 , .width_3 , .width_4 , .width_5 , .width_6  {
-    width: 13%;
+  .width_1 {
+    width: 30%;
+  }
+  .width_2 , .width_3 , .width_4 , .width_5 , .width_6 , .width_7  {
+    width: 10%;
   }
 
 }
 
+div.LiebiaoRootDiv .LoadNewRecordsButton{
+  border: 0px;
+  background-color: transparent;
+  color:green;
+}
+div.LiebiaoRootDiv .LoadNewRecordsButton.Hide{
+  display: none;
+}
+div.LiebiaoRootDiv .LoadNewRecordsButton.Show{
+  display: block;
+}
+
+.highlightLine {
+  background-color: #DEF6E8 !important;
+  border-bottom: 1px solid #A4E7C1 !important;
+}
 
 div.LiebiaoRootDiv > div.DataTableDiv table {
   th,td{
@@ -63,4 +82,27 @@ div.LiebiaoRootDiv > div.DataTableDiv table {
     }
 
   }
+}
+
+
+// 以下代码是测试代码
+div.LiebiaoRootDiv{
+  margin-top: 15px;
+}
+
+.SearchButton {
+  float: right;
+}
+
+table.SearchConditionTable > tbody > tr {
+  > td:nth-child(odd){ 
+    padding-left: 5px;  
+  }
+  > td:nth-child(even){ 
+    padding-right: 25px;
+  }
+}
+
+.SearchItemControl {
+  width: 200px;
 }
