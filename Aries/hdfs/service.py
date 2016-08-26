@@ -409,9 +409,9 @@ def showShare(request,path):
         hdfs_logger.info("space_path:{0}, source_path:{1},path:{2}".format(space_path,source_path,path))
         real_path = os.path.realpath("%s/%s/%s/%s" %(os.path.sep,space_path,source_path,path))
         hdfs_logger.info("real_path:{0}".format(real_path))
-        #获取对应的子列表 从分享的目录开始返回。而不是子目录
+        #获取对应的子列表 从分享的目录开始返回。而不是子目录.如果real_path为 "/"
         hdfs = HDFS()
-        result =  hdfs.list_status_share(real_path)
+        result = hdfs.list_status_share(real_path,request,space_name)
         result["data"]["space_name"] = space_name
         return result;
     except Exception,e:
