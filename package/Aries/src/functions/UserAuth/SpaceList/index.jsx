@@ -61,16 +61,18 @@ export default React.createClass({
     return (
        <div>
         <NavigationInPage headText={UserAuthConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={UserAuthConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
-        <Tabs>
-          <TabList>
-            <Tab>成员管理</Tab>
-          </TabList>
-          <TabPanel>
-          <Fetch style={{minHeight:100}} url={spaceInfoUrl} onSuccess={this.getSpaceInfo}>
-            <SpaceManager getUrlData={this.getUrlData} url={this.state.url} refreshTable={this.refreshTable} spaceId={this.state.spaceId} is_admin={this.state.is_admin} />
-          </Fetch>
-          </TabPanel>
-        </Tabs>
+        <div className="bottom">
+          <Tabs>
+            <TabList>
+              <Tab>成员管理</Tab>
+            </TabList>
+            <TabPanel>
+            <Fetch style={{minHeight:100}} url={spaceInfoUrl} onSuccess={this.getSpaceInfo}>
+              <SpaceManager getUrlData={this.getUrlData} url={this.state.url} refreshTable={this.refreshTable} spaceId={this.state.spaceId} is_admin={this.state.is_admin} />
+            </Fetch>
+            </TabPanel>
+          </Tabs>
+        </div>
         <Fetch style={{minHeight:0}} url={spaceCurUrl} onSuccess={this.initCurSpace}>
         </Fetch>
         </div>

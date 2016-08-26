@@ -27,7 +27,9 @@ export default React.createClass({
     let spaceName = HdfsConf.getCurSpace(this);
     return (
         <div>
-          <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
+          <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})}
+                            naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
+          <div className="bottom">
           <Tabs>
             <TabList>
               <Tab>服务监控</Tab>
@@ -36,6 +38,7 @@ export default React.createClass({
             <TabPanel><TabMonitor getUrlData={this.getUrlData} /></TabPanel>
             <TabPanel><TabManager getUrlData={this.getUrlData} /></TabPanel>
           </Tabs>
+          </div>
         </div>
     )
   }

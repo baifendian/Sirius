@@ -47,7 +47,7 @@ const conf={
       Service:{
         OPERATOR:"v1/hdfs/${hostName}/${componentName}/${operator}/", //服务启动或停止
         STATE:"v1/hdfs/state/",//获取状态
-        COMPONENT_INFO:"v1/hdfs/relation/${hostname}/",//获取某台主机上面的组件信息
+        COMPONENT_INFO:"v1/hdfs/relation/${hostName}/",//获取某台主机上面的组件信息
       },
       Share:{
         SHARE_GET:"v1/hdfs///?space_name=${spaceName}&op=SHARE", //获取分享信息
@@ -58,14 +58,14 @@ const conf={
       },
       ShowShare:{
         SHARE_LIST_STATUS:"v1/hdfs/share/${relativePath}/?shareId=${shareId}",//以列表形式获取某个分享下的文件或文件夹
-        LIST_STATUS_TREE:"v1/hdfs///?op=LISTSTATUSTREE&spaceName=${spaceName}", //以树形结构获取文件夹
+        LIST_STATUS_TREE:"v1/hdfs/${relativePath}/?op=LISTSTATUSTREE&spaceName=${spaceName}", //以树形结构获取文件夹
         DELETE:"v1/hdfs/${relativePath}/?op=DELETE&spaceName=${spaceName}", //删除目录
         RENAME:"v1/hdfs/${relativePath}/?op=RENAME&destination=${targetPath}&space_name=${spaceName}",//移动目录
         MKDIRS:"v1/hdfs/${relativePath}/?op=MKDIRS&spaceName=${this.props.cur_space}"//创建文件夹. 暂时不用.
       },
       Trash:{
         LIST_STATUS:"v1/hdfs/${relativePath}/?op=LISTSTATUS&spaceName=${spaceName}&isTrash=1",//获取回收站中的文件列表
-        LIST_STATUS_TREE:"v1/hdfs///?op=LISTSTATUSTREE&spaceName=${spaceName}",//以树形结构获取文件夹
+        LIST_STATUS_TREE:"v1/hdfs/${relativePath}/?op=LISTSTATUSTREE&spaceName=${spaceName}",//以树形结构获取文件夹
         DELETE:"v1/hdfs/${relativePath}/?op=DELETE&spaceName=${spaceName}", //删除目录
         RENAME:"v1/hdfs/${relativePath}/?op=RENAME&destination=${targetPath}&space_name=${spaceName}&isTrash=1",//从垃圾箱移出目录
         MKDIRS:"v1/hdfs/${relativePath}/?op=MKDIRS&spaceName=${spaceName}"//创建文件夹. 暂时不用.

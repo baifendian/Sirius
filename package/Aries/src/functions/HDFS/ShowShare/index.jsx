@@ -5,7 +5,6 @@ import Fetch from 'bfd-ui/lib/Fetch'
 import MyTable from '../Myfile/MyTable'
 import Navigate from '../Myfile/Navigate'
 import HdfsConf from '../Conf/HdfsConf'
-import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
   getInitialState:function(){
@@ -68,12 +67,16 @@ export default React.createClass({
     pageName:"ShowShare",
     type:"",
     spaceName:"",
-    shareId:""
+    shareId:"",
+    relativePath:"/",
+    targetPath :"",
   },
-  getUrlData({type="",spaceName="",shareId=""}){
+  getUrlData({type="",spaceName="",shareId="",relativePath="",targetPath=""}){
     this.requestArgs.type = type;
     this.requestArgs.spaceName = spaceName;
     this.requestArgs.shareId = shareId;
+    this.requestArgs.relativePath = relativePath;
+    this.requestArgs.targetPath = targetPath;
     return HdfsConf.getUrlData(this.requestArgs);
   },
   render(){
@@ -84,7 +87,6 @@ export default React.createClass({
                                   });
     return (
       <div className="hdfs-myfile">
-        <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <Navigate cur_path={this.state.cur_relative_path} is_first={this.state.is_first} num={this.state.num} updateSkipUrl={this.updateSkipUrl} />
         <MyTable  list="" data={this.state.tableData} getUrlData={this.getUrlData} cur_path={this.state.cur_relative_path} cur_space={spaceName} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
         <Fetch style={{minHeight:100}} url={shareUrl} onSuccess={this.getTableSuccess}>
