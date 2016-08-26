@@ -65,7 +65,7 @@ def login(request):
                     data = is_admin(account,account.cur_space)
                 except Exception,e:
                     ac_logger.error(e)
-                    account = Account(name=username,password=password,email=email,is_active=1)
+                    account = Account(name=username,email=email,is_active=1)
                     account.role = Role.objects.get(name="guest")
                     account.save()
                     data = ""

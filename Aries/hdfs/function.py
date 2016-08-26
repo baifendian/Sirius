@@ -202,11 +202,11 @@ class HDFS(object):
         space_path = space[0].address 
         return space_path   
     
-    def list_status_share(self,real_path):
+    def list_status_share(self,real_path,request,space_name):
         try:
             result = self.hdfs.list_status(real_path)     
         except HdfsException,e:
-            hdfs_logger.error("%s列出文件夹%s发生异常: %s" % (getUser(request).username,space_path, str(e)))
+            hdfs_logger.error("%s列出文件夹%s发生异常: %s" % (getUser(request).username,real_path, str(e)))
             self.returned['code'] = StatusCode["OK"]
             self.returned['data'] = {"totalList":[],"totalPageNum":0,"currentPage":1}
             return self.returned
@@ -214,14 +214,31 @@ class HDFS(object):
             self.returned['code'] = StatusCode["OK"]
             self.returned['msg'] = "OK"
             unit = ["B","KB","MB","GB","TB"]
-            totalList = [
-                {
-                    'name': item.get('pathSuffix'),
-                    'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
-                    'is_dir': 0 if item.get('type') == "FILE" else 1,
-                    'size': unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
-                } for item in result if item.get('pathSuffix') != ".Trash"
-            ]
+            if result:
+                item = result[0]
+                if len(result) == 1 and item.get('pathSuffix') == "":
+                    totalList = [{
+                          'name': space_name.split("/")[-1],
+                          'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
+                          'is_dir': 0,
+                           'size' : unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-"
+                    }]
+                else:
+                    totalList = [
+                        {
+                            'name': item.get('pathSuffix'),
+                            'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
+                            'is_dir': 0 if item.get('type') == "FILE" else 1,
+                            'size': unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
+                        } for item in result if item.get('pathSuffix') != ".Trash"
+                    ]
+            else:
+                totalList = [{
+                    'name': space_name.split("/")[-1],
+                    'create_time':"-",
+                    'is_dir' :1,
+                    'size' : '-'
+                 }]
             self.returned['data'] = {"totalList":totalList,"totalPageNum":len(totalList),"currentPage":1}
             hdfs_logger.info("liststatus:%s" %self.returned['data'])
             return self.returned
