@@ -7,7 +7,7 @@ import message from 'bfd-ui/lib/message'
 
 import Input from 'bfd-ui/lib/Input'
 import { Select, Option } from 'bfd-ui/lib/Select'
-import DatePicker from 'bfd-ui/lib/DatePicker'
+import { DateRange } from 'bfd-ui/lib/DatePicker'
 
 import CMDR from '../CalcManageDataRequester/requester.js'
 import Toolkit from 'public/Toolkit/index.js'
@@ -23,7 +23,7 @@ const TabLiebiao = React.createClass({
       // 表格信息
       column: [{ title:'id',       key:'id',            order:false },
                { title:'JobName',  key:'job_name',      order:false }, 
-               { title:'TaskName', key:'task_name',          order:false }, 
+               { title:'TaskName', key:'task_name',     order:false }, 
                { title:'准备时间',  key:'ready_time',    order:false }, 
                { title:'开始时间',  key:'running_time',  order:false },
                { title:'完成时间',  key:'leave_time',    order:false },
@@ -40,28 +40,15 @@ const TabLiebiao = React.createClass({
   },
 
   componentDidMount:function(){
-    this.resizeThWidth()
-
     this.installTbodyScrollListener()
-    this.initDisplay()
+
+    // 汇总搜索条件（由于页面刚刚刷新完毕时，this.userData中未保存任何搜索条件，因此得到的都是初始值）
+    this.querySearchConditions()
     this.firstTimeGetOldRecords()
   },
 
   componentDidUpdate:function(){
-    this.resizeTdWidth()
-
     this.highlightNewRecordLines()
-  },
-
-  initDisplay:function(){
-    this.stopCheckHasNewRecordInterval()
-    this.userData = {}
-    this.setState({
-      data:{"totalList": [],"totalPageNum":0},
-      highlightRecords:[],
-      lastNewRecordGUID:'',
-      loadNewRecordsButtonDisplay:false
-    })    
   },
 
   installTbodyScrollListener:function(  ){
@@ -76,10 +63,20 @@ const TabLiebiao = React.createClass({
           this.getMoreOldRecords()
         }
       }
-
     }
   },
 
+  querySearchConditions:function(){
+    let searchConditions = {
+      taskname:document.getElementById('TaskNameInputControl').value ,
+      shelltype:this.userData['curShellType'] ? this.userData['curShellType'] : 'ALL',
+      executeresult:this.userData['curExecutedResult'] ? this.userData['curExecutedResult'] : 'ALL',
+      startdate:this.userData['curStartDate'] ? this.userData['curStartDate'] : Toolkit.generateTimeStrBySeconds(0),
+      enddate:this.userData['curEndDate'] ? this.userData['curEndDate'] : Toolkit.generateTimeStrBySeconds(-1)
+    }
+    this.userData['curSearchCondition'] = searchConditions
+    return searchConditions
+  },
 
   getRealTimeTheadAndTbodyObj:function(){
     let dataTableNode = ReactDOM.findDOMNode( this.refs.DataTable )
@@ -109,11 +106,18 @@ const TabLiebiao = React.createClass({
     },5000 )
   },
   
-
-
   // 获取当前的筛选条件
   queryKeywords(){
-    return {}
+    if ( this.userData['curSearchCondition'] === undefined ){
+      this.userData['curSearchCondition'] = {
+        taskname:'',
+        shelltype:'ALL',
+        executeresult:'ALL',
+        startdate:Toolkit.generateTimeStrBySeconds(0),
+        enddate:Toolkit.generateTimeStrBySeconds(-1)
+      }
+    } 
+    return this.userData['curSearchCondition']
   },
 
   // 第一次获取现有记录，并启动定时器（获取新的记录）
@@ -176,31 +180,45 @@ const TabLiebiao = React.createClass({
   },
 
   onSearchButtonClicked:function(){
-    this.initDisplay()
+    // 清除原来的数据
+    this.stopCheckHasNewRecordInterval()
+    this.userData['scrollHeight'] = undefined
+    this.userData['lastExecutedNewRecordGUID'] = undefined
+    this.setState({
+      data:{"totalList": [],"totalPageNum":0},
+      highlightRecords:[],
+      lastNewRecordGUID:'',
+      loadNewRecordsButtonDisplay:false
+    })
+
+    // 汇总查询条件
+    // （由于Input组件设置ref之后，通过ReactDOM.findDOMNode找不到相应的节点，因此这里使用 id 来获取该节点的文本内容）
+    // 暂时不知道怎么监听Input控件的内容改变，这里没有为其设计回调函数，而是在按下按钮时实时获取
+    this.querySearchConditions()
+
+    // 重新请求数据
     this.firstTimeGetOldRecords()
-    console.log( 'SearchButtonClicked' )
   },
 
+  onShellTypeChanged( value ){
+    this.userData['curShellType'] = value
+  },
 
-  resizeThWidth:function(){
-    let thead = this.getRealTimeTheadAndTbodyObj()['thead']
-    let tr = thead.childNodes[0]
-    for( let j = 0 ; j < tr.childNodes.length ; j ++ ){
-      tr.childNodes[j].className += ' width_' + j
+  onExecutedResultChanged( value ){
+    this.userData['curExecutedResult'] = value
+  },
+
+  onDateRangeChanged( startDate,endDate ){
+    if (startDate){
+      this.userData['curStartDate'] = Toolkit.generateTimeStrBySeconds( startDate ).split('T')[0] + 'T00:00:00'
+    } else {
+      this.userData['curStartDate'] = Toolkit.generateTimeStrBySeconds( 0 )
     }
-  },
 
-  resizeTdWidth:function(){
-    let tbody = this.getRealTimeTheadAndTbodyObj()['tbody']
-    for ( let i = 0 ; i < tbody.childNodes.length ; i ++ ){
-      let tr = tbody.childNodes[i]
-
-      if (tr.childNodes.length !== this.state.column.length)
-        break
-
-      for( let j = 0 ; j < tr.childNodes.length ; j ++ ){
-        tr.childNodes[j].className = 'width_' + j
-      }
+    if ( endDate ){
+      this.userData['curEndDate'] = Toolkit.generateTimeStrBySeconds( endDate ).split('T')[0] + 'T23:59:59'
+    } else {
+      this.userData['curEndDate'] = Toolkit.generateTimeStrBySeconds( -1 )
     }
   },
 
@@ -217,58 +235,59 @@ const TabLiebiao = React.createClass({
   },
 
   render: function() {
-    
-    // 这里不知道为啥没生效
     if ( this.height !== this.props.height ){
+      this.height = this.props.height
       setTimeout( ()=>{
         let tablePanel = ReactDOM.findDOMNode( this.refs.DataTableDiv )
-        tablePanel.style.height = this.props.height - 20 + 'px'
+        let tbody = this.getRealTimeTheadAndTbodyObj()['tbody']
+        // 这里暂时写死，因为加载新记录的按钮还不知道怎么放，放在哪
+        tbody.style.height = this.props.height - 180 + 'px'
       } )
-      this.height = this.props.height
     }
-
-    let loadNewRecordsButtonStyle = { display: this.state.loadNewRecordsButtonDisplay ? 'block' : 'none' }
 
     return  (
       <div className="LiebiaoRootDiv">
 
-        <Button className="SearchButton" onClick={this.onSearchButtonClicked}> 搜索 </Button>
-        <table className="SearchConditionTable">
-          <tbody>
-            <tr>
-              <td>任务名称：</td>
-              <td><Input placeholder="正常" className="SearchItemControl" /></td>
-              
-              <td>脚本类型：</td>
-              <td>
-                <Select defaultValue="ALLSHELLTYPE"  className="SearchItemControl" >
-                  <Option value="ALLSHELLTYPE">不限制脚本类型</Option>
-                  <Option value="HIVE">HIVE</Option>
-                  <Option value="SQOOP">SQOOP</Option>
-                  <Option value="SHELL">SHELL</Option>
-                  <Option value="SPARK">SPARK</Option>                
-                </Select>
-              </td>
+        <Button className="SearchButton" onClick={this.onSearchButtonClicked}> 查询 </Button>
+        <div className="SearchConditionTableFatherDiv">
+          <table className="SearchConditionTable">
+            <tbody>
+              <tr>
+                <td>任务名称：</td>
+                <td><Input id="TaskNameInputControl" className="SearchItemControl" /></td>
+                
+                <td>脚本类型：</td>
+                <td>
+                  <Select defaultValue="ALL"  className="SearchItemControl" onChange={this.onShellTypeChanged}>
+                    <Option value="ALL">不限制脚本类型</Option>
+                    <Option value="HIVE">HIVE</Option>
+                    <Option value="SQOOP">SQOOP</Option>
+                    <Option value="SHELL">SHELL</Option>
+                    <Option value="SPARK">SPARK</Option>                
+                  </Select>
+                </td>
 
-              <td>执行结果：</td>
-              <td>
-                <Select defaultValue="ALLEXECUTEDRESULT"  className="SearchItemControl" >
-                  <Option value="ALLEXECUTEDRESULT">不限制执行结果</Option>
-                  <Option value="INIT">初始</Option>
-                  <Option value="SUCCESS">成功</Option>
-                  <Option value="FAILURE">失败</Option>
-                </Select>
-              </td>
-              <td>开始日期：</td>
-              <td><DatePicker className="SearchItemControl"/></td>
-
-              <td>结束日期：</td>
-              <td><DatePicker className="SearchItemControl"/></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <Button className="LoadNewRecordsButton" style={loadNewRecordsButtonStyle} onClick={this.onLoadNewRecordButtonClicked}> 发现新的数据，是否加载？ </Button>
+                <td>执行结果：</td>
+                <td>
+                  <Select defaultValue="ALL" className="SearchItemControl" onChange={this.onExecutedResultChanged}>
+                    <Option value="ALL">不限制执行结果</Option>
+                    <Option value="INIT">初始</Option>
+                    <Option value="SUCCESS">成功</Option>
+                    <Option value="FAILURE">失败</Option>
+                  </Select>
+                </td>
+                <td>时间范围：</td>
+                <td><DateRange onSelect={this.onDateRangeChanged} /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="LoadNewRecordsButtonFatherDiv" >
+          <Button className={'LoadNewRecordsButton' + (this.state.loadNewRecordsButtonDisplay ? 'Show' : 'Hide')} 
+                  onClick={this.onLoadNewRecordButtonClicked}> 
+                  发现新的数据，是否加载？ 
+          </Button>
+        </div>
         <div className='DataTableDiv' ref='DataTableDiv'>
           <DataTable ref="DataTable" 
             data={this.state.data} 
