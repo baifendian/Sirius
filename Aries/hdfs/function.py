@@ -18,8 +18,8 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 hdfs_logger = logging.getLogger("access_log")
 StatusCode = {
-    "OK": 200,
-    "InternalServerError": 500,
+    "SUCCESS": 200,
+    "FAILED": 500,
 }
 
 class HDFS(object):
@@ -41,7 +41,6 @@ class HDFS(object):
         operator_log.o_type = o_type
         operator_log.o_user = o_user
         operator_log.status = status
-
         operator_log.save()
         return operator_log.pk
 
@@ -130,7 +129,7 @@ class HDFS(object):
             upload_file = open(local_file, 'rb')
             self.hdfs.create(target_path, upload_file)
         except HdfsException, e:
-            self.returned['code'] = StatusCode["InternalServerError"]
+            self.returned['code'] = StatusCode["FAILED"]
             self.returned['data'] = "上传失败"
             hdfs_logger.error("%s使用http上传%s发生异常: %s" % (username, local_file, str(e)))
             self._update_upload_log(pk=log_pk, status=1)
@@ -138,7 +137,7 @@ class HDFS(object):
             if os.path.exists(local_file):
                 os.remove(local_file)
             self._update_upload_log(pk=log_pk, status=0)
-            self.returned['code'] = StatusCode["OK"]
+            self.returned['code'] = StatusCode["SUCCESS"]
             self.returned['data'] = "上传成功"
         return self.returned
 
@@ -177,7 +176,7 @@ class HDFS(object):
             result = self.hdfs.mkdirs(path)
         except HdfsException, e:
             hdfs_logger.error("%s创建文件夹%s发生异常: %s" % (getUser(request).username, path, str(e)))
-            self.returned['code'] = StatusCode["InternalServerError"]
+            self.returned['code'] = StatusCode["FAILED"]
             self.returned['msg'] = str(e)
             return self.returned
 
@@ -193,7 +192,7 @@ class HDFS(object):
             )
             return self.returned
         else:
-            self.returned['code'] = StatusCode["InternalServerError"]
+            self.returned['code'] = StatusCode["FAILED"]
             self.returned['msg'] = "unknown error when MKDIRS"
             return self.returned
     
@@ -207,11 +206,11 @@ class HDFS(object):
             result = self.hdfs.list_status(real_path)     
         except HdfsException,e:
             hdfs_logger.error("%s列出文件夹%s发生异常: %s" % (getUser(request).username,real_path, str(e)))
-            self.returned['code'] = StatusCode["OK"]
+            self.returned['code'] = StatusCode["SUCCESS"]
             self.returned['data'] = {"totalList":[],"totalPageNum":0,"currentPage":1}
             return self.returned
         else:
-            self.returned['code'] = StatusCode["OK"]
+            self.returned['code'] = StatusCode["SUCCESS"]
             self.returned['msg'] = "OK"
             unit = ["B","KB","MB","GB","TB"]
             if result:
@@ -246,7 +245,7 @@ class HDFS(object):
     def list_status(self, path, request):
         space_name = request.GET.get("spaceName", '')
         if not space_name:
-            self.returned['code'] = StatusCode["OK"]
+            self.returned['code'] = StatusCode["SUCCESS"]
             self.returned['data'] = {
                                      "totalList": [], 
                                      "currentPage": 1,
@@ -256,7 +255,7 @@ class HDFS(object):
         try:
             space_path = self.spaceNamePathMapping(space_name)
         except Exception,e:
-            self.returned['code'] = StatusCode["InternalServerError"]
+            self.returned['code'] = StatusCode["FAILED"]
             self.returned['data'] = "不存在该space: {0}".format(space_name)
             return self.returned
         isTrash = request.GET.get("isTrash",0)
@@ -269,11 +268,11 @@ class HDFS(object):
         except HdfsException, e:
             hdfs_logger.error("%s列出文件夹%s发生异常: %s" % (getUser(request).username,space_path, str(e)))
             #这里返回200,并将数据返回[]即可。不要返回500
-            self.returned['code'] = StatusCode["OK"]
+            self.returned['code'] = StatusCode["SUCCESS"]
             self.returned['data'] = {"totalList":[],"totalPageNum":0,"currentPage":1}
             return self.returned
         else:
-            self.returned['code'] = StatusCode["OK"]
+            self.returned['code'] = StatusCode["SUCCESS"]
             unit = ["B","KB","MB","GB","TB"]
             totalList = [
                 {
@@ -313,26 +312,26 @@ class HDFS(object):
     def copy_file(self, path, request):
         dest = request.GET.get('destination', None)
         if not dest:
-            self.returned['code'] = StatusCode["InternalServerError"]
-            self.returned['msg'] = "missing destination param when COPY"
+            self.returned['code'] = StatusCode["FAILED"]
+            self.returned['data'] = "missing destination param when COPY"
             return self.returned
 
         if not self.hdfs.exists(path):
-            self.returned['code'] = StatusCode["InternalServerError"]
-            self.returned['msg'] = "%s not exists when COPY" % path
+            self.returned['code'] = StatusCode["FAILED"]
+            self.returned['data'] = "%s not exists when COPY" % path
             return self.returned
 
         file_name = os.path.split(path)[-1]
         real_dest = os.path.join(dest, file_name)
         if self.hdfs.exists(real_dest):
-            self.returned['code'] = StatusCode["InternalServerError"]
-            self.returned['msg'] = "%s already exists %s when COPY" % (dest, file_name)
+            self.returned['code'] = StatusCode["FAILED"]
+            self.returned['data'] = "%s already exists %s when COPY" % (dest, file_name)
             return self.returned
 
         username = getUser(request).username
         task = threading.Thread(target=self._copy_file, args=(path, dest, username))
         task.start()
 
-        self.returned['code'] = StatusCode["OK"]
-        self.returned['msg'] = "OK"
+        self.returned['code'] = StatusCode["SUCCESS"]
+        self.returned['data'] = "OK"
         return self.returned
