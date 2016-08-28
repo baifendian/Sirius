@@ -1,8 +1,3 @@
-# Table of Contents
-* <a href="#1">Sirius是什么</a>
-* <a href="#2">功能介绍</a>
-* <a href="#3">如何部署</a>
-
 ## <div id="1">Sirius是什么</div>
 Sirius是由[百分点科技](www.baifendian.com)开发的一套云中心服务管理dashboard。
 ## <div id="2">功能介绍</div>
@@ -42,12 +37,13 @@ git clone https://github.com/baifendian/Sirius.git
 pip install -r requirements.txt
 ```
 (4) 配置Sirius<br/>
-    修改 Aries.xml配置文件
-    ```
+    修改 Aries.xml配置文件<br/>
+    ```xml
       <pythonpath>/xxxx/Sirius/Aries</pythonpath>
     ```
     <br/>
     修改 settings.py配置文件
+    <br/>
     ```python
       AUTH_LDAP_SERVER_URI = 'ldap://{ip}:{port}'
       REST_BASE_URI="{ip}:10086"
@@ -89,22 +85,20 @@ pip install -r requirements.txt
       K8S_IP = '172.24.3.x'
       K8S_PORT = 8080
 ```
-(5) 启动Sirius
-<br/>
+(5) 启动Sirius<br/>
 ```bash
   sh sbin/Aries.sh start
 ```
-(6) 停止Sirius
-<br/>
-```
+(6) 停止Sirius<br/>
+```bash
   sh sbin/Aries.sh stop
 ```
 (7) 登录
 <br/>
-```
+```bash
 127.0.0.1:10086
 ```
 <img src="readme/login.png"/>
-```
+```bash
 用户名, 密码为ldap的用户名和密码
 ```
