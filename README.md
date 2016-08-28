@@ -3,7 +3,9 @@
 Sirius是由[百分点科技](www.baifendian.com)开发的一套云中心服务管理dashboard。
 
 QQ讨论群：378093490
-<a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=302796d303355d2fa70bba985aa2e13f554f910ccab428f1437a078d7082fb7c"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="高可用RPC" title="高可用RPC"></a>
+<a target="_blank"
+ href="http://jq.qq.com/?_wv=1027&k=2GWFH6Q">
+ <img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="Sirius" title="Sirius"></a>
 ## <div id="2">功能介绍</div>
 目前已经包含:
 * <a href="#4">用户管理</a>
