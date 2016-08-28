@@ -49,59 +49,59 @@ pip install -r requirements.txt
 
 (4) 配置Sirius
 
-    修改 Aries.xml配置文件
+  修改 Aries.xml配置文件
 
-    ```xml
-      <pythonpath>/xxxx/Sirius/Aries</pythonpath>
-    ```
+```xml
+  <pythonpath>/xxxx/Sirius/Aries</pythonpath>
+```
 
-    修改 settings.py配置文件
+  修改 settings.py配置文件
 
-    ```python
-      AUTH_LDAP_SERVER_URI = 'ldap://{ip}:{port}'
-      REST_BASE_URI="{ip}:10086"
-      SHARE_PROXY_BASE_URI="http://${ip}:10086"
-      AMBARI_URL="http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/"
-      HADOOP_CLIENT="bjlg-24p1001-40-xtjc06.bfdabc.com"
-      AMBARI_USER="admin"
-      AMBARI_PASSWORD="admin"
-      LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-patch/Sirius/log"
-      #数据库部分修改
-      DATABASES = {
-          'default': {
-              'ENGINE': 'django.db.backends.mysql',
-              'NAME': 'aries',
-              'HOST':'172.24.100.40',
-              'PORT':'3306',
-              'USER':'root',
-              'PASSWORD':'Xaf8K0ws'
-          },
-          # used by app : kd_agent
-          'kd_agent_bdms': {
-              'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-              'NAME': 'bdms_web',                   # Or path to database file if using sqlite3.
-              'USER': 'bdms',                       # Not used with sqlite3.
-              'PASSWORD': 'bdms',                   # Not used with sqlite3.
-              'HOST': '172.24.2.114',             # Set to empty string for localhost. Not used with sqlite3.
-              'PORT': '3306',                       # Set to empty string for default. Not used with sqlite3.
-          }
+```python
+  AUTH_LDAP_SERVER_URI = 'ldap://{ip}:{port}'
+  REST_BASE_URI="{ip}:10086"
+  SHARE_PROXY_BASE_URI="http://${ip}:10086"
+  AMBARI_URL="http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/"
+  HADOOP_CLIENT="bjlg-24p1001-40-xtjc06.bfdabc.com"
+  AMBARI_USER="admin"
+  AMBARI_PASSWORD="admin"
+  LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-patch/Sirius/log"
+  #数据库部分修改
+  DATABASES = {
+      'default': {
+          'ENGINE': 'django.db.backends.mysql',
+          'NAME': 'aries',
+          'HOST':'172.24.100.40',
+          'PORT':'3306',
+          'USER':'root',
+          'PASSWORD':'Xaf8K0ws'
+      },
+      # used by app : kd_agent
+      'kd_agent_bdms': {
+          'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+          'NAME': 'bdms_web',                   # Or path to database file if using sqlite3.
+          'USER': 'bdms',                       # Not used with sqlite3.
+          'PASSWORD': 'bdms',                   # Not used with sqlite3.
+          'HOST': '172.24.2.114',             # Set to empty string for localhost. Not used with sqlite3.
+          'PORT': '3306',                       # Set to empty string for default. Not used with sqlite3.
       }
-      #namenode ha 地址修改
-      WEBHDFS_HOSTS = [
-          "127.0.0.1:50070",
-          "127.0.0.2:50070",
-      ]
-      # webhdfs port, it`s default value is 50070
-      #修改hadoop-run.sh脚本地址
-      HADOOP_RUN_SCRIPT = "hadoop-run.sh"
-      #K8S部分修改
-      K8S_IP = '172.24.3.x'
-      K8S_PORT = 8080
+  }
+  #namenode ha 地址修改
+  WEBHDFS_HOSTS = [
+      "127.0.0.1:50070",
+      "127.0.0.2:50070",
+  ]
+  # webhdfs port, it`s default value is 50070
+  #修改hadoop-run.sh脚本地址
+  HADOOP_RUN_SCRIPT = "hadoop-run.sh"
+  #K8S部分修改
+  K8S_IP = '172.24.3.x'
+  K8S_PORT = 8080
 ```
 
 (5) 启动Sirius
 
-```bash
+```
   sh sbin/Aries.sh start
 ```
 
