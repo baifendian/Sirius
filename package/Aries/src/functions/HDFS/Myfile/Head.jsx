@@ -35,7 +35,6 @@ const Head = React.createClass({
       <div className="head">
       <div className="table-div">
         <button type="button"
-                style={{marginLeft:'50px'}}
                 onClick={this.mkdir}
                 className="btn btn-primary" >新建文件夹</button>
       </div>

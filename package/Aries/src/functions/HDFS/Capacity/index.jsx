@@ -44,19 +44,21 @@ export default React.createClass({
     return (
        <div>
        <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
-        <Tabs>
-          <TabList>
-            <Tab>配额监控</Tab>
-            <Tab>配额管理</Tab>
-          </TabList>
-          <TabPanel><TabMonitor percentData={this.state.percentData} /></TabPanel>
-          <TabPanel><TabManager getUrlData={this.getUrlData} sliderData={this.state.sliderData} /></TabPanel>
-        </Tabs>
+        <div className="bottom">
+          <Tabs>
+            <TabList>
+              <Tab>配额监控</Tab>
+              <Tab>配额管理</Tab>
+            </TabList>
+            <TabPanel><TabMonitor percentData={this.state.percentData} /></TabPanel>
+            <TabPanel><TabManager getUrlData={this.getUrlData} sliderData={this.state.sliderData} /></TabPanel>
+          </Tabs>
+        </div>
         <div className="div-Fetch">
-        <Fetch style={{minHeight:0}} url={sumUrl} onSuccess={this.sliderDataSccuess}>
-        </Fetch>
+          <Fetch style={{minHeight:0}} url={sumUrl} onSuccess={this.sliderDataSccuess}>
+          </Fetch>
         </div>
-        </div>
+      </div>
     )
   }
 })

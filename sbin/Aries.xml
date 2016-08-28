@@ -5,7 +5,7 @@
   <harakiri>100</harakiri>
   <socket-timeout>100</socket-timeout>
   <processes>2</processes>
-  <daemonize>/opt/pan.lu/gitsource/Sirius-patch/Sirius/log/uwsgi.log</daemonize>
+  <daemonize>/tmp/sirius_log/uwsgi.log</daemonize>
   <http>0.0.0.0:10086</http>
   <enable-threads></enable-threads>
 </uwsgi>

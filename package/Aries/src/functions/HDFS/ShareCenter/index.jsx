@@ -24,13 +24,10 @@ export default React.createClass({
               key:"id",
               render:(item, component)=> {
                   let proxy_path = component.proxy_path;
-                  console.log(proxy_path);
-                  //取倒数第2个
-                  let proxy_arr = proxy_path.split("/");
-                  proxy_arr.pop();
-                  let hash = proxy_arr.pop();
-                  console.log(hash);
-                  let url = `/HDFS/ShowShare/${hash}`;
+                  let proxy_arr = proxy_path.split("/").slice(-3);
+                  let proxyStr = proxy_arr.join("/")
+                  let spaceName = HdfsConf.getCurSpace(this);
+                  let url = `/${proxyStr}?cur_space=${spaceName}`;
                   return <Link to={url}>{component.id}</Link>
               },
              },{
@@ -38,14 +35,10 @@ export default React.createClass({
               key:"proxy_path",
               render:(item, component)=> {
                 let proxy_path = component.proxy_path;
-                console.log(proxy_path);
-                //取倒数第2个
-                let proxy_arr = proxy_path.split("/");
-                proxy_arr.pop();
-                let hash = proxy_arr.pop();
-                console.log(hash);
+                let proxy_arr = proxy_path.split("/").slice(-3);
+                let proxyStr = proxy_arr.join("/")
                 let spaceName = HdfsConf.getCurSpace(this);
-                let url = `/HDFS/ShowShare/${hash}?cur_space=${spaceName}`;
+                let url = `/${proxyStr}?cur_space=${spaceName}`;
                 return <Link to={url}>{component.proxy_path}</Link>
               },
              },{

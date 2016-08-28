@@ -232,16 +232,26 @@ const MyTable = React.createClass({
       let cur_path=`/${item}`;
       cur_path = cur_path.replace("//","/");
       var itemText = "";
-      if(component.is_new==0){
-        itemText=<Editable defaultValue="new_dir" defaultEditing onChange={this.saveEdit} onCancel={this.cancelEdit} />;
+      if(component.is_new == 0){
+        itemText = <Editable defaultValue="new_dir" defaultEditing onChange={this.saveEdit} onCancel={this.cancelEdit} />;
       }else{
-        itemText = <a href="javascript:void(0);" onClick={()=>{this.skip(cur_path,component.is_dir)}} >{item}</a>
+        if(component.is_dir == 1){
+          itemText = <a href="javascript:void(0);" onClick={()=>{this.skip(cur_path,component.is_dir)}} >{item}</a>
+        }else{
+          itemText = <a href="javascript:void(0);" className="default-link" onClick={()=>{this.skip(cur_path,component.is_dir)}} >{item}</a>
+        }
+      }
+      var aLink="";
+      if(component.is_dir == 1){
+          //目录
+          aLink = <a style={{marginRight: '5px'}} > {this.iconType[component.is_dir].call(this)}  {itemText}</a>
+      }else{
+          aLink = <a style={{marginRight: '5px'}} className="default-link"> {this.iconType[component.is_dir].call(this)}  {itemText}</a>
       }
 
       return <div className="table-div">
               <div className="table-div">
-                <a style={{marginRight: '5px'}}> {this.iconType[component.is_dir].call(this)} </a>
-                {itemText}
+                {aLink}
               </div>
               <div className="table-div-icon div-float">
                 <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定删除 ${cur_path} 吗?`,this.trash,component)}}> <Icon type="trash" /> </a>

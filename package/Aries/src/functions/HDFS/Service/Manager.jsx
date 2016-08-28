@@ -40,7 +40,7 @@ const TabManager = React.createClass({
     }
     this.setState({"filterData":filterData});
   },
-  updateData(hostname){
+  updateData(hostName){
     //获取当前hostname上面组件内容
     let componentUrl = this.props.getUrlData({ type : "COMPONENT_INFO",
                                                hostName : hostName
@@ -50,7 +50,7 @@ const TabManager = React.createClass({
       url: componentUrl,
       success:data=> {
         console.log(data)
-        this.setState({"selectHost":hostname,"operatorType":"COMPONENT","componentData":data});
+        this.setState({"selectHost":hostName,"operatorType":"COMPONENT","componentData":data});
       }
     });
   },
