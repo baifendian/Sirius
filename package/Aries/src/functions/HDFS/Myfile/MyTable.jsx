@@ -1,6 +1,6 @@
 import React from 'react'
 import Task from 'public/Task'
-import CopyToClipboard from 'react-copy-to-clipboard';
+import CopyToClipboard from 'react-copy-to-clipboard'
 import './index.less'
 import DataTable from 'bfd-ui/lib/DataTable'
 import Upload from 'bfd-ui/lib/Upload'
@@ -244,9 +244,9 @@ const MyTable = React.createClass({
       var aLink="";
       if(component.is_dir == 1){
           //目录
-          aLink = <a style={{marginRight: '5px'}} > {this.iconType[component.is_dir].call(this)}  {itemText}</a>
+          aLink = <span style={{marginRight: '5px'}} className="a-link" > {this.iconType[component.is_dir].call(this)}  {itemText}</span>
       }else{
-          aLink = <a style={{marginRight: '5px'}} className="default-link"> {this.iconType[component.is_dir].call(this)}  {itemText}</a>
+          aLink = <span style={{marginRight: '5px'}} className="default-link" > {this.iconType[component.is_dir].call(this)}  {itemText}</span>
       }
 
       return <div className="table-div">
