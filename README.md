@@ -10,7 +10,6 @@ Sirius是由[百分点科技](www.baifendian.com)开发的一套云中心服务�
 ### <div id="4">用户管理</div>
 支持对用户的增加, 删除功能:
 <br/><br/>
-<img src="readme/UserAuth.png"/><br/>
 ### <div id="5">HDFS管理</div>
 支持对HDFS文件系统的增加, 删除, 恢复, 分享, 上传, 下载, 统计等功能:
 <br/><br/>
@@ -41,7 +40,6 @@ pip install -r requirements.txt
     ```xml
       <pythonpath>/xxxx/Sirius/Aries</pythonpath>
     ```
-    <br/>
     修改 settings.py配置文件
     <br/>
     ```python
