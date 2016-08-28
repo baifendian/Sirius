@@ -1,5 +1,4 @@
 # Table of Contents
-
 * <a href="#1">Sirius是什么</a>
 * <a href="#2">功能介绍</a>
 * <a href="#3">如何部署</a>
@@ -12,30 +11,33 @@ Sirius是由[百分点科技](www.baifendian.com)开发的一套云中心服务�
 * <a href="5">HDFS管理</a>
 * <a href="6">计算管理</a>
 * ......
+<br/>
 ### <div id="4">用户管理</div>
 支持对用户的增加, 删除功能:
 <br/><br/>
-<img src="readme/UserAuth.png"/>
+<img src="readme/UserAuth.png"/><br/>
 ### <div id="5">HDFS管理</div>
 支持对HDFS文件系统的增加, 删除, 恢复, 分享, 上传, 下载, 统计等功能:
 <br/><br/>
-<img src="readme/HDFS.png"/>
+<img src="readme/HDFS.png"/><br/>
 ### <div id="6">计算管理</div>
 支持对集群的管理:
 <br/><br/>
-<img src="readme/计算.png"/>
+<img src="readme/计算.png"/><br/>
 ## <div id="3">如何部署</div>
 (1) 代码拷贝
 ```bash
 git clone https://github.com/baifendian/Sirius.git
 ```
 (2) 创建Sirius隔离环境: virtualenv
+<br/>
 ```bash
 [root@bjlg-24p100-40-xtjc06 opt]# pip install virtualenv   #安装 virtualenv 环境
 [root@bjlg-24p100-40-xtjc06 opt]# virtualenv  sirius-pyenv --no-site-packages  #创建属于sirius的独立python环境
 [root@bjlg-24p100-40-xtjc06 sirius-pyenv]# source bin/activate # 激活环境
 ```
 (3) 安装Sirius python依赖包
+<br/>
 ```bash
 pip install -r requirements.txt
 ```
@@ -44,6 +46,7 @@ pip install -r requirements.txt
     ```
       <pythonpath>/xxxx/Sirius/Aries</pythonpath>
     ```
+    <br/>
     修改 settings.py配置文件
     ```python
       AUTH_LDAP_SERVER_URI = 'ldap://{ip}:{port}'
@@ -87,14 +90,17 @@ pip install -r requirements.txt
       K8S_PORT = 8080
 ```
 (5) 启动Sirius
+<br/>
 ```bash
   sh sbin/Aries.sh start
 ```
 (6) 停止Sirius
+<br/>
 ```
   sh sbin/Aries.sh stop
 ```
 (7) 登录
+<br/>
 ```
 127.0.0.1:10086
 ```
