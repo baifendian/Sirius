@@ -5,6 +5,7 @@ import xhr from 'bfd/xhr'
 import auth from 'public/auth'
 import env from './env'
 import './App.less'
+import 'antd/dist/antd.less'
 import { Select ,Option} from 'bfd-ui/lib/Select2'
 
 const LOGIN_PATH = (env.basePath + '/login').replace(/\/\//, '/')
@@ -124,9 +125,9 @@ const App = React.createClass({
                   <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
                   <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
                   <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
-               </NavItem>
+                </NavItem>
 
-               <NavItem key={1} href="CalcManage" icon="desktop" title="计算管理">
+                <NavItem key={1} href="CalcManage" icon="desktop" title="计算管理">
                   <NavItem icon="equalizer" href={`CalcManage/Overview?${params}`} title="概览" />
                   <NavItem icon="equalizer" href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
                   <NavItem icon="equalizer" href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
@@ -136,11 +137,21 @@ const App = React.createClass({
                       <NavItem  icon='equalizer' href={`CalcManage/CreateCluster/CC1?${params}`} title="开始使用 " />
                       <NavItem  icon="equalizer" href={`CalcManage/CreateCluster/CC2?${params}`} title="云中心计算集群" />
                   </NavItem>
-               </NavItem>
+                </NavItem>
 
-              <NavItem key={2} href="UserAuth" icon="th-large" title="用户管理">
-                <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
-              </NavItem>
+                <NavItem key={2} href="openstack" icon="th-large" title="计算">
+                  <NavItem href="openstack/instances" title="云主机" />
+                  <NavItem href="openstack/images" title="镜像" />
+                  <NavItem href="openstack/flavors" title="云类型" />
+                </NavItem>
+                <NavItem key={3} href="openstack" icon="credit-card-alt" title="存储">
+                  <NavItem href="openstack/volumes" title="云磁盘" />
+                  <NavItem href="#" title="备份" />
+                </NavItem>
+
+                <NavItem key={2} href="UserAuth" icon="th-large" title="用户管理">
+                  <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
+                </NavItem>
 
               </Nav>
             </div>
