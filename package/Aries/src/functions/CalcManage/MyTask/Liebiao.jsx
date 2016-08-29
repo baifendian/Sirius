@@ -68,7 +68,7 @@ const TabLiebiao = React.createClass({
 
   querySearchConditions:function(){
     let searchConditions = {
-      taskname:document.getElementById('TaskNameInputControl').value ,
+      taskname:this.userData['curTaskName'] ? this.userData['curTaskName'] : '',
       shelltype:this.userData['curShellType'] ? this.userData['curShellType'] : 'ALL',
       executeresult:this.userData['curExecutedResult'] ? this.userData['curExecutedResult'] : 'ALL',
       startdate:this.userData['curStartDate'] ? this.userData['curStartDate'] : Toolkit.generateTimeStrBySeconds(0),
@@ -91,6 +91,37 @@ const TabLiebiao = React.createClass({
   
   showLoadNewRecordsButton(){ this.setState({ 'loadNewRecordsButtonDisplay':true  }) },
   hideLoadNewRecordsButton(){ this.setState({ 'loadNewRecordsButtonDisplay':false }) },
+  
+  markControlChangedStyle( node,changed ){
+    if ( changed ){
+      node.style.color = '#333333';
+      node.style.backgroundColor = '#BBDEFB';
+    } else {
+      node.style.color = '';
+      node.style.backgroundColor = '';
+    }
+  },
+
+  // 在点击查询按钮之前、改变查询条件之后，需要改变控件的样式以提醒用户
+  markTaskNameControlState( changed ){
+    //（由于Input组件设置ref之后，通过ReactDOM.findDOMNode找不到相应的节点，因此这里使用 id 来获取该节点的文本内容）
+    let node = document.getElementById('TaskNameInputControl')
+    this.markControlChangedStyle( node,changed )
+  },
+  markShellTypeControlState( changed ){
+    let node = ReactDOM.findDOMNode( this.refs.ShellTypeSelect ).childNodes[0].childNodes[0]
+    this.markControlChangedStyle( node,changed )
+  },
+  markExecuteResultControlState( changed ){
+    let node = ReactDOM.findDOMNode( this.refs.ExecuteResultSelect ).childNodes[0].childNodes[0]
+    this.markControlChangedStyle( node,changed )
+  },
+  markDataRangeControlState( changed ){
+    let nodes = ReactDOM.findDOMNode( this.refs.DataRangeControl ).getElementsByTagName('input')
+    for ( let i = 0 ; i < nodes.length ; i ++ ){
+      this.markControlChangedStyle( nodes[i],changed )
+    }
+  },
   
   // 将滚动条置于顶端  
   tbodyScrollToHead(){  this.getRealTimeTheadAndTbodyObj()['tbody'].scrollTop = 0  },
@@ -180,6 +211,11 @@ const TabLiebiao = React.createClass({
   },
 
   onSearchButtonClicked:function(){
+    this.markTaskNameControlState( false )
+    this.markShellTypeControlState( false )
+    this.markExecuteResultControlState( false )
+    this.markDataRangeControlState( false )
+
     // 清除原来的数据
     this.stopCheckHasNewRecordInterval()
     this.userData['scrollHeight'] = undefined
@@ -192,20 +228,25 @@ const TabLiebiao = React.createClass({
     })
 
     // 汇总查询条件
-    // （由于Input组件设置ref之后，通过ReactDOM.findDOMNode找不到相应的节点，因此这里使用 id 来获取该节点的文本内容）
-    // 暂时不知道怎么监听Input控件的内容改变，这里没有为其设计回调函数，而是在按下按钮时实时获取
     this.querySearchConditions()
 
     // 重新请求数据
     this.firstTimeGetOldRecords()
   },
 
+  onTaskNameChanged( e ){
+    this.userData['curTaskName'] = e.target.value
+    this.markTaskNameControlState( true )
+  },
+
   onShellTypeChanged( value ){
     this.userData['curShellType'] = value
+    this.markShellTypeControlState( true )
   },
 
   onExecutedResultChanged( value ){
     this.userData['curExecutedResult'] = value
+    this.markExecuteResultControlState( true )
   },
 
   onDateRangeChanged( startDate,endDate ){
@@ -214,12 +255,13 @@ const TabLiebiao = React.createClass({
     } else {
       this.userData['curStartDate'] = Toolkit.generateTimeStrBySeconds( 0 )
     }
-
     if ( endDate ){
       this.userData['curEndDate'] = Toolkit.generateTimeStrBySeconds( endDate ).split('T')[0] + 'T23:59:59'
     } else {
       this.userData['curEndDate'] = Toolkit.generateTimeStrBySeconds( -1 )
     }
+
+    this.markDataRangeControlState( true )
   },
 
   highlightNewRecordLines:function(){
@@ -234,31 +276,49 @@ const TabLiebiao = React.createClass({
     }
   },
 
+  // 根据父页面传入的height计算出来本页面的table的tbody应有的height
+  calcTbodyHeight:function(){
+    let tObj = this.getRealTimeTheadAndTbodyObj()
+    let tbody = tObj['tbody']
+    let thead = tObj['thead']
+
+    let height = this.props.height
+        
+    // 减掉在父页面的 .bfd-tabs .tab-panel 的 padding-top: 10px
+    height -= 10
+
+    height -= ReactDOM.findDOMNode( this.refs.SearchConditionTableFatherDiv ).clientHeight
+
+    // 去掉 LoadNewRecordsButtonFatherDiv 的高度以及div.LiebiaoRootDiv .LoadNewRecordsButtonFatherDiv的padding-top
+    height -= ReactDOM.findDOMNode( this.refs.LoadNewRecordsButtonFatherDiv ).clientHeight + 5 
+
+    // 去掉 div.LiebiaoRootDiv > div.DataTableDiv 样式的padding、border
+    height -= ( 13 + 10 + 1*2 )
+
+    // 减掉thead的高度，以及原生table样式的margin-bottom（20px）、为thead设置的3px的border
+    height -= thead.clientHeight + 20 + 3
+
+    tbody.style.height = height + 'px'
+  },
+
   render: function() {
     if ( this.height !== this.props.height ){
       this.height = this.props.height
-      setTimeout( ()=>{
-        let tablePanel = ReactDOM.findDOMNode( this.refs.DataTableDiv )
-        let tbody = this.getRealTimeTheadAndTbodyObj()['tbody']
-        // 这里暂时写死，因为加载新记录的按钮还不知道怎么放，放在哪
-        tbody.style.height = this.props.height - 180 + 'px'
-      } )
+      setTimeout( ()=>{  this.calcTbodyHeight()  } )
     }
 
     return  (
       <div className="LiebiaoRootDiv">
-
-        <Button className="SearchButton" onClick={this.onSearchButtonClicked}> 查询 </Button>
-        <div className="SearchConditionTableFatherDiv">
+        <div ref="SearchConditionTableFatherDiv" className="SearchConditionTableFatherDiv">
           <table className="SearchConditionTable">
             <tbody>
               <tr>
                 <td>任务名称：</td>
-                <td><Input id="TaskNameInputControl" className="SearchItemControl" /></td>
+                <td><Input ref="TaskNameInput" id="TaskNameInputControl" className="SearchItemControl" onChange={this.onTaskNameChanged} /></td>
                 
                 <td>脚本类型：</td>
                 <td>
-                  <Select defaultValue="ALL"  className="SearchItemControl" onChange={this.onShellTypeChanged}>
+                  <Select ref="ShellTypeSelect" defaultValue="ALL"  className="SearchItemControl" onChange={this.onShellTypeChanged}>
                     <Option value="ALL">不限制脚本类型</Option>
                     <Option value="HIVE">HIVE</Option>
                     <Option value="SQOOP">SQOOP</Option>
@@ -269,7 +329,7 @@ const TabLiebiao = React.createClass({
 
                 <td>执行结果：</td>
                 <td>
-                  <Select defaultValue="ALL" className="SearchItemControl" onChange={this.onExecutedResultChanged}>
+                  <Select ref="ExecuteResultSelect" defaultValue="ALL" className="SearchItemControl" onChange={this.onExecutedResultChanged}>
                     <Option value="ALL">不限制执行结果</Option>
                     <Option value="INIT">初始</Option>
                     <Option value="SUCCESS">成功</Option>
@@ -277,12 +337,14 @@ const TabLiebiao = React.createClass({
                   </Select>
                 </td>
                 <td>时间范围：</td>
-                <td><DateRange onSelect={this.onDateRangeChanged} /></td>
+                <td><DateRange ref="DataRangeControl" onSelect={this.onDateRangeChanged} /></td>
+
+                <td><Button className="SearchButton" onClick={this.onSearchButtonClicked}> 查询 </Button></td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div className="LoadNewRecordsButtonFatherDiv" >
+        <div ref="LoadNewRecordsButtonFatherDiv" className="LoadNewRecordsButtonFatherDiv" >
           <Button className={'LoadNewRecordsButton' + (this.state.loadNewRecordsButtonDisplay ? 'Show' : 'Hide')} 
                   onClick={this.onLoadNewRecordButtonClicked}> 
                   发现新的数据，是否加载？ 
@@ -293,7 +355,7 @@ const TabLiebiao = React.createClass({
             data={this.state.data} 
             showPage={this.state.showPage} 
             column= { this.state.column }  />
-          </div>
+        </div>
       </div>
     )
   }

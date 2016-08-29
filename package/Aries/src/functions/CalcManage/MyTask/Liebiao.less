@@ -1,12 +1,4 @@
 
-div.LiebiaoRootDiv{
-  margin-top: 15px;
-}
-
-div.LiebiaoRootDiv .SearchButton {
-  float: right;
-}
-
 div.LiebiaoRootDiv .LoadNewRecordsButtonFatherDiv{
   height:30px;
   padding-top:5px;
@@ -15,7 +7,7 @@ div.LiebiaoRootDiv .LoadNewRecordsButtonFatherDiv{
   .LoadNewRecordsButton{
     border: 0px;
     background-color: transparent;
-    color:green;
+    color:#4AD083;
   }
 
   .LoadNewRecordsButtonShow{
@@ -43,10 +35,12 @@ div.LiebiaoRootDiv .SearchConditionTableFatherDiv{
     width: 150px;
   }
 
-  table.SearchConditionTable tbody tr td:nth-child(odd){ 
+  // 由于DataRange位于table控件内部，且它也是使用的table来布局的
+  // 因此这里必须添加 > 以防止对DataRange内的样式造成污染
+  table.SearchConditionTable > tbody > tr > td:nth-child(odd){ 
     padding-left: 5px;  
   }
-  table.SearchConditionTable tbody tr td:nth-child(even){ 
+  table.SearchConditionTable > tbody > tr > td:nth-child(even){ 
     padding-right: 25px;
   }
 }
