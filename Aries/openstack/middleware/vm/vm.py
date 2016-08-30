@@ -1,7 +1,7 @@
 # coding:utf-8
 import urllib
 import time
-from middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time,dlog
+from middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog
 from middleware.db.db import Db
 from middleware.image.image import Image
 from middleware.login.login import get_token, get_proid
@@ -123,7 +123,7 @@ class Vm_manage:
         '''
         ret = 0
         self.result.update({name: {"name": name, "id": "", "status_vm": 0,
-                               "status_disk": {}}})  # 虚拟机创建状态，0表示创建中，1表示成功，2表示失败
+                                   "status_disk": {}}})  # 虚拟机创建状态，0表示创建中，1表示成功，2表示失败
         assert self.token != "", "not login"
         path = "/v2.1/%s/servers" % self.project_id
         method = "POST"
@@ -229,7 +229,7 @@ class Vm_control:
         self.project_id = get_proid()
 
     @plog("Vm_control.wait_complete")
-    def wait_complete(self, vm_id,status):
+    def wait_complete(self, vm_id, status):
         '''
         等待指定虚拟机创建完成,status为指定的状态
         :return:
@@ -377,11 +377,11 @@ class Vm_control:
         params = {"resize": {"flavorRef": flavor_id, "OS-DCF:diskConfig": "AUTO"}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
-        self.wait_complete(vm_id,"VERIFY_RESIZE")
-        params = {"confirmResize":""}
-        ret = send_request(method,IP_nova,PORT_nova,path,params,head)
+        self.wait_complete(vm_id, "VERIFY_RESIZE")
+        params = {"confirmResize": ""}
+        ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
-        self.wait_complete(vm_id,"ACTIVE")
+        self.wait_complete(vm_id, "ACTIVE")
         return ret
 
     @plog("vm_control.create_backup")
@@ -515,6 +515,7 @@ class Vm_snap:
         '''
         cmd = "select image_name from '%s' where status = 1" % self.table
         tmp_ret = self.db.exec_cmd(cmd)
+        assert tmp_ret != 1, "cmd:%s exec faild" % cmd
         ret = tmp_ret[0][0]
         return ret
 
@@ -530,7 +531,7 @@ class Vm_snap:
         tmp_ret = self.db.exec_cmd(cmd1)
         assert tmp_ret != 1, "cmd:%s exec err" % cmd1
         time_now = get_time()
-        cmd2 = "insert into '%s' values('root','','%s','%s',1)" % (self.table,image_id, time_now)
+        cmd2 = "insert into '%s' values('root','','%s','%s',1)" % (self.table, image_id, time_now)
         tmp_ret = self.db.exec_cmd(cmd2)
         assert tmp_ret != 1, "cmd:%s exec err" % cmd2
         return ret
@@ -545,42 +546,44 @@ class Vm_snap:
         ret = 0
         cmd = "drop table '%s'" % vm_id
         tmp_ret = self.db.exec_cmd(cmd)
-        assert tmp_ret != 1,"cmd:%s exec err" % cmd
+        assert tmp_ret != 1, "cmd:%s exec err" % cmd
         return ret
 
     @plog("Vm_snap.change_node")
-    def change_node(self,image_name_old,image_name_new):
+    def change_node(self, image_name_old, image_name_new):
         '''
         修改快照名
         :param image_name:
         :return:
         '''
         ret = 0
-        cmd1 = "update '%s' set image_name='%s' where image_name='%s'"%(self.table,image_name_new,image_name_old)
+        cmd1 = "update '%s' set image_name='%s' where image_name='%s'" % (
+            self.table, image_name_new, image_name_old)  # 将其子快照的parent_name设置为新的快照名
         tmp_ret = self.db.exec_cmd(cmd1)
-        assert tmp_ret != 1,"cmd:%s exec err" % cmd1
-        cmd2 = "update '%s' set parent_name='%s' where parent_name='%s'"%(self.table,image_name_new,image_name_old)
+        assert tmp_ret != 1, "cmd:%s exec err" % cmd1
+        cmd2 = "update '%s' set parent_name='%s' where parent_name='%s'" % (self.table, image_name_new, image_name_old)
         tmp_ret = self.db.exec_cmd(cmd2)
-        assert tmp_ret != 1,"cmd:%s exec err" % cmd2
+        assert tmp_ret != 1, "cmd:%s exec err" % cmd2
         return ret
 
     @plog("Vm_snap.delete_node")
-    def delete_node(self,image_name):
+    def delete_node(self, image_name):
         '''
         删除某一个快照
         :param image_name:
         :return:
         '''
         ret = 0
-        cmd1 = "select parent_name from '%s' where image_name='%s'"%(self.table,image_name)
+        cmd1 = "select parent_name from '%s' where image_name='%s'" % (self.table, image_name)
         parent_name = self.db.exec_cmd(cmd1)[0][0]
-        assert parent_name != 1,"cmd:%s exec err" % cmd1
-        cmd2 = "delete from '%s' where image_name='%s'"%(self.table,image_name)
+        assert parent_name != 1, "cmd:%s exec err" % cmd1
+        cmd2 = "delete from '%s' where image_name='%s'" % (
+            self.table, image_name)  # 将其子快照的parent_name改为删除快照的parent_name
         tmp_ret = self.db.exec_cmd(cmd2)
-        assert tmp_ret != 1,"cmd:%s exec err" % cmd2
-        cmd3 = "update '%s' set parent_name='%s' where parent_name='%s'"%(self.table,parent_name,image_name)
+        assert tmp_ret != 1, "cmd:%s exec err" % cmd2
+        cmd3 = "update '%s' set parent_name='%s' where parent_name='%s'" % (self.table, parent_name, image_name)
         tmp_ret = self.db.exec_cmd(cmd3)
-        assert tmp_ret != 1,"cmd:%s exec err" % cmd3
+        assert tmp_ret != 1, "cmd:%s exec err" % cmd3
         return ret
 
     @plog("Vm_snap.set_table")
@@ -631,11 +634,12 @@ class Vm_snap:
         assert image_id != 1
         parent_name = self.find_parent()
         assert parent_name != 1
-        # node = self.insert(image_name,time_now,image_id,self.stat)
-        cmd1 = "insert into '%s' values('%s','%s','%s','%s',1)" % (self.table.encode("utf8"),image_name, parent_name, image_id, time_now)
+        # node = self.insert(image_name,time_now,image_id,self.stat)   #创建完成后需要将新创建的快照的状态设置为1，把以前的主快照状态置0
+        cmd1 = "insert into '%s' values('%s','%s','%s','%s',1)" % (
+            self.table.encode("utf8"), image_name, parent_name, image_id, time_now)
         tmp_ret = self.db.exec_cmd(cmd1)
         assert tmp_ret != 1, "cmd:%s exec err" % cmd1
-        cmd2 = "update '%s' set status=0 where image_name='%s'" % (self.table,parent_name)
+        cmd2 = "update '%s' set status=0 where image_name='%s'" % (self.table, parent_name)
         tmp_ret = self.db.exec_cmd(cmd2)
         assert tmp_ret != 1, "cmd:%s exec err" % cmd2
         return ret

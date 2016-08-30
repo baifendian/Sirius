@@ -1,16 +1,18 @@
-#coding:utf-8
+# coding:utf-8
 import sys
 import time
 from middleware.flavor.flavor import Flavor
 from middleware.login.login import Login
-from middleware.vm.vm import Vm_manage,Vm_control, Vm_snap
+from middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
 from middleware.volume.volume import Volume
 from middleware.image.image import Image
 from middleware.common.common import run_in_thread
 import json
 
+
 def prints(msg):
-    print json.dumps(msg,indent=4)
+    print json.dumps(msg, indent=4)
+
 
 class Test_Module():
     def test_login(self):
@@ -18,7 +20,7 @@ class Test_Module():
         测试登入
         :return:
         '''
-        login = Login("openstack","baifendian2016")
+        login = Login("openstack", "baifendian2016")
         login.user_token_login()
         login.proid_login()
         login.token_login()
@@ -36,7 +38,7 @@ class Test_Module():
         '''
         self.test_login()
         volume = Volume()
-        volume.create(10,name="test_a")
+        volume.create(10, name="test_a")
 
     def test_list_volume(self):
         '''
@@ -78,10 +80,9 @@ class Test_Module():
     def test_list_vm_detail(self):
         self.test_login()
         vm = Vm_manage()
-        query = {"name":"ddd"}
+        query = {"name": "ddd"}
         msg = vm.list_detail(query)
         prints(msg)
-
 
     def test_create_vm(self):
         '''
@@ -89,8 +90,9 @@ class Test_Module():
         '''
         self.test_login()
         vm = Vm_manage()
-        disk = [{"name":"disk_test2","size":"10","dev_name":"/dev/sdb"},{"name":"disk_test3","size":"10","dev_name":"/dev/sdc"}]
-        msg = vm.create("test_zd3","1","222e2074-65e0-4ef2-b40e-a48e41181bce","123456",disk)
+        disk = [{"name": "disk_test2", "size": "10", "dev_name": "/dev/sdb"},
+                {"name": "disk_test3", "size": "10", "dev_name": "/dev/sdc"}]
+        msg = vm.create("test_zd3", "1", "222e2074-65e0-4ef2-b40e-a48e41181bce", "123456", disk)
         prints(msg)
 
     def test_create_vm_multiple(self):
@@ -99,8 +101,9 @@ class Test_Module():
         '''
         self.test_login()
         vm = Vm_manage()
-        disk = [{"name":"disk_test2","size":"10","dev_name":"/dev/sdb"},{"name":"disk_test3","size":"10","dev_name":"/dev/sdc"}]
-        msg = vm.create_multiple("test_zd3","1","222e2074-65e0-4ef2-b40e-a48e41181bce","123456",3,10,disk)
+        disk = [{"name": "disk_test2", "size": "10", "dev_name": "/dev/sdb"},
+                {"name": "disk_test3", "size": "10", "dev_name": "/dev/sdc"}]
+        msg = vm.create_multiple("test_zd3", "1", "222e2074-65e0-4ef2-b40e-a48e41181bce", "123456", 3, 10, disk)
         prints(msg)
 
     # def test_create_image(self):
@@ -115,7 +118,7 @@ class Test_Module():
         vm_id = "abbd4d3f-3483-41b3-97eb-ee59898191cf"
         vm = Vm_snap(vm_id)
         image_name = "test_snap_1"
-        ret = vm.create(vm_id,image_name)
+        ret = vm.create(vm_id, image_name)
 
     def test_rebuild(self):
         self.test_login()
@@ -138,7 +141,7 @@ class Test_Module():
         vm = Vm_snap(vm_id)
         image_name = ""
         image_name_new = ""
-        ret = vm.change_node(image_name,image_name_new)
+        ret = vm.change_node(image_name, image_name_new)
         print ret
 
     def test_del_snap(self):
@@ -154,7 +157,8 @@ class Test_Module():
             print a
             time.sleep(a)
             return 0
-        a = run_in_thread(test_t,(10,),timeout=10)
+
+        a = run_in_thread(test_t, (10,), timeout=10)
         print a
 
     def no_found(self):
@@ -167,8 +171,8 @@ class Test_Module():
 
 if __name__ == "__main__":
     assert sys.argv[1], "missing params"
-    test_sec = "test_%s"%sys.argv[1]
+    test_sec = "test_%s" % sys.argv[1]
     test = Test_Module()
     test.test_login()
-    test_func = getattr(test,test_sec,test.no_found)
+    test_func = getattr(test, test_sec, test.no_found)
     test_func()
