@@ -239,7 +239,7 @@ class Volume_attach():
         ret = send_request(method,IP_nova,PORT_nova,path,params,head)
         return ret
 
-    @plog("Volume_attach.show_detail")
+    @plog("Volume_agttach.show_detail")
     def show_detail(self,vm_id,attach_id):
         ret = 0
         assert self.token != "","not login"

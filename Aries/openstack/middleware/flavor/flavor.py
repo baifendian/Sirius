@@ -41,6 +41,13 @@ class Flavor:
         assert ret != 1,"send_request error"
         return ret
 
+    @plog("Flavor.get_id")
+    def get_id(self,name):
+        assert self.token != "","not login"
+        tmp_ret = self.list()
+        id = filter(lambda i:i["name"]==name,tmp_ret["flavors"])
+        return id
+
     def create(self):
         pass
 

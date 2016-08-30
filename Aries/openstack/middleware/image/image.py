@@ -1,6 +1,7 @@
 #coding:utf-8
 from middleware.common.common import  send_request,IP_nova,PORT_nova, dlog,plog
 from middleware.login.login import get_token,get_proid
+import urllib
 
 class Image:
     def __init__(self):
@@ -8,9 +9,12 @@ class Image:
         self.project_id = get_proid()
 
     @plog("Image.list")
-    def list(self):
+    def list(self,query_dict={}):
         assert self.token != "","not login"
         path = "/v2.1/%s/images"%self.project_id
+        if query_dict:
+            query_str = urllib.urlencode(query_dict)
+            path = "%s?%s" % (path, query_str)
         method = "GET"
         head = {"Content-Type":"application/json","X-Auth-Token":self.token}
         params = ''

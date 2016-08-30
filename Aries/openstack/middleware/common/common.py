@@ -9,6 +9,8 @@ import os
 
 import errno
 
+import time
+
 pro_path = os.path.split(os.path.realpath(__file__))[0]
 LOG_PATH = os.path.join(pro_path,"log") #日志路径
 DB_PATH = os.path.join(pro_path,"db.sqlite3")
@@ -29,6 +31,13 @@ def exec_shell(cmd):
 
 def prints(msg):
     print json.dumps(msg,indent=4)
+
+def get_time():
+    value = time.time()
+    format = '%Y-%m-%d %H:%M:%S'
+    value = time.localtime(value)
+    time_now = time.strftime(format, value)
+    return time_now
 
 def init_log(logfile=os.path.join(LOG_PATH,"dashboard.log")):
     try:
@@ -164,15 +173,9 @@ def run_in_thread(target, *args, **kwargs):
     timeout = kwargs.pop('timeout', 0)
     countdown = timeout
     t = exec_thread(target, *args, **kwargs)
-
-    # allow the main thread to exit (presumably, avoid a join() on this
-    # subthread) before this thread terminates.  This allows SIGINT
-    # exit of a blocked call.  See below.
     t.daemon = True
-
     t.start()
     try:
-        # poll for thread exit
         while t.is_alive():
             t.join(POLL_TIME_INCR)
             if timeout and t.is_alive():

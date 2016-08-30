@@ -3,7 +3,7 @@ import sys
 import time
 from middleware.flavor.flavor import Flavor
 from middleware.login.login import Login
-from middleware.vm.vm import Vm_manage,Vm_control
+from middleware.vm.vm import Vm_manage,Vm_control, Vm_snap
 from middleware.volume.volume import Volume
 from middleware.image.image import Image
 from middleware.common.common import run_in_thread
@@ -103,12 +103,51 @@ class Test_Module():
         msg = vm.create_multiple("test_zd3","1","222e2074-65e0-4ef2-b40e-a48e41181bce","123456",3,10,disk)
         prints(msg)
 
-    def test_create_image(self):
+    # def test_create_image(self):
+    #     self.test_login()
+    #     vm_id = "abbd4d3f-3483-41b3-97eb-ee59898191cf"
+    #     vm = Vm_snap(vm_id)
+    #     image_name = "test_snap_1"
+    #     ret = vm.create(vm_id,image_name)
+
+    def test_create_snap(self):
         self.test_login()
-        vm = Vm_control()
+        vm_id = "abbd4d3f-3483-41b3-97eb-ee59898191cf"
+        vm = Vm_snap(vm_id)
+        image_name = "test_snap_1"
+        ret = vm.create(vm_id,image_name)
+
+    def test_rebuild(self):
+        self.test_login()
         vm_id = ""
+        vm = Vm_snap(vm_id)
         image_name = ""
-        ret = vm.create_image(vm_id,image_name)
+        ret = vm.rebuild(image_name)
+
+    def test_getinfo_snap(self):
+        self.test_login()
+        vm_id = ""
+        vm = Vm_snap(vm_id)
+        image_name = ""
+        ret = vm.getinfo_node(image_name)
+        print ret
+
+    def test_change_snap(self):
+        self.test_login()
+        vm_id = ""
+        vm = Vm_snap(vm_id)
+        image_name = ""
+        image_name_new = ""
+        ret = vm.change_node(image_name,image_name_new)
+        print ret
+
+    def test_del_snap(self):
+        self.test_login()
+        vm_id = ""
+        vm = Vm_snap(vm_id)
+        image_name = ""
+        ret = vm.delete_node(image_name)
+        print ret
 
     def test_thread(self):
         def test_t(a):

@@ -1,11 +1,9 @@
 # coding:utf-8
-import json
 import urllib
-
 import time
-
-from middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool
+from middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time,dlog
 from middleware.db.db import Db
+from middleware.image.image import Image
 from middleware.login.login import get_token, get_proid
 from middleware.volume.volume import Volume, Volume_attach
 
@@ -124,13 +122,19 @@ class Vm_manage:
         :return:
         '''
         ret = 0
+        self.result.update({name: {"name": name, "id": "", "status_vm": 0,
+                               "status_disk": {}}})  # 虚拟机创建状态，0表示创建中，1表示成功，2表示失败
         assert self.token != "", "not login"
         path = "/v2.1/%s/servers" % self.project_id
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"server": {"name": name, "flavorRef": flavor, "imageRef": image, "adminPass": password, "user_data": userdata}}
+        params = {"server": {"name": name, "flavorRef": flavor, "imageRef": image, "adminPass": password,
+                             "user_data": userdata}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         vm_id = ret["server"]["id"]
+        vm_snap = Vm_snap()
+        vm_snap.set_table(vm_id)
+        vm_snap.create_table(image)
         self.result[name]["id"] = vm_id
         if disk:
             volume = Volume()
@@ -138,7 +142,7 @@ class Vm_manage:
             vm_compele_flag = 0  # 判断虚拟机是否创建完成的标志，如果置1则下面不再判断创建的状态
             for tmp_dict in disk:
                 name_disk = tmp_dict.get("name", "")
-                self.result[name]["status_disk"].update({name_disk:0})
+                self.result[name]["status_disk"].update({name_disk: 0})
                 size = tmp_dict["size"]
                 availability_zone = tmp_dict.get("availability_zone", "")
                 des = tmp_dict.get("des", "")
@@ -152,20 +156,21 @@ class Vm_manage:
                     t1 = run_in_thread(self.wait_complete, vm_id, timeout=TIMEOUT)
                     if t1 == 0:
                         vm_compele_flag = 1
-                t2 = run_in_thread(volume.wait_compele, volume_id, timeout=TIMEOUT)                # assert vm_compele_flag == 1, "vm status is not activate"
+                t2 = run_in_thread(volume.wait_compele, volume_id,
+                                   timeout=TIMEOUT)  # assert vm_compele_flag == 1, "vm status is not activate"
                 if not vm_compele_flag:
                     self.result[name]["status_vm"] = 2
                     ret = 1
                     break
                 # assert t2 == 0, "volume status is not available"
-                if t2 != 0 :
+                if t2 != 0:
                     self.result[name]["status_disk"][name_disk] = 2
                     continue
                 self.result[name]["status_disk"][name_disk] = 1
                 volume_attach.attach(vm_id, volume_id, dev_name)
             self.result[name]["status_vm"] = 1
         else:
-            t = run_in_thread(self.wait_complete,vm_id,timeout=TIMEOUT)
+            t = run_in_thread(self.wait_complete, vm_id, timeout=TIMEOUT)
             self.result[name]["status_vm"] = 1 if t == 0 else 2
         return ret
 
@@ -192,11 +197,10 @@ class Vm_manage:
         workpool = WorkPool()
         workpool.work_add()
         for i in range(max_count):
-            name_new = "%s-%s"%(name,i)
-            self.result.update({name_new:{"name":name_new,"id":"","status_vm":0,"status_disk":{}}})   #虚拟机创建状态，0表示创建中，1表示成功，2表示失败
+            name_new = "%s-%s" % (name, i)
             workpool.task_add(self.create, (name_new, flavor, image, password, userdata, disk))
         workpool.work_start()
-        workpool.work_wait()   #改成非阻塞的模式,通过self.result来判断是否做完
+        workpool.work_wait()  # 改成非阻塞的模式,通过self.result来判断是否做完
         # else:  下面的方法是调用原生的api去创建多台虚拟机，但是无法展示每台创建的进度，现在是循序调用创建单台的api
         #     path = "/v2.1/%s/servers" % self.project_id
         #     method = "POST"
@@ -223,6 +227,22 @@ class Vm_control:
     def __init__(self):
         self.token = get_token()
         self.project_id = get_proid()
+
+    @plog("Vm_control.wait_complete")
+    def wait_complete(self, vm_id,status):
+        '''
+        等待指定虚拟机创建完成,status为指定的状态
+        :return:
+        '''
+        flag = True
+        vm_mange = Vm_manage()
+        while flag:
+            tmp_ret = vm_mange.show_detail(vm_id)
+            if tmp_ret.get("server", {}).get("status", "") == status:
+                flag = False
+            else:
+                time.sleep(1)
+        return 0
 
     @plog("Vm_control.start")
     def start(self, vm_id):
@@ -357,10 +377,15 @@ class Vm_control:
         params = {"resize": {"flavorRef": flavor_id, "OS-DCF:diskConfig": "AUTO"}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
+        self.wait_complete(vm_id,"VERIFY_RESIZE")
+        params = {"confirmResize":""}
+        ret = send_request(method,IP_nova,PORT_nova,path,params,head)
+        assert ret != 1, "send_request error"
+        self.wait_complete(vm_id,"ACTIVE")
         return ret
 
     @plog("vm_control.create_backup")
-    def create_backup(self,vm_id,name,rotation,type="daily"):
+    def create_backup(self, vm_id, name, rotation, type="daily"):
         '''
         主机备份
         :return:
@@ -370,13 +395,13 @@ class Vm_control:
         path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"createBackup":{"name":name,"backup_type":type,"rotation":rotation}}
+        params = {"createBackup": {"name": name, "backup_type": type, "rotation": rotation}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
         return ret
 
     @plog("vm_control.migrate")
-    def migrate(self,vm_id):
+    def migrate(self, vm_id):
         '''
         虚拟机冷迁移
         :return:
@@ -386,13 +411,13 @@ class Vm_control:
         path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"migrate":""}
+        params = {"migrate": ""}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
         return ret
 
     @plog("vm_control.live_migrate")
-    def live_migrate(self,vm_id,host,block_migration,disk_over_commit):
+    def live_migrate(self, vm_id, host, block_migration, disk_over_commit):
         '''
         虚拟机热迁移
         :return:
@@ -402,91 +427,14 @@ class Vm_control:
         path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"os-migrateLive":{"host":host,"block_migration":block_migration,"disk_over_commit":disk_over_commit}}
+        params = {
+            "os-migrateLive": {"host": host, "block_migration": block_migration, "disk_over_commit": disk_over_commit}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
         return ret
 
-    @plog("vm_control.rebuild")
-    def rebuild(self,vm_id,image_id,name,adminPass="",metadata="",personality="",preserve_ephemeral=False):
-        '''
-        主机从镜像(快照)还原
-        :return:
-        '''
-        ret = 0
-        assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
-        method = "POST"
-        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"rebuild":{"imageRef":image_id,"name":name}}
-        if adminPass:
-            params["rebuild"].update({"adminPass":adminPass})
-        if metadata:
-            params["rebuild"].update({"metadata":metadata})
-        if personality:
-            params["rebuild"].update({"personality":personality})
-        if preserve_ephemeral:
-            params["rebuild"].update({"preserve_ephemeral":True})
-        ret = send_request(method, IP_nova, PORT_nova, path, params, head)
-        assert ret != 1, "send_request error"
-        return ret
-
-class Vm_snap:
-    @plog("Vm_snap.__init__")
-    def __init__(self,vm_id):
-        self.root = {"name":"root","child":[],"time":"","id":"","path":""}   #虚拟机创建时默认创建的一个快照,path为记录路径，格式类似于"012502"
-        self.db = Db()
-        self.vm_id = vm_id
-        self.token = get_token()
-        self.project_id = get_proid()
-        self.tree = self.db.get_snap(vm_id)
-        self.stat = self.db.get_node_status(vm_id)
-        self.update_flag = True                                          #判断是更新数据还是增加数据
-        assert self.tree != 1,'db error'
-        if not self.tree:
-            self.update_flag = False
-            self.tree = self.root
-
-    @plog("Vm_snap.search")
-    def search(self,path):
-        head = self.tree["child"]
-        if path:
-            for i in path:
-                head = head[int(i)]
-        return head
-
-    @plog("Vm_snap.insert")
-    def insert(self,name,time,id,parent_path):     #当父路径为root时,parent_path传空("")
-        head = self.search(parent_path)
-        node = {"name":name,"child":[],"time":time,"id":id,"path":parent_path+str(len(head["child"]))}
-        head["child"].append(node)
-
-    @plog("Vm_snap.delete")
-    def delete(self,path):
-        parent_path = path[:-1]
-        node_path = path[-1]
-        parent_node = self.search(parent_path)
-        parent_node.pop(node_path)
-
-    @plog("Vm_snap.change")
-    def change(self,path,name):
-        head = self.search(path)
-        head["name"] = name
-
-    @plog("Vm_snap.save")
-    def save(self):
-        '''
-        保存现在快照树到数据库中
-        :return:
-        '''
-        if self.update_flag:
-            tmp_ret = self.db.update_snap(self.vm_id,self.tree)
-        else:
-            tmp_ret = self.db.insert_snap(self.vm_id,self.tree)
-        assert tmp_ret != 1,"db err"
-
-    @plog("vm_snap.create")
-    def create(self, vm_id, image_name):
+    @plog("vm_control.create")
+    def create_image(self, vm_id, image_name):
         '''
         创建镜像
         只有在ACTIVE, SHUTOFF, PAUSED, 或 SUSPENDED的状态下才能制作镜像
@@ -502,4 +450,214 @@ class Vm_snap:
         assert ret != 1, "send_request error"
         return ret
 
+    @plog("vm_control.rebuild")
+    def rebuild(self, vm_id, image_id, name, adminPass="", metadata="", personality="", preserve_ephemeral=False):
+        '''
+        主机从镜像(快照)还原
+        :return:
+        '''
+        ret = 0
+        assert self.token != "", "not login"
+        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        method = "POST"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = {"rebuild": {"imageRef": image_id, "name": name}}
+        if adminPass:
+            params["rebuild"].update({"adminPass": adminPass})
+        if metadata:
+            params["rebuild"].update({"metadata": metadata})
+        if personality:
+            params["rebuild"].update({"personality": personality})
+        if preserve_ephemeral:
+            params["rebuild"].update({"preserve_ephemeral": True})
+        ret = send_request(method, IP_nova, PORT_nova, path, params, head)
+        assert ret != 1, "send_request error"
+        return ret
 
+
+class Vm_snap:
+    def __init__(self, vm_id=""):
+        self.db = Db()
+        self.token = get_token()
+        self.table = vm_id
+
+    # @plog("Vm_snap.search")
+    # def search(self,path):
+    #     head = self.tree
+    #     if path:
+    #         for i in path:
+    #             head = head["child"][int(i)]
+    #     return head
+    #
+    # @plog("Vm_snap.insert")
+    # def insert(self,name,time,id,parent_path):     #当父路径为root时,parent_path传空("")
+    #     head = self.search(parent_path)
+    #     now_path = parent_path+str(len(head["child"]))
+    #     node = {"name":name,"child":[],"time":time,"id":id,"path":now_path}
+    #     head["child"].append(node)
+    #     return node
+
+    # @plog("Vm_snap.delete")
+    # def delete(self,path):
+    #     parent_path = path[:-1]
+    #     node_path = path[-1]
+    #     parent_node = self.search(parent_path)
+    #     parent_node.pop(node_path)
+    #
+    # @plog("Vm_snap.change")
+    # def change(self,path,name):
+    #     head = self.search(path)
+    #     head["name"] = name
+    def find_parent(self):
+        '''
+        找到当前主机所在的快照节点
+        :return:
+        '''
+        cmd = "select image_name from '%s' where status = 1" % self.table
+        tmp_ret = self.db.exec_cmd(cmd)
+        ret = tmp_ret[0][0]
+        return ret
+
+    @plog("Vm_snap.create_table")
+    def create_table(self, image_id):
+        '''
+        创建表,创建虚拟机时调用
+        :param vm_id:
+        :return:
+        '''
+        ret = 0
+        cmd1 = "CREATE TABLE '%s'('image_name'  TEXT NOT NULL,'parent_name'  TEXT NOT NULL DEFAULT 0,'image_id'  TEXT NOT NULL,'time'  TEXT NOT NULL,'status'  INTEGER NOT NULL DEFAULT 1,PRIMARY KEY ('image_name'))" % self.table
+        tmp_ret = self.db.exec_cmd(cmd1)
+        assert tmp_ret != 1, "cmd:%s exec err" % cmd1
+        time_now = get_time()
+        cmd2 = "insert into '%s' values('root','','%s','%s',1)" % (self.table,image_id, time_now)
+        tmp_ret = self.db.exec_cmd(cmd2)
+        assert tmp_ret != 1, "cmd:%s exec err" % cmd2
+        return ret
+
+    @plog("Vm_snap.delete_table")
+    def delete_table(self, vm_id):
+        '''
+        删除表，删除虚拟机时调用
+        :param vm_id:
+        :return:
+        '''
+        ret = 0
+        cmd = "drop table '%s'" % vm_id
+        tmp_ret = self.db.exec_cmd(cmd)
+        assert tmp_ret != 1,"cmd:%s exec err" % cmd
+        return ret
+
+    @plog("Vm_snap.change_node")
+    def change_node(self,image_name_old,image_name_new):
+        '''
+        修改快照名
+        :param image_name:
+        :return:
+        '''
+        ret = 0
+        cmd1 = "update '%s' set image_name='%s' where image_name='%s'"%(self.table,image_name_new,image_name_old)
+        tmp_ret = self.db.exec_cmd(cmd1)
+        assert tmp_ret != 1,"cmd:%s exec err" % cmd1
+        cmd2 = "update '%s' set parent_name='%s' where parent_name='%s'"%(self.table,image_name_new,image_name_old)
+        tmp_ret = self.db.exec_cmd(cmd2)
+        assert tmp_ret != 1,"cmd:%s exec err" % cmd2
+        return ret
+
+    @plog("Vm_snap.delete_node")
+    def delete_node(self,image_name):
+        '''
+        删除某一个快照
+        :param image_name:
+        :return:
+        '''
+        ret = 0
+        cmd1 = "select parent_name from '%s' where image_name='%s'"%(self.table,image_name)
+        parent_name = self.db.exec_cmd(cmd1)[0][0]
+        assert parent_name != 1,"cmd:%s exec err" % cmd1
+        cmd2 = "delete from '%s' where image_name='%s'"%(self.table,image_name)
+        tmp_ret = self.db.exec_cmd(cmd2)
+        assert tmp_ret != 1,"cmd:%s exec err" % cmd2
+        cmd3 = "update '%s' set parent_name='%s' where parent_name='%s'"%(self.table,parent_name,image_name)
+        tmp_ret = self.db.exec_cmd(cmd3)
+        assert tmp_ret != 1,"cmd:%s exec err" % cmd3
+        return ret
+
+    @plog("Vm_snap.set_table")
+    def set_table(self, vm_id):
+        '''
+        设置表
+        :return:
+        '''
+        self.table = vm_id
+
+    @plog("Vm_snap.getinfo_node")
+    def getinfo_node(self, image_name):
+        '''
+        获取指定快照信息
+        :param image_name:
+        :return:
+        '''
+        cmd = "select * from '%s' where image_name='%s'" % (self.table, image_name)
+        tmp_ret = self.db.exec_cmd(cmd)
+        assert tmp_ret != 1
+        ret = tmp_ret[0]
+        return ret
+
+    @plog("Vm_snap.get_id")
+    def get_id(self, name):
+        '''
+        通过快照名称获取对应的id，所以快照的名称必须是唯一的
+        :return:
+        '''
+        image = Image()
+        tmp_ret = image.list({"type": "snapshot"})
+        id = filter(lambda i: i["name"] == name, tmp_ret["images"])[0]["id"]
+        return id
+
+    @plog("Vm_snap.create")
+    def create(self, image_name):
+        '''
+        创建快照
+        :param image_name:
+        :return:
+        '''
+        vm = Vm_control()
+        ret = vm.create_image(self.table, image_name)
+        assert ret != 1
+        # 更新快照树数据
+        time_now = get_time()
+        image_id = self.get_id(image_name)
+        assert image_id != 1
+        parent_name = self.find_parent()
+        assert parent_name != 1
+        # node = self.insert(image_name,time_now,image_id,self.stat)
+        cmd1 = "insert into '%s' values('%s','%s','%s','%s',1)" % (self.table.encode("utf8"),image_name, parent_name, image_id, time_now)
+        tmp_ret = self.db.exec_cmd(cmd1)
+        assert tmp_ret != 1, "cmd:%s exec err" % cmd1
+        cmd2 = "update '%s' set status=0 where image_name='%s'" % (self.table,parent_name)
+        tmp_ret = self.db.exec_cmd(cmd2)
+        assert tmp_ret != 1, "cmd:%s exec err" % cmd2
+        return ret
+
+    @plog("Vm_snap.rebuild")
+    def rebuild(self, image_name):
+        '''
+        还原快照，对应快照的状态改为1
+        :param image_name:
+        :return:
+        '''
+        ret = 0
+        vm = Vm_control()
+        cmd1 = "select image_id from '%s' where image_name='%s'" % (self.table, image_name)
+        image_id = self.db.exec_cmd(cmd1)[0][0]
+        assert image_id != 1, "cmd:%s exec faild" % cmd1
+        ret = vm.rebuild(self.table, image_id, "default")
+        assert ret != 1
+        cmd2 = "update '%s' set status=0 where status=1" % self.table
+        cmd3 = "update '%s' set status=1 where image_name='%s'" % (self.table, image_name)
+        tmp_ret = self.db.exec_cmd(cmd2)
+        assert tmp_ret != 1, "cmd:%s exec faild" % cmd2
+        tmp_ret = self.db.exec_cmd(cmd3)
+        assert tmp_ret != 1, "cmd:%s exec faild" % cmd3
+        return ret
