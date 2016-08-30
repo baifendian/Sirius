@@ -11,4 +11,7 @@ urlpatterns = patterns('',
     url(r'^api/v1/namespaces/mytasklist$', views.get_mytask_list),
     url(r'^api/v1/namespaces/mytaskgraph$', views.get_mytask_graph),
     url(r'^download/$', views.download),
+    url(r'^api/v1/namespaces/mytasklist/getoldrecords', views.mytask_get_old_records),
+    url(r'^api/v1/namespaces/mytasklist/checkhasnewrecords', views.mytask_check_has_new_records),
+    url(r'^api/v1/namespaces/mytasklist/getnewrecords', views.mytask_get_new_records),
 )
