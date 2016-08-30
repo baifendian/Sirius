@@ -72,6 +72,7 @@ INSTALLED_APPS = (
     'user_auth',
     'hdfs',
     'kd_agent',
+	'openstack',
     #'Aries',
 )
 
