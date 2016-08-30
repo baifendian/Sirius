@@ -20,8 +20,8 @@ from openstack.views import test,instances,create_host,volumes,login,logout,imag
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    #url(r'^login',login,name='login'),
-   # url(r'^logout',logout,name='logout'),
+    url(r'^login',login,name='login'),
+    url(r'^logout',logout,name='logout'),
     url(r'^images',images),
     url(r'^bfddashboard/instances/$',instances,name='instances'),
     url(r'^bfddashboard/instances/vm/$',create_host,name='create_host'),
