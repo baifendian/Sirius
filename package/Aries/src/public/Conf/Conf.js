@@ -31,17 +31,17 @@ const conf={
     HDFS:{
       Capacity:{
         SUM:"v1/hdfs///?op=SUM", //统计各个space配额
-        UPSET:"v1/hdfs///?op=UPSET&space_name=${spaceName}" //给space扩容.
+        UPSET:"v1/hdfs///?op=UPSET&spaceName=${spaceName}" //给space扩容.
       },
       MyFile:{
         LIST_STATUS:"v1/hdfs/${relativePath}/?op=LISTSTATUS&spaceName=${spaceName}", //以表格结构获取文件列表(过滤掉回收站的数据)
-        UPLOAD:"v1/hdfs/upload/${relativePath}/?type=http&space_name=${spaceName}", //文件上传
+        UPLOAD:"v1/hdfs/upload/${relativePath}/?type=http&spaceName=${spaceName}", //文件上传
         LIST_STATUS_TREE:"v1/hdfs/${relativePath}/?op=LISTSTATUSTREE&spaceName=${spaceName}", //以树形结构获取文件夹
         DELETE:"v1/hdfs/${relativePath}/?op=DELETE&spaceName=${spaceName}", //删除目录
-        COMPRESS:"v1/hdfs/${relativePath}/?op=COMPRESS&space_name=${spaceName}", //压缩目录
-        SHARE:"v1/hdfs/${relativePath}/?permission=private&op=SHARE&Validity=10&space_name=${spaceName}",//分享目录
-        DOWNLOAD:"v1/hdfs/${relativePath}/?type=http&op=DOWNLOAD&space_name=${spaceName}",//下载文件
-        RENAME:"v1/hdfs/${relativePath}/?op=RENAME&destination=${targetPath}&space_name=${spaceName}", //移动目录
+        COMPRESS:"v1/hdfs/${relativePath}/?op=COMPRESS&spaceName=${spaceName}", //压缩目录
+        SHARE:"v1/hdfs/${relativePath}/?permission=private&op=SHARE&Validity=10&spaceName=${spaceName}",//分享目录
+        DOWNLOAD:"/v1/hdfs/${relativePath}/?type=http&op=DOWNLOAD&spaceName=${spaceName}",//下载文件
+        RENAME:"v1/hdfs/${relativePath}/?op=MV&destination=${targetPath}&spaceName=${spaceName}", //移动目录
         MKDIRS:"v1/hdfs/${relativePath}/?op=MKDIRS&spaceName=${spaceName}", //创建目录
       },
       Service:{
@@ -50,24 +50,24 @@ const conf={
         COMPONENT_INFO:"v1/hdfs/relation/${hostName}/",//获取某台主机上面的组件信息
       },
       Share:{
-        SHARE_GET:"v1/hdfs///?space_name=${spaceName}&op=SHARE", //获取分享信息
+        SHARE_GET:"v1/hdfs///?spaceName=${spaceName}&op=SHARE", //获取分享信息
         SHARE_DELETE:"v1/hdfs///?op=SHARE&share_id=${shareId}", //删除分享
       },
       ShareCenter:{
-        SHARE:"v1/hdfs///?space_name=${spaceName}&op=SHARE", //获取分享信息
+        SHARE:"v1/hdfs///?spaceName=${spaceName}&op=SHARE", //获取分享信息
       },
       ShowShare:{
         SHARE_LIST_STATUS:"v1/hdfs/share/${relativePath}/?shareId=${shareId}",//以列表形式获取某个分享下的文件或文件夹
         LIST_STATUS_TREE:"v1/hdfs/${relativePath}/?op=LISTSTATUSTREE&spaceName=${spaceName}", //以树形结构获取文件夹
-        DELETE:"v1/hdfs/${relativePath}/?op=DELETE&spaceName=${spaceName}", //删除目录
-        RENAME:"v1/hdfs/${relativePath}/?op=CP&destination=${targetPath}&space_name=${spaceName}",//移动目录
-        MKDIRS:"v1/hdfs/${relativePath}/?op=MKDIRS&spaceName=${this.props.cur_space}"//创建文件夹. 暂时不用.
+        DELETE:"v1/hdfs/${relativePath}/?op=DELETE&shareId=${shareId}&filter=share&spaceName=${spaceName}", //删除目录
+        RENAME:"v1/hdfs/${relativePath}/?op=CP&destination=${targetPath}&filter=share&shareId=${shareId}&spaceName=${spaceName}",//移动目录
+        MKDIRS:"v1/hdfs/${relativePath}/?op=MKDIRS&spaceName=${spaceName}"//创建文件夹. 暂时不用.
       },
       Trash:{
-        LIST_STATUS:"v1/hdfs/${relativePath}/?op=LISTSTATUS&spaceName=${spaceName}&isTrash=1",//获取回收站中的文件列表
+        LIST_STATUS:"v1/hdfs/${relativePath}/?op=LISTSTATUS&spaceName=${spaceName}&filter=trash",//获取回收站中的文件列表
         LIST_STATUS_TREE:"v1/hdfs/${relativePath}/?op=LISTSTATUSTREE&spaceName=${spaceName}",//以树形结构获取文件夹
-        DELETE:"v1/hdfs/${relativePath}/?op=DELETE&spaceName=${spaceName}", //删除目录
-        RENAME:"v1/hdfs/${relativePath}/?op=RENAME&destination=${targetPath}&space_name=${spaceName}&isTrash=1",//从垃圾箱移出目录
+        DELETE:"v1/hdfs/${relativePath}/?op=DELETE&spaceName=${spacessName}&filter=trash", //删除目录
+        RENAME:"v1/hdfs/${relativePath}/?op=MV&destination=${targetPath}&spaceName=${spaceName}&filter=trash",//从垃圾箱移出目录
         MKDIRS:"v1/hdfs/${relativePath}/?op=MKDIRS&spaceName=${spaceName}"//创建文件夹. 暂时不用.
       },
     },

@@ -16,6 +16,7 @@ export default React.createClass({
       is_first:0,
       num:10,
       treePath:"/",
+      random:0,
     };
   },
   updateTableList(data,num){
@@ -63,6 +64,10 @@ export default React.createClass({
     let num = this.state.num+1;
     this.setState({tableData:data,num:num});
   },
+  updateRandom(random){
+    //修改random信息,让页面刷新
+    this.setState({random:random});
+  },
   requestArgs:{
     pageName:"ShowShare",
     type:"",
@@ -71,7 +76,7 @@ export default React.createClass({
     relativePath:"/",
     targetPath :"",
   },
-  getUrlData({type="",spaceName="",shareId="",relativePath="",targetPath=""}){
+  getUrlData({type="",spaceName="",shareId=this.props.params.hash,relativePath="",targetPath=""}){
     this.requestArgs.type = type;
     this.requestArgs.spaceName = spaceName;
     this.requestArgs.shareId = shareId;
@@ -88,8 +93,8 @@ export default React.createClass({
     return (
       <div className="hdfs-myfile">
         <Navigate cur_path={this.state.cur_relative_path} is_first={this.state.is_first} num={this.state.num} updateSkipUrl={this.updateSkipUrl} />
-        <MyTable  list="" data={this.state.tableData} getUrlData={this.getUrlData} cur_path={this.state.cur_relative_path} cur_space={spaceName} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
-        <Fetch style={{minHeight:100}} url={shareUrl} onSuccess={this.getTableSuccess}>
+        <MyTable  list="" data={this.state.tableData} updateRandom={this.updateRandom} getUrlData={this.getUrlData} cur_path={this.state.cur_relative_path} cur_space={spaceName} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
+        <Fetch style={{minHeight:100}} url={`${shareUrl}&random=${this.state.random}`} onSuccess={this.getTableSuccess}>
         </Fetch>
       </div>
     )

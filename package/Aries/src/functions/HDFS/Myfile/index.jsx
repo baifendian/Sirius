@@ -69,7 +69,7 @@ export default React.createClass({
   addTableData(){
     //debugger;
     let data = this.state.tableData;
-    let row = {"name":"new_dir","create_time":"2015-02-10 10:11","size":"0","is_dir":"1","is_new":0};
+    let row = {"name":"new_dir","create_time":"2015-02-10 10:11","size":"-","is_dir":"1","is_new":0};
     let totalList = data.totalList;
     totalList.unshift(row);
     data.totalList =totalList;

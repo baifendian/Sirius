@@ -248,6 +248,12 @@ const MyTable = React.createClass({
       }else{
           aLink = <span style={{marginRight: '5px'}} className="default-link" > {this.iconType[component.is_dir].call(this)}  {itemText}</span>
       }
+      //DOWNLOAD URL
+      let new_relative_path = `${this.props.cur_path}/${cur_path}`.replace("//","/");
+      let downloadUrl = this.props.getUrlData({ type: "DOWNLOAD",
+                                                relativePath : new_relative_path,
+                                                spaceName : this.props.cur_space
+                                           });
 
       return <div className="table-div">
               <div className="table-div">
@@ -261,7 +267,7 @@ const MyTable = React.createClass({
                     <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要分享 ${cur_path} 吗?`,this.share,component)}}> <Icon type="share-alt" /></a>
                     <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要压缩 ${cur_path} 吗?`,this.compress,component)}}><Icon type="compress" /></a>
                     {component.is_dir < 1 ? [
-                      <a href={`/v1/hdfs/${this.props.cur_path}/${cur_path}/?type=http&op=DOWNLOAD&space_name=${this.props.cur_space}`}
+                      <a href={downloadUrl}
                         style={{marginRight: '20px'}}> <Icon type="download" /> </a>
                     ] : null}
                   </span>
