@@ -2,7 +2,7 @@
 
 import json
 import time
-import logging
+import kd_logger
 import httplib
 import traceback
 
@@ -22,10 +22,8 @@ from kd_agent.models import Task
 RETU_INFO_SUCCESS = 200
 RETU_INFO_ERROR = 201
 
-from kd_agent.logconfig import LOGGING
-from kd_agent.querysetslice import QuerySetSlice
-
-logging.config.dictConfig( LOGGING )
+kd_logger = logging.getLogger("kd_agent_log")
+kd_logger.setLevel( logging.DEBUG )
 
 
 
@@ -35,10 +33,10 @@ def return_http_json(func):
     def wrapper( *arg1,**arg2 ):
         try:
             retu_obj = func( *arg1,**arg2 )
-            logging.info( 'execute func %s success' % (func) )
+            kd_logger.info( 'execute func %s success' % (func) )
         except Exception as reason:
             retu_obj = generate_failure( str(reason) )
-            logging.error( 'execute func %s failure : %s' % (func,str(reason)) )
+            kd_logger.error( 'execute func %s failure : %s' % (func,str(reason)) )
             traceback.print_exc()
 
         obj = HttpResponse( json.dumps(retu_obj) )
@@ -74,20 +72,20 @@ def get_k8s_data(url,params = {},timeout = 10 ):
         resp = con.getresponse()
         if not resp:
             s = 'get k8s data resp is not valid : %s' % resp
-            logging.error( s )
+            kd_logger.error( s )
             return generate_failure( s )
 
         if resp.status == 200:
             s = resp.read()
-            logging.debug( 'get k8s data response : %s' % s )
+            kd_logger.debug( 'get k8s data response : %s' % s )
             return generate_success( data = json.loads(s) )
         else:
             s = 'get k8s data status is not 200 : %s' % resp.status
-            logging.error( s )
+            kd_logger.error( s )
             return generate_failure( s )
     except Exception, e:
         s = "get k8s data occured exception : %s" % str(e)
-        logging.error(s)
+        kd_logger.error(s)
         return generate_failure( s )
     
 def restore_k8s_path(p):
@@ -97,10 +95,10 @@ def restore_k8s_path(p):
 @csrf_exempt
 @return_http_json
 def get_pod_list(request,namespace):
-    logging.info( 'call get_pod_list request.path : %s , namespace : %s' % (request.path,namespace) )
+    kd_logger.info( 'call get_pod_list request.path : %s , namespace : %s' % (request.path,namespace) )
     pod_detail_info = get_k8s_data( restore_k8s_path(request.path) )
     if pod_detail_info['code'] == RETU_INFO_ERROR:
-        logging.error( 'call get_pod_list query k8s data error : %s' % pod_detail_info['msg'] )
+        kd_logger.error( 'call get_pod_list query k8s data error : %s' % pod_detail_info['msg'] )
         return generate_failure( pod_detail_info['msg'] )
 
     retu_data = []
@@ -134,18 +132,18 @@ def get_pod_list(request,namespace):
             restartCountArr.append( cItem['restartCount'] )
         record['Restarts'] = sum(restartCountArr)
     
-    logging.debug( 'call get_pod_list query k8s data : %s' % retu_data )
-    logging.info( 'call get_pod_list query k8s data successful' )
+    kd_logger.debug( 'call get_pod_list query k8s data : %s' % retu_data )
+    kd_logger.info( 'call get_pod_list query k8s data successful' )
     return generate_success( data = retu_data )
 
 
 @csrf_exempt
 @return_http_json
 def get_service_list(request,namespace):
-    logging.info( 'call get_service_list request.path : %s , namespace : %s' % (request.path,namespace) )
+    kd_logger.info( 'call get_service_list request.path : %s , namespace : %s' % (request.path,namespace) )
     service_detail_info = get_k8s_data( restore_k8s_path(request.path) )
     if service_detail_info['code'] == RETU_INFO_ERROR:
-        logging.error( 'call get_service_list query k8s data error : %s' % service_detail_info['msg'] )
+        kd_logger.error( 'call get_service_list query k8s data error : %s' % service_detail_info['msg'] )
         return generate_failure( service_detail_info['msg'] )
 
     retu_data = []
@@ -172,18 +170,18 @@ def get_service_list(request,namespace):
                 selector_info_arr.append( '%s=%s' % (k,v) )
             record['Selector'] = str(',').join( selector_info_arr )
 
-    logging.debug( 'call get_service_list query k8s data : %s' % retu_data )
-    logging.info( 'call get_service_list query k8s data successful' )
+    kd_logger.debug( 'call get_service_list query k8s data : %s' % retu_data )
+    kd_logger.info( 'call get_service_list query k8s data successful' )
     return generate_success( data = retu_data )
 
 
 @csrf_exempt
 @return_http_json
 def get_rc_list(request,namespace):
-    logging.info( 'call get_rc_list request.path : %s , namespace : %s' % (request.path,namespace) )
+    kd_logger.info( 'call get_rc_list request.path : %s , namespace : %s' % (request.path,namespace) )
     rc_detail_info = get_k8s_data( restore_k8s_path(request.path) )
     if rc_detail_info['code'] == RETU_INFO_ERROR:
-        logging.error( 'call get_rc_list query k8s data error : %s' % rc_detail_info['msg'] )
+        kd_logger.error( 'call get_rc_list query k8s data error : %s' % rc_detail_info['msg'] )
         return generate_failure( rc_detail_info['msg'] )
 
     retu_data = []
@@ -213,8 +211,8 @@ def get_rc_list(request,namespace):
                 selector_info_arr.append( '%s=%s' % (k,v) )
             record['Selector'] = str(',').join( selector_info_arr )
     
-    logging.debug( 'call get_rc_list query k8s data : %s' % retu_data )
-    logging.info( 'call get_rc_list query k8s data successful' )
+    kd_logger.debug( 'call get_rc_list query k8s data : %s' % retu_data )
+    kd_logger.info( 'call get_rc_list query k8s data successful' )
     return generate_success( data = retu_data )
 
 def trans_obj_to_easy_dis(obj_info):
@@ -254,7 +252,7 @@ def __trans_obj_to_easy_dis(obj_info,head_str = 'obj'):
 @csrf_exempt
 @return_http_json
 def get_mytask_list(request):    
-    logging.info( 'call get_mytask_list' )
+    kd_logger.info( 'call get_mytask_list' )
     retu_data = []
     for record in Schedule_Status.objects.filter(status=3L):
         d = {}
@@ -268,8 +266,8 @@ def get_mytask_list(request):
         d['status'] = record.status
         d['result'] = record.result
     
-    logging.debug( 'call get_mytask_list query bdms data : %s' % retu_data )
-    logging.info( 'call get_mytask_list query bdms data successful' )
+    kd_logger.debug( 'call get_mytask_list query bdms data : %s' % retu_data )
+    kd_logger.info( 'call get_mytask_list query bdms data successful' )
     return generate_success( data = retu_data )
 
 def format_datetime_obj(datetime_obj):
@@ -282,7 +280,7 @@ def format_datetime_obj(datetime_obj):
 @return_http_json
 def get_mytask_graph(request):
     import requests
-    logging.info( 'call get_mytask_graph' )
+    kd_logger.info( 'call get_mytask_graph' )
     url1 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/accounts/login/'  #模拟登陆BDMS
     url2 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/ide/schedule/directedgraphdata/?username=all&status=all&taskname=&env=0'  #任务运行网络图 rest api
     data={"username":settings.BDMS_USERNAME,"password": settings.BDMS_PASSWORD}
@@ -302,7 +300,7 @@ def get_mytask_graph(request):
         r1 = req.post(url1, data=data, headers=headers)
         r2 = req.get(url2)
         if r1.status_code and r2.status_code == 200:
-            logging.debug( 'get my task graph data success ')
+            kd_logger.debug( 'get my task graph data success ')
             dic = eval(r2.text)
             all_task = []
             data = {}
@@ -317,17 +315,17 @@ def get_mytask_graph(request):
             data["edges"] = [{}]
             return generate_success( data=data )
         else:
-            logging.error('get my tsk graph data error ')
+            kd_logger.error('get my tsk graph data error ')
             return generate_failure( 'get my tsk graph data error ' )
     except Exception, e:
         s = "get mytask graph data occured exception : %s" % str(e)
-        logging.error(s)
+        kd_logger.error(s)
         return generate_failure(s)
 
 @csrf_exempt
 @return_http_json
 def mytask_get_old_records(request):
-    logging.debug( 'call mytask_get_old_records : %s ' % request )
+    kd_logger.debug( 'call mytask_get_old_records : %s ' % request )
     oldestrecordid = int(request.POST.get('oldestrecordid'))
     requestnumber = int(request.POST.get('requestnumber'))
     keywords = json.loads(request.POST.get('keywords'))
