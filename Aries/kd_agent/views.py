@@ -6,24 +6,28 @@ import logging
 import httplib
 import traceback
 
+from datetime import datetime
 from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render
-from django.conf import settings
 from django.http import *
-from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 
 from kd_agent.models import Schedule_Status
-
-kd_logger = logging.getLogger("kd_agent_log")
-kd_logger.setLevel(logging.INFO)
-
+from kd_agent.models import Schedule_Log
+from kd_agent.models import Task
 RETU_INFO_SUCCESS = 200
 RETU_INFO_ERROR = 201
+
+from kd_agent.logconfig import LOGGING
+from kd_agent.querysetslice import QuerySetSlice
+
+logging.config.dictConfig( LOGGING )
+
+
 
 
 # 一个装饰器，将原函数返回的json封装成response对象
@@ -31,14 +35,16 @@ def return_http_json(func):
     def wrapper( *arg1,**arg2 ):
         try:
             retu_obj = func( *arg1,**arg2 )
-            kd_logger.info( 'execute func %s success' % (func) )
+            logging.info( 'execute func %s success' % (func) )
         except Exception as reason:
             retu_obj = generate_failure( str(reason) )
-            kd_logger.error( 'execute func %s failure : %s' % (func,str(reason)) )
+            logging.error( 'execute func %s failure : %s' % (func,str(reason)) )
             traceback.print_exc()
 
         obj = HttpResponse( json.dumps(retu_obj) )
         obj['Access-Control-Allow-Origin'] = '*'
+        obj['Access-Control-Allow-Methods'] = 'GET,POST'
+        obj['Access-Control-Allow-Headers'] = 'X-CSRFToken'
         obj['Content-Type'] = 'application/json'
         return obj
     return wrapper
@@ -68,20 +74,20 @@ def get_k8s_data(url,params = {},timeout = 10 ):
         resp = con.getresponse()
         if not resp:
             s = 'get k8s data resp is not valid : %s' % resp
-            kd_logger.error( s )
+            logging.error( s )
             return generate_failure( s )
 
         if resp.status == 200:
             s = resp.read()
-            kd_logger.debug( 'get k8s data response : %s' % s )
+            logging.debug( 'get k8s data response : %s' % s )
             return generate_success( data = json.loads(s) )
         else:
             s = 'get k8s data status is not 200 : %s' % resp.status
-            kd_logger.error( s )
+            logging.error( s )
             return generate_failure( s )
     except Exception, e:
         s = "get k8s data occured exception : %s" % str(e)
-        kd_logger.error(s)
+        logging.error(s)
         return generate_failure( s )
     
 def restore_k8s_path(p):
@@ -90,36 +96,11 @@ def restore_k8s_path(p):
 
 @csrf_exempt
 @return_http_json
-def get_overview_info(request,namespace):
-    kd_logger.info( 'call get_overview_info request.path : %s , namespace : %s' % (request.path,namespace) )
-    retu_dict = {
-        'pod_used':0,
-        'pod_total':100,
-        'task_used':0,
-        'task_total':100,
-        'memory_used':0,
-        'memory_total':100
-    }
-
-    # 获取pod个数
-    url = '/api/v1/namespaces/%s/pods' % namespace
-    pod_list = get_k8s_data( url )
-    if pod_list['code'] == RETU_INFO_ERROR:
-        kd_logger.error( 'call %s query k8s pod info error : %s' % ( url,pod_list['msg']) )
-        return generate_failure( pod_list['msg'] )
-    retu_dict['pod_used'] = len( pod_list['data']['items'] )
-
-
-    return generate_success( data=retu_dict )
-
-
-@csrf_exempt
-@return_http_json
 def get_pod_list(request,namespace):
-    kd_logger.info( 'call get_pod_list request.path : %s , namespace : %s' % (request.path,namespace) )
+    logging.info( 'call get_pod_list request.path : %s , namespace : %s' % (request.path,namespace) )
     pod_detail_info = get_k8s_data( restore_k8s_path(request.path) )
     if pod_detail_info['code'] == RETU_INFO_ERROR:
-        kd_logger.error( 'call get_pod_list query k8s data error : %s' % pod_detail_info['msg'] )
+        logging.error( 'call get_pod_list query k8s data error : %s' % pod_detail_info['msg'] )
         return generate_failure( pod_detail_info['msg'] )
 
     retu_data = []
@@ -153,18 +134,18 @@ def get_pod_list(request,namespace):
             restartCountArr.append( cItem['restartCount'] )
         record['Restarts'] = sum(restartCountArr)
     
-    kd_logger.debug( 'call get_pod_list query k8s data : %s' % retu_data )
-    kd_logger.info( 'call get_pod_list query k8s data successful' )
+    logging.debug( 'call get_pod_list query k8s data : %s' % retu_data )
+    logging.info( 'call get_pod_list query k8s data successful' )
     return generate_success( data = retu_data )
 
 
 @csrf_exempt
 @return_http_json
 def get_service_list(request,namespace):
-    kd_logger.info( 'call get_service_list request.path : %s , namespace : %s' % (request.path,namespace) )
+    logging.info( 'call get_service_list request.path : %s , namespace : %s' % (request.path,namespace) )
     service_detail_info = get_k8s_data( restore_k8s_path(request.path) )
     if service_detail_info['code'] == RETU_INFO_ERROR:
-        kd_logger.error( 'call get_service_list query k8s data error : %s' % service_detail_info['msg'] )
+        logging.error( 'call get_service_list query k8s data error : %s' % service_detail_info['msg'] )
         return generate_failure( service_detail_info['msg'] )
 
     retu_data = []
@@ -191,18 +172,18 @@ def get_service_list(request,namespace):
                 selector_info_arr.append( '%s=%s' % (k,v) )
             record['Selector'] = str(',').join( selector_info_arr )
 
-    kd_logger.debug( 'call get_service_list query k8s data : %s' % retu_data )
-    kd_logger.info( 'call get_service_list query k8s data successful' )
+    logging.debug( 'call get_service_list query k8s data : %s' % retu_data )
+    logging.info( 'call get_service_list query k8s data successful' )
     return generate_success( data = retu_data )
 
 
 @csrf_exempt
 @return_http_json
 def get_rc_list(request,namespace):
-    kd_logger.info( 'call get_rc_list request.path : %s , namespace : %s' % (request.path,namespace) )
+    logging.info( 'call get_rc_list request.path : %s , namespace : %s' % (request.path,namespace) )
     rc_detail_info = get_k8s_data( restore_k8s_path(request.path) )
     if rc_detail_info['code'] == RETU_INFO_ERROR:
-        kd_logger.error( 'call get_rc_list query k8s data error : %s' % rc_detail_info['msg'] )
+        logging.error( 'call get_rc_list query k8s data error : %s' % rc_detail_info['msg'] )
         return generate_failure( rc_detail_info['msg'] )
 
     retu_data = []
@@ -232,8 +213,8 @@ def get_rc_list(request,namespace):
                 selector_info_arr.append( '%s=%s' % (k,v) )
             record['Selector'] = str(',').join( selector_info_arr )
     
-    kd_logger.debug( 'call get_rc_list query k8s data : %s' % retu_data )
-    kd_logger.info( 'call get_rc_list query k8s data successful' )
+    logging.debug( 'call get_rc_list query k8s data : %s' % retu_data )
+    logging.info( 'call get_rc_list query k8s data successful' )
     return generate_success( data = retu_data )
 
 def trans_obj_to_easy_dis(obj_info):
@@ -273,9 +254,9 @@ def __trans_obj_to_easy_dis(obj_info,head_str = 'obj'):
 @csrf_exempt
 @return_http_json
 def get_mytask_list(request):    
-    kd_logger.info( 'call get_mytask_list' )
+    logging.info( 'call get_mytask_list' )
     retu_data = []
-    for record in Schedule_Status.objects.using('kd_agent_bdms').filter(status=3L):
+    for record in Schedule_Status.objects.filter(status=3L):
         d = {}
         retu_data.append(d) 
     
@@ -287,8 +268,8 @@ def get_mytask_list(request):
         d['status'] = record.status
         d['result'] = record.result
     
-    kd_logger.debug( 'call get_mytask_list query bdms data : %s' % retu_data )
-    kd_logger.info( 'call get_mytask_list query bdms data successful' )
+    logging.debug( 'call get_mytask_list query bdms data : %s' % retu_data )
+    logging.info( 'call get_mytask_list query bdms data successful' )
     return generate_success( data = retu_data )
 
 def format_datetime_obj(datetime_obj):
@@ -301,7 +282,7 @@ def format_datetime_obj(datetime_obj):
 @return_http_json
 def get_mytask_graph(request):
     import requests
-    kd_logger.info( 'call get_mytask_graph' )
+    logging.info( 'call get_mytask_graph' )
     url1 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/accounts/login/'  #模拟登陆BDMS
     url2 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/ide/schedule/directedgraphdata/?username=all&status=all&taskname=&env=0'  #任务运行网络图 rest api
     data={"username":settings.BDMS_USERNAME,"password": settings.BDMS_PASSWORD}
@@ -310,9 +291,9 @@ def get_mytask_graph(request):
             "Accept-Language":"zh-CN,zh;q=0.8",
             "Cache-Control":"no-cache",
             "Connection":"keep-alive",
-            "Host":"172.24.100.40:10001",
+            "Host":"172.24.2.114:10010",
             "Pragma":"no-cache",
-            "Referer":"http://172.24.100.40:10001/ide/schedule/directedgraph/",
+            "Referer":"http://172.24.2.114:10010/ide/schedule/directedgraph/",
             "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
             "X-Requested-With":"XMLHttpRequest"
             }
@@ -321,63 +302,227 @@ def get_mytask_graph(request):
         r1 = req.post(url1, data=data, headers=headers)
         r2 = req.get(url2)
         if r1.status_code and r2.status_code == 200:
-            kd_logger.debug( 'get my task graph data success ')
+            logging.debug( 'get my task graph data success ')
             dic = eval(r2.text)
             all_task = []
             data = {}
             nodes = []
-            edges = []
-            #处理节点数据及颜色信息
             for i in dic['task_info']:
                 for j in dic['task_process']:
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 1:  #执行完成(成功)
-                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#87d068"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 2:  #执行完成(失败)
-                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#F50"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 2:  #等待执行
-                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#2db7f5"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 3:  #执行中
-                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#0000FF"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 1:  #等待调度
-                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#A9A9A9"})
-            # 处理依赖关系
-            for depen in dic['task_info']:
-                if depen['input']:
-                    for detal in depen['input']:
-                        edges.append({"from": detal, "to": depen['id']})                 
+                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 1:
+                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#C2FABC"})
+                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 2:
+                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#FF0000"})
             data["nodes"] = nodes
-            data["edges"] = edges
+            data["edges"] = [{}]
             return generate_success( data=data )
         else:
-            kd_logger.error('get my tsk graph data error ')
+            logging.error('get my tsk graph data error ')
             return generate_failure( 'get my tsk graph data error ' )
     except Exception, e:
         s = "get mytask graph data occured exception : %s" % str(e)
-        kd_logger.error(s)
+        logging.error(s)
         return generate_failure(s)
 
+@csrf_exempt
+@return_http_json
+def mytask_get_old_records(request):
+    logging.debug( 'call mytask_get_old_records : %s ' % request )
+    oldestrecordid = int(request.POST.get('oldestrecordid'))
+    requestnumber = int(request.POST.get('requestnumber'))
+    keywords = json.loads(request.POST.get('keywords'))
+    
+    '''
+    oldestrecordid = -1 
+    requestnumber = 303 
+    keywords = {
+        'taskname': 'hyn',
+        'shelltype': 'ALL', # HIVE SHELL SQOOP SPARK
+        'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
+        'startdate': '2015-08-10T00:00:00',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
+        'enddate': '2016-08-30T23:59:59', 
+    }'''
 
-from django.http import StreamingHttpResponse
-def download(request):
-    sys = request.GET.get('sys')
-    def readfile(file_name, chunk_size=262144):
-        with open(file_name) as f:
-            while True:
-                c = f.read(chunk_size)
-                if c:
-                    yield c
-                else:
-                    break
-    osx_file = settings.KUBECTL_OSX
-    linux_file = settings.KUBECTL_LINUX
-    if sys == 'osx':
-        response = StreamingHttpResponse(readfile(osx_file))
-        response['Content-Type'] = 'application/octet-stream'
-        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(osx_file)
-    elif sys == 'linux':
-        response = StreamingHttpResponse(readfile(linux_file))
-        response['Content-Type'] = 'application/octet-stream'
-        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(linux_file)
+    convert_dict(keywords)
+    retu_data = []
+    if oldestrecordid == -1:
+        oldestrecordid = 0xFFFFFFFFFFFFFFFFFF
+    
+    filtered_tasks = query_tasks(name=keywords['taskname'], scripttype=keywords['shelltype'] )
+    info_dict = {}
+    for task in filtered_tasks:
+        info_dict[ task.id ] = task.name
+
+    # 如果Task表中没有满足taskname、shelltype的双重约束，则直接返回空列表
+    if filtered_tasks.count() == 0:
+        return generate_success( data = {'records': []} )
+
+    filtered_records = query_records( result=keywords['executeresult'],
+                                      beginning_exec=keywords['startdate'],
+                                      deadline_exec=keywords['enddate'],
+                                      id=oldestrecordid,
+                                      new=False )
+    filtered_records = filtered_records.filter( task_id__in=filtered_tasks )
+    filtered_records = filtered_records[0:requestnumber]
+    for record in filtered_records:
+        retu_data.append({
+                'id':record.id,
+                'job_name':record.query_name,
+                'task_name':info_dict[record.task_id],
+                'ready_time':format_datetime_obj(record.ready_time),
+                'running_time':format_datetime_obj(record.running_time),
+                'leave_time':format_datetime_obj(record.leave_time),
+                'result':record.result,
+                'status':trans_result_to_status(record.result)
+            })
+    return generate_success( data = {'records': retu_data} )
+
+
+def trans_result_to_status(result):
+    d = {
+        0:'INIT',
+        1:'SUCCESS',
+        2:'FAILURE'
+    }
+    return d[result]
+
+def query_records(result,beginning_exec,deadline_exec,id,new = False):
+    QS = None
+    if new == True:
+        tmpq = Q(id__gt=id)
     else:
-        kd_logger.error('Download Error')
-    return response
+        tmpq = Q(id__lt=id)
+    QS = QS & tmpq if QS else tmpq
+    if result != '':
+        tmpq = Q(result=result)
+        QS = QS & tmpq if QS else tmpq
+
+    tmpq = Q(ready_time__gte=beginning_exec,ready_time__lte=deadline_exec)
+    QS = QS & tmpq if QS else tmpq
+    if QS:
+        return Schedule_Log.objects.filter(QS).order_by('-id')
+    else:
+        return Schedule_Log.objects.all().order_by('-id')
+
+@csrf_exempt
+@return_http_json
+def mytask_check_has_new_records(request):  
+    newestrecordid = int(request.POST.get('newestrecordid'))
+    keywords = json.loads(request.POST.get('keywords'))
+    '''
+    newestrecordid = 494665 
+    keywords = {
+        'taskname': 'HDFSCheck',
+        'shelltype': 'ALL', # ALL HIVE SHELL SQOOP SPARK
+        'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
+        'startdate': '2016-08-20T23:59:59',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
+        'enddate': '2016-08-31T23:59:59', 
+    }'''
+
+    convert_dict(keywords)
+
+    filtered_tasks = query_tasks(name=keywords['taskname'], scripttype=keywords['shelltype'] )
+    info_dict = {}
+    for task in filtered_tasks:
+        info_dict[ task.id ] = task.name
+
+    # 如果Task表中没有满足taskname、shelltype的双重约束，则直接返回空列表
+    if filtered_tasks.count() == 0:
+        return generate_success( data = {'hasnew': 0 } ) 
+
+    filtered_records = query_records( result=keywords['executeresult'],
+                                      beginning_exec=keywords['startdate'],
+                                      deadline_exec=keywords['enddate'],
+                                      id=newestrecordid,
+                                      new=True )
+    filtered_records = filtered_records.filter( task_id__in=filtered_tasks )
+    return generate_success( data = {'hasnew': 0 if filtered_records.count() == 0 else 1 } )
+ 
+
+@csrf_exempt
+@return_http_json
+def mytask_get_new_records(request):
+    newestrecordid = int(request.POST.get('newestrecordid'))
+    keywords = json.loads(request.POST.get('keywords'))
+    '''
+    newestrecordid = 494702  
+    keywords = {
+        'taskname': 'HDFSCheck',
+        'shelltype': 'ALL', # ALL HIVE SHELL SQOOP SPARK
+        'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
+        'startdate': '2016-08-20T23:59:59',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
+        'enddate': '2016-08-31T23:59:59', 
+    }'''
+    convert_dict(keywords)
+    retu_data = []
+
+    filtered_tasks = query_tasks(name=keywords['taskname'], scripttype=keywords['shelltype'] )
+    info_dict = {}
+    for task in filtered_tasks:
+        info_dict[ task.id ] = task.name
+
+    # 如果Task表中没有满足taskname、shelltype的双重约束，则直接返回空列表
+    if filtered_tasks.count() == 0:
+        return generate_success( data = {'records': []} )
+
+    filtered_records = query_records( result=keywords['executeresult'],
+                                      beginning_exec=keywords['startdate'],
+                                      deadline_exec=keywords['enddate'],
+                                      id=newestrecordid,
+                                      new=True )
+    filtered_records = filtered_records.filter( task_id__in=filtered_tasks )
+    for record in filtered_records:
+        retu_data.append({
+                'id':record.id,
+                'job_name':record.query_name,
+                'task_name':info_dict[record.task_id],
+                'ready_time':format_datetime_obj(record.ready_time),
+                'running_time':format_datetime_obj(record.running_time),
+                'leave_time':format_datetime_obj(record.leave_time),
+                'result':record.result,
+                'status':trans_result_to_status(record.result)
+            })  
+    return generate_success( data = {'records': retu_data} )
+
+
+#查询脚本类型
+#def get_scripttype(name):
+#    try:
+#        return ScriptType.objects.get(name=name).id
+#    except :
+#        return None
+
+#根据条件查询任务
+def query_tasks(name=None, name_op = 'contains', scripttype=None):#,status=None,owner=None,export_flag=None):
+    QS = None
+    if name and name.strip() != '':
+        if name_op == '==':
+            QS = QS & Q(name=name) if QS else Q(name=name)
+        else :
+            QS = QS & Q(name__icontains=name) if QS else Q(name__icontains=name)
+    if scripttype:
+        QS = QS & Q(scripttype=scripttype) if QS else Q(scripttype=scripttype)
+    if QS:
+        return Task.objects.filter(QS)
+    else:
+        return Task.objects.all()
+
+def convert_dict(keywords):
+    scripttype = {
+        'ALL':0,
+        'HIVE':1,
+        'SQOOP':2,
+        'SHELL':3,
+        'SPARK':4
+    }
+    result = {
+        'ALL':'',
+        'INIT':0,
+        'SUCCESS':1,
+        'FAILURE':2
+    }
+    keywords['shelltype'] = scripttype[keywords['shelltype']]
+    keywords['executeresult'] = result[keywords['executeresult']]
+    keywords['startdate'] = datetime.strptime(keywords['startdate'], '%Y-%m-%dT%H:%M:%S')
+    keywords['enddate'] = datetime.strptime(keywords['enddate'], '%Y-%m-%dT%H:%M:%S')
+    return keywords

@@ -45,14 +45,8 @@ export default React.createClass({
        <div>
         <Tabs>
           <TabList>
-            <Tab>space信息</Tab>
             <Tab>成员管理</Tab>
           </TabList>
-          <TabPanel>
-          <Fetch style={{minHeight:100}} url={spaceInfoUrl} onSuccess={this.getSpaceInfo}>
-            <SpaceInfo />
-          </Fetch>
-          </TabPanel>
           <TabPanel>
           <Fetch style={{minHeight:100}} url={spaceInfoUrl} onSuccess={this.getSpaceInfo}>
             <SpaceManager url={this.state.url} refreshTable={this.refreshTable} cur_space={this.state.cur_space} is_admin={this.state.is_admin} />

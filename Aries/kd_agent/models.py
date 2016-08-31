@@ -11,7 +11,8 @@ class ScriptType(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=128)
     is_valid = models.BooleanField(default=True)
-#    
+    class Meta:
+        db_table = 'ide_scripttype'
 #    def __unicode__(self):
 #        return self.name
 #    class Meta:
@@ -144,7 +145,7 @@ class Task(models.Model):
 #    task_retry_times_choice = [(1, '1次'),(2, '2次'),(3, '3次')]
 #    task_retry_choice = [(5,'5分钟'),(15,'15分钟'),(30,'30分钟')]
 #    
-#    id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
 #    name = models.CharField(max_length=128)
     scripttype = models.ForeignKey(ScriptType)  # 任务类型，hql、python、shell等
 #    command = models.TextField(blank=True)
@@ -172,7 +173,7 @@ class Task(models.Model):
 #    groupid = models.CharField(max_length=256,blank=True)
 #
 #    reviewer = models.ForeignKey(User, related_name='ide_task_reviewer', null=True, blank=True) #任务的审核人
-#    ins_time = models.DateTimeField(auto_now=True)
+    ins_time = models.DateTimeField(auto_now=True)
 #    modify_time = models.DateTimeField(auto_now=True)
 #    is_valid = models.CharField(max_length=128,default='Y')
 #    parent_id = models.CharField(max_length=1024,blank=True)
