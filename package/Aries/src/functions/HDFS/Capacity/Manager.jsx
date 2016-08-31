@@ -6,22 +6,20 @@ import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd-ui/lib/message'
 
 const TabMonitor = React.createClass({
-  handleSliding(value){
-    console.log('sliding'+value);
-  },
-  handleSlid(value,space_name){
-    console.log(`slid:${value}, space_name:${space_name}`);
-    let url = `v1/hdfs///?op=UPSET&space_name=${space_name}`;
-    xhr({type: 'PUT',url: url,data:{"capacity":value},
+  handleSlid(value,spaceName){
+    console.log(`slid:${value}, spaceName:${spaceName}`);
+    let upsetUrl = this.props.getUrlData({ type : "UPSET",
+                                           spaceName : spaceName
+                                          });
+    xhr({type: 'PUT',url: upsetUrl,data:{"capacity":value},
       success(data) {
         message.success(data);
       }
     });
-
   },
   render:function(){
     let sliderData = this.props.sliderData.map((slider,i)=>{
-      return  <div >
+      return  <div>
                   <div className="col-sm-5 col-md-5 col-lg-5">
                   {slider.name}<Slider defaultValue={slider.value} tickValue={10} start={0} end={slider.end} suffix="G"
                   onSlid={(value)=>{this.handleSlid(value,slider.name)}} />

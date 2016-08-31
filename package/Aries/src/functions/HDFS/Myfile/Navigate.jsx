@@ -56,9 +56,9 @@ const Navigate = React.createClass({
     };
   },
   render(){
-        return <div  className="navigate">
-                {this.listManager[this.props.is_first].call(this)}
-               </div>
+    return <div  className="navigate">
+            {this.listManager[this.props.is_first].call(this)}
+           </div>
   }
 });
 
