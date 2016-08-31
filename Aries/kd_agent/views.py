@@ -2,7 +2,7 @@
 
 import json
 import time
-import kd_logger
+import logging
 import httplib
 import traceback
 
