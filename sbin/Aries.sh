@@ -1,4 +1,6 @@
 #!/bin/bash
+rmr -rf /tmp/Aries/download/
+mkdir -p /tmp/Aries/download/
 LOG_BASE_DIR="/tmp/sirius_log"
 mkdir -p $LOG_BASE_DIR
 HOME=`dirname $(cd "$(dirname "$0")"; pwd)`

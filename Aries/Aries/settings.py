@@ -277,7 +277,7 @@ WEBHDFS_RETRY_DELAY = 3
 HADOOP_RUN_SCRIPT = "/opt/pan.lu/gitsource/Aries/Aries/hdfs/hadoop-run.sh"
 
 SESSION_COOKIE_AGE=60*30
-
+FTP_LOCAL_DIR="/tmp/Aries/download/"
 #kubectl_file
 KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx_1_2_4')
 KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')
