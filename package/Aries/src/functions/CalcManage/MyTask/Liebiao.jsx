@@ -156,7 +156,7 @@ const TabLiebiao = React.createClass({
     this.stopCheckHasNewRecordInterval()
     this.tbodyScrollToHead()
 
-    CMDR.getMyTaskOldRecords( -1,30,this.queryKeywords(),( executedData ) => { 
+    CMDR.getMyTaskOldRecords( -1,50,this.queryKeywords(),( executedData ) => { 
       let data = executedData['records']
       this.setState ( { 
         "data": {
@@ -169,7 +169,7 @@ const TabLiebiao = React.createClass({
   },
 
   getMoreOldRecords:function(){
-    CMDR.getMyTaskOldRecords( this.getOldestID(),30,this.queryKeywords(),( executedData ) => { 
+    CMDR.getMyTaskOldRecords( this.getOldestID(),50,this.queryKeywords(),( executedData ) => { 
       let data = this.state.data['totalList'].concat( executedData['records'] )
       this.setState ( { 
         "data": {
@@ -314,7 +314,7 @@ const TabLiebiao = React.createClass({
             <tbody>
               <tr>
                 <td>任务名称：</td>
-                <td><Input ref="TaskNameInput" id="TaskNameInputControl" className="SearchItemControl" onChange={this.onTaskNameChanged} /></td>
+                <td><Input id="TaskNameInputControl" className="SearchItemControl" onChange={this.onTaskNameChanged} /></td>
                 
                 <td>脚本类型：</td>
                 <td>
