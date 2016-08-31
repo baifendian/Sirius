@@ -10,7 +10,6 @@ import { Row, Col } from 'bfd-ui/lib/Layout'
 import xhr from 'bfd-ui/lib/xhr'
 import { Spin } from 'antd'
 import { notification } from 'antd'
-
 import Input from 'bfd-ui/lib/Input'
 
 
@@ -48,7 +47,7 @@ const Disk_list = React.createClass({
     this.setState({loading:true})
       xhr({
         type: 'POST',
-        url: 'volumes/',
+        url: 'openstack/volumes/',
         data:{
           method: 'attach',
           disk: this.state.select_disk,
@@ -156,7 +155,7 @@ const Vm_Type=React.createClass({
     return (
       <Form 
         ref="form" 
-        action="bfddashboard/instances/" 
+        action="openstack/bfddashboard/instances/" 
         data={formData} 
         rules={this.rules} 
         onSuccess={this.handleSuccess}
@@ -225,7 +224,7 @@ const Forced_vm=React.createClass({
     return (
       <Form 
         ref="form" 
-        action="bfddashboard/instances/" 
+        action="openstack/bfddashboard/instances/" 
         data={formData} 
         rules={this.rules} 
         onSuccess={this.handleSuccess}
@@ -274,7 +273,7 @@ const Disk_model=React.createClass({
             this.setState({loading:true})
             xhr({
               type: 'GET',
-              url: 'volumes/',
+              url: 'openstack/volumes/',
               success(data) {
                 let disk_list=[]
                 let disk_object={}
@@ -283,7 +282,6 @@ const Disk_model=React.createClass({
                     disk_list.push(data['totalList'][i]['name'])
                     disk_object[data['totalList'][i]['name']]=data['totalList'][i]['id']
                   }}
-                //  console.log('disk_object',disk_object)
                 _this.setState({ disk_list,loading:false,disk_object })
                 }     
               })
@@ -295,7 +293,7 @@ const Disk_model=React.createClass({
       if (event['key'] == 3){
             xhr({
               type: 'GET',
-              url: 'flavors/',
+              url: 'openstack/flavors/',
               success(data) {
                 console.log(data)
                 let flavor_list=[]
@@ -336,7 +334,7 @@ const Disk_model=React.createClass({
     this.refs.model_disk.close()
       xhr({
         type: 'POST',
-        url: 'volumes/',
+        url: 'openstack/volumes/',
         data:{
           method: 'attach'
         },
@@ -390,10 +388,6 @@ const Disk_model=React.createClass({
                   }
                 })}
                  </div>
-                { /*<div className="create_host">
-                  <Button onClick={this.handleclose}>取消</Button>
-                  <Button onClick={this.handlerequest}>加载</Button>
-                 </div>*/}
               </ModalBody>
               </Spin> 
               

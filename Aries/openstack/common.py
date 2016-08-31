@@ -1,10 +1,10 @@
 #-*- coding: UTF-8 -*-
 import json
-from middleware.login.login import Login
+from openstack.middleware.login.login import Login
 from middleware.image.image import Image
 from middleware.flavor.flavor import Flavor
 #from common import json_data
-from middleware.vm.vm import Vm_manage
+from openstack.middleware.vm.vm import Vm_manage
 
 def json_data(json_status):
     print len(json_status)

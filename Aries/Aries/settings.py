@@ -60,7 +60,7 @@ ALLOWED_HOSTS = []
 APPEND_SLASH=False
 # Application definition
 INSTALLED_APPS = (
-    'django_admin_bootstrapped.bootstrap3',
+#    'django_admin_bootstrapped.bootstrap3',
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -164,6 +164,12 @@ LOGGING = {
             'formatter': 'complete',
             'filename' :'{0}/service.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
+        'openstack_log': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'complete',
+            'filename': '{0}/openstack.log'.format(LOG_BASE_DIR).replace('\\', '/')
+        },
         'console':{
             'level':'DEBUG',
             'class':'logging.StreamHandler',
@@ -199,6 +205,11 @@ LOGGING = {
             'handlers':['kd_agent_file','console'],
             'propagate': False,
             'level':'DEBUG',
+        },
+        'openstack_log': {
+            'handlers': ['openstack_log'],
+            'propagate': False,
+            'level': 'DEBUG',
         },
         'django.request': {
             'handlers': ['ac_file', 'mail_admins'],

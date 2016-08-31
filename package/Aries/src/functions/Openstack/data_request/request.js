@@ -31,7 +31,7 @@ var Datarequest = {
         	 console.log(retu_data)
         	 _this.setState({
                 loading:false,
-                url: "bfddashboard/instances/?"+Math.random(),
+                url: "openstack/bfddashboard/instances/?"+Math.random(),
                 button_status: false
             })
           // notification['info']({ message: '这是标题',description: '这是提示框的文案这是提示框示框的文案这是提示是提示框的文案这是提示框的文案',});

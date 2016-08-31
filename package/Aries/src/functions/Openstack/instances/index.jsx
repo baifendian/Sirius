@@ -27,7 +27,7 @@ export default React.createClass({
       loading:false,
       select_all:[],
       button_status:"disabled",
-    	url: "bfddashboard/instances/",
+    	url: "openstack/bfddashboard/instances/",
       column: [{
         title:'序号',
         key:'sequence'
@@ -70,17 +70,7 @@ export default React.createClass({
         title: '创建时间',
         key: 'created',
         order: true
-      }, /*{
-        title: '操作',        
-        render:(item, component)=> {
-          return (
-         <DropdownButton overlay={menu} type="primary">
-            启动
-          </DropdownButton>
-          )
-        },
-        key: 'operation'
-      }*/
+      }
       ]
     }
   },
@@ -161,18 +151,15 @@ export default React.createClass({
       //  host_stop['method'] = "start"
           xhr({
            type: 'POST',
-            url: 'bfddashboard/instances/',
+            url: 'openstack/bfddashboard/instances/',
             data: {
               method:"start",
               data:host_stop
             },
           success(data) {
-           //console.log(data)
-            //console.log(name)
             let start=''
             let error=''
             let stop=''
-           // message.success('启动成功')
             for (i in data){
               console.log(i)
               console.log(data[i])
@@ -192,7 +179,7 @@ export default React.createClass({
 
             _this.setState({
                 loading:false,
-                url: "bfddashboard/instances/?"+Math.random()
+                url: "openstack/bfddashboard/instances/?"+Math.random()
             })
           } 
         })
@@ -266,7 +253,7 @@ export default React.createClass({
     		break;
         case 5:
           this.setState({
-                url: "bfddashboard/instances/?"+Math.random()
+                url: "openstack/bfddashboard/instances/?"+Math.random()
             })
     }
 
@@ -279,7 +266,7 @@ export default React.createClass({
       console.log(name)
     //  let select_all=
       this.refs.modal.close()
-      OPEN.posthoststop(this,'bfddashboard/instances/',this.state.select_all,this.state.host_post)
+      OPEN.posthoststop(this,'openstack/bfddashboard/instances/',this.state.select_all,this.state.host_post)
     //  message.success('启动成功')
 
     }
@@ -356,11 +343,6 @@ export default React.createClass({
                  </div>
               </ModalBody>
           </Modal>
-        	{/*<Modal ref="modal">
-        	<Model_host
-        		test={this.state.test}
-        	/>
-        	</Modal>*/}
       	</div>
       		<div>
         	<DataTable 

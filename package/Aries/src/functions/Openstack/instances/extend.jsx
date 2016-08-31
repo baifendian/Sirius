@@ -49,7 +49,6 @@ const Create_model_disk  = React.createClass({
 		let html=""
 	},
 	create_disk(name,number,number_s){
-  	//console.log('test_1111')
   	if (name=='1'){
   		let arr= this.state.disk_list;
   		let disk_counters=this.state.disk_counter
@@ -87,11 +86,11 @@ const Create_model_disk  = React.createClass({
   			console.log('arr',arr)
   			disk_counters=disk_counters+1
   			this.setState({
-        		//formData:disk_length,
+      
   				disk_list:arr,
   				disk_number:disk_numbers,
   				disk_counter:disk_counters
-  				//host_disk:disk_arr
+  				
   			});
   			this.props.disks_m.setState({
   				host_disk:disk_mm,
@@ -100,22 +99,12 @@ const Create_model_disk  = React.createClass({
 
   		}
   }else{
-  	//console.log('aaa')
-  	//console.log('number',this.refs['disk']+number['itmes'])
-  	//console.log('number',this.refs['disk'+number['i']].context.form.props.data['disk'+number['i']]);
-  	
-  	//console.log("itmes",number['i'])
-  	//console.log('parent',this.props.disks_m);
-  	//console.log('itmes',number['item'])
   	let arr= this.state.disk_list;
   	let disk_arr=this.state.host_disk
   	let disk_mm=this.props.disks_m.state.host_disk
     let host_diskss=this.props.disks_m.state.host_disks
-  //	console.log(disk_arr)
   	if (this.state.disk_list.length>1){
   		let disk_numbers=this.state.disk_number+1
-  		//arr.pop();
-  		//arr.splice(number['i'],1,0)
   		arr.splice(number_s['i'],1)
       host_diskss.splice(number_s['i']-1,1)
   		delete this.refs[number['item']].context.form.props.data[number['item']]
@@ -154,11 +143,6 @@ const Create_model_disk  = React.createClass({
 	render(){
 		let nav = this.state.disk_list.map((item, i) => {
 		let disk='disk'+i
-    //let disk_brand={'brand':i}
-   // _this.setState({formData:disk_brand})
-   	//	console.log('item',item)
-    	//console.log(this.state.formData['brand'])
-		//console.log(disk)
 	 	if (i==0){
 	 		return (
 	 				<h1 key={i}></h1>
@@ -204,20 +188,15 @@ const Create_model = React.createClass({
         }
       },
   	  disk1(v){
-  	  	//console.log('this',this)
   	  	if (!v) {return '不能为空'
   	  }else{
   	  	v=v+"GB"
   	  	let disk_arr=self.state.host_disk
         for (var i=0;i<self.state.host_disks.length;i++ ){
-          //console.log(i)
-        //  console.log(self.state.host_disks[i])
-         // console.log(disk_arr)
           if (self.state.host_disks[i] == "disk1"){
               disk_arr.splice(i,1,v)
           }
         }
-  	  //	disk_arr.splice(0,1,v)
         console.log(self.state.host_disks)
   	  	self.setState({
   			host_disk:disk_arr
@@ -249,13 +228,10 @@ const Create_model = React.createClass({
   	  		v=v+"GB"
   	  		let disk_arr=self.state.host_disk
           for (var i=0;i<self.state.host_disks.length;i++ ){
-       //   console.log(i)
-         // console.log(self.state.host_disks[i])
           if (self.state.host_disks[i] == "disk3"){
               disk_arr.splice(i,1,v)
           }
         }
-  	  	//	disk_arr.splice(2,1,v)
   	  		self.setState({
   				host_disk:disk_arr
   	  		})
@@ -277,7 +253,6 @@ const Create_model = React.createClass({
   	  },
   	type(v){
   		console.log(v)
-  		//console.log(self.state.test_1)
   		xhr({
  			 type: 'POST',
  			 url: 'flavors/',
@@ -330,37 +305,22 @@ const Create_model = React.createClass({
       const self = this;
       xhr({
        type: 'GET',
-       url: 'images/',
+       url: 'openstack/images/',
        success(data) {
           console.log(data)
          self.setState(
               {host_images:data['name']}
            )
-       //  self.refs.spinObj.setState({ loading: false }
-         console.log(data.length)
-        // for (var i=0;i<data['totalList'].length;i++){
-         //   console.log(data['totalList'][i])
-           // console.log(i)
-         //}
        }
     }),
       xhr({
        type: 'GET',
-       url: 'flavors/',
+       url: 'openstack/flavors/',
        success(data) {
-          console.log(data)
           self.setState({
             host_flavors:data['name'],
             loading:false
             })
-        //  console.log(self.refs.spinObj)
-         // self.refs.spinObj.setState({spinning: true})
-        
-       //  console.log(data.length)
-        // for (var i=0;i<data['totalList'].length;i++){
-         //   console.log(data['totalList'][i])
-           // console.log(i)
-         //}
        }
     })
 
@@ -457,18 +417,12 @@ const Create_model = React.createClass({
     				<h5>{disk}</h5>
     			</Col>
    			</Row>
-   			{/*<Row style={{margin: "5px 0px 0px 0px"}}>
-      			<Col col="md-4" ><h4>物理机</h4></Col>
-    			<Col col="md-8" >
-    				<h4>{this.state.host_host}</h4>
-    			</Col>
-   			</Row>*/}
         </div>
         
      <div>
       <Form 
         ref="form" 
-        action="bfddashboard/instances/" 
+        action="openstack/bfddashboard/instances/" 
         data={formData} 
         rules={this.rules} 
         onSuccess={this.handleSuccess}
@@ -498,10 +452,6 @@ const Create_model = React.createClass({
           </FormSelect>
         </FormItem>
         <FormItem label="磁盘" name="name" className="disk_left" style={{height:'200px', overflow: 'auto'}}>
-        	{/*<div>{nav}</div> 
-        	<div>
-        	 <Icon type="plus-square" onClick={this.create_disk.bind(this,1)}/><span>您还可选配</span><span className="disk_span">{this.state.test_mum}</span><span>快</span>
-	     	</div> */}
 	     	<Create_model_disk disks_m={this}/>      		
         </FormItem>
         <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>创建</button>
@@ -528,44 +478,6 @@ const Progress_model=React.createClass({
       status:'',
     };
   },
-  componentWillMount:function() {
-   // console.log(argument)
-      const self=this
-    /*  let interval=setInterval(function(){
-          if (  self.state.percent > 99){
-            clearTimeout(interval)
-            //     console.log(window.percent)
-          }
-          else{
-            let percents=self.state.percent+10
-            self.setState({
-              percent:percents
-            })
-          }
-          },500)
-      */
-     /* let intervals=setInterval(function(){
-        if (self.state.status=='up' || self.state.status=="down"){
-            clearTimeout(intervals)
-        }else{
-            xhr({
-              type: 'GET',
-              url: 'bfddashboard/instances/',
-              data:{
-                method: "host_status",
-              },
-              success(data) {
-                console.log(data)
-                self.setState({
-                  status:'up'  
-                })
-               } 
-              })
-              }
-      },500)*/
-    // body...
-   
-    },
 
   increase() {
     let percent = this.state.percent + 10;
@@ -586,10 +498,6 @@ const Progress_model=React.createClass({
     return (
       <div>
         <Progress percent={this.state.percent} /><span>正在创建</span>
-        {/* <ButtonGroup>
-          <Button type="ghost" onClick={this.decline} icon="minus" />
-          <Button type="ghost" onClick={this.increase} icon="plus" />
-        </ButtonGroup>*/}
       </div>
     );
   },

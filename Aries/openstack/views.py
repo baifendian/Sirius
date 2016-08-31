@@ -8,15 +8,21 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required,permission_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect,HttpResponse
-from middleware.login.login import Login
-from middleware.image.image import Image
-from middleware.flavor.flavor import Flavor
+from openstack.middleware.login.login import Login,get_token
+from openstack.middleware.image.image import Image
+from openstack.middleware.flavor.flavor import Flavor
 from common import json_data
-from middleware.vm.vm import Vm_manage,Vm_control
-from middleware.volume.volume import Volume,Volume_attach
+from openstack.middleware.vm.vm import Vm_manage,Vm_control
+from openstack.middleware.volume.volume import Volume,Volume_attach
+
+#from
+from django.views.decorators.csrf import csrf_exempt
 import base64
 from decimal import *
 import json
+import logging
+openstack_log = logging.getLogger("openstack_log")
+
 
 
 def login(request):
@@ -71,11 +77,10 @@ def create_host(request):
             return HttpResponse(ret)
 
         return HttpResponseRedirect("/bfddashboard/instances/")
-
     return render_to_response('manage_host.html')
 
 #    return HttpResponse('aaa')
-
+@csrf_exempt
 def instances(request):
     ret={}
     disk=[]
@@ -96,10 +101,14 @@ def instances(request):
         print request.GET
         currentPages=request.GET.get('currentPage')
         pageSizes =request.GET.get('pageSize')
-        minpageSizes=(int(currentPages)-1)*int(pageSizes)
-        maxpageSizes=int(currentPages)*int(pageSizes)
-        print 'aaaaa',minpageSizes,maxpageSizes
-        print currentPages,pageSizes
+        if currentPages and pageSizes:
+            minpageSizes=(int(currentPages)-1)*int(pageSizes)
+            maxpageSizes=int(currentPages)*int(pageSizes)
+            print 'aaaaa',minpageSizes,maxpageSizes
+            print currentPages,pageSizes
+        else:
+            minpageSizes=0
+            maxpageSizes=0
      #   print json.dumps(host_list,indent=4)
         ret['totalList']=[]
         test_list=[]
@@ -262,8 +271,8 @@ def images(request):
     login.user_token_login()
     login.proid_login()
     login.token_login()
+    print get_token()
     image = Image()
-
     if request.method == 'GET':
         sys['totalList'] = []
         sys['name'] = {}
@@ -297,6 +306,7 @@ def images(request):
             sys['totalList'].append(ret)
         sys['currentPage'] = 1
         sys['totalPageNum'] = len(sys['totalList'])
+    openstack_log.info(sys)
     json_status=json_data(sys)
     response = HttpResponse(json_status)
     response['Access-Control-Allow-Origin']='*'

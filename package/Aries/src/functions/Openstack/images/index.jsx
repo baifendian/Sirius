@@ -12,7 +12,7 @@ export default React.createClass({
    getInitialState: function () {
     return {
       loading:false,
-      url: "images/",
+      url: "openstack/images/",
       column: [{
         title: '镜像名称',
         order: true,

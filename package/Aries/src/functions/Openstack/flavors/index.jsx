@@ -14,7 +14,7 @@ export default React.createClass({
 
     return {
       loading:false, 
-      url: "flavors/",
+      url: "openstack/flavors/",
       column: [{
         title: '名称',
         order: true,

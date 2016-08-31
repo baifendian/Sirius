@@ -1,11 +1,11 @@
 # coding:utf-8
 import urllib
 import time
-from middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog
-from middleware.db.db import Db
-from middleware.image.image import Image
-from middleware.login.login import get_token, get_proid
-from middleware.volume.volume import Volume, Volume_attach
+from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog
+#from openstack.middleware.db.db import Db
+from openstack.middleware.image.image import Image
+from openstack.middleware.login.login import get_token, get_proid
+from openstack.middleware.volume.volume import Volume, Volume_attach
 
 TIMEOUT = 60
 

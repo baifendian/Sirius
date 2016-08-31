@@ -13,7 +13,7 @@ export default React.createClass({
       
       test:"启动",
       data_test:"<h1>启动</h1>",
-      url: "volumes/",
+      url: "openstack/volumes/",
       column: [/*{
         title:'序号',
         key:'sequence'
@@ -140,34 +140,3 @@ export default React.createClass({
     )
   }
 })
-
-
-
-/*import React from 'react'
-import Task from 'public/Task'
-
-import { Pagination } from 'antd';
-//import { Row, Col } from 'bfd/Layout'
-
-export default React.createClass({
-
- 
-  handleChange(page){
-  	console.log(page)
-
-  },
-  render() {
-    return (
-      <div>
-        <h1>ModuleB</h1>
-        <Pagination defaultCurrent={1} total={50} onChange={this.handleChange}/>
-        <hr/>
-        
-
-      </div>
-
-    )
-  }
- 
-
-})*/

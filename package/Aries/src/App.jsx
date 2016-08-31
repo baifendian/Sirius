@@ -144,12 +144,12 @@ const App = React.createClass({
                   <NavItem href="openstack/images" title="镜像" />
                   <NavItem href="openstack/flavors" title="云类型" />
                 </NavItem>
-                <NavItem key={3} href="openstack" icon="credit-card-alt" title="存储">
+                <NavItem key={3} href="volumes" icon="credit-card-alt" title="存储">
                   <NavItem href="openstack/volumes" title="云磁盘" />
                   <NavItem href="#" title="备份" />
                 </NavItem>
 
-                <NavItem key={2} href="UserAuth" icon="th-large" title="用户管理">
+                <NavItem key={4} href="UserAuth" icon="th-large" title="用户管理">
                   <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
                 </NavItem>
 
