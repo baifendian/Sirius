@@ -398,6 +398,12 @@ def mytask_get_old_records(request):
     return generate_success( data = {'records': retu_data} )
 
 
+def format_datetime_obj(datetime_obj):
+    if datetime_obj:
+        return datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        return '<None>'
+
 def trans_result_to_status(result):
     d = {
         0:'INIT',
@@ -420,9 +426,9 @@ def query_records(result,beginning_exec,deadline_exec,id,new = False):
     tmpq = Q(ready_time__gte=beginning_exec,ready_time__lte=deadline_exec)
     QS = QS & tmpq if QS else tmpq
     if QS:
-        return Schedule_Log.objects.filter(QS).order_by('-id')
+        return Schedule_Log.objects.using('kd_agent_bdms').filter(QS).order_by('-id')
     else:
-        return Schedule_Log.objects.all().order_by('-id')
+        return Schedule_Log.objects.using('kd_agent_bdms').all().order_by('-id')
 
 @csrf_exempt
 @return_http_json
@@ -523,9 +529,9 @@ def query_tasks(name=None, name_op = 'contains', scripttype=None):#,status=None,
     if scripttype:
         QS = QS & Q(scripttype=scripttype) if QS else Q(scripttype=scripttype)
     if QS:
-        return Task.objects.filter(QS)
+        return Task.objects.using('kd_agent_bdms').filter(QS)
     else:
-        return Task.objects.all()
+        return Task.objects.using('kd_agent_bdms').all()
 
 def convert_dict(keywords):
     scripttype = {
