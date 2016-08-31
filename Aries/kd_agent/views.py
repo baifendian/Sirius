@@ -6,6 +6,7 @@ import logging
 import httplib
 import traceback
 
+from django.http import StreamingHttpResponse
 from datetime import datetime
 from django.conf import settings
 from django.utils import timezone
@@ -16,7 +17,6 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 
-from kd_agent.models import Schedule_Status
 from kd_agent.models import Schedule_Log
 from kd_agent.models import Task
 RETU_INFO_SUCCESS = 200
@@ -90,6 +90,30 @@ def get_k8s_data(url,params = {},timeout = 10 ):
     
 def restore_k8s_path(p):
     return p.replace('/k8s','')
+
+
+@csrf_exempt
+@return_http_json
+def get_overview_info(request,namespace):
+    kd_logger.info( 'call get_overview_info request.path : %s , namespace : %s' % (request.path,namespace) )
+    retu_dict = {
+        'pod_used':0,
+        'pod_total':100,
+        'task_used':0,
+        'task_total':100,
+        'memory_used':0,
+        'memory_total':100
+    }
+
+    # 获取pod个数
+    url = '/api/v1/namespaces/%s/pods' % namespace
+    pod_list = get_k8s_data( url )
+    if pod_list['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call %s query k8s pod info error : %s' % ( url,pod_list['msg']) )
+        return generate_failure( pod_list['msg'] )
+    retu_dict['pod_used'] = len( pod_list['data']['items'] )
+
+    return generate_success( data=retu_dict )
 
 
 @csrf_exempt
@@ -251,33 +275,6 @@ def __trans_obj_to_easy_dis(obj_info,head_str = 'obj'):
 
 @csrf_exempt
 @return_http_json
-def get_mytask_list(request):    
-    kd_logger.info( 'call get_mytask_list' )
-    retu_data = []
-    for record in Schedule_Status.objects.filter(status=3L):
-        d = {}
-        retu_data.append(d) 
-    
-        d['task'] = str(record.query_name)
-        d['category'] = record.category
-        d['ready_time'] = format_datetime_obj(record.ready_time)
-        d['running_time'] = format_datetime_obj(record.running_time)
-        d['leave_time'] = format_datetime_obj(record.leave_time)
-        d['status'] = record.status
-        d['result'] = record.result
-    
-    kd_logger.debug( 'call get_mytask_list query bdms data : %s' % retu_data )
-    kd_logger.info( 'call get_mytask_list query bdms data successful' )
-    return generate_success( data = retu_data )
-
-def format_datetime_obj(datetime_obj):
-    if datetime_obj:
-        return datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
-    else:
-        return '<None>'
-
-@csrf_exempt
-@return_http_json
 def get_mytask_graph(request):
     import requests
     kd_logger.info( 'call get_mytask_graph' )
@@ -321,6 +318,31 @@ def get_mytask_graph(request):
         s = "get mytask graph data occured exception : %s" % str(e)
         kd_logger.error(s)
         return generate_failure(s)
+
+def download(request):
+    sys = request.GET.get('sys')
+    def readfile(file_name, chunk_size=262144):
+        with open(file_name) as f:
+            while True:
+                c = f.read(chunk_size)
+                if c:
+                    yield c
+                else:
+                    break
+    osx_file = settings.KUBECTL_OSX
+    linux_file = settings.KUBECTL_LINUX
+    if sys == 'osx':
+        response = StreamingHttpResponse(readfile(osx_file))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(osx_file)
+    elif sys == 'linux':
+        response = StreamingHttpResponse(readfile(linux_file))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(linux_file)
+    else:
+        kd_logger.error('Download Error')
+    return response
+
 
 @csrf_exempt
 @return_http_json
