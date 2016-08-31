@@ -106,6 +106,8 @@ class HDFS(object):
     def upload_file_by_http(self, path, request):
         space_name = request.GET.get("space_name","")
         exec_user,space_path = getSpaceExecUserPath(space_name)
+        ac_logger.info("request.FILES:{0}".format(request.FILES))
+        ac_logger.info("request:{0}".format(request))
         f = request.FILES["files"]
         filename = f.name
         hdfs_logger.info("space_path:{0},path:{1}".format(space_path,path))
@@ -131,12 +133,17 @@ class HDFS(object):
             upload_file = open(local_file, 'rb')
             self.hdfs.create(target_path, upload_file)
         except HdfsException, e:
+            self.returned['code'] = StatusCode["InternalServerError"]
+            self.returned['data'] = "上传失败"
             hdfs_logger.error("%s使用http上传%s发生异常: %s" % (username, local_file, str(e)))
             self._update_upload_log(pk=log_pk, status=1)
         else:
             if os.path.exists(local_file):
                 os.remove(local_file)
             self._update_upload_log(pk=log_pk, status=0)
+            self.returned['code'] = StatusCode["OK"]
+            self.returned['data'] = "上传成功"
+        return self.returned
 
     def _upload_file_by_ftp(self, src_path, dest_path,exec_user,username):
         hdfs_logger.info("src_path:{0},dest_path:{1},exec_user:{2},username:{3}".format(src_path,dest_path,exec_user,username))
@@ -442,7 +449,7 @@ class HDFS(object):
             self.returned['msg'] = "OK"
             # get custom file status
             # self.return['data'] = [{custom_key: item.get('expect_key')} for item in self.returned]
-            unit = ["KB","MB","GB","TB"]
+            unit = ["B","KB","MB","GB","TB"]
             totalList = [
                 {
                     'name': item.get('pathSuffix'),
@@ -489,7 +496,7 @@ class HDFS(object):
             return self.returned
         else:
             self.returned['code'] = StatusCode["OK"]
-            unit = ["KB","MB","GB","TB"]
+            unit = ["B","KB","MB","GB","TB"]
             totalList = [
                 {
                     'name': item.get('pathSuffix'),

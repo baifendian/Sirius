@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 import traceback
 import datetime,time
 import os,sys,json
+import threading
 #from Aries.settings import HDFS_URL,HADOOP_RUN_SCRIPT,WEBHDFS_USER
 from django.conf import settings
 # use webhdfs rest api
@@ -144,6 +145,30 @@ def getshare(request,path):
         result["data"] = {"totalList":[],"totalPageNum":0,"currentPage":1}
     return result
 
+def compress_backgroud(exec_user,operator,args):
+    exitCode,data = run_hadoop(user_name=exec_user,operator="compress",args=[full_path])
+    if exitCode !=0:
+        hdfs_logger.error("压缩失败.日志如下:")
+        hdfs_logger.error(data)    
+
+#压缩文件
+def compress(request,path):
+    nowuser = getUser(request)
+    result = {}
+    space_name = request.GET.get("space_name")
+    space =getObjByAttr(Space,"name",space_name)[0]
+    space_path = space.address
+    exec_user = space.exec_user
+    full_path = os.path.realpath("/%s/%s/%s" %(os.path.sep,space_path,path))
+    hdfs_logger.info("compress full_path:{0}".format(full_path))
+    #单独启动一个线程进行压缩
+    t = threading.Thread(target=compress_backgroud,args=(exec_user,"compress",[full_path]))
+    t.start()
+    result["code"] = 200
+    result["data"] = "目录:{0}正在压缩.请稍等".format(path)
+    return result 
+    #exitCode,data = run_hadoop(user_name=exec_user,operator="compress",args=[full_path])
+    
 def share(request, path):
     if request.method == "POST":
         result = postshare(request, path)
@@ -295,6 +320,8 @@ def renameDir(request, path):
     exec_user,space_path = getSpaceExecUserPath(space_name)
     if isTrash != 0:
         source_path = trashPath(space_path)
+    else:
+        source_path = space_path
     destination = request.GET.get('destination','')
     path = os.path.realpath("/%s/%s/%s" % (os.path.sep,source_path,path))
     destination = os.path.realpath("/%s/%s/%s" % (os.path.sep,space_path,destination))
@@ -517,6 +544,7 @@ OP_DICT={
         "SHARE":share,
         "UPLOAD": upload,
         "MKDIRS":make_dir,
+        "COMPRESS":compress,
     },
     "PUT":{
         "UPSET":upSet,

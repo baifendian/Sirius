@@ -43,18 +43,16 @@ def is_admin(account,cur_space):
     if flag:
         return {"name":account.name,"cur_space":cur_space,"type":is_admin}
     else:
-        return ""
+        return {"cur_space":"","type":0}
+
 #@ensure_csrf_cookie
 def login(request):
-    ac_logger.info("######################cookie: {0}#######".format(request.COOKIES.get('csrftoken')))
-    ac_logger.info("######################login#######")
     if request.method == "POST":
         res = {}
         username = request.POST.get("username")
         password = request.POST.get("password")
         email = username + "@baifendian.com"
         ldap_user = ldap_get_vaild(username=username,passwd=password)
-        ac_logger.info("######################login####### %s" %ldap_user)
         if ldap_user:
             user = authenticate(username=username, password=password)
             if not user:
@@ -81,7 +79,8 @@ def login(request):
                 res["data"] = "username or password is error"
             response = HttpResponse(content_type='application/json')
             response.write(json.dumps(res))
-            response.set_cookie('csrftoken',request.COOKIES.get('csrftoken'))
+            #response.set_cookie('csrftoken',request.COOKIES.get('csrftoken',"S6ouKsk1kRrp5qsHlmd5fupVJewYitW3"))
+            response.set_cookie('csrftoken',"S6ouKsk1kRrp5qsHlmd5fupVJewYitW3")
             response["Access-Control-Allow-Origin"] = "*"
             response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
             return response
@@ -115,9 +114,11 @@ def login(request):
         ac_logger.info("##########user:%s" %user)   
         response =  render_to_response('index/index.html',locals())
         # set default cookie value
-        response.set_cookie('csrftoken',request.COOKIES.get('csrftoken','S6ouKsk1kRrp5qsHlmd5fupVJewYitW3'))
+        #response.set_cookie('csrftoken',request.COOKIES.get('csrftoken','S6ouKsk1kRrp5qsHlmd5fupVJewYitW3'))
+        response.set_cookie('csrftoken',"S6ouKsk1kRrp5qsHlmd5fupVJewYitW3")
         return response
 
+#@ensure_csrf_cookie
 def logout(request):
     result = {}
     try:
@@ -130,6 +131,7 @@ def logout(request):
         result["data"] = "logout failed."
     response = HttpResponse(content_type='application/json')
     response.write(json.dumps(result))
+    response.set_cookie('csrftoken',"S6ouKsk1kRrp5qsHlmd5fupVJewYitW3")
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
     return response

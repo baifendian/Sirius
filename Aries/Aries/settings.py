@@ -33,13 +33,14 @@ AUTH_LDAP_USER_ATTR_MAP = {
 "password": "password"
 }
 
-REST_BASE_URI="172.24.3.64:10010"
-SHARE_PROXY_BASE_URI="http://172.24.3.64:10086"
+REST_BASE_URI="172.24.3.64:10012"
+SHARE_PROXY_BASE_URI="http://172.24.3.64:10012"
 AMBARI_URL="http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/"
 HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
 HADOOP_CLIENT="hlg3p64-lupan"
 AMBARI_USER="admin"
 AMBARI_PASSWORD="admin"
+LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 
@@ -77,7 +78,7 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -136,31 +137,31 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'online',
-            'filename' : '/opt/pan.lu/gitsource/Sirius/log/error.log'.replace('\\','/')
+            'filename' : '{0}/error.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
         'ac_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius/log/service.log'.replace('\\','/')
+            'filename' :'{0}/service.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
         'cmd_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius/log/cmd.log'.replace('\\','/')
+            'filename' :'{0}/cmd.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
         'hdfs_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius/log/hdfs.log'.replace('\\','/')
+            'filename' :'{0}/hdfs.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
         'kd_agent_file': {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'/opt/pan.lu/gitsource/Sirius/log/service.log'.replace('\\','/')
+            'filename' :'{0}/service.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
         'console':{
             'level':'DEBUG',
@@ -290,5 +291,5 @@ FTP_CERTFILE = None
 SESSION_COOKIE_AGE=60*30
 
 #kubectl_file
-KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx__1_2_4')
+KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx_1_2_4')
 KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')
