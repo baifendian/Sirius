@@ -134,6 +134,10 @@ const App = React.createClass({
                       <NavItem  icon="equalizer" href={`CalcManage/CreateCluster/CC2?${params}`} title="云中心计算集群" />
                   </NavItem>
                </NavItem>
+	       <NavItem key={3} href="CodisCloud" icon="hand-right" title="codis云">
+                  <NavItem icon="codis" href={`CodisCloud/HostInfo?${params}`} title="host信息" />
+                  <NavItem icon="codis" href={`CodisCloud/CodisInfo?${params}`} title="codis信息" />
+               </NavItem>
 
               <NavItem key={2} href="UserAuth" icon="th-large" title="用户管理">
                 <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
