@@ -38,7 +38,8 @@ HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
 HADOOP_CLIENT="hlg3p64-lupan"
 AMBARI_USER="admin"
 AMBARI_PASSWORD="admin"
-LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-patch/Sirius/log"
+#LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-patch/Sirius/log"
+LOG_BASE_DIR="/root/jingxia.sun/dev/Sirius/log"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 
@@ -70,6 +71,7 @@ INSTALLED_APPS = (
     'user_auth',
     'hdfs',
     'kd_agent',
+    'codis',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -281,3 +283,15 @@ FTP_LOCAL_DIR="/tmp/Aries/download/"
 #kubectl_file
 KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx_1_2_4')
 KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')
+
+#codis设置
+CODIS_LOCAL_DIR = '/opt/jingxia.sun/codis/redisconf/'
+CODIS_COMMOND_DIR = '/root/jingxia.sun/Sirius/Aries/codis/commandlog/'
+CODIS_DATADIR = '/opt/jingxia.sun/codis/serverconf/data/'
+CODIS_LOGFILE_DIR = '/opt/jingxia.sun/codis/serverconf/log/'
+CODIS_PIDFILE_DIR = '/opt/jingxia.sun/codis/serverconf/pid/'
+CODIS_ZK_ADDR = '172.24.2.236:2181'
+CODIS_INDEX_LINE = 1
+CODIS_HOST_INFO = [0,'172.24.2.236','sys','',0,'a',0]
+CODIS_SHOME='/opt/jingxia.sun/codis/codis/rediscloud/'
+CODIS_MEMORY_MAX = 30

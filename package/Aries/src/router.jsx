@@ -100,18 +100,18 @@ export default render((
               })
           }}/>
         </Route>
-        <Route path="CodisCloud">
-          <Route path="CodisInfo" getComponent={(location, cb) => {
-            require.ensure([], require => {
-              cb(null, require('./functions/Codis/CodisInfo').default)
-            })
-          }}/>
-          <Route path="HostInfo" getComponent={(location, cb) => {
-            require.ensure([], require => {
-              cb(null, require('./functions/Codis/HostInfo').default)
-            })
-          }}/>
-        </Route>
+       </Route>
+       <Route path="CodisCloud">
+         <Route path="CodisInfo" getComponent={(location, cb) => {
+           require.ensure([], require => {
+             cb(null, require('./functions/Codis/CodisInfo').default)
+           })
+         }}/>
+         <Route path="HostInfo" getComponent={(location, cb) => {
+           require.ensure([], require => {
+             cb(null, require('./functions/Codis/HostInfo').default)
+           })
+         }}/>
        </Route>
 
       <Route path="login" getComponent={(location, cb) => {
