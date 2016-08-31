@@ -7,7 +7,6 @@ import logging
 import datetime
 import subprocess
 from django.conf import settings
-from hdfs.libs.ftp_operator import FTPOperator
 from hdfs.libs.hdfs_operator import HdfsClient
 from hdfs.models import *
 from hdfs.libs.hdfs_operator import HdfsClient, HdfsException
@@ -21,6 +20,8 @@ StatusCode = {
     "SUCCESS": 200,
     "FAILED": 500,
 }
+
+TableNoData = {"totalList":[],"totalPageNum":0,"currentPage":1}
 
 class HDFS(object):
     def __init__(self):
@@ -100,7 +101,7 @@ class HDFS(object):
         download_log.save()
 
     def upload_file_by_http(self, path, request):
-        space_name = request.GET.get("space_name","")
+        space_name = request.GET.get("spaceName","")
         exec_user,space_path = getSpaceExecUserPath(space_name)
         ac_logger.info("request.FILES:{0}".format(request.FILES))
         ac_logger.info("request:{0}".format(request))
@@ -142,7 +143,7 @@ class HDFS(object):
         return self.returned
 
     def download_file_by_http(self, path, request):
-        space_name = request.GET.get("space_name","")
+        space_name = request.GET.get("spaceName","")
         exec_user,space_path = getSpaceExecUserPath(space_name)
         hdfs_logger.info("space_path:{0},path:{1}".format(space_path,path))
         path = os.path.realpath("/%s/%s/%s" % (os.path.sep,space_path, path))
@@ -201,45 +202,59 @@ class HDFS(object):
         space_path = space[0].address 
         return space_path   
     
-    def list_status_share(self,real_path,request,space_name):
+    def list_status_share(self,request,path):
+        space_name = ""
+        self.returned['data'] = TableNoData
         try:
-            result = self.hdfs.list_status(real_path)     
-        except HdfsException,e:
+            shareId = request.GET.get("shareId","")
+            real_path,source_path = sharePath(shareId,path)
+            hdfs_logger.info("real_path:{0},dataShare:{1}".format(real_path,source_path))
+            result = self.hdfs.list_status(real_path)
+        except Exception,e:
             hdfs_logger.error("%s列出文件夹%s发生异常: %s" % (getUser(request).username,real_path, str(e)))
             self.returned['code'] = StatusCode["SUCCESS"]
-            self.returned['data'] = {"totalList":[],"totalPageNum":0,"currentPage":1}
-            return self.returned
         else:
             self.returned['code'] = StatusCode["SUCCESS"]
-            self.returned['msg'] = "OK"
             unit = ["B","KB","MB","GB","TB"]
             if result:
                 item = result[0]
                 if len(result) == 1 and item.get('pathSuffix') == "":
+                    #文件分享
                     totalList = [{
-                          'name': space_name.split("/")[-1],
+                          'name': source_path.split("/")[-1],
                           'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
                           'is_dir': 0,
                            'size' : unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-"
                     }]
                 else:
-                    totalList = [
-                        {
-                            'name': item.get('pathSuffix'),
-                            'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
-                            'is_dir': 0 if item.get('type') == "FILE" else 1,
-                            'size': unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
-                        } for item in result if item.get('pathSuffix') != ".Trash"
-                    ]
+                    #目录分享
+                    if path == "/":
+                        totalList = [{
+                            'name': source_path.split("/")[-1],
+                            'create_time':"-",
+                            'is_dir' :1,
+                            'size' : '-'
+                         }]
+                    else:
+                        totalList = [
+                            {
+                                'name': item.get('pathSuffix'),
+                                'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
+                                'is_dir': 0 if item.get('type') == "FILE" else 1,
+                                'size': unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
+                            } for item in result if item.get('pathSuffix') != ".Trash"
+                        ]
             else:
                 totalList = [{
-                    'name': space_name.split("/")[-1],
+                    'name': source_path.split("/")[-1],
                     'create_time':"-",
                     'is_dir' :1,
                     'size' : '-'
                  }]
             self.returned['data'] = {"totalList":totalList,"totalPageNum":len(totalList),"currentPage":1}
             hdfs_logger.info("liststatus:%s" %self.returned['data'])
+        finally:
+            self.returned['data']["space_name"] = space_name
             return self.returned
         
     def list_status(self, path, request):
@@ -258,8 +273,8 @@ class HDFS(object):
             self.returned['code'] = StatusCode["FAILED"]
             self.returned['data'] = "不存在该space: {0}".format(space_name)
             return self.returned
-        isTrash = request.GET.get("isTrash",0)
-        if isTrash != 0:
+        filterStr = request.GET.get("filter")
+        if filterStr.lower() == "trash":
             space_path = trashPath(space_path)
         real_path = os.path.realpath("/%s/%s" % (space_path, path))
         hdfs_logger.info("list_status: real_path:{0}".format(real_path))

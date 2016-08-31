@@ -65,7 +65,7 @@ def deleteshare(request,path):
 def postshare(request,path):
     result = {}
     path = os.path.realpath("/%s/%s" %(os.path.sep,path))
-    space_name = request.GET.get("space_name","")
+    space_name = request.GET.get("spaceName","")
     proxy_link = hashlib.md5("%s%s%s" %(space_name,path,int(time.time()))).hexdigest()
     proxy_link = "{0}/{1}/{2}".format(settings.SHARE_PROXY_BASE_URI,"HDFS/ShowShare",proxy_link)
     hdfs_logger.info("proxy_link:{0}".format(proxy_link)) 
@@ -98,7 +98,7 @@ def postshare(request,path):
             result["data"] = "分享失败"
             result["proxy_link"] = ""
     except:
-        hdfs_logger.debug(traceback.format_exc())
+        hdfs_logger.error(traceback.format_exc())
         result["code"]=StatusCode["FAILED"]
         result["data"] = "分享失败"
     return result
@@ -106,7 +106,7 @@ def postshare(request,path):
 #显示分享文件（夹）的信息
 def getshare(request,path):
     result = {}
-    space_name = request.GET.get("space_name")
+    space_name = request.GET.get("spaceName")
     hdfs_logger.info("space_name:{0}".format(space_name))
     if space_name:
         try:
@@ -147,7 +147,7 @@ def compress_backgroud(exec_user,operator,args):
 def compress(request,path):
     nowuser = getUser(request)
     result = {}
-    space_name = request.GET.get("space_name")
+    space_name = request.GET.get("spaceName")
     space =getObjByAttr(Space,"name",space_name)[0]
     space_path = space.address
     exec_user = space.exec_user
@@ -195,24 +195,28 @@ def get_delete(request, path):
 
 #删除文件（夹）
 def de_delete(request, path):
-    space_name = request.GET.get("spaceName",'')
-    spaces = getObjByAttr(Space,"name",space_name)
-    space = spaces[0]
-    space_path = space.address
-    exec_user = space.exec_user 
-    isTrash = request.GET.get("isTrash",0)
-    if isTrash != 0:
-        space_path = trashPath(space_path)
-    path = os.path.realpath("/%s/%s/%s" %(os.path.sep,space_path,path))
+    filterStr = request.GET.get("filter","").lower()
+    if filterStr == "trash":
+        space_name = request.GET.get("spaceName","")
+        exec_user,space_path = getSpaceExecUserPath(space_name)
+        source_path = trashPath(space_path)
+        path = os.path.realpath("/%s/%s/%s" % (os.path.sep,source_path,path))
+    elif filterStr == "share":
+        shareId = request.GET.get("shareId")
+        path,source_path = sharePath(shareId,path)
+    else:
+        space_name = request.GET.get("spaceName","")
+        exec_user,space_path = getSpaceExecUserPath(space_name)
+        path = os.path.realpath("/%s/%s/%s" % (os.path.sep,space_path,path))
+
     ac_logger.info("path:%s" %path)
-    op="DELETE"
     result={}
     nowuser = getUser(request)
     exitCode,data = run_hadoop(user_name=exec_user,operator="rmr",args=[path])
     ac_logger.info("data:%s" %data)
     if exitCode != 0:
-        result["code"] = StatusCode["FAILED"]
-        result["data"] = data
+        result["code"] = StatusCode["SUCCESS"]
+        result["data"] = "删除失败!"
     else:
         o_type = FileOperatorType.objects.get(name='delete')
         fileopt = DataOperator.objects.create(source_path=path, target_path="-", o_type=o_type, o_user=nowuser.username)
@@ -258,7 +262,7 @@ def upSet(request, path):
         body_data = request.data
         capacity_value = body_data["capacity"]
         hdfs_logger.info("upSet capacity_value:{0}".format(capacity_value))
-        space_name = request.GET.get("space_name","")
+        space_name = request.GET.get("spaceName","")
         #total = int(body_data['capacity'])
         if capacity_value > 0:
             space = Space.objects.get(name=space_name)
@@ -267,7 +271,7 @@ def upSet(request, path):
             space.capacity = capacity
             space.save()
         result["code"] = StatusCode["SUCCESS"]
-        result["data"] = "配额扩容成功".
+        result["data"] = "配额扩容成功"
     except:
         hdfs_logger.error(traceback.format_exc())
         result["code"] = StatusCode["SUCCESS"]
@@ -278,7 +282,7 @@ def upSet(request, path):
 #获取已使用容量和总容量
 def sumSpace(request, path):
     result={}
-    space_name = request.GET.get("space_name","")
+    space_name = request.GET.get("spaceName","")
     #没有space_name则直接返回所有的space容量统计
     if space_name:
         spaces = Space.objects.filter(name="space_name")
@@ -302,25 +306,34 @@ def sumSpace(request, path):
     return result
    
 #移动文件夹
-def renameDir(request, path):
-    space_name = request.GET.get("space_name","")
-    isTrash = request.GET.get("isTrash",0)
+def mv_or_cp(request, path):
+    hdfs_logger.info("1.....")
+    space_name = request.GET.get("spaceName","")
     exec_user,space_path = getSpaceExecUserPath(space_name)
-    if isTrash != 0:
-        source_path = trashPath(space_path)
-    else:
-        source_path = space_path
+    filterStr = request.GET.get("filter","").lower()
     destination = request.GET.get('destination','')
-    path = os.path.realpath("/%s/%s/%s" % (os.path.sep,source_path,path))
     destination = os.path.realpath("/%s/%s/%s" % (os.path.sep,space_path,destination))
+    if filterStr == "trash":
+        source_path = trashPath(space_path)
+        path = os.path.realpath("/%s/%s/%s" % (os.path.sep,source_path,path))
+        hdfs_logger.info("2")
+    elif filterStr == "share":
+        hdfs_logger.info("3")
+        shareId = request.GET.get("shareId")
+        path,source_path = sharePath(shareId,path)
+    else:
+        hdfs_logger.info("4")
+        path = os.path.realpath("/%s/%s/%s" % (os.path.sep,space_path,path))
+    hdfs_logger.info("5")
     hdfs_logger.info("path:{0},destination:{1}".format(path,destination))
     result = {}
-    if len(destination)>0:
-        try:  
-            exitCode,data = run_hadoop(user_name=exec_user,operator="mv",args=[path,destination])        
+    if len(destination) > 0:
+        try:
+            op = request.GET.get("op","mv").lower()
+            exitCode,data = run_hadoop(user_name=exec_user,operator=op,args=[path,destination])
             if exitCode == 0:
                 nowuser = getUser(request)
-                o_type = FileOperatorType.objects.get(name='mv')
+                o_type = FileOperatorType.objects.get(name=op)
                 fileopt = DataOperator.objects.create(source_path=path, target_path=destination, o_type=o_type, o_user=nowuser)
                 result["code"] = StatusCode["SUCCESS"]
                 result["data"] = "移动成功!"
@@ -335,7 +348,6 @@ def renameDir(request, path):
         hdfs_logger.info("用户%s的请求：目的路径不明确!"%(getUser(request)))
         result["code"] = StatusCode["SUCCESS"]
         result["data"] = "移动失败!"
-
     return result
 
 def list_status(request, path):
@@ -372,41 +384,27 @@ def make_dir(request, path):
     hdfs = HDFS()
     return hdfs.make_dir(path, request)
 
-def copy_file(request, path):
-    path = os.path.realpath("/%s/%s" % (os.path.sep, path))
-    hdfs = HDFS()
-    return hdfs.copy_file(path, request)
-
 def upload(request, path):
-    #path = os.path.realpath("%s%s" % (os.path.sep, path))
+    path = os.path.realpath("%s/%s" % (os.path.sep, path))
     hdfs = HDFS()
     return hdfs.upload(path, request)
 
 def download(request, path):
-    #path = os.path.realpath("%s%s" % (os.path.sep, path))
+    path = os.path.realpath("%s/%s" % (os.path.sep, path))
     hdfs = HDFS()
     return hdfs.download(path, request)
 
 def showShare(request,path):
+    result = {}
     try:
-        shareId = request.GET.get("shareId","")
-        result = {}
-        dataShare = DataShare.objects.filter(proxy_path__icontains=shareId)[0]
-        source_path = dataShare.source_path
-        space_name = dataShare.space_name
-        exec_user,space_path = getSpaceExecUserPath(space_name)
-        hdfs_logger.info("space_path:{0}, source_path:{1},path:{2}".format(space_path,source_path,path))
-        real_path = os.path.realpath("%s/%s/%s/%s" %(os.path.sep,space_path,source_path,path))
-        hdfs_logger.info("real_path:{0}".format(real_path))
-        #获取对应的子列表 从分享的目录开始返回。而不是子目录.如果real_path为 "/"
+        path = os.path.realpath("%s/%s" %(os.path.sep,path))
         hdfs = HDFS()
-        result = hdfs.list_status_share(real_path,request,space_name)
-        result["data"]["space_name"] = space_name
-        return result;
+        result = hdfs.list_status_share(request,path)
     except Exception,e:
         hdfs_logger.error(traceback.format_exc())
         result["code"] = StatusCode["SUCCESS"]
         result["data"] = TableNoData
+    finally:
         return result
 
 def HostStateGET(request):
@@ -534,8 +532,8 @@ OP_DICT={
     },
     "PUT":{
         "UPSET":upSet,
-        "RENAME":renameDir,
-        "CP": copy_file,
+        "MV":mv_or_cp,
+        "CP":mv_or_cp,
     },
     "DELETE":{
         "DELETE":delete,
