@@ -58,7 +58,12 @@ export default React.createClass({
     _this.oriData = executedData
   },
   checkToRequestData(){
+        // 如果当前保存的namespace与实时获取的namespace相同，则不再重新请求
+    // 否则，重新请求数据
+    if ( this.curNameSpace !== CMDR.getCurNameSpace(this) ){
       CMDR.getCodisList( this,this.xhrCallback )
+      this.curNameSpace = CMDR.getCurNameSpace(this)
+    }
     },
 
   handleEdit(product_id,new_addr) {
@@ -203,7 +208,7 @@ onTableRowClick( record ){
        success:data =>{
         message.success("扩容成功!", 2);
         this.curNameSpace = undefined;
-        this.forceUpdate();
+        this.checkToRequestData();
       }
     });
    this.refs.addmem.close()
@@ -220,7 +225,7 @@ handleSave_a() {
         message.success("添加成功!", 2);
         this.modalClose();
         this.curNameSpace = undefined;
-        this.forceUpdate();
+        this.checkToRequestData();
       }
     });
 this.refs.modal.close();
@@ -236,7 +241,7 @@ handleSave2() {
         message.success("添加proxy请求已下发!", 2);
         this.modalClose();
         this.curNameSpace = undefined;
-        this.forceUpdate();
+        this.checkToRequestData();
       }
     });
  this.refs.addproxy.close();
@@ -252,7 +257,7 @@ handleSave3() {
         message.success("删除成功!", 2);
         this.modalClose();
         this.curNameSpace = undefined;
-        this.forceUpdate();
+        this.checkToRequestData();
       }
     });
  this.refs.deletecodis.close();
