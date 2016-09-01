@@ -1,12 +1,12 @@
 # coding:utf-8
 import sys
 import time
-from middleware.flavor.flavor import Flavor
-from middleware.login.login import Login
-from middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
-from middleware.volume.volume import Volume
-from middleware.image.image import Image
-from middleware.common.common import run_in_thread
+from Aries.openstack.middleware.flavor.flavor import Flavor
+from Aries.openstack.middleware.login.login import Login
+from Aries.openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
+from Aries.openstack.middleware.volume.volume import Volume
+from Aries.openstack.middleware.image.image import Image
+from Aries.openstack.middleware.common.common import run_in_thread
 import json
 
 
@@ -151,6 +151,13 @@ class Test_Module():
         image_name = ""
         ret = vm.delete_node(image_name)
         print ret
+
+    def test_vm_resize(self):
+        self.test_login()
+        vm_id = ""
+        vm = Vm_control()
+        flavor = ""
+        vm.resize(vm_id,flavor)
 
     def test_thread(self):
         def test_t(a):

@@ -1,7 +1,7 @@
 # coding:utf-8
 import sqlite3
 import json
-from openstack.middleware.common.common import DB_PATH, plog
+from Aries.openstack.middleware.common.common import DB_PATH, plog
 
 
 class Db:

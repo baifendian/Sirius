@@ -1,11 +1,11 @@
 # coding:utf-8
 import urllib
 import time
-from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog
-#from openstack.middleware.db.db import Db
-from openstack.middleware.image.image import Image
-from openstack.middleware.login.login import get_token, get_proid
-from openstack.middleware.volume.volume import Volume, Volume_attach
+from Aries.openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog
+from Aries.openstack.middleware.db.db import Db
+from Aries.openstack.middleware.image.image import Image
+from Aries.openstack.middleware.login.login import get_token, get_proid
+from Aries.openstack.middleware.volume.volume import Volume, Volume_attach
 
 TIMEOUT = 60
 
@@ -238,7 +238,7 @@ class Vm_control:
         vm_mange = Vm_manage()
         while flag:
             tmp_ret = vm_mange.show_detail(vm_id)
-            if tmp_ret.get("server", {}).get("status", "") == status:
+            if tmp_ret.get("server", {}).get("status", "") in status:
                 flag = False
             else:
                 time.sleep(1)
@@ -377,11 +377,13 @@ class Vm_control:
         params = {"resize": {"flavorRef": flavor_id, "OS-DCF:diskConfig": "AUTO"}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
-        self.wait_complete(vm_id, "VERIFY_RESIZE")
+        t1 = run_in_thread(self.wait_complete,vm_id, ["VERIFY_RESIZE"],timeout=TIMEOUT)
+        assert t1 == 0
         params = {"confirmResize": ""}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
-        self.wait_complete(vm_id, "ACTIVE")
+        t2 = run_in_thread(self.wait_complete,vm_id, ["ACTIVE","SHUTOFF"],timeout=TIMEOUT)
+        assert t2 == 0
         return ret
 
     @plog("vm_control.create_backup")
