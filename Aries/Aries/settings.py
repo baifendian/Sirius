@@ -38,8 +38,7 @@ HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
 HADOOP_CLIENT="hlg3p64-lupan"
 AMBARI_USER="admin"
 AMBARI_PASSWORD="admin"
-#LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-patch/Sirius/log"
-LOG_BASE_DIR="/root/jingxia.sun/dev/Sirius/log"
+LOG_BASE_DIR="/tmp/sirius/"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 
@@ -276,7 +275,7 @@ WEBHDFS_TIMEOUT = 10
 WEBHDFS_MAX_TRIES = 2
 WEBHDFS_RETRY_DELAY = 3
 # HADOOP_RUN_SCRIPT = os.path.join(BASE_DIR, os.path.pardir, 'sbin/hadoop-run.sh')
-HADOOP_RUN_SCRIPT = "/opt/pan.lu/gitsource/Aries/Aries/hdfs/hadoop-run.sh"
+HADOOP_RUN_SCRIPT = "hadoop-run.sh"
 
 SESSION_COOKIE_AGE=60*30
 FTP_LOCAL_DIR="/tmp/Aries/download/"
