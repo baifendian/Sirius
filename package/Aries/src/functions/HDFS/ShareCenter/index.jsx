@@ -4,12 +4,12 @@ import './index.less'
 import DataTable from 'bfd-ui/lib/DataTable'
 import confirm from 'bfd-ui/lib/confirm'
 import Fetch from 'bfd-ui/lib/Fetch'
-import { Select, Option } from 'bfd-ui/lib/Select2'
 import TextOverflow from 'bfd-ui/lib/TextOverflow'
 import Icon from 'bfd-ui/lib/Icon'
-import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd-ui/lib/message'
 import {Link} from 'react-router'
+import HdfsConf from '../Conf/HdfsConf'
+import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
   handleSuccess(data){
@@ -24,13 +24,10 @@ export default React.createClass({
               key:"id",
               render:(item, component)=> {
                   let proxy_path = component.proxy_path;
-                  console.log(proxy_path);
-                  //取倒数第2个
-                  let proxy_arr = proxy_path.split("/");
-                  proxy_arr.pop();
-                  let hash = proxy_arr.pop();
-                  console.log(hash);
-                  let url = `/HDFS/ShowShare/${hash}`;
+                  let proxy_arr = proxy_path.split("/").slice(-3);
+                  let proxyStr = proxy_arr.join("/")
+                  let spaceName = HdfsConf.getCurSpace(this);
+                  let url = `/${proxyStr}?cur_space=${spaceName}`;
                   return <Link to={url}>{component.id}</Link>
               },
              },{
@@ -38,13 +35,10 @@ export default React.createClass({
               key:"proxy_path",
               render:(item, component)=> {
                 let proxy_path = component.proxy_path;
-                console.log(proxy_path);
-                //取倒数第2个
-                let proxy_arr = proxy_path.split("/");
-                proxy_arr.pop();
-                let hash = proxy_arr.pop();
-                console.log(hash);
-                let url = `/HDFS/ShowShare/${hash}?cur_space=${this.props.location.query.cur_space}`;
+                let proxy_arr = proxy_path.split("/").slice(-3);
+                let proxyStr = proxy_arr.join("/")
+                let spaceName = HdfsConf.getCurSpace(this);
+                let url = `/${proxyStr}?cur_space=${spaceName}`;
                 return <Link to={url}>{component.proxy_path}</Link>
               },
              },{
@@ -65,10 +59,25 @@ export default React.createClass({
              }]
             };
   },
+  requestArgs:{
+    pageName : "ShareCenter",
+    type : "",
+    spaceName : "",
+  },
+  getUrlData({type="",spaceName=""}){
+    this.requestArgs.type = type;
+    this.requestArgs.spaceName = spaceName;
+    return HdfsConf.getUrlData(this.requestArgs);
+  },
   render() {
+    let spaceName = HdfsConf.getCurSpace(this);
+    let shareUrl = this.getUrlData({ type : "SHARE",
+                                     spaceName : spaceName
+                                    });
     return (
         <div>
-          <Fetch style={{minHeight:0}} url={`v1/hdfs///?space_name=${this.props.location.query.cur_space}&op=SHARE`} onSuccess={this.handleSuccess}>
+          <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
+          <Fetch style={{minHeight:0}} url={shareUrl} onSuccess={this.handleSuccess}>
             <DataTable data={this.state.data} column={this.state.column}></DataTable>
           </Fetch>
         </div>

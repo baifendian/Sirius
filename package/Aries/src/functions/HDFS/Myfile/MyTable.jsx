@@ -1,12 +1,10 @@
 import React from 'react'
 import Task from 'public/Task'
-import CopyToClipboard from 'react-copy-to-clipboard';
+import CopyToClipboard from 'react-copy-to-clipboard'
 import './index.less'
-import { Select, Option } from 'bfd-ui/lib/Select2'
 import DataTable from 'bfd-ui/lib/DataTable'
 import Upload from 'bfd-ui/lib/Upload'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
-import ClearableInput from 'bfd-ui/lib/ClearableInput'
 import xhr from 'bfd-ui/lib/xhr'
 import Icon from 'bfd-ui/lib/Icon'
 import confirm from 'bfd-ui/lib/confirm'
@@ -25,9 +23,13 @@ const MyTable = React.createClass({
   },
   trash(path,component){
     path = `${this.props.cur_path}/${path}`;
-    let url = `v1/hdfs/${path}/?op=DELETE&spaceName=${this.props.cur_space}`.replace(/\/\//g,"/");
+    let deleteUrl = this.props.getUrlData({ type : "DELETE",
+                                            spaceName : this.props.cur_space,
+                                            relativePath : path
+                                            });
+    deleteUrl = deleteUrl.replace(/\/\//g,"/");
     console.log("trash path"+path);
-    xhr({ type: 'DELETE',url:url,
+    xhr({ type: 'DELETE',url:deleteUrl,
         success: data =>{
           let dataTable = this.props.data;
           let totalList = this.props.data.totalList;
@@ -43,9 +45,12 @@ const MyTable = React.createClass({
   compress(path,component){
     console.log("compress....."+path);
     let cur_path = `${this.props.cur_path}/${path}`;
-    let url = `v1/hdfs/${cur_path}/?op=COMPRESS&space_name=${this.props.cur_space}`;
+    let compressUrl = this.props.getUrlData({ type : "COMPRESS",
+                                              spaceName : this.props.cur_space,
+                                              relativePath : cur_path
+                                              });
     xhr({
-      type: 'POST',url:url,
+      type: 'POST',url:compressUrl,
       success:data =>{
         //弹框提示数据正在压缩
         message.success(data,2);
@@ -55,23 +60,26 @@ const MyTable = React.createClass({
   share(path,component){
     let cur_path = `${this.props.cur_path}/${path}`
     console.log("share...."+cur_path);
-    let url = `v1/hdfs/${cur_path}/?permission=private&op=SHARE&Validity=10&space_name=${this.props.cur_space}`;
+    let shareUrl = this.props.getUrlData({ type : "SHARE",
+                                           spaceName : this.props.cur_space,
+                                           relativePath : cur_path
+                                          });
     xhr({
-      type: 'POST',url:url,
+      type: 'POST',url:shareUrl,
       success:data =>{
-        //弹框
         this.proxy_path = data;
         this.setState({modalTitle:"share"});
         this.openModal();
-        //message.success(data,2)
       }
     })
   },
   downLoad(path,component){
-    //http download
     path = `${this.props.cur_path}/${path}`;
-    let url = `v1/hdfs/${path}/?type=http&op=DOWNLOAD&space_name=${this.props.cur_space}`;
-    //使用表单的形式进行数据下载. xhr({type: 'GET',url: url,success(data) {console.log(data)}});
+    let downloadUrl = this.props.getUrlData({ type : "DOWNLOAD",
+                                              spaceName : this.props.cur_space,
+                                              relativePath : path
+                                            });
+    xhr({type: 'GET',url: downloadUrl,success(data) {console.log(data)}});
     console.log(component);
   },
   move(path){
@@ -83,7 +91,7 @@ const MyTable = React.createClass({
   tablePath:"",
   selectPathTree:"",
   iconType:{
-    0:()=>{return <span><Icon type="file" /></span>},
+    0:()=>{return <span><Icon type="file-text-o" /></span>},
     1:()=>{return <span><Icon type="folder" /></span>}
   },
   modalTitle:{
@@ -106,10 +114,16 @@ const MyTable = React.createClass({
     let targetPath =this.selectPathTree;
     let sourcePath = this.tablePath;
     console.log(`${sourcePath} --> ${targetPath}`);
-    let url = `v1/hdfs/${sourcePath}/?op=RENAME&destination=${targetPath}&space_name=${this.props.cur_space}`;
-    xhr({type: 'PUT',url: url,
+    let renameUrl = this.props.getUrlData({ type : "RENAME",
+                                            relativePath : sourcePath,
+                                            spaceName : this.props.cur_space,
+                                            targetPath : targetPath
+                                          });
+    xhr({type: 'PUT',url: renameUrl,
         success:data =>  {
-        message.success(data, 2);
+          message.success(data, 2);
+          let random = Math.floor(Math.random()*10000000000);
+          this.props.updateRandom(random);
       }
     });
     this.closeModal();
@@ -126,19 +140,24 @@ const MyTable = React.createClass({
     }
   },
   getUrl(value,pathData){
-    console.log(pathData);
     let treePath = pathData.map((i,j)=>{return i.name}).join("/");
     console.log(treePath);
-    let url = `v1/hdfs//${treePath}/?op=LISTSTATUSTREE&spaceName=${this.props.cur_space}`;
-    this.treePath=treePath;
-    return url;
+    let listChildrenTreeUrl = this.props.getUrlData({ type : "LIST_STATUS_TREE",
+                                                    spaceName : this.props.cur_space,
+                                                    relativePath : treePath
+                                                    });
+    this.treePath = treePath;
+    return listChildrenTreeUrl;
   },
   modalBody:{
     move:function(){
-       let url = `v1/hdfs///?op=LISTSTATUSTREE&spaceName=${this.props.cur_space}`;
+       let listRootTreeUrl = this.props.getUrlData({ type : "LIST_STATUS_TREE",
+                                                     spaceName : this.props.cur_space,
+                                                     relativePath : "/"
+                                                   });
        return <div>
                <div className="tree-div">
-                 <Fetch style={{minHeight:100}} url={url} onSuccess={this.handleTreeSuccess}>
+                 <Fetch style={{minHeight:100}} url={listRootTreeUrl} onSuccess={this.handleTreeSuccess}>
                     <Tree data={this.state.treeData} getUrl={this.getUrl} onActive={this.handleActive}/>
                  </Fetch>
                 </div>
@@ -178,7 +197,11 @@ const MyTable = React.createClass({
     //发送请求更新
     let new_relative_path = `${this.props.cur_path}/${value}`.replace("//","/");
     console.log(`new_relative_path:${new_relative_path} cur_space:${this.props.cur_space}`);
-    xhr({ type: 'POST',url: `v1/hdfs/${new_relative_path}/?op=MKDIRS&spaceName=${this.props.cur_space}`,
+    let mkdirsUrl = this.props.getUrlData({ type: "MKDIRS",
+                                          relativePath : new_relative_path,
+                                          spaceName : this.props.cur_space
+                                         });
+    xhr({ type: 'POST',url: mkdirsUrl,
         success:data1 =>  {
           let data = this.props.data;
           let totalList =data.totalList;
@@ -209,27 +232,46 @@ const MyTable = React.createClass({
       let cur_path=`/${item}`;
       cur_path = cur_path.replace("//","/");
       var itemText = "";
-      if(component.is_new==0){
-        itemText=<Editable defaultValue="new_dir" defaultEditing onChange={this.saveEdit} onCancel={this.cancelEdit} />;
+      if(component.is_new == 0){
+        itemText = <Editable defaultValue="new_dir" defaultEditing onChange={this.saveEdit} onCancel={this.cancelEdit} />;
       }else{
-        itemText = <a href="javascript:void(0);" onClick={()=>{this.skip(cur_path,component.is_dir)}} >{item}</a>
+        if(component.is_dir == 1){
+          itemText = <a href="javascript:void(0);" onClick={()=>{this.skip(cur_path,component.is_dir)}} >{item}</a>
+        }else{
+          itemText = <a href="javascript:void(0);" className="default-link" onClick={()=>{this.skip(cur_path,component.is_dir)}} >{item}</a>
+        }
       }
+      var aLink="";
+      if(component.is_dir == 1){
+          //目录
+          aLink = <span style={{marginRight: '5px'}} className="a-link" > {this.iconType[component.is_dir].call(this)}  {itemText}</span>
+      }else{
+          aLink = <span style={{marginRight: '5px'}} className="default-link" > {this.iconType[component.is_dir].call(this)}  {itemText}</span>
+      }
+      //DOWNLOAD URL
+      let new_relative_path = `${this.props.cur_path}/${cur_path}`.replace("//","/");
+      let downloadUrl = this.props.getUrlData({ type: "DOWNLOAD",
+                                                relativePath : new_relative_path,
+                                                spaceName : this.props.cur_space
+                                           });
 
       return <div className="table-div">
               <div className="table-div">
-                <a style={{marginRight: '5px'}}> {this.iconType[component.is_dir].call(this)} </a>
-                {itemText}
+                {aLink}
               </div>
               <div className="table-div-icon div-float">
-                <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要分享 ${cur_path} 吗?`,this.share,component)}}> <Icon type="share-alt" /></a>
                 <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定删除 ${cur_path} 吗?`,this.trash,component)}}> <Icon type="trash" /> </a>
-                <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要压缩 ${cur_path} 吗?`,this.compress,component)}}> <Icon type="compress" /> </a>
                 <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.move(cur_path)}}> <Icon type="arrows" /> </a>
-                {component.is_dir < 1 ? [
-                  <a href={`/v1/hdfs/${this.props.cur_path}/${cur_path}/?type=http&op=DOWNLOAD&space_name=${this.props.cur_space}`}
-                    style={{marginRight: '20px'}}> <Icon type="download" /> </a>
-
-                ] : null}
+                { this.props.list == "ALL" ?[
+                  <span>
+                    <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要分享 ${cur_path} 吗?`,this.share,component)}}> <Icon type="share-alt" /></a>
+                    <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(cur_path,`你确定要压缩 ${cur_path} 吗?`,this.compress,component)}}><Icon type="compress" /></a>
+                    {component.is_dir < 1 ? [
+                      <a href={downloadUrl}
+                        style={{marginRight: '20px'}}> <Icon type="download" /> </a>
+                    ] : null}
+                  </span>
+                  ]: null}
               </div>
             </div>
       },

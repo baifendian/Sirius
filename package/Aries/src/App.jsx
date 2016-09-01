@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { Nav, NavItem } from 'bfd/Nav'
 import xhr from 'bfd/xhr'
 import auth from 'public/auth'
+import conf from 'public/Conf/Conf'
 import env from './env'
 import './App.less'
 import { Select ,Option} from 'bfd-ui/lib/Select2'
@@ -49,12 +50,11 @@ const App = React.createClass({
   //space切换
   switchSpace(value){
     //更新用户默认cur_space
-    let url = `v1/user_auth/user/${value}/`
-    xhr({type: 'PUT',url: url,success:data=> {
+    let switchUrl = conf.getUrlData({ moduleName : "COMMON", pageName : "Head",
+                                      type : "SPACE_SWITCH", spaceName : value });
+    xhr({type: 'PUT',url: switchUrl,success:data=> {
         //需要切换space的权限
-        console.log("switchSpace:"+data);
         auth.user.type = data;
-        console.log(auth);
         this.setState({cur_space:value});
         this.props.history.push({
           pathname:this.props.location.pathname,
@@ -94,10 +94,7 @@ const App = React.createClass({
       if (!this.hasPermission()) {
         Children = <div>您无权访问该页面</div>
       }
-      let cur_space = this.props.location.query.cur_space;
-      if(cur_space==undefined){
-        cur_space = auth.user.cur_space;
-      }
+      let cur_space = conf.getCurSpace(this);
       let params=`cur_space=${cur_space}`;
       return (
         <div id="wrapper" className="container-fluid">
@@ -125,7 +122,7 @@ const App = React.createClass({
                   <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
                   <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
                </NavItem>
-
+               
                <NavItem key={1} href="CalcManage" icon="desktop" title="计算管理">
                   <NavItem icon="equalizer" href={`CalcManage/Overview?${params}`} title="概览" />
                   <NavItem icon="equalizer" href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
@@ -136,6 +133,10 @@ const App = React.createClass({
                       <NavItem  icon='equalizer' href={`CalcManage/CreateCluster/CC1?${params}`} title="开始使用 " />
                       <NavItem  icon="equalizer" href={`CalcManage/CreateCluster/CC2?${params}`} title="云中心计算集群" />
                   </NavItem>
+               </NavItem>
+	       <NavItem key={3} href="CodisCloud" icon="hand-right" title="codis云">
+                  <NavItem icon="codis" href={`CodisCloud/HostInfo?${params}`} title="host信息" />
+                  <NavItem icon="codis" href={`CodisCloud/CodisInfo?${params}`} title="codis信息" />
                </NavItem>
 
               <NavItem key={2} href="UserAuth" icon="th-large" title="用户管理">

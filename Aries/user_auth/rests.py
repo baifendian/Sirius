@@ -1,26 +1,10 @@
 #encoding=utf8
 #email: pan.lu@baifendian.com
-from django.http import HttpResponse
-from models import *
-#from serializers import *
-from django.http import Http404
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.request import Request
-from rest_framework_jsonp.renderers import JSONPRenderer
-from rest_framework import status
-from rest_framework import renderers
-from rest_framework.decorators import api_view
-from rest_framework.reverse import reverse
-from rest_framework import generics
 import logging
 ac_logger = logging.getLogger("access_log")
-from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
-from user_auth.models import Account,Role
-import json
 from service import *
-from tools import *
+from hdfs.tools import *
 
 class spaceList(APIView):
     '''
@@ -59,15 +43,15 @@ class spaceMember(APIView):
         return packageResponse(result)
 
     def options(self,request,pk,format=None):    
-	ac_logger.info("/spaceMemberOptions===========================")
+        ac_logger.info("/spaceMemberOptions===========================")
         result = {"code":200,"data":"options"}
         #result = spaceMemberPut(request,pk)
         return packageResponse(result)
 
     def delete(self,request,pk,format=None):
         ac_logger.info("/spaceMemberDelete===========================")
-	result ={"code":200,"data":"test"} 
-        return packageResponse(result)  
+        result ={"code":200,"data":"test"}
+        return packageResponse(result)
  
 class roleList(APIView):
     '''
