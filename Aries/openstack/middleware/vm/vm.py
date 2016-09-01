@@ -476,6 +476,22 @@ class Vm_control:
         assert ret != 1, "send_request error"
         return ret
 
+    @plog("vm_control.get_console")
+    def get_console(self, vm_id):
+        '''
+        主机备份
+        :return:
+        '''
+        ret = 0
+        assert self.token != "", "not login"
+        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        method = "POST"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = {"os-getVNCConsole":{"type":"novnc"}}
+        ret = send_request(method, IP_nova, PORT_nova, path, params, head)
+        assert ret != 1, "send_request error"
+        return ret
+
 
 class Vm_snap:
     def __init__(self, vm_id=""):
