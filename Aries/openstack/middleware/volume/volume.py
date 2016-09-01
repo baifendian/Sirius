@@ -1,8 +1,8 @@
 # coding:utf-8
 import time
 
-from Aries.openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog
-from Aries.openstack.middleware.login.login import get_token, get_proid
+from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog
+from openstack.middleware.login.login import get_token, get_proid
 
 
 class Volume:

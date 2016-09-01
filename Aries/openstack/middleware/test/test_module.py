@@ -1,12 +1,12 @@
 # coding:utf-8
 import sys
 import time
-from Aries.openstack.middleware.flavor.flavor import Flavor
-from Aries.openstack.middleware.login.login import Login
-from Aries.openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
-from Aries.openstack.middleware.volume.volume import Volume
-from Aries.openstack.middleware.image.image import Image
-from Aries.openstack.middleware.common.common import run_in_thread
+from openstack.middleware.flavor.flavor import Flavor
+from openstack.middleware.login.login import Login
+from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
+from openstack.middleware.volume.volume import Volume
+from openstack.middleware.image.image import Image
+from openstack.middleware.common.common import run_in_thread
 import json
 
 
@@ -158,6 +158,13 @@ class Test_Module():
         vm = Vm_control()
         flavor = ""
         vm.resize(vm_id,flavor)
+
+    def test_vm_console(self):
+        self.test_login()
+        vm_id = ""
+        vm = Vm_control()
+        ret = vm.get_console(vm_id)
+        print ret
 
     def test_thread(self):
         def test_t(a):

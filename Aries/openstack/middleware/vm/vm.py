@@ -1,11 +1,11 @@
 # coding:utf-8
 import urllib
 import time
-from Aries.openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog
-from Aries.openstack.middleware.db.db import Db
-from Aries.openstack.middleware.image.image import Image
-from Aries.openstack.middleware.login.login import get_token, get_proid
-from Aries.openstack.middleware.volume.volume import Volume, Volume_attach
+from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog
+from openstack.middleware.db.db import Db
+from openstack.middleware.image.image import Image
+from openstack.middleware.login.login import get_token, get_proid
+from openstack.middleware.volume.volume import Volume, Volume_attach
 
 TIMEOUT = 60
 
@@ -472,6 +472,22 @@ class Vm_control:
             params["rebuild"].update({"personality": personality})
         if preserve_ephemeral:
             params["rebuild"].update({"preserve_ephemeral": True})
+        ret = send_request(method, IP_nova, PORT_nova, path, params, head)
+        assert ret != 1, "send_request error"
+        return ret
+
+    @plog("vm_control.get_console")
+    def get_console(self, vm_id):
+        '''
+        主机备份
+        :return:
+        '''
+        ret = 0
+        assert self.token != "", "not login"
+        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        method = "POST"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = {"os-getVNCConsole":{"type":"novnc"}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
         return ret

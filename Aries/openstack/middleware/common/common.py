@@ -51,7 +51,7 @@ def init_log(logfile=os.path.join(LOG_PATH, "dashboard.log")):
         formatter = logging.Formatter('[%(asctime)s][%(levelname)s]: %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.INFO)
         return logger
     except:
         pass
