@@ -1,11 +1,11 @@
 <uwsgi>
-<pythonpath>/opt/pan.lu/gitsource/Sirius-patch/Sirius/Aries</pythonpath>
+<pythonpath>/opt/pan.lu/gitsource/Sirius-dev/Sirius/Aries</pythonpath>
   <module>Aries.wsgi</module>
   <master/>
   <harakiri>100</harakiri>
   <socket-timeout>100</socket-timeout>
   <processes>2</processes>
-  <daemonize>/tmp/sirius_log/uwsgi.log</daemonize>
+  <daemonize>/tmp/sirius/uwsgi.log</daemonize>
   <http>0.0.0.0:10086</http>
   <enable-threads></enable-threads>
 </uwsgi>

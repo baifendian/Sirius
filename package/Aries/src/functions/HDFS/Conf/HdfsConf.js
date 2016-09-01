@@ -1,4 +1,4 @@
-import conf from 'public/Conf/conf'
+import conf from 'public/Conf/Conf'
 const HdfsConf={
   //从location中获取cur_space
   getCurSpace(_this){

@@ -273,7 +273,7 @@ class HDFS(object):
             self.returned['code'] = StatusCode["FAILED"]
             self.returned['data'] = "不存在该space: {0}".format(space_name)
             return self.returned
-        filterStr = request.GET.get("filter")
+        filterStr = request.GET.get("filter","")
         if filterStr.lower() == "trash":
             space_path = trashPath(space_path)
         real_path = os.path.realpath("/%s/%s" % (space_path, path))

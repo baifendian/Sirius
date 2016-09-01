@@ -1,8 +1,9 @@
 #!/bin/bash
-rmr -rf /tmp/Aries/download/
+rm -rf /tmp/Aries/download/
 mkdir -p /tmp/Aries/download/
-LOG_BASE_DIR="/tmp/sirius_log"
+LOG_BASE_DIR="/tmp/sirius"
 mkdir -p $LOG_BASE_DIR
+echo "$LOG_BASE_DIR/uwsgi.log"
 HOME=`dirname $(cd "$(dirname "$0")"; pwd)`
 cd $HOME
 echo $HOME
