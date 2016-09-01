@@ -291,7 +291,7 @@ def get_mytask_graph(request):
             "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
             "X-Requested-With":"XMLHttpRequest"
             }
-    headers["Host"] = settings.BDMS_IP + ":" + BDMS_PORT
+    headers["Host"] = settings.BDMS_IP + ":" + settings.BDMS_PORT
     headers["Referer"] = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/ide/schedule/directedgraph/"
     try:
         req = requests.Session()
