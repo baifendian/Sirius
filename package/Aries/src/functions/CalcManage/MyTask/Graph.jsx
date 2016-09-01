@@ -31,13 +31,13 @@ const TabGraph = React.createClass({
     if ( this.height !== this.props.height ){
       setTimeout( ()=>{
         let graphPanel = ReactDOM.findDOMNode( this.refs.Graph2Name )
-        graphPanel.childNodes[0].style.height = this.props.height  + 'px'
+        graphPanel.childNodes[0].style.height = (this.props.height - 40)  + 'px'
         graphPanel.childNodes[0].style.background = '#FAFAFA'
       } )
       this.height = this.props.height
     }
-  
-    /*let data = {
+    /** 
+    let data = {
       nodes: [
             {id: 1, label: 'taskf', color:'#97C2FC', shape: 'dot',shapeProperties: {},size: 15},
             {id: 2, label: 'task 2', color:'#6E6EFD'},
