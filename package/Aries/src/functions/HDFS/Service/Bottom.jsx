@@ -53,13 +53,11 @@ const Bottom = React.createClass({
     }
   },
   handleChange(select,text){
+    let hostName = this.props.selectHost;
     //启动,停止
-    let operatorUrl = this.props.getUrlData({ type : "OPERATOR",
-                                              hostName : this.props.selectHost,
-                                              componentName : text,
-                                              operator : select
-                                             });
-    xhr({type: 'POST',url: operatorUrl,
+    let url = `v1/hdfs/${hostName}/${text}/${select}/`;
+    console.log(select,text,hostName,url);
+    xhr({type: 'POST',url: url,
       success(data) {
         message.success(data)
       }

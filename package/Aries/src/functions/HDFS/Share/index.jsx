@@ -4,12 +4,11 @@ import './index.less'
 import DataTable from 'bfd-ui/lib/DataTable'
 import confirm from 'bfd-ui/lib/confirm'
 import Fetch from 'bfd-ui/lib/Fetch'
+import { Select, Option } from 'bfd-ui/lib/Select2'
 import TextOverflow from 'bfd-ui/lib/TextOverflow'
 import Icon from 'bfd-ui/lib/Icon'
 import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd-ui/lib/message'
-import HdfsConf from '../Conf/HdfsConf'
-import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
   confirm_handler(id,confirm_str,func,component){
@@ -22,10 +21,8 @@ export default React.createClass({
     this.setState({data:data});
   },
   trash(id,component){
-    let shareUrl = this.getUrlData({ type : "SHARE_DELETE",
-                                     shareId : id
-                                    });
-    xhr({ type: 'DELETE',url:shareUrl,
+    let url = `v1/hdfs///?op=SHARE&share_id=${id}`;
+    xhr({ type: 'DELETE',url:url,
         success: data =>{
           let dataTable = this.state.data;
           let totalList = this.state.data.totalList;
@@ -80,27 +77,10 @@ export default React.createClass({
             }]
             };
   },
-  requestArgs:{
-    pageName : "Share",
-    type : "",
-    spaceName : "",
-    shareId : ""
-  },
-  getUrlData({type="",spaceName="",shareId=""}){
-    this.requestArgs.type = type;
-    this.requestArgs.spaceName = spaceName;
-    this.requestArgs.shareId = shareId;
-    return HdfsConf.getUrlData(this.requestArgs);
-  },
   render() {
-    let spaceName = HdfsConf.getCurSpace(this);
-    let shareUrl = this.getUrlData({ type : "SHARE_GET",
-                                     spaceName : spaceName,
-                                    });
     return (
         <div>
-          <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
-          <Fetch style={{minHeight:0}} url={shareUrl} onSuccess={this.handleSuccess}>
+          <Fetch style={{minHeight:0}} url={`v1/hdfs///?space_name=${this.props.location.query.cur_space}&op=SHARE`} onSuccess={this.handleSuccess}>
             <DataTable data={this.state.data} column={this.state.column}></DataTable>
           </Fetch>
         </div>

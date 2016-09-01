@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "antd": "^1.8.0",
-    "bfd-ui": "^0.7.7",
+    "bfd-ui": "^0.7.1",
     "js-cookie": "^2.1.2",
     "react-copy-to-clipboard": "^4.2.2",
     "react-markdown": "^2.4.2",

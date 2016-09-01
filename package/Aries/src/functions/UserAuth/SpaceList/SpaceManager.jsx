@@ -20,12 +20,10 @@ const SpaceManager = React.createClass({
   },
   saveMember(){
     let newMember = this.state.newMember;
-    let space_id = this.props.spaceId;
+    let space_id = this.props.cur_space;
     if(newMember.length>0){
-      let addMemberUrl = this.props.getUrlData({ type : "SPACE_MEMBER_POST",
-                                                 spaceId : space_id
-                                                });
-      xhr({type: 'POST',url: addMemberUrl,data:{"key":newMember},
+      let url = `v1/user_auth/spaces/member/${space_id}/`;
+      xhr({type: 'POST',url: url,data:{"key":newMember},
         success:data =>{
           message.success("成员更新成功!", 2);
           this.modalClose();
@@ -46,12 +44,10 @@ const SpaceManager = React.createClass({
     this.modalOpen();
   },
   updateRole(user_id,role_id){
-    let space_id = this.props.spaceId;
-    let updateMemberUrl = this.props.getUrlData({ type : "SPACE_MEMBER_PUT",
-                                                  spaceId : space_id
-    });
+    let space_id = this.props.cur_space;
+    let url = `v1/user_auth/spaces/member/${space_id}/`;
     console.log(`uid: ${user_id}, r_id: ${role_id}`);
-    xhr({type: 'PUT',url: updateMemberUrl,data:{"key":[{"user_id":user_id,"role_id":role_id}]},
+    xhr({type: 'PUT',url: url,data:{"key":[{"user_id":user_id,"role_id":role_id}]},
       success:data => {
         message.success("成员角色更新成功!", 2);
         this.props.refreshTable();
@@ -59,7 +55,7 @@ const SpaceManager = React.createClass({
     });
   },
   is_admin_button:{
-    1:function(){return <div className="add-Button"><Button onClick={()=>{this.addMember()}}>添加成员</Button></div>},
+    1:function(){return <div className="function-UserAuth-SpaceManager-Div"><Button onClick={()=>{this.addMember()}}>添加成员</Button></div>},
     0:()=>{return <div></div>}
   },
   getTransferDataSuccess(data){
@@ -94,11 +90,9 @@ const SpaceManager = React.createClass({
     };
   },
   render: function() {
-    let TransferUrl = this.props.getUrlData({ type : "SPACE_MEMBER",
-                                              spaceId : this.props.spaceId,
-                                            });
+    let TransferUrl = `v1/user_auth/spaces/member/${this.props.cur_space}/?inspace=2`;
     return  (
-        <div className="spaceManager">
+        <div>
           {this.is_admin_button[this.props.is_admin].call(this)}
           <div>
             <DataTable url={this.props.url} showPage="false" column={this.state.column}></DataTable>
@@ -109,12 +103,12 @@ const SpaceManager = React.createClass({
                 <h4 className="modal-title">添加成员</h4>
               </ModalHeader>
               <ModalBody>
-                <div className="modelDiv">
+                <div className="function-UserAuth-SpaceList-modelDiv">
                 <Fetch style={{minHeight:100}} url={TransferUrl} onSuccess={this.getTransferDataSuccess}>
                   <Transfer height={200} title={"已选的用户"} onChange={this.tranferChange} sdata={this.state.sourceData} tdata={this.state.targetData} onSearch={this.handleSearch}  />
                 </Fetch>
                 </div>
-                <div className="Button-Div">
+                <div className="function-UserAuth-Button-Div">
                    <Button className="left-Button" onClick={this.saveMember}>保存</Button>
                    <Button type="primary" onClick={this.modalClose}>取消</Button>
                 </div>

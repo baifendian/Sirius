@@ -8,45 +8,14 @@ var CalcManageDataRequester = {
   },
   getUrlForm() {
     return {
-      'k8soverview': 'k8s/api/v1/namespaces/{nameSpace}/getk8soverview',
       'podlist': 'k8s/api/v1/namespaces/{nameSpace}/pods',
       'serviceList': 'k8s/api/v1/namespaces/{nameSpace}/services',
       'rclist': 'k8s/api/v1/namespaces/{nameSpace}/replicationcontrollers',
       'mytasklist': 'k8s/api/v1/namespaces/mytasklist',
       'mytaskgraph': 'k8s/api/v1/namespaces/mytaskgraph',
 
-      'mytaskoldrecords':'k8s/api/v1/namespaces/mytasklist/getoldrecords',
-      'mytaskhasnewrecords':'k8s/api/v1/namespaces/mytasklist/checkhasnewrecords',
-      'mytasknewrecords':'k8s/api/v1/namespaces/mytasklist/getnewrecords',
     }
   },
-
-  getMyTaskOldRecords( oldestrecordid,requestnumber,keywords,callback ) {
-    let url = this.getUrlForm()['mytaskoldrecords']
-    let data = {
-      oldestrecordid:oldestrecordid,
-      requestnumber:requestnumber,
-      keywords:keywords
-    }
-    this.xhrPostData(url, data, callback)
-  },
-  checkMyTaskHasNewRecords( newestrecordid,keywords,callback ) {
-    let url = this.getUrlForm()['mytaskhasnewrecords']
-    let data = {
-      newestrecordid:newestrecordid,
-      keywords:keywords
-    }
-    this.xhrPostData(url, data, callback)
-  },
-  getMyTaskNewRecords( newestrecordid,keywords,callback ) {
-    let url = this.getUrlForm()['mytasknewrecords']
-    let data = {
-      newestrecordid:newestrecordid,
-      keywords:keywords
-    }
-    this.xhrPostData(url, data, callback)
-  },
-  
   getMytaskGraph(_this, callback) {
     let url = this.getUrlForm()['mytaskgraph']
     this.xhrGetData(url, _this, callback)
@@ -55,13 +24,6 @@ var CalcManageDataRequester = {
   getMytaskList(_this, callback) {
     let url = this.getUrlForm()['mytasklist']
     this.xhrGetData(url, _this, callback)
-  },
-
-  getK8sOverview(_this, callback, nameSpace){
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['k8soverview'],{
-      'nameSpace': nameSpace      
-    })
-    this.xhrGetData(url, _this, callback)    
   },
 
   getPodList(_this, callback, nameSpace ) {
@@ -93,19 +55,8 @@ var CalcManageDataRequester = {
         callback(_this, retu_data)
       }
     })
-  },
 
-  xhrPostData(url, data, callback) {
-    xhr({
-      url: url,
-      type: 'POST',
-      data: data,
-      success: (retu_data) => {
-        callback( retu_data)
-      }
-    })
   },
-
 
 
 
