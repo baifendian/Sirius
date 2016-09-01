@@ -113,10 +113,15 @@ def instances(request):
         ret['totalList']=[]
         test_list=[]
         for host in host_list['servers'][minpageSizes:maxpageSizes]:
+            print host,'.......host'
+            print host_list['servers'][minpageSizes:maxpageSizes]
             sys={}
             sys['id']=host['id']
             sys['name']=host['name']
-            sys['image']=imagess.show_detail(host['image']['id'])['image']['name']
+            try:
+                sys['image']=imagess.show_detail(host['image']['id'])['image']['name']
+            except:
+                sys['image']='-'
             sys['flavor']=flavorss.show_detail(host['flavor']['id'])['flavor']['name']
             sys['created']=host['created']
             sys['status']=host['OS-EXT-STS:vm_state']
@@ -215,7 +220,6 @@ def instances(request):
                 else:
                     ret[values] = "stopped"
         elif host_method == "restart":
-
             type=request.POST.get('type')
             #print request_list
             if type == "restart":
@@ -243,16 +247,37 @@ def instances(request):
                 else:
                     ret[values] = True
         if host_method == "update":
-            flavors=Flavor()
-            host_vm_start = Vm_control()
-         #   host_vm_start.resize('')
-            host_id=request.POST.get('host_id')
-            host_name=request.POST.get('host_name')
-            type=request.POST.get('type')
-            print  host_vm_start.resize(host_id,type)
-          #  print host_vm_start.resize('b75c4e52-b031-454c-a4c6-07f83fb70a56','2')
-            print host_id,host_name,type
-            pass
+            type=request.POST.get('type_vm')
+            print "type................",type
+            if type == "flavor":
+                flavors=Flavor()
+                host_vm_start = Vm_control()
+             #   host_vm_start.resize('')
+                host_id=request.POST.get('host_id')
+                host_name=request.POST.get('host_name')
+                type=request.POST.get('type')
+                print "...........return_data"
+                return_data=host_vm_start.resize(host_id,type)
+                print return_data,'return_data'
+                if return_data == 1:
+                    ret[host_name]=False
+                else:
+                    ret[host_name]=True
+              #  print host_vm_start.resize('b75c4e52-b031-454c-a4c6-07f83fb70a56','2')
+                print host_id,host_name,type
+                pass
+            elif type == "image":
+                host_vm_start = Vm_control()
+                host_id = request.POST.get('host_id')
+                host_name = request.POST.get('host_name')
+                type = request.POST.get('type')
+                return_data=host_vm_start.rebuild(host_id,type,host_name)
+                if return_data == 1:
+                    ret[host_name]=False
+                else:
+                    ret[host_name]=True
+                pass
+
         elif host_method == "host_status":
             print vm_manage.result
             print ret
@@ -338,7 +363,6 @@ def flavors(request):
 
         ret['currentPage'] = 1
         ret['totalPageNum'] = len(ret['totalList'])
-
 
     if request.method == "POST":
         print request.POST

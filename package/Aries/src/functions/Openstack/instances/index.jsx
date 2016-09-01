@@ -1,6 +1,6 @@
 import React from 'react'
 //import Task from 'public/Task'
-import { Menu, Dropdown as Dropdown1 ,Icon } from 'antd'
+import { Menu, Dropdown as Dropdown1 ,Icon as Iconant  } from 'antd'
 import './index.less'
 import Button from 'bfd-ui/lib/Button'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
@@ -14,6 +14,8 @@ import DataTable from 'bfd-ui/lib/DataTable'
 import message from 'bfd-ui/lib/message'
 import {Extend,Create_model,Progress_model}from './extend'
 import {Disk_model} from './model_list'
+
+import Icon from 'bfd-ui/lib/Icon'
 
 //import Model_host from './Model_host'
 export default React.createClass({
@@ -40,7 +42,9 @@ export default React.createClass({
             let path="/openstack/"+item['id']+'/'
           return ( 
               /*<a href="javascript:void(0);" onClick={this.handleClick.bind(this, item)}>{text}</a>*/
-              <a href={path} >{text}</a>
+              <div>
+                <a href={path} >{text}</a><a style={{"margin-left":"20px"}}><Icon type="fa-desktop" /></a>
+              </div>
             )
         },
         key: 'name'
@@ -311,7 +315,7 @@ export default React.createClass({
           {/*<DropdownButton overlay={menu} type="primary" style={{margin: '0px 0px 0px 10px'}} className="operation_host">
             更多操作
           </DropdownButton>*/}
-          <Disk_model vm_list={this.state.select_all} ref="model_model"/>
+          <Disk_model vm_list={this.state.select_all} ref="model_model" _this={this}/>
           <div style={{float: 'right'}}>
             <Extend/>
           </div>

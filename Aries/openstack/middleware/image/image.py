@@ -1,6 +1,6 @@
 # coding:utf-8
-from Aries.openstack.middleware.common.common import send_request, IP_nova, PORT_nova, dlog, plog
-from Aries.openstack.middleware.login.login import get_token, get_proid
+from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, dlog, plog
+from openstack.middleware.login.login import get_token, get_proid
 import urllib
 
 

@@ -40,7 +40,8 @@ HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
 HADOOP_CLIENT="hlg3p64-lupan"
 AMBARI_USER="admin"
 AMBARI_PASSWORD="admin"
-LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
+#LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
+LOG_BASE_DIR="/opt/shengui.luo/log"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 

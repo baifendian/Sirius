@@ -18,6 +18,7 @@ import FormInput from 'bfd-ui/lib/FormInput'
 import FormTextarea from 'bfd-ui/lib/FormTextarea'
 import { FormSelect, Option as Options } from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
+import OPEN from '../data_request/request.js'
 
 const Disk_list = React.createClass({
   getInitialState() {
@@ -108,17 +109,14 @@ const Disk_list = React.createClass({
 
 const Vm_Type=React.createClass({
   getInitialState() {
-    this.rules = {
-      date(v) {
-        if (!v) return '日期不能为空'
-      }
-    }
     return {
       formData: {
         brand: 100,
         method: 'update',
         host_id: this.props.vm_list[0]['id'],
-        host_name: this.props.vm_list[0]['name']
+        host_name: this.props.vm_list[0]['name'],
+        loading: false,
+        type_vm:'flavor'
       },
       type:''
     }
@@ -135,21 +133,29 @@ const Vm_Type=React.createClass({
   },
 
   handleSave() {
-    console.log(this.state.formData)
+    console.log('this.state.formData',this.state.formData)
+    this.props._this.refs.model_disk.close()
+    this.props.self.setState({loading:true})
     this.refs.form.save()
-    //this.refs.form.close()
   },
 
   handleSuccess(res) {
-    console.log(res)
-    message.success('保存成功！')
+    console.log('res.........',res)
+    this.props.self.setState({loading:false})
+    for (var i in res){
+      if (res[i] == true){
+        OPEN.update_url(this.props.self,"openstack/bfddashboard/instances/")
+        message.success('修改成功！')
+      }else{
+        message.success('修改失败！')
+      }
+    }   
   },
 
   render() {
     const { formData } = this.state
     let _this=this
     let type_display=this.props.flavor_list.map((item,i)=>{
-      //console.log('.........i',_this.props.flavor_object)
       return(<Options value={_this.props.flavor_object[item]} key={i}>{item}</Options>)
     })
     return (
@@ -163,17 +169,91 @@ const Vm_Type=React.createClass({
         <FormItem label="当前配置" required name="name" >
           <FormInput style={{width: '200px'}} placeholder={this.state.type} disabled></FormInput>
         </FormItem>
+        
         <FormItem label="选择新配置" name="type">
           <FormSelect style={{width: '200px'}}>
             <Options value={100}>请选择</Options>
             {type_display}
           </FormSelect>
         </FormItem>
+       
         <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>确定</button>
       </Form>
     )
   }
 })
+
+const Vm_image=React.createClass({
+  getInitialState() {
+    return {
+      formData: {
+        brand: 100,
+        method: 'update',
+        host_id: this.props.vm_list[0]['id'],
+        host_name: this.props.vm_list[0]['name'],
+        loading: false,
+        type_vm:'image'
+      },
+      type:''
+    }
+  },
+  componentWillMount: function(){
+      let type=this.props.vm_list[0]['flavor']
+      let host_id=this.props.vm_list[0]['name']
+      this.setState({type})
+  },
+  handleDateSelect(date) {
+    const formData = this.state.formData
+    formData.date = date
+    this.setState({ formData })
+  },
+
+  handleSave() {
+    console.log('this.state.formData',this.state.formData)
+    this.props._this.refs.model_disk.close()
+    this.props.self.setState({loading:true})
+    this.refs.form.save()
+  },
+
+  handleSuccess(res) {
+    console.log('res.........',res)
+    this.props.self.setState({loading:false})
+    for (var i in res){
+      if (res[i] == true){
+        OPEN.update_url(this.props.self,"openstack/bfddashboard/instances/")
+        message.success('修改成功！')
+      }else{
+        message.success('修改失败！')
+      }
+    }   
+  },
+
+  render() {
+    const { formData } = this.state
+    let _this=this
+    let type_display=this.props.data_list.map((item,i)=>{
+      return(<Options value={this.props.data_object[item]} key={i}>{item}</Options>)
+    })
+    return (
+      <Form 
+        ref="form" 
+        action="openstack/bfddashboard/instances/" 
+        data={formData} 
+        rules={this.rules} 
+        onSuccess={this.handleSuccess}
+      > 
+        <FormItem label="选择镜像" name="type">
+          <FormSelect style={{width: '200px'}}>
+           <Options value={100}>请选择</Options>
+            {type_display}
+          </FormSelect>
+        </FormItem> 
+        <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>确定</button>
+      </Form>
+    )
+  }
+})
+
 
 const Forced_vm=React.createClass({
 
@@ -190,10 +270,6 @@ const Forced_vm=React.createClass({
     }
   },
   componentWillMount: function(){
-     // let type=this.props.vm_list[0]['flavor']
-  //    let host_id=this.props.vm_list[0]['name']
-    //  this.setState({type})
-    console.log(this.props.vm_list)
     let host_id=[]
     let host_name=''
     for (var i in this.props.vm_list){
@@ -255,6 +331,8 @@ const Disk_model=React.createClass({
       disk_object:{},
       flavor_list:[0],
       flavor_object:{},
+      data_list:[0],
+      data_object:{},
       loading: false
       }
   	},
@@ -263,11 +341,7 @@ const Disk_model=React.createClass({
      },
 
 	handleOpen(event) {
-    	this.refs.model_disk.open()
-      console.log(this.props.vm_list)
-     // console.log(event)
-     // console.log(event['key'])
-     
+    	this.refs.model_disk.open()  
      const _this=this
       if ( event['key'] == 2 ){
             this.setState({loading:true})
@@ -291,6 +365,7 @@ const Disk_model=React.createClass({
           })
       }
       if (event['key'] == 3){
+          this.setState({loading:true})
             xhr({
               type: 'GET',
               url: 'openstack/flavors/',
@@ -299,11 +374,10 @@ const Disk_model=React.createClass({
                 let flavor_list=[]
                 let flavor_object={}
                 for (var i in data['name']){
-                  console.log(i)
                   flavor_list.push(data['name'][i])
                   flavor_object[data['name'][i]]=i
                 } 
-                _this.setState({flavor_object,flavor_list})
+                _this.setState({flavor_object,flavor_list,loading:false})
               }
               })
         this.setState({
@@ -312,6 +386,8 @@ const Disk_model=React.createClass({
           })
       }
       if (event['key'] == 4){
+        this.setState({loading:true})
+        OPEN.Get_image(this,this.handlerequest)
         this.setState({
          title:'重置虚拟机',
           model:[4]
@@ -323,25 +399,16 @@ const Disk_model=React.createClass({
           model:[5]
         })
       }
-      if (event['key'] == 6){
-        this.setState({
-         title:'强制关机',
-          model:[6]
-        })
-      }
   	},
-  handlerequest(){
-    this.refs.model_disk.close()
-      xhr({
-        type: 'POST',
-        url: 'openstack/volumes/',
-        data:{
-          method: 'attach'
-        },
-        success(data) {
-          console.log(data)
-         } 
-      })},
+  handlerequest(_this,return_data){
+    let data_list=[]
+    let data_object={}
+    for (var i in return_data['name']){
+      data_list.push(return_data['name'][i])
+      data_object[return_data['name'][i]]=i
+    } 
+    _this.setState({data_list,data_object,loading:false})
+  },
 
   handleclose(){
     this.refs.model_disk.close()},
@@ -354,13 +421,9 @@ const Disk_model=React.createClass({
             <Menu.Item disabled={this.state.button_status} key="3">更改配置</Menu.Item>
             <Menu.Item disabled={this.state.button_status} key="4">重置系统</Menu.Item>
             <Menu.Item disabled={this.state.button_statuss} key="5">强制重启</Menu.Item>
-            <Menu.Item disabled={this.state.button_statuss} key="6">强制关机</Menu.Item>
           </Menu>
          );
-   // const disk_display=this.state.disk_list.map((item, i) => {
-  //    return ()
-    //})
-    //let d
+ 
     return (       
     	<div style={{float:"left"}}>  	
      	<DropdownButton overlay={menu} type="primary" style={{margin: '0px 0px 0px 10px'}} className="operation_host">
@@ -378,12 +441,12 @@ const Disk_model=React.createClass({
                     return (<Disk_list key={i} vm_list={this.props.vm_list} disk_list={this.state.disk_list} disk_object={this.state.disk_object} _this={this}/>)
                   }
                   if (item == 3){
-                    return (<Vm_Type key={i} vm_list={this.props.vm_list} flavor_list={this.state.flavor_list} flavor_object={this.state.flavor_object} _this={this}/>)
+                    return (<Vm_Type key={i} vm_list={this.props.vm_list} flavor_list={this.state.flavor_list} flavor_object={this.state.flavor_object} _this={this} self={this.props._this}/>)
+                  }
+                  if (item == 4) {
+                    return (<Vm_image key={i} vm_list={this.props.vm_list} data_list={this.state.data_list} data_object={this.state.data_object} _this={this} self={this.props._this}/>)
                   }
                   if (item == 5){
-                    return (<Forced_vm key={i} vm_list={this.props.vm_list} title={this.state.title}/>)
-                  }
-                  if (item == 6){
                     return (<Forced_vm key={i} vm_list={this.props.vm_list} title={this.state.title}/>)
                   }
                 })}
@@ -392,22 +455,6 @@ const Disk_model=React.createClass({
               </Spin> 
               
           </Modal>
-         
-          <Modal ref="model_">
-              <ModalHeader>
-                <h4>aa</h4>
-              </ModalHeader>
-              <ModalBody>
-                <div>
-                  <h4>aaa</h4>
-                 </div>
-                 <div className="create_host">
-                  <Button >关闭</Button>
-                  <Button >aa</Button>
-                 </div>
-              </ModalBody>
-          </Modal>  
-          
         </div>
     )
   }
