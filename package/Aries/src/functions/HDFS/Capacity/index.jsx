@@ -5,8 +5,7 @@ import { Tabs, TabList, Tab, TabPanel } from 'bfd-ui/lib/Tabs'
 import TabManager from './Manager'
 import TabMonitor from './Monitor'
 import Fetch from 'bfd-ui/lib/Fetch'
-import HdfsConf from '../Conf/HdfsConf'
-import NavigationInPage from 'public/NavigationInPage'
+
 
 export default React.createClass({
   sliderDataSccuess(data){
@@ -19,6 +18,8 @@ export default React.createClass({
               "end":d.plan_capacity,
               }
     });
+    console.log(percentData);
+    console.log(slider_data);
     this.setState({"sliderData":slider_data,"percentData":percentData});
   },
   getInitialState: function() {
@@ -27,38 +28,22 @@ export default React.createClass({
       "percentData":[],
     };
   },
-  requestArgs:{
-    pageName:"Capacity",
-    type:"",
-    spaceName:"",
-  },
-  getUrlData({type="",spaceName=""}){
-    this.requestArgs.type = type;
-    this.requestArgs.spaceName = spaceName;
-    return HdfsConf.getUrlData(this.requestArgs);
-  },
   render() {
-    let spaceName = HdfsConf.getCurSpace(this);
-    let sumUrl = this.getUrlData({ type : "SUM",
-                                 });
     return (
        <div>
-       <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
-        <div className="bottom">
-          <Tabs>
-            <TabList>
-              <Tab>配额监控</Tab>
-              <Tab>配额管理</Tab>
-            </TabList>
-            <TabPanel><TabMonitor percentData={this.state.percentData} /></TabPanel>
-            <TabPanel><TabManager getUrlData={this.getUrlData} sliderData={this.state.sliderData} /></TabPanel>
-          </Tabs>
-        </div>
+        <Tabs>
+          <TabList>
+            <Tab>配额监控</Tab>
+            <Tab>配额管理</Tab>
+          </TabList>
+          <TabPanel><TabMonitor percentData={this.state.percentData} /></TabPanel>
+          <TabPanel><TabManager sliderData={this.state.sliderData} /></TabPanel>
+        </Tabs>
         <div className="div-Fetch">
-          <Fetch style={{minHeight:0}} url={sumUrl} onSuccess={this.sliderDataSccuess}>
+          <Fetch style={{minHeight:0}} url="v1/hdfs///?op=SUM" onSuccess={this.sliderDataSccuess}>
           </Fetch>
         </div>
-      </div>
+        </div>
     )
   }
 })

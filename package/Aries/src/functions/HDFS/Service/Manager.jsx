@@ -40,17 +40,15 @@ const TabManager = React.createClass({
     }
     this.setState({"filterData":filterData});
   },
-  updateData(hostName){
+  updateData(hostname){
     //获取当前hostname上面组件内容
-    let componentUrl = this.props.getUrlData({ type : "COMPONENT_INFO",
-                                               hostName : hostName
-                                              });
+    let componentUrl = `v1/hdfs/relation/${hostname}/`;
     xhr({
       type: 'GET',
       url: componentUrl,
       success:data=> {
         console.log(data)
-        this.setState({"selectHost":hostName,"operatorType":"COMPONENT","componentData":data});
+        this.setState({"selectHost":hostname,"operatorType":"COMPONENT","componentData":data});
       }
     });
   },
@@ -65,18 +63,17 @@ const TabManager = React.createClass({
     };
   },
   render: function(){
-    let stateUrl = this.props.getUrlData({type : "STATE"});
     return (
       <div className="service-manage">
         <div>
           <Head statusFilter={this.statusFilter}  />
           <div>
             <Top data={this.state.filterData} updateData={this.updateData} selectHost={this.state.selectHost} />
-            <Bottom getUrlData={this.props.getUrlData} data={this.state.componentData} operatorType={this.state.operatorType} selectHost={this.state.selectHost} />
+            <Bottom data={this.state.componentData} operatorType={this.state.operatorType} selectHost={this.state.selectHost} />
           </div>
         </div>
         <div className="div-Fetch">
-          <Fetch style={{minHeight:0}} url={stateUrl} onSuccess={this.statusDataSccuess}>
+          <Fetch style={{minHeight:0}} url="v1/hdfs/state/" onSuccess={this.statusDataSccuess}>
           </Fetch>
         </div>
       </div>

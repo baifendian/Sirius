@@ -33,6 +33,6 @@ dist/
 index.ejs
 index.jsp
 Aries.xml
-#Aries.sh
+Aries.sh
 env.js
 webpack.config.js

@@ -3,16 +3,15 @@ import Task from 'public/Task'
 import './index.less'
 import { Tabs, TabList, Tab, TabPanel } from 'bfd-ui/lib/Tabs'
 import Fetch from 'bfd-ui/lib/Fetch'
+import SpaceInfo from './SpaceInfo'
 import SpaceManager from './SpaceManager'
 import { Select ,Option} from 'bfd-ui/lib/Select2'
 import auth from 'public/auth'
-import UserAuthConf from '../Conf/UserAuthConf'
-import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
   getInitialState: function() {
     return {
-      spaceId:0,
+      cur_space:0,
       url:"",
       is_admin:0,
       defaultValue:"0"
@@ -23,6 +22,7 @@ export default React.createClass({
     let url_old = this.state.url;
     let url_start = url_old.split("?")[0];
     let url_new = `${url_start}?date=${url_end}`;
+    console.log(`url_new:${url_new}`)
     this.setState({url:url_new});
   },
   getSpaceInfo(data){
@@ -31,49 +31,29 @@ export default React.createClass({
     this.setState({is_admin:is_admin});
   },
   initCurSpace(data){
-    let spaceId = data.space_id;
-    let url = this.getUrlData({ type : "SPACE_MEMBER_NO",
-                                spaceId : spaceId
-                    });
-    this.setState({spaceId:spaceId,url:url});
-  },
-  requestArgs:{
-    pageName:"SpaceList",
-    type:"",
-    spaceName:"",
-    spaceId:"",
-  },
-  getUrlData({type="",spaceName="",spaceId=""}){
-    this.requestArgs.type = type;
-    this.requestArgs.spaceName = spaceName;
-    this.requestArgs.spaceId = spaceId;
-    return UserAuthConf.getUrlData(this.requestArgs);
+    let cur_space = data.space_id;
+    let url = `v1/user_auth/spaces/member/${cur_space}/`;
+    this.setState({cur_space:cur_space,url:url});
   },
   render() {
-    let spaceName = UserAuthConf.getCurSpace(this);
-
-    let spaceInfoUrl = this.getUrlData({ type : "SPACE_INFO",
-                                         spaceId : this.state.spaceId
-                                        });
-    let spaceCurUrl = this.getUrlData({ type : "SPACE_CUR",
-                                        spaceName : spaceName
-                                      });
+    let spaceInfoUrl=`v1/user_auth/spaces/info/${this.state.cur_space}/`;
+    let filter = this.props.location.query.cur_space;
+    if(filter==undefined){
+      filter = auth.user.cur_space;
+    }
     return (
        <div>
-        <NavigationInPage headText={UserAuthConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={UserAuthConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
-        <div className="bottom">
-          <Tabs>
-            <TabList>
-              <Tab>成员管理</Tab>
-            </TabList>
-            <TabPanel>
-            <Fetch style={{minHeight:100}} url={spaceInfoUrl} onSuccess={this.getSpaceInfo}>
-              <SpaceManager getUrlData={this.getUrlData} url={this.state.url} refreshTable={this.refreshTable} spaceId={this.state.spaceId} is_admin={this.state.is_admin} />
-            </Fetch>
-            </TabPanel>
-          </Tabs>
-        </div>
-        <Fetch style={{minHeight:0}} url={spaceCurUrl} onSuccess={this.initCurSpace}>
+        <Tabs>
+          <TabList>
+            <Tab>成员管理</Tab>
+          </TabList>
+          <TabPanel>
+          <Fetch style={{minHeight:100}} url={spaceInfoUrl} onSuccess={this.getSpaceInfo}>
+            <SpaceManager url={this.state.url} refreshTable={this.refreshTable} cur_space={this.state.cur_space} is_admin={this.state.is_admin} />
+          </Fetch>
+          </TabPanel>
+        </Tabs>
+        <Fetch style={{minHeight:0}} url={`v1/user_auth/spaces/?filter=${filter}`} onSuccess={this.initCurSpace}>
         </Fetch>
         </div>
     )

@@ -1,24 +1,6 @@
 
 
 var Toolkit = {
-
-  /**
-   * 根据给定的秒数，将其对应的日期转换成字符串，格式为  YYYY-MM-DDTHH:mm:SS
-   * 如果seconds传入-1，则将其视为最新时间对应的秒数
-   */
-  generateTimeStrBySeconds(seconds){
-    function _f(v){  return v < 10 ? '0'+v : ''+v  }
-
-    let d = (seconds === -1) ? new Date() : new Date( seconds )
-    let s = _f(d.getFullYear()) + '-' +
-            _f(d.getMonth()+1) + '-' +
-            _f(d.getDate())  + 'T' +
-            _f(d.getHours()) + ':' +
-            _f(d.getMinutes()) + ':' +
-            _f(d.getSeconds())
-    return s
-  },
-
   generateGUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 	  var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
