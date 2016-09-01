@@ -294,3 +294,4 @@ CODIS_INDEX_LINE = 1
 CODIS_HOST_INFO = [0,'172.24.2.236','sys','',0,'a',0]
 CODIS_SHOME='/opt/jingxia.sun/codis/codis/rediscloud/'
 CODIS_MEMORY_MAX = 30
+OPENTSDB_URL = "http://0.0.0.0:4242"
