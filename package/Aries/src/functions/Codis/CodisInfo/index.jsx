@@ -58,7 +58,12 @@ export default React.createClass({
     _this.oriData = executedData
   },
   checkToRequestData(){
+        // 如果当前保存的namespace与实时获取的namespace相同，则不再重新请求
+    // 否则，重新请求数据
+    if ( this.curNameSpace !== CMDR.getCurNameSpace(this) ){
       CMDR.getCodisList( this,this.xhrCallback )
+      this.curNameSpace = CMDR.getCurNameSpace(this)
+    }
     },
 
   handleEdit(product_id,new_addr) {
@@ -203,7 +208,7 @@ onTableRowClick( record ){
        success:data =>{
         message.success("扩容成功!", 2);
         this.curNameSpace = undefined;
-        this.forceUpdate();
+        this.checkToRequestData();
       }
     });
    this.refs.addmem.close()
@@ -220,7 +225,7 @@ handleSave_a() {
         message.success("添加成功!", 2);
         this.modalClose();
         this.curNameSpace = undefined;
-        this.forceUpdate();
+        this.checkToRequestData();
       }
     });
 this.refs.modal.close();
@@ -236,7 +241,7 @@ handleSave2() {
         message.success("添加proxy请求已下发!", 2);
         this.modalClose();
         this.curNameSpace = undefined;
-        this.forceUpdate();
+        this.checkToRequestData();
       }
     });
  this.refs.addproxy.close();
@@ -252,7 +257,7 @@ handleSave3() {
         message.success("删除成功!", 2);
         this.modalClose();
         this.curNameSpace = undefined;
-        this.forceUpdate();
+        this.checkToRequestData();
       }
     });
  this.refs.deletecodis.close();
@@ -335,11 +340,6 @@ handleSave4() {
     this.refs.autorebalance.close()
   },
 
-  formatPercent(used,total){
-    return (total == 0) ? 100 : parseInt( 100 * used / total)
-  },
-
-
   render: function() {
     let proxyinfo = this.state.proxyinfo;
     let serverinfo = this.state.serverinfo;
@@ -354,8 +354,6 @@ handleSave4() {
                      {  'url':'/Codis/CodisInfo',  'text':'codis列表'   }]
     let text = this.state.detailText
     let result = [{user:300,sales:100,date:"2016-1-1"},{user:200,sales:300,date:"2016-1-2"},{user:100,sales:200,date:"2016-1-3"},{user:200,sales:300,date:"2016-1-4"},{user:200,sales:300,date:"2016-1-5"}]
-    let pod_percent = this.formatPercent( 80,100 )
-    let task_percent = this.formatPercent( this.state.task_used,this.state.task_total)
     let result1 = [{value:18954,name:"expires"},{value:1555,name:"unexpires"}]
     if ( !text ){
       text = [['请选择Service']]
