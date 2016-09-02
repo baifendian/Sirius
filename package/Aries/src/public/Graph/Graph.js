@@ -62,8 +62,8 @@ var Graph = React.createClass({
       edges: {
         color: '#000000',
         width: 0.5,
-        arrowScaleFactor: 100,
-        style: "arrow",
+        //arrowScaleFactor: 100,
+        //style: "arrow",
         arrows: "to",
         dashes: false
       }

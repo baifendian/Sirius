@@ -27,7 +27,7 @@ const TabGraph = React.createClass({
     })
   }, 
   render() {
-    console.log( '///////////////' + this.props.height);
+    console.log( 'canvas height is: ' + this.props.height);
     if ( this.height !== this.props.height ){
       setTimeout( ()=>{
         let graphPanel = ReactDOM.findDOMNode( this.refs.Graph2Name )
@@ -77,7 +77,7 @@ const TabGraph = React.createClass({
           <Button className='btn-4' size='sm'>执行完成(成功)</Button>
           <Button className='btn-5' size='sm'>执行完成(失败)</Button>
           <Button className='btn-6' size='sm'>任务停止中</Button>
-          
+          &nbsp;&nbsp; 提示：A指向B 表示B依赖A
         </div>
         <div ref='Graph2Name' className='Graph2Name'>
            <Graph graph={this.state.data}/>
