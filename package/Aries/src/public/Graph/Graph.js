@@ -48,13 +48,16 @@ var Graph = React.createClass({
           nodeSpacing: 180,
           treeSpacing: 100,
           direction: "UD",
-          sortMethod: "directed",
+          sortMethod: "hubsize",
+          //blockShifting: true,
+          //edgeMinimization: true,
+          parentCentralization: true,
         }
       },
       interaction: {
         dragNodes: true,
         navigationButtons: true,
-        keyboard: true
+        keyboard: true,
       },
       physics: {
         enabled: false
@@ -65,8 +68,11 @@ var Graph = React.createClass({
         //arrowScaleFactor: 100,
         //style: "arrow",
         arrows: "to",
-        dashes: false
-      }
+        dashes: false,
+      },
+      nodes: {
+        shape: 'dot',
+      },
     };
 
     var network = new vis.Network(container, this.props.graph, options);
