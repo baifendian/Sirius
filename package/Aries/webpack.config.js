@@ -22,8 +22,8 @@ var config = {
     filename: '[name]' + (isProduction ? '.[hash]' : '') + '.js',
     chunkFilename: '[id]' + (isProduction ? '.[hash]' : '') + '.js',
     //静态资源全路径
-    //publicPath: ((isProduction ? env.basePath : '') + '/build/').replace(/\/\//, '/')
-    publicPath: ((isProduction ? env.basePath : '') + '/static/aries/').replace(/\/\//, '/')
+    publicPath: ((isProduction ? env.basePath : '') + '/build/').replace(/\/\//, '/')
+    //publicPath: ((isProduction ? env.basePath : '') + '/static/aries/').replace(/\/\//, '/')
   },
   module: {
     noParse: [],

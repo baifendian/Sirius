@@ -92,6 +92,19 @@ const conf={
   navigationData:{
     //HDFS面包屑数据配置
     HDFS:{
+      Base:{
+        headText:"",
+        navigationTexts:[{
+          text:"概览",
+          url:"/?cur_space=${spaceName}"
+        },{
+          text:"云服务",
+          url:""
+        },{
+          text:"HDFS云",
+          url:""
+        }]
+      },
       MyFile:{
         headText:"我的文件",
         navigationTexts:[{
@@ -137,6 +150,13 @@ const conf={
     },
     //用户管理面包屑配置
     UserAuth:{
+      Base:{
+        headText:"",
+        navigationTexts:[{
+          text:"概览",
+          url:"/?cur_space=${spaceName}"
+        }]
+      },
       SpaceList:{
           headText:"space管理",
           navigationTexts:[{
@@ -144,15 +164,141 @@ const conf={
               url:"/UserAuth/SpaceList?cur_space=${spaceName}"
           }]
       },
+    },
+   //Codis 面包屑
+    Codis:{
+      Base:{
+        headText:"",
+        navigationTexts:[{
+          text:"概览",
+          url:"/?cur_space=${spaceName}"
+        },{
+          text:"云服务",
+          url:""
+        },{
+          text:"Codis云",
+          url:""
+        }]
+      },
+      CodisInfo:{
+        headText:"Codis信息",
+        navigationTexts:[{
+          text:"Codis信息",
+          url:"/CodisCloud/CodisInfo?cur_space=${spaceName}"
+        }]
+      },
+      HostInfo:{
+        headText:"主机信息",
+        navigationTexts:[{
+          text:"主机信息",
+          url:"/CodisCloud/HostInfo?cur_space=${spaceName}"
+        }]
+      },
+    },
+    //计算管理面包屑
+    K8sMonitor:{
+      Base:{
+        headText:"",
+        navigationTexts:[{
+          text:"概览",
+          url:"/?cur_space=${spaceName}"
+        },{
+          text:"云容器",
+          url:""
+        },{
+          text:"k8s相关监控",
+          url:""
+        }]
+      },
+      Overview:{
+        headText:"K8s监控概览",
+        navigationTexts:[{
+          text:"K8s监控概览",
+          url:"/CalcManage/Overview?cur_space=${spaceName}"
+        }]
+      },
+     PodInfo:{
+       headText:"Pod信息",
+       navigationTexts:[{
+         text:"Pod信息",
+         url:"/CalcManage/PodInfo?cur_space=${spaceName}"
+       }]
+     },
+     ServiceInfo:{
+       headText:"Service信息",
+       navigationTexts:[{
+         text:"Service信息",
+         url:"/CalcManage/ServiceInfo?cur_space=${spaceName}"
+       }]
+     },
+     ReplicationControllerInfo:{
+       headText:"RC信息",
+       navigationTexts:[{
+         text:"RC信息",
+         url:"/CalcManage/ReplicationControllerInfo?cur_space=${spaceName}"
+       }]
+     },
+   },
+    UserDoc:{
+      Base:{
+        headText:"",
+        navigationTexts:[{
+          text:"概览",
+          url:"/?cur_space=${spaceName}"
+        },{
+          text:"云容器",
+          url:""
+        },{
+          text:"使用说明",
+          url:""
+        }]
+      },     
+      CC1:{
+        headText:"开始使用",
+        navigationTexts:[{
+          text:"开始使用",
+          url:"/CalcManage/CreateCluster/CC1?cur_space=${spaceName}"
+        }]
+      },
+      CC2:{
+        headText:"云中心计算集群",
+        navigationTexts:[{
+          text:"云中心计算集群",
+          url:"/CalcManage/CreateCluster/CC2?cur_space=${spaceName}"  
+        }]
+      }
+    },
+    OffLineCalcTask:{
+      Base:{
+        headText:"",
+        navigationTexts:[{
+          text:"概览",
+          url:"/?cur_space=${spaceName}"
+        },{
+          text:"云容器",
+          url:""
+        },{
+          text:"离线计算任务",
+          url:""
+        }]
+      },  
+      MyTask:{
+        headText:"我的任务",
+        navigationTexts:[{
+          text:"我的任务",
+          url:"/CalcManage/MyTask?cur_space=${spaceName}"
+        }]
+      }
     }
   },
   //公共获取面包屑数据的接口
   getNavigationData({moduleName="",pageName="",type="",spaceName=""}){
-    //给navigationTexts增加一个公用的概览
-    let outLine = {text:"概览",url:"/?cur_space=${spaceName}"};
     if(type.toLocaleLowerCase() == "navigationtexts"){
-      let navigationTextTemp = this.navigationData[moduleName][pageName][type];
-      navigationTextTemp.unshift(outLine);
+      //获取Base中的公共导航
+      let navigationTextBase = this.navigationData[moduleName]["Base"][type]
+      let navigationTextExtend = this.navigationData[moduleName][pageName][type];
+      //增加Base中的模块.
+      let navigationTextTemp = [].concat(navigationTextBase,navigationTextExtend);
       //替换模版中的spaceName
       let navigationTexts = navigationTextTemp.map(function(navigationText,index){
          let urlTemp = navigationText.url;

@@ -7,6 +7,7 @@ import SearchInput from 'bfd-ui/lib/SearchInput'
 
 import DynamicTable from 'public/DynamicTable'
 import NavigationInPage from 'public/NavigationInPage'
+import CodisConf from '../Conf/CodisConf'
 import Toolkit from 'public/Toolkit/index.js'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import { Tabs, TabList, Tab, TabPanel } from 'bfd-ui/lib/Tabs'
@@ -338,9 +339,12 @@ handleSave4() {
   formatPercent(used,total){
     return (total == 0) ? 100 : parseInt( 100 * used / total)
   },
-
+  requestArgs:{
+    pageName : "CodisInfo",
+  },
 
   render: function() {
+    let spaceName = CodisConf.getCurSpace(this);
     let proxyinfo = this.state.proxyinfo;
     let serverinfo = this.state.serverinfo;
     let picinfo = this.state.picinfo;
@@ -362,8 +366,7 @@ handleSave4() {
     }
     return  (
       <div className="ServiceInfoChildRootDiv">
-
-        <NavigationInPage headText={headText} naviTexts={naviTexts} />
+        <NavigationInPage headText={CodisConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={CodisConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <div className="ButtonFatherDiv">
           <div className="SearchInputFatherDiv">
             <SearchInput placeholder="请输入查询关键字"
@@ -460,7 +463,7 @@ handleSave4() {
                         <td colSpan="5" style={{height:20}}></td>
                     </tr>
                 </table>
-         
+
             </div>
             <div className="function-UserAuth-Button-Div">
                <Button className="left-Button" onClick={this.handleSave}>保存</Button>
@@ -587,4 +590,3 @@ handleSave4() {
     )
   }
 });
-
