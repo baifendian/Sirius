@@ -72,7 +72,7 @@ const TabLiebiao = React.createClass({
       shelltype:this.userData['curShellType'] ? this.userData['curShellType'] : 'ALL',
       executeresult:this.userData['curExecutedResult'] ? this.userData['curExecutedResult'] : 'ALL',
       startdate:this.userData['curStartDate'] ? this.userData['curStartDate'] : Toolkit.generateTimeStrBySeconds(0),
-      enddate:this.userData['curEndDate'] ? this.userData['curEndDate'] : Toolkit.generateTimeStrBySeconds(-1)
+      enddate:this.userData['curEndDate'] ? this.userData['curEndDate'] : Toolkit.generateTimeStrBySeconds(-1).split('T')[0] + 'T23:59:59'
     }
     this.userData['curSearchCondition'] = searchConditions
     return searchConditions
@@ -127,13 +127,17 @@ const TabLiebiao = React.createClass({
   tbodyScrollToHead(){  this.getRealTimeTheadAndTbodyObj()['tbody'].scrollTop = 0  },
 
   // 开启、关闭定时获取是否存在更新的记录
-  stopCheckHasNewRecordInterval(){  
-    this.userData['checkHasNewRecordInterval'] && clearInterval( this.userData['checkHasNewRecordInterval'] )
-    this.userData['checkHasNewRecordInterval'] = undefined
+  stopCheckHasNewRecordTimeout(){  
+    this.userData['checkHasNewRecordTimeoutObj'] && clearTimeout( this.userData['checkHasNewRecordTimeoutObj'] )
+    this.userData['checkHasNewRecordTimeoutObj'] = undefined
   },
-  startCheckHasNewRecordInterval(){ 
-    this.userData['checkHasNewRecordInterval'] = setInterval( ()=>{
-      this.startCheckHasNewRecords()
+  startCheckHasNewRecordTimeout(){ 
+    // 如果用户配置的时间范围的结束时间是当天，则需要启动这个轮询；但如果不是，则实际上没有启动轮询的必要
+    if ( (new Date()).getTime() > (new Date(this.queryKeywords()['enddate'])).getTime() ){
+      return
+    }
+    this.userData['checkHasNewRecordTimeoutObj'] = setTimeout( ()=>{
+      this.checkHasNewRecords()
     },5000 )
   },
   
@@ -153,7 +157,7 @@ const TabLiebiao = React.createClass({
 
   // 第一次获取现有记录，并启动定时器（获取新的记录）
   firstTimeGetOldRecords:function(){
-    this.stopCheckHasNewRecordInterval()
+    this.stopCheckHasNewRecordTimeout()
     this.tbodyScrollToHead()
 
     CMDR.getMyTaskOldRecords( -1,50,this.queryKeywords(),( executedData ) => { 
@@ -164,7 +168,7 @@ const TabLiebiao = React.createClass({
           "totalPageNum":data.length
         }
       })
-      this.startCheckHasNewRecordInterval()
+      this.startCheckHasNewRecordTimeout()
     } )
   },
 
@@ -180,16 +184,17 @@ const TabLiebiao = React.createClass({
     })
   },
 
-  startCheckHasNewRecords:function(){
+  checkHasNewRecords:function(){
     CMDR.checkMyTaskHasNewRecords( this.getNewestID(),this.queryKeywords(),( executedData )=>{
-      if ( executedData['hasnew'] !== 1 )
-        return
-      this.showLoadNewRecordsButton()
+      if ( executedData['hasnew'] === 1 ){
+        this.showLoadNewRecordsButton()
+      } else {
+        this.startCheckHasNewRecordTimeout()
+      }
     })
   },
 
   loadNewRecords:function(){
-    this.stopCheckHasNewRecordInterval()
     this.hideLoadNewRecordsButton()
     CMDR.getMyTaskNewRecords( this.getNewestID(),this.queryKeywords(),( executedData ) => {
       let newRecords = executedData['records']
@@ -202,8 +207,8 @@ const TabLiebiao = React.createClass({
         highlightRecords:newRecords,
         lastNewRecordGUID:Toolkit.generateGUID()
       })
+      this.startCheckHasNewRecordTimeout()
     })
-    this.startCheckHasNewRecordInterval()
   },
 
   onLoadNewRecordButtonClicked:function(){
@@ -217,7 +222,7 @@ const TabLiebiao = React.createClass({
     this.markDataRangeControlState( false )
 
     // 清除原来的数据
-    this.stopCheckHasNewRecordInterval()
+    this.stopCheckHasNewRecordTimeout()
     this.userData['scrollHeight'] = undefined
     this.userData['lastExecutedNewRecordGUID'] = undefined
     this.setState({
@@ -258,7 +263,7 @@ const TabLiebiao = React.createClass({
     if ( endDate ){
       this.userData['curEndDate'] = Toolkit.generateTimeStrBySeconds( endDate ).split('T')[0] + 'T23:59:59'
     } else {
-      this.userData['curEndDate'] = Toolkit.generateTimeStrBySeconds( -1 )
+      this.userData['curEndDate'] = Toolkit.generateTimeStrBySeconds( -1 ).split('T')[0] + 'T23:59:59'
     }
 
     this.markDataRangeControlState( true )

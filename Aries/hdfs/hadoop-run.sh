@@ -1,5 +1,7 @@
 #/usr/bin/bash
-HADOOP_HOME=/opt/hadoop/hadoop
+HADOOP_HOME=/opt/hadoop/hadoop-2.6.0
+NAMENODE_PATH="hdfs://172.24.100.44:8020"
+BASE_PATH=$(pwd)
 operator=$1
 shift
 base_command="${HADOOP_HOME}/bin/hadoop fs"
@@ -11,12 +13,12 @@ if [ "$operator" = "du" ] ; then
        $base_command -$operator $target_path |awk '{print $1}' |awk '{sum += $1};END {print sum}'|grep '^[0-9]'
 elif [ "$operator" = "compress" ] ; then
       #启动压缩程序
-      echo " compress......... "
-      sh compress/compress.sh $HADOOP_HOME $@
-      echo " compress complete! "
       echo " merge............ "
-      sh merge/merge.sh $HADOOP_HOME $@
+      sh ${BASE_PATH}/merge/merge.sh $HADOOP_HOME $NAMENODE_PATH $@
       echo " merge complete! "
+      echo " compress......... "
+      sh ${BASE_PATH}/compress/compress.sh $HADOOP_HOME $@
+      echo " compress complete! "
 else
        $base_command -$operator $@
 fi

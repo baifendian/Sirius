@@ -138,7 +138,7 @@ def getshare(request,path):
     return result
 
 def compress_backgroud(exec_user,operator,args):
-    exitCode,data = run_hadoop(user_name=exec_user,operator="compress",args=[full_path])
+    exitCode,data = run_hadoop(user_name=exec_user,operator="compress",args=args)
     if exitCode !=0:
         hdfs_logger.error("压缩失败.日志如下:")
         hdfs_logger.error(data)    

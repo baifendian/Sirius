@@ -27,7 +27,6 @@ class HostInfo(APIView):
     获取所有host信息
     '''
     def get(self, request, format=None):
-        ac_logger.info("host_list==========================")
         host_list = Host.objects.all().order_by('host_id') 
         host_ret = []
         for host in host_list:
@@ -50,7 +49,6 @@ class HostInfo(APIView):
     添加host
     '''
     def post(self, request, format=None):
-        ac_logger.info("host_add==========================")
         hostip=request.POST.get("host_ip","")
         hostuser=request.POST.get("host_user","")
         hostpasswd= request.POST.get("password","")
@@ -85,7 +83,6 @@ class CodisInfo(APIView):
         申请codis
     '''
     def post(self, request, format=None):
-        ac_logger.info("codis_add==========================")
         product_id = request.POST.get('name')
         memory_size = request.POST.get('mem')
         cc = Codis.objects.filter(product_id=product_id)
@@ -109,7 +106,6 @@ class CodisInfo(APIView):
     查看codis列表
     '''
     def get(self, request, format=None):
-        ac_logger.info("codis_get===========================")
         codis_list = Codis.objects.all().order_by('codis_id')
         codis_ret = []
         for one in codis_list:
@@ -122,7 +118,6 @@ class CodisInfo(APIView):
             codis_dict['memory_used_to_total'] = str(one.memory_used) + "/" + str(one.memory_total)
             codis_dict['dashboard_proxy_addr'] = one.dashboard_proxy_addr
             codis_dict['dashboard'] = one.dashboard_ip + ":" + str(one.dashboard_port)
-            ac_logger.info("codis_get===========================%s" %codis_dict)
             codis_ret.append(codis_dict)
         result = {
             "code":200,
@@ -135,13 +130,11 @@ class CodisInfo(APIView):
     删除codis集群
     '''
     def delete(self,request,format=None):
-        ac_logger.info("codis_Delete==================%s" %request.data)
         dict_1 = json.loads(request.data["data"])
         product_id = dict_1['product_id']
         cc = Codis.objects.get(product_id=product_id)
         if cc:
             cc.delete()
-            ac_logger.info("codis_Delete==================%s" %cc)
         else:
             result ={"code":400,"msg":"无法找到此codis！"}
             return packageResponse(result)
@@ -170,7 +163,6 @@ class CodisInfo(APIView):
             #t1.start()
             result ={"code":200,"msg":"添加proxy申请已提交！"}
         elif op.upper() == "UPDATEPROXYADDR":
-            ac_logger.info("codis_UPDATEPROXYADDR==========================")
             product_id = dict_1["name"]
             new_addr = dict_1["new_addr"]
             cc = Codis.objects.get(product_id=product_id)
@@ -178,7 +170,6 @@ class CodisInfo(APIView):
             cc.save()
             result ={"code":200,"msg":"更新成功！"}
         else:
-            ac_logger.info("codis_ALEARTMEM==========================")
             product_id = dict_1["product_id"]
             requiremem = long(dict_1["alertmem"])
             cc = Codis.objects.get(product_id=product_id)
@@ -309,25 +300,66 @@ class GetAllCodisInfo(APIView):
     '''
        获取表信息 
     '''
-    def get(self, request, format=None):
-        codis_id = request.GET.get("codis_id")
+    def post(self, request, format=None):
+        codis_id = request.POST.get("codis_id")
         query_url = settings.OPENTSDB_URL + "/api/query/"
         codis_info = Codis.objects.get(codis_id=int(codis_id))
         ops_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "sum","metric":"codis.pv.count",\
                      "tags":{"db":codis_info.product_id}}]} 
         latency_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.proxy.command.spent",\
                              "tags":{"db":codis_info.product_id,"cmd":"*"}}]}
-        mem_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.memory_used_ratio",\
+        total_expired_keys = {"start":"2h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_expired_keys",\
                              "tags":{"db":codis_info.product_id}}]}
-        keys_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.expired_keys_ratio",\
+        total_keys = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_keys",\
+                             "tags":{"db":codis_info.product_id}}]}
+        total_usedmemory = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.usedmemory",\
+                             "tags":{"db":codis_info.product_id}}]}
+        total_maxmemory = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_maxmemory",\
                              "tags":{"db":codis_info.product_id}}]}
         latency_info = requests.post(query_url,data=json.dumps(latency_query_args),timeout=10)
         ops_info = requests.post(query_url,data=json.dumps(ops_query_args),timeout=10)
-        mem_info = requests.post(query_url,data=json.dumps(mem_query_args),timeout=10)
-        keys_info = requests.post(query_url,data=json.dumps(keys_query_args),timeout=10)
-        print json.loads(latency_info.content)
-        print json.loads(ops_info.content)
-        print json.loads(mem_info.content)
-        print json.loads(keys_info.content)
-        pass
+        expired_keys = requests.post(query_url,data=json.dumps(total_expired_keys),timeout=10)
+        keys = requests.post(query_url,data=json.dumps(total_keys),timeout=10)
+        usedmemory = requests.post(query_url,data=json.dumps(total_usedmemory),timeout=10)
+        maxmemory = requests.post(query_url,data=json.dumps(total_maxmemory),timeout=10)
+        opsdata = []
+        latencydata = []
+        expiredkeysdata = 1
+        allkeysdata = 1
+        usedmemorydata = 1
+        maxmemorydata = 1
+        dict_ops = json.loads(ops_info.text)[0]['dps']
+        list_ops = sorted(dict_ops.items(),key=lambda d:d[0],reverse=False)
+        for k,v in list_ops:
+            a = {}
+            timeStamp = int(k)
+            timeArray = time.localtime(timeStamp)
+            otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+            a["ops"] = v
+            a["date"] = otherStyleTime
+            opsdata.append(a)
+        #for j in json.loads(latency_info.text):
+        #    b = {}
+        #    
+        #    for k,v in j['dps'].items():
+        #    
+        for k,v in json.loads(expired_keys.text)[0]['dps'].items():
+            expiredkeysdata = v
+            break
+        for k,v in json.loads(keys.text)[0]['dps'].items():
+            allkeysdata = v
+            break
+        for k,v in json.loads(usedmemory.text)[0]['dps'].items():
+            usedmemorydata = v/(1024*1024*1024)
+            break
+        for k,v in json.loads(maxmemory.text)[0]['dps'].items():
+            maxmemorydata = v/(1024*1024*1024)
+            break
+        data={"ops":opsdata,"expiredkeysdata":expiredkeysdata,"allkeysdata":allkeysdata,"usedmemorydata":usedmemorydata,"maxmemorydata":maxmemorydata}
+        result={
+            "msg":"OK",
+            "code":200,
+            "data":data
+        } 
+        return packageResponse(result) 
 
