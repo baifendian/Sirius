@@ -340,11 +340,6 @@ handleSave4() {
     this.refs.autorebalance.close()
   },
 
-  formatPercent(used,total){
-    return (total == 0) ? 100 : parseInt( 100 * used / total)
-  },
-
-
   render: function() {
     let proxyinfo = this.state.proxyinfo;
     let serverinfo = this.state.serverinfo;
@@ -359,8 +354,6 @@ handleSave4() {
                      {  'url':'/Codis/CodisInfo',  'text':'codis列表'   }]
     let text = this.state.detailText
     let result = [{user:300,sales:100,date:"2016-1-1"},{user:200,sales:300,date:"2016-1-2"},{user:100,sales:200,date:"2016-1-3"},{user:200,sales:300,date:"2016-1-4"},{user:200,sales:300,date:"2016-1-5"}]
-    let pod_percent = this.formatPercent( 80,100 )
-    let task_percent = this.formatPercent( this.state.task_used,this.state.task_total)
     let result1 = [{value:18954,name:"expires"},{value:1555,name:"unexpires"}]
     if ( !text ){
       text = [['请选择Service']]
