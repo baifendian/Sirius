@@ -206,7 +206,7 @@ const conf={
           text:"云容器",
           url:""
         },{
-          text:"计算管理",
+          text:"k8s相关监控",
           url:""
         }]
       },
@@ -214,68 +214,65 @@ const conf={
         headText:"计算管理概览",
         navigationTexts:[{
           text:"计算管理概览",
-          url:""
+          url:"/CalcManage/Overview?cur_space=${spaceName}"
         }]
       },
      PodInfo:{
        headText:"Pod信息",
        navigationTexts:[{
          text:"Pod信息",
-         url:""
+         url:"/CalcManage/PodInfo?cur_space=${spaceName}"
        }]
      },
      ServiceInfo:{
        headText:"Service信息",
        navigationTexts:[{
          text:"Service信息",
-         url:""
+         url:"/CalcManage/ServiceInfo?cur_space=${spaceName}"
        }]
      },
      ReplicationControllerInfo:{
        headText:"RC信息",
        navigationTexts:[{
          text:"RC信息",
-         url:""
+         url:"/CalcManage/ReplicationControllerInfo?cur_space=${spaceName}"
        }]
      },
      MyTask:{
        headText:"我的任务",
        navigationTexts:[{
-         headText:"我的任务",
-         navigationTexts:[{
-           text:"我的任务",
-           url:""
-         }]
+         text:"我的任务",
+         url:"/CalcManage/MyTask?cur_space=${spaceName}"
        }]
      },
+     CC1:{
+       headText:"CC1",
+       navigationTexts:[{
+           text:"开始使用",
+           url:"/CalcManage/CreateCluster/CC1?cur_space=${spaceName}"
+       }]
+     },
+     CC2:{
+       headText:"CC2",
+       navigationTexts:[{
+           text:"云中心计算集群",
+           url:"/CalcManage/CreateCluster/CC2?cur_space=${spaceName}"  
+       }]
+     },
+
+
+
      CreateCluster:{
        headText:"创建集群",
        navigationTexts:[{
          headText:"创建集群",
          navigationTexts:[{
-           text:"创建集群",
-           url:""
-         }]
-       }]
-     },
-     CC1:{
-       headText:"开始使用",
-       navigationTexts:[{
-           text:"创建集群",
-           url:""
-       },{
            text:"开始使用",
-           url:""
-       }]
-     },
-     CC2:{
-       headText:"云中心计算集群",
-       navigationTexts:[{
-           text:"创建集群",
-           url:""
-       },{
+           url:"/CalcManage/CreateCluster/CC1?cur_space=${spaceName}"
+         },{
            text:"云中心计算集群",
-           url:""
+           url:"/CalcManage/CreateCluster/CC2?cur_space=${spaceName}"           
+         }]
        }]
      }
    },
