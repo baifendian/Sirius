@@ -114,30 +114,33 @@ const App = React.createClass({
             <div className="sidebar col-md-2 col-sm-3">
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
-                <NavItem key={0} href="HDFS" icon="cubes" defaultOpen title="存储管理">
-                  <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
-                  <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
-                  <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
-                  <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
-                  <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
-                  <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
-               </NavItem>
-               
-               <NavItem key={1} href="CalcManage" icon="desktop" title="计算管理">
-                  <NavItem icon="equalizer" href={`CalcManage/Overview?${params}`} title="概览" />
-                  <NavItem icon="equalizer" href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
-                  <NavItem icon="equalizer" href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
-                  <NavItem icon="equalizer" href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
-                  <NavItem icon="equalizer" href={`CalcManage/MyTask?${params}`} title="我的任务" />
-                  <NavItem icon="equalizer" href={`CalcManage/CreateCluster?${params}`} title="创建集群" >
-                      <NavItem  icon='equalizer' href={`CalcManage/CreateCluster/CC1?${params}`} title="开始使用 " />
-                      <NavItem  icon="equalizer" href={`CalcManage/CreateCluster/CC2?${params}`} title="云中心计算集群" />
-                  </NavItem>
-               </NavItem>
-	       <NavItem key={3} href="CodisCloud" icon="hand-right" title="codis云">
-                  <NavItem icon="codis" href={`CodisCloud/HostInfo?${params}`} title="host信息" />
-                  <NavItem icon="codis" href={`CodisCloud/CodisInfo?${params}`} title="codis信息" />
-               </NavItem>
+                  <NavItem key={10} href="Service" icon="cloud" title="云服务">
+                    <NavItem key={0} href="HDFS" icon="cubes" title="HDFS云">
+                      <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
+                      <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
+                      <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
+                      <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
+                      <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
+                      <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
+                   </NavItem>
+                   <NavItem key={11} href="CodisCloud" icon="skyatlas" title="Codis云">
+                      <NavItem href={`CodisCloud/HostInfo?${params}`} title="主机信息" />
+                      <NavItem href={`CodisCloud/CodisInfo?${params}`} title="Codis信息" />
+                   </NavItem>
+                 </NavItem>
+                 <NavItem key={12} href="Container" icon="sellsy" title="云容器">
+                   <NavItem key={1} href="CalcManage" icon="desktop" title="计算管理">
+                      <NavItem icon="equalizer" href={`CalcManage/Overview?${params}`} title="概览" />
+                      <NavItem icon="equalizer" href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
+                      <NavItem icon="equalizer" href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
+                      <NavItem icon="equalizer" href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
+                      <NavItem icon="equalizer" href={`CalcManage/MyTask?${params}`} title="我的任务" />
+                      <NavItem icon="equalizer" href={`CalcManage/CreateCluster?${params}`} title="创建集群" >
+                          <NavItem  icon='equalizer' href={`CalcManage/CreateCluster/CC1?${params}`} title="开始使用 " />
+                          <NavItem  icon="equalizer" href={`CalcManage/CreateCluster/CC2?${params}`} title="云中心计算集群" />
+                      </NavItem>
+                   </NavItem>
+                 </NavItem>
 
               <NavItem key={2} href="UserAuth" icon="th-large" title="用户管理">
                 <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />

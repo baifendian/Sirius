@@ -7,6 +7,7 @@ import { SplitPanel, SubSplitPanel } from 'bfd-ui/lib/SplitPanel'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import xhr from 'bfd-ui/lib/xhr'
 import NavigationInPage from 'public/NavigationInPage'
+import CodisConf from '../Conf/CodisConf'
 import Toolkit from 'public/Toolkit/index.js'
 
 import CMDR from '../CodisCloudDataRequester/requester.js'
@@ -125,9 +126,13 @@ export default React.createClass({
       this.curNameSpace = CMDR.getCurNameSpace(this)
     }
   },
-
+  requestArgs:{
+    pageName : "HostInfo",
+  },
 
   render: function() {
+    let spaceName = CodisConf.getCurSpace(this);
+
 	  let headText = '我的集群'
     let host_ip = this.state.host_ip
     let host_user = this.state.host_user
@@ -141,8 +146,7 @@ export default React.createClass({
 
     return (
       <div className="PodInfoChildRootDiv" >
-
-        <NavigationInPage headText={headText} naviTexts={naviTexts} />
+        <NavigationInPage headText={CodisConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={CodisConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <div className="ButtonFatherDiv">
             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>
               <Modal ref="modal">
