@@ -18,7 +18,7 @@ const CalcManageConf={
                             });
   },
   //直接获取面包屑数据的接口
-  getNavigationData({moduleName="CalcManage",pageName="",type="",spaceName=""}){
+  getNavigationData({moduleName="K8sMonitor",pageName="",type="",spaceName=""}){
     return conf.getNavigationData({ moduleName : moduleName, pageName : pageName,
                                     type : type, spaceName : spaceName});
   },

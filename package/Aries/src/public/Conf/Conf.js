@@ -196,7 +196,7 @@ const conf={
       },
     },
     //计算管理面包屑
-    CalcManage:{
+    K8sMonitor:{
       Base:{
         headText:"",
         navigationTexts:[{
@@ -211,9 +211,9 @@ const conf={
         }]
       },
       Overview:{
-        headText:"计算管理概览",
+        headText:"K8s监控概览",
         navigationTexts:[{
-          text:"计算管理概览",
+          text:"K8s监控概览",
           url:"/CalcManage/Overview?cur_space=${spaceName}"
         }]
       },
@@ -238,44 +238,58 @@ const conf={
          url:"/CalcManage/ReplicationControllerInfo?cur_space=${spaceName}"
        }]
      },
-     MyTask:{
-       headText:"我的任务",
-       navigationTexts:[{
-         text:"我的任务",
-         url:"/CalcManage/MyTask?cur_space=${spaceName}"
-       }]
-     },
-     CC1:{
-       headText:"CC1",
-       navigationTexts:[{
-           text:"开始使用",
-           url:"/CalcManage/CreateCluster/CC1?cur_space=${spaceName}"
-       }]
-     },
-     CC2:{
-       headText:"CC2",
-       navigationTexts:[{
-           text:"云中心计算集群",
-           url:"/CalcManage/CreateCluster/CC2?cur_space=${spaceName}"  
-       }]
-     },
-
-
-
-     CreateCluster:{
-       headText:"创建集群",
-       navigationTexts:[{
-         headText:"创建集群",
-         navigationTexts:[{
-           text:"开始使用",
-           url:"/CalcManage/CreateCluster/CC1?cur_space=${spaceName}"
-         },{
-           text:"云中心计算集群",
-           url:"/CalcManage/CreateCluster/CC2?cur_space=${spaceName}"           
-         }]
-       }]
-     }
    },
+    UserDoc:{
+      Base:{
+        headText:"",
+        navigationTexts:[{
+          text:"概览",
+          url:"/?cur_space=${spaceName}"
+        },{
+          text:"云容器",
+          url:""
+        },{
+          text:"使用说明",
+          url:""
+        }]
+      },     
+      CC1:{
+        headText:"开始使用",
+        navigationTexts:[{
+          text:"开始使用",
+          url:"/CalcManage/CreateCluster/CC1?cur_space=${spaceName}"
+        }]
+      },
+      CC2:{
+        headText:"云中心计算集群",
+        navigationTexts:[{
+          text:"云中心计算集群",
+          url:"/CalcManage/CreateCluster/CC2?cur_space=${spaceName}"  
+        }]
+      }
+    },
+    OffLineCalcTask:{
+      Base:{
+        headText:"",
+        navigationTexts:[{
+          text:"概览",
+          url:"/?cur_space=${spaceName}"
+        },{
+          text:"云容器",
+          url:""
+        },{
+          text:"离线计算任务",
+          url:""
+        }]
+      },  
+      MyTask:{
+        headText:"我的任务",
+        navigationTexts:[{
+          text:"我的任务",
+          url:"/CalcManage/MyTask?cur_space=${spaceName}"
+        }]
+      }
+    }
   },
   //公共获取面包屑数据的接口
   getNavigationData({moduleName="",pageName="",type="",spaceName=""}){

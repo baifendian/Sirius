@@ -5,6 +5,7 @@ import TabGraph from './Graph'
 import TabLiebiao from './Liebiao'
 import NavigationInPage from 'public/NavigationInPage'
 import Icon from 'bfd-ui/lib/Icon'
+import CalcManageConf from '../UrlConf'
 
 //import { Tabs, Icon } from 'antd'
 
@@ -52,31 +53,23 @@ export default React.createClass({
       return totalHeight
     },
 
-
     render() {
-
-      const TabPane = Tabs.TabPane;
-      let headText = '我的任务'
-      let navigationTexts = [{
-        'url':'/',
-        'text':'首页'
-      },{
-        'url':'/CalcManage/Overview',
-        'text':'计算管理'
-      },{
-        'url':'/CalcManage/MyTask',
-        'text':'我的任务'
-      }]
-
-      for ( let i = 0 ; i < navigationTexts.length ; i ++ ){
-        navigationTexts[i]['url'] += location.search
-      }
-
-      //let tabsPanelHeight = this.calcDesiredHeight()
+      let spaceName = CalcManageConf.getCurSpace(this);
       
-    return (
+      return (
         <div className='MyTaskRootDiv' ref='MyTaskRootDiv'>
-          <NavigationInPage ref='NavigationInPage' headText={headText} naviTexts={navigationTexts}  />
+          <NavigationInPage ref='NavigationInPage'
+                          headText={CalcManageConf.getNavigationData({
+                            moduleName:'OffLineCalcTask',
+                            pageName:'MyTask',
+                            type : 'headText'
+                          })} 
+                          naviTexts={CalcManageConf.getNavigationData({
+                            moduleName:'OffLineCalcTask',
+                            pageName:'MyTask',
+                            type:'navigationTexts',
+                            spaceName:spaceName
+                          })} />
           <div className='cTabs' ref='cTabs' >
  
             <Tabs>
