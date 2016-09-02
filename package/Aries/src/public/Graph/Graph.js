@@ -1,6 +1,7 @@
 var vis = require('vis');
 var React = require('react');
 var uuid = require('uuid');
+import './Graph.less';
 
 var Graph = React.createClass({
   getDefaultProps: function() {
@@ -9,7 +10,7 @@ var Graph = React.createClass({
       identifier: uuid.v4(),
       style: {
         width: "100%",
-        
+
       }
     };
   },
@@ -22,7 +23,7 @@ var Graph = React.createClass({
     }, this.props.identifier);
   },
 
-  changeMode: function(){
+  changeMode: function() {
     this.updateGraph()
   },
 
@@ -41,16 +42,23 @@ var Graph = React.createClass({
     // Options
     var options = {
       layout: {
+        improvedLayout: true,
         hierarchical: {
+          levelSeparation: 150,
+          nodeSpacing: 180,
+          treeSpacing: 100,
           direction: "UD",
-          sortMethod: "directed"
+          sortMethod: "directed",
         }
       },
-      interaction: {dragNodes :true},
+      interaction: {
+        dragNodes: true,
+        navigationButtons: true,
+        keyboard: true
+      },
       physics: {
         enabled: false
       },
-
       edges: {
         color: '#000000',
         width: 0.5,
