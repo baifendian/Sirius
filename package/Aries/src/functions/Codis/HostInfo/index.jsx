@@ -96,7 +96,7 @@ export default React.createClass({
       message.success("添加成功!", 2);
       this.modalClose();
       this.curNameSpace = undefined;
-      this.forceUpdate();
+      this.checkToRequestData();
     }
     })
   },
@@ -145,7 +145,20 @@ export default React.createClass({
         <NavigationInPage headText={headText} naviTexts={naviTexts} />
         <div className="ButtonFatherDiv">
             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>
-              <Modal ref="modal">
+            <div className="SearchInputFatherDiv">
+              <SearchInput placeholder="请输入查询关键字"
+                           onChange={function(){}}
+                           onSearch={this.onSearchByKey}
+                           label="查询" />
+            </div>
+        </div>
+            <div className="DataTableFatherDiv">
+              <DataTable ref="DataTable" data={this.state.data}
+                         showPage={this.state.showPage}
+                         onRowClick={this.onTableRowClick}
+                         column= { this.state.column } />
+            </div>
+                          <Modal ref="modal">
                 <ModalHeader>
                   <h4>添加host</h4>
                 </ModalHeader>
@@ -207,20 +220,8 @@ export default React.createClass({
               </div>
               </ModalBody>
         </Modal>
-            <div className="SearchInputFatherDiv">
-              <SearchInput placeholder="请输入查询关键字"
-                           onChange={function(){}}
-                           onSearch={this.onSearchByKey}
-                           label="查询" />
-            </div>
-        </div>
-            <div className="DataTableFatherDiv">
-              <DataTable ref="DataTable" data={this.state.data}
-                         showPage={this.state.showPage}
-                         onRowClick={this.onTableRowClick}
-                         column= { this.state.column } />
-            </div>
       </div>
+      
     )
   }
 });

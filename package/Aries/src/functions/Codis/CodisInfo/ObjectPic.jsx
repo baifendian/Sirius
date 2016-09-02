@@ -4,7 +4,22 @@ import Percentage from 'bfd-ui/lib/Percentage'
 import './index.less'
 
 const ObjectPic =  React.createClass({
+    formatPercent(used,total){
+        return (total == 0) ? 100 : parseInt( 100 * used / total)
+    },
+    selectColorByPercent(percent){
+    if (percent <= 33.33){
+      return '#1CB162'
+    }else if (percent <= 66.66){
+      return '#1BB8FA'
+    }else {
+      return '#FA7252'
+    }
+  },
     render: function () {
+        let result = [{user:300,sales:100,date:"2016-1-1"},{user:200,sales:300,date:"2016-1-2"},{user:100,sales:200,date:"2016-1-3"},{user:200,sales:300,date:"2016-1-4"},{user:200,sales:300,date:"2016-1-5"}]
+        let pod_percent = this.formatPercent( this.props.piclist.expiredkeysdata,this.props.piclist.allkeysdata )
+        let task_percent = this.formatPercent( this.props.piclist.usedmemorydata,this.props.piclist.maxmemorydata)
         return (
             <table className="LineChartFatherDiv">
                 <tbody>
@@ -16,7 +31,7 @@ const ObjectPic =  React.createClass({
                   <tr className="LinePic" >
                     <td style={{width:'600px'}}>
                       <div className="borderclass">
-                      <LineChart style={{height: '300px'}} category="date" cols={{ops: 'op/s'}} data={result} />
+                      <LineChart style={{height: '300px'}} category="date" cols={{ops: 'op/s'}} data={this.props.piclist.ops} />
                       </div>
                     </td>
                     <td style={{width:'50px'}} className="MidTdDiv"><div /></td>
@@ -41,11 +56,11 @@ const ObjectPic =  React.createClass({
                     </td>
                     <td style={{width:'30px'}} className="MidTdDiv"><div /></td>
                     <td style={{width:'500px'}} className="percentage">
-                      <Percentage percent={pod_percent}
-                          foreColor={this.selectColorByPercent(pod_percent)}
-                          textColor={this.selectColorByPercent(pod_percent)}
+                      <Percentage percent={task_percent}
+                          foreColor={this.selectColorByPercent(task_percent)}
+                          textColor={this.selectColorByPercent(task_percent)}
                           style={{width: '150px'}}
-                          ref="pod_percent" />
+                          ref="task_percent" />
                     </td>
                   </tr>
                   <tr className="PercentText">
@@ -54,9 +69,9 @@ const ObjectPic =  React.createClass({
                     <td className="percentage">memory used</td>
                   </tr>
                   <tr className="PercentDetail">
-                    <td className="percentage">243434&nbsp;/&nbsp;432423443</td>
+                    <td className="percentage">{this.props.piclist.expiredkeysdata}&nbsp;/&nbsp;{this.props.piclist.allkeysdata}</td>
                     <td style={{width:'30px'}} className="MidTdDiv"><div /></td>
-                    <td className="percentage">243434&nbsp;/&nbsp;432423443</td>
+                    <td className="percentage">{this.props.piclist.usedmemorydata}G&nbsp;/&nbsp;{this.props.piclist.maxmemorydata}G</td>
                   </tr>
                 </tbody>
             </table>

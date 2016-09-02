@@ -9,14 +9,8 @@ var Graph = React.createClass({
       identifier: uuid.v4(),
       style: {
         width: "100%",
-
+        
       }
-    };
-  },
-
-  getInitialState: function() {
-    return {
-      hierarchicalLayout: true
     };
   },
 
@@ -28,11 +22,8 @@ var Graph = React.createClass({
     }, this.props.identifier);
   },
 
-  changeMode: function(event) {
-    this.setState({
-      hierarchicalLayout: !this.state.hierarchicalLayout
-    });
-    this.updateGraph();
+  changeMode: function(){
+    this.updateGraph()
   },
 
   componentDidMount: function() {
@@ -49,8 +40,17 @@ var Graph = React.createClass({
 
     // Options
     var options = {
-      stabilize: false,
-      smoothCurves: false,
+      layout: {
+        hierarchical: {
+          direction: "UD",
+          sortMethod: "directed"
+        }
+      },
+      interaction: {dragNodes :true},
+      physics: {
+        enabled: false
+      },
+
       edges: {
         color: '#000000',
         width: 0.5,
@@ -59,25 +59,10 @@ var Graph = React.createClass({
         arrows: "to",
         dashes: false
       }
-
     };
-    if (this.state.hierarchicalLayout) {
-      options.hierarchicalLayout = {
-        enabled: true,
-        direction: "UD",
-        levelSeparation: 100,
-        nodeSpacing: 1
-      };
-    } else {
-      options.hierarchicalLayout = {
-        enabled: false
-      };
-    }
 
     var network = new vis.Network(container, this.props.graph, options);
   }
-
-
 
 });
 module.exports = Graph;
