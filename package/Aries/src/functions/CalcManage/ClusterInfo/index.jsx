@@ -9,6 +9,7 @@ import DynamicTable from 'public/DynamicTable'
 import NavigationInPage from 'public/NavigationInPage'
 import Toolkit from 'public/Toolkit/index.js'
 
+import CalcManageConf from '../UrlConf'
 import './index.less'
 
 var ClusterCommonInfo = React.createClass({
@@ -26,10 +27,8 @@ var ClusterCommonInfo = React.createClass({
   componentWillMount(){
     let config = this.props
     this.storeConstData = {
-      headText:'我的集群',
       dataTableConfigDict:config.dataTableConfigDict,
       rootDivClassName:config.rootDivClassName,
-      naviTexts:config.naviTexts,
       defaultDetailText:config.defaultDetailText
     }
     this.storeVarData = {
@@ -158,14 +157,6 @@ var ClusterCommonInfo = React.createClass({
   },
 
   render: function (){
-    let naviTexts = []
-    for ( let i = 0 ; i < this.storeConstData.naviTexts.length ; i ++ ){
-      naviTexts.push( {
-        url:this.storeConstData.naviTexts[i].url + location.search,
-        text:this.storeConstData.naviTexts[i].text
-      } )
-    }
-
     if ( this.storeVarData.dataTableDataArr !== this.props.dataTableDataArr ){      
       // 如果namespace发生切换，则会进入这个函数体内
       this.storeVarData.dataTableDataArr = this.props.dataTableDataArr
@@ -194,7 +185,16 @@ var ClusterCommonInfo = React.createClass({
                         defaultValue={this.state.searchInputKey}
                         label="查询" />
         </div>
-        <NavigationInPage ref="NavigationInPage" headText={this.storeConstData.headText} naviTexts={naviTexts} />
+        <NavigationInPage ref="NavigationInPage" 
+                          headText={CalcManageConf.getNavigationData({
+                            pageName:this.props.navigationKey,
+                            type : 'headText'
+                          })} 
+                          naviTexts={CalcManageConf.getNavigationData({
+                            pageName:this.props.navigationKey,
+                            type:'navigationTexts',
+                            spaceName:this.props.spaceName
+                          })} />
         <SplitPanel ref='SplitPanel'
                     onSplit={this.onSplitPanelHeightChange} 
                     className='SplitPanel' 

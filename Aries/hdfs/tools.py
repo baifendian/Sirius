@@ -23,7 +23,9 @@ def run_hadoop(user_name="hadoop",operator="ls",args=["/user/hadoop",]):
     env[ 'LOGNAME'  ]  = user_name
     #env[ 'PWD'      ]  = cwd
     env[ 'USER'     ]  = user_name
-    cmd=["sh",settings.HADOOP_RUN_SCRIPT,operator]
+    cur_dir = os.path.join(os.getcwd(),"Aries/hdfs")
+    run_script = os.path.join(cur_dir,settings.HADOOP_RUN_SCRIPT)
+    cmd=["sh",run_script,operator]
     cmd= cmd + args
     cmd = " ".join(cmd)
     ac_logger.info("cmd:{0}".format(cmd))

@@ -17,7 +17,8 @@ urlpatterns = [
     url(r'^logout$',views.logout),
     url(r'^HDFS/.*$',views.index),
     url(r'^UserAuth/.*$',views.index),
-    url(r'^CalcManage/.*$',views.index)
+    url(r'^CalcManage/.*$',views.index),
+	url(r'^CodisCloud/.*$',views.index)
 ]
 
 # 可浏览式登录API

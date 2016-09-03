@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import ReactMarkdown from 'react-markdown'
 import './index.less'
 import NavigationInPage from 'public/NavigationInPage'
+import CalcManageConf from '../../UrlConf'
 
 export default React.createClass({
      //动态计算组件高度
@@ -32,15 +33,6 @@ export default React.createClass({
       ReactDOM.findDOMNode( this.refs.Big1 ).style.height = BigHeight + 'px'
     },
   render(){
-    let headText = '创建集群'
-    let naviTexts = [{  'url':'/',   'text':'首页'   },
-                     {  'url':'/CalcManage/Overview',   'text':'计算管理'   },
-                     {  'url':'/CalcManage/CreateCluster/CC1',   'text':'云中心计算集群'   }]
-
-    for ( let i = 0 ; i < naviTexts.length ; i ++ ){
-      naviTexts[i]['url'] += location.search
-    }
-
     var source = ['# Kubernetes综合使用指南',
 '本章包含了Kubernetes101，Kubernetes201以及一个留言板的例子。但是在里面插入了更多的对于Kubernetes的相关概念的解释。',
 '这篇文档中包含了以下Kubernetes组件的介绍：',
@@ -324,13 +316,26 @@ export default React.createClass({
       str += source[i] + '\n'
     }
 
+    let spaceName = CalcManageConf.getCurSpace(this);
+
     return (
       <div className='mdRootDiv1' ref='mdRootDiv1'>
-         <NavigationInPage ref="NavigationInPage" headText={headText} naviTexts={naviTexts} />
-         <div className='Big1' ref='Big1'>
-           <ReactMarkdown className='mdChildDiv1' source={str} />
-
-        </div>
+        <NavigationInPage ref='NavigationInPage'
+                          headText={CalcManageConf.getNavigationData({
+                            moduleName:'UserDoc',
+                            pageName:'CC2',
+                            type : 'headText'
+                          })} 
+                          naviTexts={CalcManageConf.getNavigationData({
+                            moduleName:'UserDoc',
+                            pageName:'CC2',
+                            type:'navigationTexts',
+                            spaceName:spaceName
+                          })} />
+                          
+          <div className='Big1' ref='Big1'>
+            <ReactMarkdown className='mdChildDiv1' source={str} />
+          </div>
       </div>
     )
   }

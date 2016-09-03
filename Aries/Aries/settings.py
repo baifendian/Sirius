@@ -293,3 +293,18 @@ SESSION_COOKIE_AGE=60*30
 #kubectl_file
 KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx_1_2_4')
 KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')
+
+#codis设置
+CODIS_LOCAL_DIR = '/opt/jingxia.sun/codis/redisconf/'
+CODIS_COMMOND_DIR = '/root/jingxia.sun/Sirius/Aries/codis/commandlog/'
+CODIS_DATADIR = '/opt/jingxia.sun/codis/serverconf/data/'
+CODIS_LOGFILE_DIR = '/opt/jingxia.sun/codis/serverconf/log/'
+CODIS_PIDFILE_DIR = '/opt/jingxia.sun/codis/serverconf/pid/'
+CODIS_ZK_ADDR = '172.24.2.236:2181'
+CODIS_INDEX_LINE = 1
+CODIS_HOST_INFO = [0,'172.24.3.64','root','',0,'a',0]
+CODIS_SHOME='/root/jingxia.sun/dev/Sirius/Aries/codis/'
+CODIS_MEMORY_MAX = 10
+PENTSDB_URL = "http://172.24.4.33:4242"
+SSH_PKEY = '/root/.ssh/id_rsa'
+SSH_KNOWN_HOSTS = '/root/.ssh/known_hosts' 

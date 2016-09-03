@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './Graph.less'
-import Graph from 'public/Graph'
+import Graph from 'public/Graph/Graph'
 import { Tag } from 'antd'
 import Button from 'bfd-ui/lib/Button'
 
@@ -27,16 +27,24 @@ const TabGraph = React.createClass({
     })
   }, 
   render() {
-    console.log( '///////////////' + this.props.height);
+    console.log( 'canvas height is: ' + this.props.height);
     if ( this.height !== this.props.height ){
       setTimeout( ()=>{
         let graphPanel = ReactDOM.findDOMNode( this.refs.Graph2Name )
+<<<<<<< HEAD
         graphPanel.childNodes[0].style.height = this.props.height  + 'px'
+=======
+        graphPanel.childNodes[0].style.height = (this.props.height - 50)  + 'px'
+        //graphPanel.childNodes[0].style.background-image = 'public/background.png'
+        // /graphPanel.childNodes[0].style. = '15px'
+        
+
+>>>>>>> dev
       } )
       this.height = this.props.height
     }
-  
-    /*let data = {
+    /** 
+    let data = {
       nodes: [
             {id: 1, label: 'taskf', color:'#97C2FC', shape: 'dot',shapeProperties: {},size: 15},
             {id: 2, label: 'task 2', color:'#6E6EFD'},
@@ -73,7 +81,7 @@ const TabGraph = React.createClass({
           <Button className='btn-4' size='sm'>执行完成(成功)</Button>
           <Button className='btn-5' size='sm'>执行完成(失败)</Button>
           <Button className='btn-6' size='sm'>任务停止中</Button>
-          提示：A指向B 表示B依赖A
+          &nbsp;&nbsp; 提示：A指向B 表示B依赖A
         </div>
         <div ref='Graph2Name' className='Graph2Name'>
            <Graph graph={this.state.data}/>
