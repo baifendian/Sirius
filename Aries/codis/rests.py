@@ -63,8 +63,7 @@ class HostInfo(APIView):
                 "msg":"ERROR:the host already exists"
             }
             return packageResponse(result) 
-        #if CheckHost(hostip, hostuser):
-        if True:
+        if CheckHost(hostip, hostuser):
             host=Host(host_ip=hostip, host_user=hostuser, host_pass=hostpasswd, memory_total=memtotal, codis_home=codishome, memory_used=0)
             host.save()
             result = {
@@ -84,18 +83,16 @@ class CodisInfo(APIView):
     '''
     def post(self, request, format=None):
         product_id = request.POST.get('name')
-        memory_size = request.POST.get('mem')
+        memory_size = int(request.POST.get('mem'))
         cc = Codis.objects.filter(product_id=product_id)
         if len(cc)>0:
             result = {
             "code":400,
             "msg":"product_id重名，请重新尝试"
             }
-            return packageResponse(result) 
-        codis=Codis(product_id=product_id,memory_total=int(memory_size))
-        codis.save()  
-        #t1=NewApply(product_id, memory_size, settings.CODIS_ZK_ADD,GetDashHost()[1:4])
-        #t1.start()
+            return packageResponse(result)
+        t1=NewApply(product_id, memory_size, settings.CODIS_ZK_ADDR,GetDashHost()[1:4])
+        t1.start()
         result = {
             "code":200,
             "msg":"OK"
@@ -132,14 +129,9 @@ class CodisInfo(APIView):
     def delete(self,request,format=None):
         dict_1 = json.loads(request.data["data"])
         product_id = dict_1['product_id']
-        cc = Codis.objects.get(product_id=product_id)
-        if cc:
-            cc.delete()
-        else:
-            result ={"code":400,"msg":"无法找到此codis！"}
-            return packageResponse(result)
-        #t1=DeleteCodisApply(codisinfo)
-        #t1.start()
+        codisinfo = Codis.objects.get(product_id=product_id)
+        t1=DeleteCodisApply(codisinfo)
+        t1.start()
         result ={"code":200,"msg":"删除请求已经提交！"}
         return packageResponse(result)
 
@@ -159,8 +151,8 @@ class CodisInfo(APIView):
             else:
                 result ={"code":400,"msg":"无此codis集群！"}
                 return packageResponse(result)
-            #t1 = AddCodisProxyApply(codisinfo,settings.CODIS_ZK_ADDR)
-            #t1.start()
+            t1 = AddCodisProxyApply(cc,settings.CODIS_ZK_ADDR)
+            t1.start()
             result ={"code":200,"msg":"添加proxy申请已提交！"}
         elif op.upper() == "UPDATEPROXYADDR":
             product_id = dict_1["name"]
@@ -171,12 +163,9 @@ class CodisInfo(APIView):
             result ={"code":200,"msg":"更新成功！"}
         else:
             product_id = dict_1["product_id"]
-            requiremem = long(dict_1["alertmem"])
-            cc = Codis.objects.get(product_id=product_id)
-            cc.memory_total += requiremem
-            cc.save()
-            #t1 = AlterMem(product_id,requiremem)
-            #t1.start()
+            requiremem = int(dict_1["alertmem"])
+            t1 = AlterMem(product_id,requiremem)
+            t1.start()
             result ={"code":200,"msg":"扩容请求已发送！"}
         return packageResponse(result)
 
