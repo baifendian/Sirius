@@ -663,8 +663,6 @@ def SetServerGrp(sshdash,hostlist,productid):
                      %(CODISHOME,productid,slotgrp[i][0],slotgrp[i][1],i+1)
         ac_logger.debug(setservercom)
         codisinfo=Codis.objects.filter(product_id=productid)
-        slot=Slotalloc(codis_id=codisinfo[0].codis_id, group_index=i+1, group_slot=GenSlotStr(slotgrp[i][0],slotgrp[i][1]))
-        slot.save()
         stdin,stdout,stderr=sshdash.exec_command(setservercom)
         outstring=str(stdout.readlines()+stderr.readlines())
         GenerateCommandLog(productid,'SETSERVERGRP',setservercom,stdout.readlines()+stderr.readlines())
@@ -684,7 +682,6 @@ def StartCodisProxy(hostrecord,productid,codisid,id):
     httpip=hostrecord.host_ip
     host_id=hostrecord.host_id    
     sshproxy=SSH(hostrecord.host_ip,hostrecord.host_user)
-    #proxyport,httpport,id=GetProxyPort(mysqlctl, host_id)
     proxy_list=Proxy.objects.filter(host_id=host_id).order_by('-proxy_port')
     if proxy_list:
         proxyport=proxy_list[0].proxy_port+1
@@ -730,12 +727,6 @@ def StartCodisHA(sshgrp,daship,dashport,productid):
     sthacom='cd %s &&nohup ./bin/codis-ha --codis-config=%s:%d'\
     ' --productName=%s >>./codislog/codisha%s.log  2>&1 < /dev/null &'%(CODISHOME,daship,dashport,productid,productid)
     ac_logger.info(sthacom)
-    #dbterminal=asshgrp.invoke_shell()
-    #try:
-    #    dbterminal.send(sthacom)
-    #    ac_logger.debug(dbterminal.recv(256))
-    #except:
-    #    ac_logger.error('startcodisha error')
     asshgrp.exec_command(sthacom)
     time.sleep(3)
     stdin,stdout,stderr=asshgrp.exec_command('cat %scodislog/codisha%s.log'%(CODISHOME,productid))
@@ -992,8 +983,6 @@ def DeleteCodisRun(zk,codisinfo):
     Proxy.objects.filter(codis_id=codisinfo.codis_id).delete()
     #删除servers信息
     Servers.objects.filter(codis_id=codisinfo.codis_id).delete()
-    #删除slotalloc信息
-    Slotalloc.objects.filter(codis_id=codisinfo.codis_id).delete()
     #删除codis信息
     codisinfo.delete()
     GenerateCommandLog(codisinfo.product_id,'#result','','delete success')
@@ -1026,7 +1015,6 @@ def ApplyMemory(zk,productid,applymem,zkinfo,dashboardinfo):
                 if not CODISHOME.endswith('/'):
                     CODISHOME += '/'
                 proxyhostlist=SelectProxyHost()
-                #proxyhostlist=Host.objects.all()
                 sshgrp,codisid,dashboardport=PreCodis(hostlist,proxyhostlist,productid,zkinfo,dashboardinfo,applymem)
                 sshdash=SSH(dashboardinfo[0],dashboardinfo[1])
                 StartDashBoard(sshdash,dashboardinfo[0],productid,dashboardport)
@@ -1266,7 +1254,6 @@ def GetFitHostList(applymem):
         #选从
         for j in range(0,divided):
             SelectSlaveHost(hostinfolist,classlist,SERVERINSTANCEMAXMEMORY,j,True)
-        ac_logger.info(hostinfolist)
         if remin!=0 and len(hostinfolist)!=divided+1:
             return None
         return hostinfolist
@@ -1347,7 +1334,7 @@ def SelectSlaveHost(hostinfolist,classlist,applymem,times,flag):
 #@ param[in] passwd   远程服务器的密码
 #@ param[in] port=22  连接远程服务器的端口号
 def SFTPFile(file,remotedir,ip,user,passwd,port=3222):
-    pkey='/opt/sys/.ssh/id_rsa'
+    pkey = settings.SSH_PKEY
     key=paramiko.RSAKey.from_private_key_file(pkey)
     t=paramiko.Transport((ip,3222))
     t.connect(username=user, pkey=key)
@@ -1371,12 +1358,12 @@ def SFTPFile(file,remotedir,ip,user,passwd,port=3222):
 #@ param[out] 远程服务器的ssh连接
 def SSH(ip,username):  
     #try:  
-    pkey='/opt/sys/.ssh/id_rsa'
+    pkey = settings.SSH_PKEY
+    known_host_dir = settings.SSH_KNOWN_HOSTS
     key=paramiko.RSAKey.from_private_key_file(pkey)
     ssh = paramiko.SSHClient()  
-    ssh.load_system_host_keys()
-    #ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())  
-    ssh.connect(ip,3222,username,key)  
+    ssh.load_system_host_keys(settings.SSH_KNOWN_HOSTS)
+    ssh.connect(ip,3222,username,None,key)  
     return ssh 
     #except :  
     ac_logger.error('connect to %s\tError\n'%(ip))  
