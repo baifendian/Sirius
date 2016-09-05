@@ -181,7 +181,6 @@ class CodisLog(APIView):
         product_id = request.POST.get("product_id","")
         try:
             log=open(settings.CODIS_COMMOND_DIR+('command%s.log')%product_id,'a+')
-            print settings.CODIS_COMMOND_DIR+('command%s.log')%product_id
             codislog=[]
             if log:
                 for line in log:
@@ -297,7 +296,7 @@ class GetAllCodisInfo(APIView):
                      "tags":{"db":codis_info.product_id}}]} 
         latency_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.proxy.command.spent",\
                              "tags":{"db":codis_info.product_id,"cmd":"*"}}]}
-        total_expired_keys = {"start":"2h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_expired_keys",\
+        total_expired_keys = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_expired_keys",\
                              "tags":{"db":codis_info.product_id}}]}
         total_keys = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_keys",\
                              "tags":{"db":codis_info.product_id}}]}
@@ -326,18 +325,23 @@ class GetAllCodisInfo(APIView):
             otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
             a["ops"] = v
             a["date"] = otherStyleTime
-            m = 0
-            for n in opsdata:
-                if n["date"] == otherStyleTime:
-                    n["ops"] += v
-                    m = 1
-            if m == 0:
-                opsdata.append(a)
-        #for j in json.loads(latency_info.text):
-        #    b = {}
-        #    
-        #    for k,v in j['dps'].items():
-        #    
+            opsdata.append(a)
+        count = 0
+        for j in json.loads(latency_info.text):
+            list_ops = sorted(j['dps'].items(),key=lambda d:d[0],reverse=False)
+            for k,v in list_ops:
+                timeArray = time.localtime(int(k))
+                otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+                if count == 0:
+                    b = {}
+                    b[j['tags']['cmd']] = v
+                    b['date'] = otherStyleTime
+                    latencydata.append(b)
+                else:
+                    for m in latencydata:
+                        if m['date'] == otherStyleTime:
+                            m[j['tags']['cmd']] = v
+            count += 1
         for k,v in json.loads(expired_keys.text)[0]['dps'].items():
             expiredkeysdata = v
             break
@@ -350,7 +354,7 @@ class GetAllCodisInfo(APIView):
         for k,v in json.loads(maxmemory.text)[0]['dps'].items():
             maxmemorydata = v/(1024*1024*1024)
             break
-        data={"ops":opsdata,"expiredkeysdata":expiredkeysdata,"allkeysdata":allkeysdata,"usedmemorydata":usedmemorydata,"maxmemorydata":maxmemorydata}
+        data={"ops":opsdata,"expiredkeysdata":expiredkeysdata,"allkeysdata":allkeysdata,"usedmemorydata":usedmemorydata,"maxmemorydata":maxmemorydata,"latency":latencydata}
         result={
             "msg":"OK",
             "code":200,
