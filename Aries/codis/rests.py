@@ -326,7 +326,13 @@ class GetAllCodisInfo(APIView):
             otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
             a["ops"] = v
             a["date"] = otherStyleTime
-            opsdata.append(a)
+            m = 0
+            for n in opsdata:
+                if n["date"] == otherStyleTime:
+                    n["ops"] += v
+                    m = 1
+            if m == 0:
+                opsdata.append(a)
         #for j in json.loads(latency_info.text):
         #    b = {}
         #    
