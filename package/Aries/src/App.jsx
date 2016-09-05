@@ -128,26 +128,26 @@ const App = React.createClass({
                       <NavItem href={`CodisCloud/CodisInfo?${params}`} title="Codis信息" />
                     </NavItem>
                   </NavItem>
-                  <NavItem key={20} href="Container" icon="sellsy" title="云容器">
-                    <NavItem key={21} href="CalcManage" icon="desktop" title="k8s相关监控">
-                      <NavItem href={`CalcManage/Overview?${params}`} title="概览" />
-                      <NavItem href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
-                      <NavItem href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
-                      <NavItem href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
+                  <NavItem key={20} href="CloudContainer" icon="sellsy" title="云容器">
+                    <NavItem key={21} href="CloudContainer/CalcManage" icon="desktop" title="k8s相关监控">
+                      <NavItem href={`CloudContainer/CalcManage/Overview?${params}`} title="概览" />
+                      <NavItem href={`CloudContainer/CalcManage/PodInfo?${params}`} title="Pod信息" />
+                      <NavItem href={`CloudContainer/CalcManage/ServiceInfo?${params}`} title="Service信息" />
+                      <NavItem href={`CloudContainer/CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
                     </NavItem>
                     {/* 暂时下面没有任何节点，因此注释掉
                     <NavItem key={22} icon="equalizer" title="Docker Image" />
                     */}
-                    <NavItem key={23} icon="tasks" title="离线计算任务" >
-                      <NavItem href={`CalcManage/MyTask?${params}`} title="我的任务" />                  
+                    <NavItem key={23} href="CloudContainer/OffLineCalcTask" icon="tasks" title="离线计算任务" >
+                      <NavItem href={`CloudContainer/OffLineCalcTask/MyTask?${params}`} title="我的任务" />                  
                     </NavItem>
                     {/** 暂时下面没有任何节点，因此注释掉
                     <NavItem key={24} icon="equalizer" title="storm实时计算任务" />
                     <NavItem key={25} icon="equalizer" title="Ceph" />
                     */}
-                    <NavItem key={26} icon="book" title="使用说明" >
-                      <NavItem href={`CalcManage/CreateCluster/CC1?${params}`} title="开始使用 " />
-                      <NavItem href={`CalcManage/CreateCluster/CC2?${params}`} title="云中心计算集群" />
+                    <NavItem key={26} href="CloudContainer/UserDoc" icon="book" title="使用说明" >
+                      <NavItem href={`CloudContainer/UserDoc/CC1?${params}`} title="开始使用 " />
+                      <NavItem href={`CloudContainer/UserDoc/CC2?${params}`} title="云中心计算集群" />
                     </NavItem>
                   </NavItem>
                   <NavItem key={30} href="UserAuth" icon="th-large" title="用户管理">
