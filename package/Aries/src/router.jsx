@@ -101,6 +101,46 @@ export default render((
           }}/>
         </Route>
        </Route>
+
+
+
+      <Route path="openstack">
+        <Route path="instances" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/instances').default)
+          })
+        }}/>
+         <Route path="create" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/create_host').default)
+          })
+        }}/>
+
+        <Route path="images" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/images').default)
+          })
+        }}/>
+
+        <Route path="flavors" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/flavors').default)
+          })
+        }}/>
+        
+        <Route path="volumes" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/volumes').default)
+          })
+        }}/>
+        
+        <Route path=":id" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/host_list').default)
+          })
+        }}/>
+      </Route>
+
        <Route path="CodisCloud">
          <Route path="CodisInfo" getComponent={(location, cb) => {
            require.ensure([], require => {

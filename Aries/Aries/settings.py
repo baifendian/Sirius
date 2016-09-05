@@ -38,7 +38,7 @@ HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
 HADOOP_CLIENT="hlg3p64-lupan"
 AMBARI_USER="admin"
 AMBARI_PASSWORD="admin"
-LOG_BASE_DIR="/tmp/sirius/"
+LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 
@@ -58,7 +58,7 @@ ALLOWED_HOSTS = []
 APPEND_SLASH=False
 # Application definition
 INSTALLED_APPS = (
-    'django_admin_bootstrapped.bootstrap3',
+#    'django_admin_bootstrapped.bootstrap3',
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -70,6 +70,7 @@ INSTALLED_APPS = (
     'user_auth',
     'hdfs',
     'kd_agent',
+	'openstack',
     'codis',
 )
 
@@ -161,6 +162,12 @@ LOGGING = {
             'formatter': 'complete',
             'filename' :'{0}/service.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
+        'openstack_log': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'complete',
+            'filename': '{0}/openstack.log'.format(LOG_BASE_DIR).replace('\\', '/')
+        },
         'console':{
             'level':'DEBUG',
             'class':'logging.StreamHandler',
@@ -196,6 +203,11 @@ LOGGING = {
             'handlers':['kd_agent_file','console'],
             'propagate': False,
             'level':'DEBUG',
+        },
+        'openstack_log': {
+            'handlers': ['openstack_log'],
+            'propagate': False,
+            'level': 'DEBUG',
         },
         'django.request': {
             'handlers': ['ac_file', 'mail_admins'],
