@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import ReactMarkdown from 'react-markdown'
 import './index.less'
 import NavigationInPage from 'public/NavigationInPage'
+import CalcManageConf from '../../UrlConf'
 
 export default React.createClass({
    //动态计算组件高度
@@ -32,15 +33,6 @@ export default React.createClass({
     },
 
   render(){
-    let headText = '创建集群'
-    let naviTexts = [{  'url':'/',   'text':'首页'   },
-                     {  'url':'/CalcManage/Overview',   'text':'计算管理'   },
-                     {  'url':'/CalcManage/CreateCluster/CC1',   'text':'开始使用'   }]
-
-    for ( let i = 0 ; i < naviTexts.length ; i ++ ){
-      naviTexts[i]['url'] += location.search
-    }
-
     var source = ['# 入门',
 '云中心计算服务，是基于kubernetes的通用计算平台。可以轻松的调度Web服务，计算框架如storm, hadoop, tensorflow，中间件如redis, memcache, mongodb。任意可以作为docker镜像运行的程序或应用都可以呗调度在kubernetes之上，享受强大通用计算集群的能力。',
 '本文档将快速引导云中心计算服务的使用方法，并指导用户如何快速的在云端启动一个Hello World的Web应用',
@@ -123,10 +115,21 @@ export default React.createClass({
     for ( let i = 0 ; i < source.length ; i ++ ){
       str += source[i] + '\n'
     }
-
+    let spaceName = CalcManageConf.getCurSpace(this);
     return (
       <div className='mdRootDiv' ref='mdRootDiv'>
-         <NavigationInPage ref="NavigationInPage" headText={headText} naviTexts={naviTexts} />
+        <NavigationInPage ref='NavigationInPage'
+                          headText={CalcManageConf.getNavigationData({
+                            moduleName:'UserDoc',
+                            pageName:'CC1',
+                            type : 'headText'
+                          })} 
+                          naviTexts={CalcManageConf.getNavigationData({
+                            moduleName:'UserDoc',
+                            pageName:'CC1',
+                            type:'navigationTexts',
+                            spaceName:spaceName
+                          })} />
          <div className='Big' ref='Big' >
            <ReactMarkdown className='mdChildDiv' source = {str} />
          </div>

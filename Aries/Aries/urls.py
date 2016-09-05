@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^v1/user_auth/', include('user_auth.urls')),
     url(r'^v1/hdfs/', include('hdfs.urls')),
+    url(r'^v1/codis/', include('codis.urls')),
     url(r'^k8s/', include('kd_agent.urls')),
     url(r'^openstack/', include('openstack.urls')),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT, 'show_indexes': True}),
@@ -18,7 +19,8 @@ urlpatterns = [
     url(r'^logout$',views.logout),
     url(r'^HDFS/.*$',views.index),
     url(r'^UserAuth/.*$',views.index),
-    url(r'^CalcManage/.*$',views.index)
+    url(r'^CalcManage/.*$',views.index),
+	url(r'^CodisCloud/.*$',views.index)
 ]
 
 # 可浏览式登录API

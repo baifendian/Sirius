@@ -21,8 +21,6 @@ CORS_ORIGIN_WHITELIST = (
     '192.168.164.120:4001'
 )
 
-#import ldap
-#from django_auth_ldap.config import LDAPSearch
 AUTH_LDAP_SERVER_URI = 'ldap://192.168.49.241:389'
 AUTH_LDAP_USER_DN_TEMPLATE = 'uid=%(user)s,ou=mrbs,dc=baifendian,dc=com'
 AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = True
@@ -40,8 +38,7 @@ HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
 HADOOP_CLIENT="hlg3p64-lupan"
 AMBARI_USER="admin"
 AMBARI_PASSWORD="admin"
-#LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
-LOG_BASE_DIR="/opt/shengui.luo/log"
+LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 
@@ -74,7 +71,7 @@ INSTALLED_APPS = (
     'hdfs',
     'kd_agent',
 	'openstack',
-    #'Aries',
+    'codis',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -290,19 +287,25 @@ WEBHDFS_TIMEOUT = 10
 WEBHDFS_MAX_TRIES = 2
 WEBHDFS_RETRY_DELAY = 3
 # HADOOP_RUN_SCRIPT = os.path.join(BASE_DIR, os.path.pardir, 'sbin/hadoop-run.sh')
-HADOOP_RUN_SCRIPT = "/opt/pan.lu/gitsource/Aries/Aries/hdfs/hadoop-run.sh"
+HADOOP_RUN_SCRIPT = "hadoop-run.sh"
 
-# ftp settings
-FTP_SERVER = "117.121.7.29"
-FTP_PORT = 990
-FTP_BUFFER_SIZE = 1024
-FTP_TIMEOUT = 10
-FTP_LOCAL_DIR = "/tmp/Aries/ftp/"
-FTP_ACCT = ""
-FTP_KEYFILE = None
-FTP_CERTFILE = None
 SESSION_COOKIE_AGE=60*30
-
+FTP_LOCAL_DIR="/tmp/Aries/download/"
 #kubectl_file
 KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx_1_2_4')
 KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')
+
+#codis设置
+CODIS_LOCAL_DIR = '/opt/jingxia.sun/codis/redisconf/'
+CODIS_COMMOND_DIR = '/root/jingxia.sun/Sirius/Aries/codis/commandlog/'
+CODIS_DATADIR = '/opt/jingxia.sun/codis/serverconf/data/'
+CODIS_LOGFILE_DIR = '/opt/jingxia.sun/codis/serverconf/log/'
+CODIS_PIDFILE_DIR = '/opt/jingxia.sun/codis/serverconf/pid/'
+CODIS_ZK_ADDR = '172.24.2.236:2181'
+CODIS_INDEX_LINE = 1
+CODIS_HOST_INFO = [0,'172.24.3.64','root','',0,'a',0]
+CODIS_SHOME='/root/jingxia.sun/dev/Sirius/Aries/codis/'
+CODIS_MEMORY_MAX = 10
+PENTSDB_URL = "http://172.24.4.33:4242"
+SSH_PKEY = '/root/.ssh/id_rsa'
+SSH_KNOWN_HOSTS = '/root/.ssh/known_hosts' 

@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { Nav, NavItem } from 'bfd/Nav'
 import xhr from 'bfd/xhr'
 import auth from 'public/auth'
+import conf from 'public/Conf/Conf'
 import env from './env'
 import './App.less'
 import 'antd/dist/antd.less'
@@ -50,12 +51,11 @@ const App = React.createClass({
   //space切换
   switchSpace(value){
     //更新用户默认cur_space
-    let url = `v1/user_auth/user/${value}/`
-    xhr({type: 'PUT',url: url,success:data=> {
+    let switchUrl = conf.getUrlData({ moduleName : "COMMON", pageName : "Head",
+                                      type : "SPACE_SWITCH", spaceName : value });
+    xhr({type: 'PUT',url: switchUrl,success:data=> {
         //需要切换space的权限
-        console.log("switchSpace:"+data);
         auth.user.type = data;
-        console.log(auth);
         this.setState({cur_space:value});
         this.props.history.push({
           pathname:this.props.location.pathname,
@@ -95,10 +95,7 @@ const App = React.createClass({
       if (!this.hasPermission()) {
         Children = <div>您无权访问该页面</div>
       }
-      let cur_space = this.props.location.query.cur_space;
-      if(cur_space==undefined){
-        cur_space = auth.user.cur_space;
-      }
+      let cur_space = conf.getCurSpace(this);
       let params=`cur_space=${cur_space}`;
       return (
         <div id="wrapper" className="container-fluid">
@@ -118,40 +115,56 @@ const App = React.createClass({
             <div className="sidebar col-md-2 col-sm-3">
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
-                <NavItem key={0} href="HDFS" icon="cubes" defaultOpen title="存储管理">
-                  <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
-                  <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
-                  <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
-                  <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
-                  <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
-                  <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
+                <NavItem key={10} href="Service" icon="cloud" title="云服务">
+                  <NavItem key={11} href="HDFS" icon="cubes" title="HDFS云">
+                    <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
+                    <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
+                    <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
+                    <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
+                    <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
+                    <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
+                  </NavItem>
+                  <NavItem key={12} href="CodisCloud" icon="skyatlas" title="Codis云">
+                    <NavItem href={`CodisCloud/HostInfo?${params}`} title="主机信息" />
+                    <NavItem href={`CodisCloud/CodisInfo?${params}`} title="Codis信息" />
+                  </NavItem>
                 </NavItem>
-
-                <NavItem key={1} href="CalcManage" icon="desktop" title="计算管理">
-                  <NavItem icon="equalizer" href={`CalcManage/Overview?${params}`} title="概览" />
-                  <NavItem icon="equalizer" href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
-                  <NavItem icon="equalizer" href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
-                  <NavItem icon="equalizer" href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
-                  <NavItem icon="equalizer" href={`CalcManage/MyTask?${params}`} title="我的任务" />
-                  <NavItem icon="equalizer" href={`CalcManage/CreateCluster?${params}`} title="创建集群" >
-                      <NavItem  icon='equalizer' href={`CalcManage/CreateCluster/CC1?${params}`} title="开始使用 " />
-                      <NavItem  icon="equalizer" href={`CalcManage/CreateCluster/CC2?${params}`} title="云中心计算集群" />
+                <NavItem key={20} href="Container" icon="sellsy" title="云容器">
+                  <NavItem key={21} href="CalcManage" icon="desktop" title="k8s相关监控">
+                    <NavItem href={`CalcManage/Overview?${params}`} title="概览" />
+                    <NavItem href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
+                    <NavItem href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
+                    <NavItem href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
+                  </NavItem>
+                  {/* 暂时下面没有任何节点，因此注释掉
+                  <NavItem key={22} icon="equalizer" title="Docker Image" />
+                  */}
+                  <NavItem key={23} icon="tasks" title="离线计算任务" >
+                    <NavItem href={`CalcManage/MyTask?${params}`} title="我的任务" />                  
+                  </NavItem>
+                  {/** 暂时下面没有任何节点，因此注释掉
+                  <NavItem key={24} icon="equalizer" title="storm实时计算任务" />
+                  <NavItem key={25} icon="equalizer" title="Ceph" />
+                  */}
+                  <NavItem key={26} icon="book" title="使用说明" >
+                    <NavItem href={`CalcManage/CreateCluster/CC1?${params}`} title="开始使用 " />
+                    <NavItem href={`CalcManage/CreateCluster/CC2?${params}`} title="云中心计算集群" />
                   </NavItem>
                 </NavItem>
 
-                <NavItem key={2} href="openstack" icon="th-large" title="云主机">
-                  <NavItem key={1} href="title" icon="th-large" title="计算">
+                <NavItem key={30} href="openstack" icon="th-large" title="云主机">
+                  <NavItem key={31} href="title" icon="th-large" title="计算">
                     <NavItem href="openstack/instances" title="虚拟机" />
                     <NavItem href="openstack/images" title="镜像" />
                     <NavItem href="openstack/flavors" title="云类型" />
                   </NavItem>
-                  <NavItem key={2} href="volumes" icon="credit-card-alt" title="存储">
+                  <NavItem key={32} href="volumes" icon="credit-card-alt" title="存储">
                     <NavItem href="openstack/volumes" title="云磁盘" />
                     <NavItem href="#" title="备份" />
                   </NavItem>
                 </NavItem>
 
-                <NavItem key={4} href="UserAuth" icon="th-large" title="用户管理">
+                <NavItem key={40} href="UserAuth" icon="th-large" title="用户管理">
                   <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
                 </NavItem>
 

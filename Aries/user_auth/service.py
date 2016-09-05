@@ -7,8 +7,8 @@ from Aries.settings import REST_BASE_URI
 import logging
 from django.http import HttpResponse
 import json
+from hdfs.tools import *
 ac_logger = logging.getLogger("access_log")
-from tools import *
 StatusCode={"GET_SUCCESS":200,
              "GET_FAILED":500,
              "PUT_SUCCESS":200,

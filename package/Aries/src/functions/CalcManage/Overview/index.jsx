@@ -5,6 +5,7 @@ import NavigationInPage from 'public/NavigationInPage'
 import './index.less'
 
 import CMDR from '../CalcManageDataRequester/requester.js'
+import CalcManageConf from '../UrlConf'
 
 var mod = React.createClass({
   getInitialState:function(){
@@ -37,16 +38,22 @@ var mod = React.createClass({
     }
   },
   render: function() {
-    let headText = '概览'
-    let naviTexts = [{  'url':'/',   'text':'首页'   },
-                     {  'url':'/CalcManage/Overview',   'text':'计算管理概览'   }]
-
+    let spaceName = CalcManageConf.getCurSpace(this);
+    
     let pod_percent = this.formatPercent( this.state.pod_used,this.state.pod_total )
     let task_percent = this.formatPercent( this.state.task_used,this.state.task_total)
     let memory_percent = this.formatPercent( this.state.memory_used,this.state.memory_total)
     return (
       <div className="MyCalcManagerOverviewChildRootDiv">
-        <NavigationInPage headText={headText} naviTexts={naviTexts} />
+        <NavigationInPage headText={CalcManageConf.getNavigationData({
+                            pageName:'Overview',
+                            type : 'headText'
+                          })} 
+                          naviTexts={CalcManageConf.getNavigationData({
+                            pageName:'Overview',
+                            type:'navigationTexts',
+                            spaceName:spaceName
+                          })} />
           <table className="PercentageFatherDiv">
             <tbody>
               <tr className="PercentPic">

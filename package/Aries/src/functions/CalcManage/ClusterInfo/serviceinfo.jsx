@@ -2,7 +2,7 @@ import React from 'react'
 
 import ClusterCommonInfo from './index.jsx'
 import CMDR from '../CalcManageDataRequester/requester.js'
-
+import CalcManageConf from '../UrlConf'
 import './index.less'
 
 export default React.createClass({
@@ -37,10 +37,9 @@ export default React.createClass({
                { title:'Selector',	    key:'Selector',	    order:true }],
       showPage:'false'
     }
+    let navigationKey = 'ServiceInfo'
+    let spaceName = CalcManageConf.getCurSpace(this);    
     let rootDivClassName = 'ServiceInfoChildRootDiv'
-    let naviTexts = [{  'url':'/',   'text':'首页'   },
-                     {  'url':'/CalcManage/Overview',     'text':'计算管理'   },
-                     {  'url':'/CalcManage/ServiceInfo',  'text':'Service信息'   }]
     let defaultDetailText = [['请选择Service']]
 
     this.checkToRequestData()
@@ -48,7 +47,8 @@ export default React.createClass({
     return (
       <ClusterCommonInfo dataTableConfigDict={dataTableConfigDict}
                          rootDivClassName={rootDivClassName}
-                         naviTexts={naviTexts}
+                         navigationKey={navigationKey}
+                         spaceName={spaceName}
                          defaultDetailText={defaultDetailText}
                          dataTableDataArr={this.state.dataTableDataArr} />
     ) 

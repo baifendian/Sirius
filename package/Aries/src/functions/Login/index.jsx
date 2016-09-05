@@ -68,8 +68,9 @@ export default React.createClass({
           </Form>
         </div>
         <div className="footer">
-          <a href="http://www.baifendian.com" className="pull-left logo">POWERED BY</a>
+          <a href="http://www.baifendian.com" className="pull-left logo"></a>
           <div className="pull-right">
+            {/*
             <div className="links">
               <a href="http://www.baifendian.com/list.php?catid=32">公司简介</a>&nbsp;&nbsp;|&nbsp;&nbsp;
               <a href="http://www.baifendian.com/list.php?catid=43">联系我们</a>&nbsp;&nbsp;|&nbsp;&nbsp;
@@ -77,6 +78,7 @@ export default React.createClass({
               <a href="">使用条款</a>&nbsp;&nbsp;|&nbsp;&nbsp;
               <a href="">商标</a>
             </div>
+            */}
             <div className="copyright">Copyright©2016 Baifendian Corporation All Rights Reserved.&nbsp;&nbsp;|&nbsp;&nbsp;京ICP备09109727号&nbsp;&nbsp;|&nbsp;&nbsp;京公网安备11010802010283号</div>
           </div>
         </div>

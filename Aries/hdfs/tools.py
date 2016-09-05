@@ -9,7 +9,7 @@ import subprocess
 import sys
 from django.conf import settings
 from user_auth.models import *
-from django.contrib.auth.models import *
+from hdfs.models import *
 ac_logger = logging.getLogger("cmd_log")
 
 def run_hadoop(user_name="hadoop",operator="ls",args=["/user/hadoop",]):
@@ -23,7 +23,9 @@ def run_hadoop(user_name="hadoop",operator="ls",args=["/user/hadoop",]):
     env[ 'LOGNAME'  ]  = user_name
     #env[ 'PWD'      ]  = cwd
     env[ 'USER'     ]  = user_name
-    cmd=["sh",settings.HADOOP_RUN_SCRIPT,operator]
+    cur_dir = os.path.join(os.getcwd(),"Aries/hdfs")
+    run_script = os.path.join(cur_dir,settings.HADOOP_RUN_SCRIPT)
+    cmd=["sh",run_script,operator]
     cmd= cmd + args
     cmd = " ".join(cmd)
     ac_logger.info("cmd:{0}".format(cmd))
@@ -70,11 +72,18 @@ def getUser(request):
     return user
 
 def getSpaceExecUserPath(space_name):
-    spaces = getObjByAttr(Space,"name",space_name)
-    space = spaces[0]
-    space_path = space.address
-    exec_user = space.exec_user   
-    return exec_user,space_path 
+    exec_user = ""
+    space_path = ""
+    try:
+        spaces = getObjByAttr(Space,"name",space_name)
+        space = spaces[0]
+        space_path = space.address
+        exec_user = space.exec_user
+    except Exception,e:
+        ac_logger.error(e.message)
+        ac_logger.error("space_name:{0}".format(space_name))
+    finally:
+        return exec_user,space_path
 
 def getObjByAttr(cla,name,value):
     return cla.objects.filter(name=value)
@@ -101,7 +110,18 @@ def delObjById(cla,id):
 
 def trashPath(space_path):
     trashPath =  os.path.realpath("/%s/%s/%s/%s" %(os.path.sep,space_path,"/.Trash/Current/",space_path))
-    return trashPath 
+    return trashPath
+
+def sharePath(shareId,path):
+    dataShare = DataShare.objects.filter(proxy_path__icontains=shareId)[0]
+    source_path = dataShare.source_path
+    if path != "/":
+        source_path = "/".join(source_path.split("/")[:-1])
+    space_name = dataShare.space_name
+    exec_user,space_path = getSpaceExecUserPath(space_name)
+    ac_logger.info("space_path:{0}, source_path:{1},path:{2}".format(space_path,source_path,path))
+    real_path = os.path.realpath("%s/%s/%s/%s" %(os.path.sep,space_path,source_path,path))
+    return real_path,source_path
 
 def unitTransform(size,index,unit):
     if size/1024.0 > 1024:

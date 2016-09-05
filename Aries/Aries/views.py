@@ -1,11 +1,9 @@
 #encoding=utf8
-from django.db.models import Q
 import logging
 ac_logger = logging.getLogger("access_log")
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login,logout as auth_logout,authenticate
-from django import forms
-from django.shortcuts import render,render_to_response,redirect
+from django.shortcuts import render_to_response
 import json
 from django.http import HttpResponse
 from user_auth.models import *
@@ -67,7 +65,7 @@ def login(request):
                     data = is_admin(account,account.cur_space)
                 except Exception,e:
                     ac_logger.error(e)
-                    account = Account(name=username,password=password,email=email,is_active=1)
+                    account = Account(name=username,email=email,is_active=1)
                     account.role = Role.objects.get(name="guest")
                     account.save()
                     data = ""

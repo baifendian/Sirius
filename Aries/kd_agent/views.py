@@ -1,29 +1,30 @@
 # encoding:utf-8
-
 import json
 import time
 import logging
 import httplib
 import traceback
 
+from django.http import StreamingHttpResponse
+from datetime import datetime
 from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render
-from django.conf import settings
 from django.http import *
-from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 
-from kd_agent.models import Schedule_Status
-
-kd_logger = logging.getLogger("kd_agent_log")
-kd_logger.setLevel(logging.INFO)
-
+from kd_agent.models import Schedule_Log
+from kd_agent.models import Task
 RETU_INFO_SUCCESS = 200
 RETU_INFO_ERROR = 201
+
+kd_logger = logging.getLogger("kd_agent_log")
+kd_logger.setLevel( logging.DEBUG )
+
+
 
 
 # 一个装饰器，将原函数返回的json封装成response对象
@@ -39,6 +40,8 @@ def return_http_json(func):
 
         obj = HttpResponse( json.dumps(retu_obj) )
         obj['Access-Control-Allow-Origin'] = '*'
+        obj['Access-Control-Allow-Methods'] = 'GET,POST'
+        obj['Access-Control-Allow-Headers'] = 'X-CSRFToken'
         obj['Content-Type'] = 'application/json'
         return obj
     return wrapper
@@ -108,7 +111,6 @@ def get_overview_info(request,namespace):
         kd_logger.error( 'call %s query k8s pod info error : %s' % ( url,pod_list['msg']) )
         return generate_failure( pod_list['msg'] )
     retu_dict['pod_used'] = len( pod_list['data']['items'] )
-
 
     return generate_success( data=retu_dict )
 
@@ -272,33 +274,6 @@ def __trans_obj_to_easy_dis(obj_info,head_str = 'obj'):
 
 @csrf_exempt
 @return_http_json
-def get_mytask_list(request):    
-    kd_logger.info( 'call get_mytask_list' )
-    retu_data = []
-    for record in Schedule_Status.objects.using('kd_agent_bdms').filter(status=3L):
-        d = {}
-        retu_data.append(d) 
-    
-        d['task'] = str(record.query_name)
-        d['category'] = record.category
-        d['ready_time'] = format_datetime_obj(record.ready_time)
-        d['running_time'] = format_datetime_obj(record.running_time)
-        d['leave_time'] = format_datetime_obj(record.leave_time)
-        d['status'] = record.status
-        d['result'] = record.result
-    
-    kd_logger.debug( 'call get_mytask_list query bdms data : %s' % retu_data )
-    kd_logger.info( 'call get_mytask_list query bdms data successful' )
-    return generate_success( data = retu_data )
-
-def format_datetime_obj(datetime_obj):
-    if datetime_obj:
-        return datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
-    else:
-        return '<None>'
-
-@csrf_exempt
-@return_http_json
 def get_mytask_graph(request):
     import requests
     kd_logger.info( 'call get_mytask_graph' )
@@ -310,12 +285,14 @@ def get_mytask_graph(request):
             "Accept-Language":"zh-CN,zh;q=0.8",
             "Cache-Control":"no-cache",
             "Connection":"keep-alive",
-            "Host":"172.24.100.40:10001",
+            "Host":"",
             "Pragma":"no-cache",
-            "Referer":"http://172.24.100.40:10001/ide/schedule/directedgraph/",
+            "Referer":"",
             "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
             "X-Requested-With":"XMLHttpRequest"
             }
+    headers["Host"] = settings.BDMS_IP + ":" + settings.BDMS_PORT
+    headers["Referer"] = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/ide/schedule/directedgraph/"
     try:
         req = requests.Session()
         r1 = req.post(url1, data=data, headers=headers)
@@ -344,7 +321,7 @@ def get_mytask_graph(request):
             for depen in dic['task_info']:
                 if depen['input']:
                     for detal in depen['input']:
-                        edges.append({"from": detal, "to": depen['id']})                 
+                        edges.append({"from": detal, "to": depen['id']})  
             data["nodes"] = nodes
             data["edges"] = edges
             return generate_success( data=data )
@@ -356,8 +333,6 @@ def get_mytask_graph(request):
         kd_logger.error(s)
         return generate_failure(s)
 
-
-from django.http import StreamingHttpResponse
 def download(request):
     sys = request.GET.get('sys')
     def readfile(file_name, chunk_size=262144):
@@ -381,3 +356,213 @@ def download(request):
     else:
         kd_logger.error('Download Error')
     return response
+
+
+@csrf_exempt
+@return_http_json
+def mytask_get_old_records(request):
+    kd_logger.debug( 'call mytask_get_old_records : %s ' % request )
+    oldestrecordid = int(request.POST.get('oldestrecordid'))
+    requestnumber = int(request.POST.get('requestnumber'))
+    keywords = json.loads(request.POST.get('keywords'))
+    
+    '''
+    oldestrecordid = -1 
+    requestnumber = 303 
+    keywords = {
+        'taskname': 'hyn',
+        'shelltype': 'ALL', # HIVE SHELL SQOOP SPARK
+        'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
+        'startdate': '2015-08-10T00:00:00',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
+        'enddate': '2016-08-30T23:59:59', 
+    }'''
+
+    convert_dict(keywords)
+    retu_data = []
+    if oldestrecordid == -1:
+        oldestrecordid = 0xFFFFFFFFFFFFFFFFFF
+    
+    filtered_tasks = query_tasks(name=keywords['taskname'], scripttype=keywords['shelltype'] )
+    info_dict = {}
+    for task in filtered_tasks:
+        info_dict[ task.id ] = task.name
+
+    # 如果Task表中没有满足taskname、shelltype的双重约束，则直接返回空列表
+    if filtered_tasks.count() == 0:
+        return generate_success( data = {'records': []} )
+
+    filtered_records = query_records( result=keywords['executeresult'],
+                                      beginning_exec=keywords['startdate'],
+                                      deadline_exec=keywords['enddate'],
+                                      id=oldestrecordid,
+                                      new=False )
+    filtered_records = filtered_records.filter( task_id__in=filtered_tasks )
+    filtered_records = filtered_records[0:requestnumber]
+    for record in filtered_records:
+        retu_data.append({
+                'id':record.id,
+                'job_name':record.query_name,
+                'task_name':info_dict[record.task_id],
+                'ready_time':format_datetime_obj(record.ready_time),
+                'running_time':format_datetime_obj(record.running_time),
+                'leave_time':format_datetime_obj(record.leave_time),
+                'result':record.result,
+                'status':trans_result_to_status(record.result)
+            })
+    return generate_success( data = {'records': retu_data} )
+
+
+def format_datetime_obj(datetime_obj):
+    if datetime_obj:
+        return datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        return '<None>'
+
+def trans_result_to_status(result):
+    d = {
+        0:'INIT',
+        1:'SUCCESS',
+        2:'FAILURE'
+    }
+    return d[result]
+
+def query_records(result,beginning_exec,deadline_exec,id,new = False):
+    QS = None
+    if new == True:
+        tmpq = Q(id__gt=id)
+    else:
+        tmpq = Q(id__lt=id)
+    QS = QS & tmpq if QS else tmpq
+    if result != '':
+        tmpq = Q(result=result)
+        QS = QS & tmpq if QS else tmpq
+
+    tmpq = Q(ready_time__gte=beginning_exec,ready_time__lte=deadline_exec)
+    QS = QS & tmpq if QS else tmpq
+    if QS:
+        return Schedule_Log.objects.using('kd_agent_bdms').filter(QS).order_by('-id')
+    else:
+        return Schedule_Log.objects.using('kd_agent_bdms').all().order_by('-id')
+
+@csrf_exempt
+@return_http_json
+def mytask_check_has_new_records(request):  
+    newestrecordid = int(request.POST.get('newestrecordid'))
+    keywords = json.loads(request.POST.get('keywords'))
+    '''
+    newestrecordid = 494665 
+    keywords = {
+        'taskname': 'HDFSCheck',
+        'shelltype': 'ALL', # ALL HIVE SHELL SQOOP SPARK
+        'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
+        'startdate': '2016-08-20T23:59:59',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
+        'enddate': '2016-08-31T23:59:59', 
+    }'''
+
+    convert_dict(keywords)
+
+    filtered_tasks = query_tasks(name=keywords['taskname'], scripttype=keywords['shelltype'] )
+    info_dict = {}
+    for task in filtered_tasks:
+        info_dict[ task.id ] = task.name
+
+    # 如果Task表中没有满足taskname、shelltype的双重约束，则直接返回空列表
+    if filtered_tasks.count() == 0:
+        return generate_success( data = {'hasnew': 0 } ) 
+
+    filtered_records = query_records( result=keywords['executeresult'],
+                                      beginning_exec=keywords['startdate'],
+                                      deadline_exec=keywords['enddate'],
+                                      id=newestrecordid,
+                                      new=True )
+    filtered_records = filtered_records.filter( task_id__in=filtered_tasks )
+    return generate_success( data = {'hasnew': 0 if filtered_records.count() == 0 else 1 } )
+ 
+
+@csrf_exempt
+@return_http_json
+def mytask_get_new_records(request):
+    newestrecordid = int(request.POST.get('newestrecordid'))
+    keywords = json.loads(request.POST.get('keywords'))
+    '''
+    newestrecordid = 494702  
+    keywords = {
+        'taskname': 'HDFSCheck',
+        'shelltype': 'ALL', # ALL HIVE SHELL SQOOP SPARK
+        'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
+        'startdate': '2016-08-20T23:59:59',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
+        'enddate': '2016-08-31T23:59:59', 
+    }'''
+    convert_dict(keywords)
+    retu_data = []
+
+    filtered_tasks = query_tasks(name=keywords['taskname'], scripttype=keywords['shelltype'] )
+    info_dict = {}
+    for task in filtered_tasks:
+        info_dict[ task.id ] = task.name
+
+    # 如果Task表中没有满足taskname、shelltype的双重约束，则直接返回空列表
+    if filtered_tasks.count() == 0:
+        return generate_success( data = {'records': []} )
+
+    filtered_records = query_records( result=keywords['executeresult'],
+                                      beginning_exec=keywords['startdate'],
+                                      deadline_exec=keywords['enddate'],
+                                      id=newestrecordid,
+                                      new=True )
+    filtered_records = filtered_records.filter( task_id__in=filtered_tasks )
+    for record in filtered_records:
+        retu_data.append({
+                'id':record.id,
+                'job_name':record.query_name,
+                'task_name':info_dict[record.task_id],
+                'ready_time':format_datetime_obj(record.ready_time),
+                'running_time':format_datetime_obj(record.running_time),
+                'leave_time':format_datetime_obj(record.leave_time),
+                'result':record.result,
+                'status':trans_result_to_status(record.result)
+            })  
+    return generate_success( data = {'records': retu_data} )
+
+
+#查询脚本类型
+#def get_scripttype(name):
+#    try:
+#        return ScriptType.objects.get(name=name).id
+#    except :
+#        return None
+
+#根据条件查询任务
+def query_tasks(name=None, name_op = 'contains', scripttype=None):#,status=None,owner=None,export_flag=None):
+    QS = None
+    if name and name.strip() != '':
+        if name_op == '==':
+            QS = QS & Q(name=name) if QS else Q(name=name)
+        else :
+            QS = QS & Q(name__icontains=name) if QS else Q(name__icontains=name)
+    if scripttype:
+        QS = QS & Q(scripttype=scripttype) if QS else Q(scripttype=scripttype)
+    if QS:
+        return Task.objects.using('kd_agent_bdms').filter(QS)
+    else:
+        return Task.objects.using('kd_agent_bdms').all()
+
+def convert_dict(keywords):
+    scripttype = {
+        'ALL':0,
+        'HIVE':1,
+        'SQOOP':2,
+        'SHELL':3,
+        'SPARK':4
+    }
+    result = {
+        'ALL':'',
+        'INIT':0,
+        'SUCCESS':1,
+        'FAILURE':2
+    }
+    keywords['shelltype'] = scripttype[keywords['shelltype']]
+    keywords['executeresult'] = result[keywords['executeresult']]
+    keywords['startdate'] = datetime.strptime(keywords['startdate'], '%Y-%m-%dT%H:%M:%S')
+    keywords['enddate'] = datetime.strptime(keywords['enddate'], '%Y-%m-%dT%H:%M:%S')
+    return keywords

@@ -5,13 +5,14 @@ import { Select, Option } from 'bfd-ui/lib/Select2'
 import Upload from 'bfd-ui/lib/Upload'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import ClearableInput from 'bfd-ui/lib/ClearableInput'
-import xhr from 'bfd-ui/lib/xhr'
 import Icon from 'bfd-ui/lib/Icon'
 import confirm from 'bfd-ui/lib/confirm'
 import Fetch from 'bfd-ui/lib/Fetch'
 import Head from './Head'
 import MyTable from './MyTable'
 import Navigate from './Navigate'
+import NavigationInPage from 'public/NavigationInPage'
+import HdfsConf from '../Conf/HdfsConf'
 
 export default React.createClass({
   getInitialState:function(){
@@ -21,7 +22,7 @@ export default React.createClass({
       tableData:{"totalList":[],"currentPage": 1,"totalPageNum": 500},
       cur_relative_path:"/",
       is_first:0,
-      num:10,
+      num:0,
       treePath:"/",
       random:0,
     };
@@ -39,7 +40,6 @@ export default React.createClass({
   },
   getTableSuccess(data){
     //当前只获取了表格的数据。其实还应该获取表格的总记录数. // num
-    console.log(data);
     this.setState({tableData:data,num:data.totalPageNum});
   },
   updateSkipUrl(url){
@@ -67,22 +67,46 @@ export default React.createClass({
     this.setState({tableData:data,num:cur_num});
   },
   addTableData(){
+    //debugger;
     let data = this.state.tableData;
-    let row = {"name":"new_dir","create_time":"2015-02-10 10:11","size":"0","is_dir":"1","is_new":0};
+    let row = {"name":"new_dir","create_time":"2015-02-10 10:11","size":"-","is_dir":"1","is_new":0};
     let totalList = data.totalList;
     totalList.unshift(row);
     data.totalList =totalList;
     let num = this.state.num+1;
     this.setState({tableData:data,num:num});
   },
+  requestArgs:{
+    pageName:"MyFile",
+    type:"",
+    spaceName:"",
+    relativePath:"",
+    targetPath:"",
+  },
+  getUrlData({type="",spaceName="",relativePath="",targetPath=""}){
+    this.requestArgs.type = type;
+    this.requestArgs.spaceName = spaceName;
+    this.requestArgs.relativePath = relativePath;
+    this.requestArgs.targetPath = targetPath;
+    return HdfsConf.getUrlData(this.requestArgs);
+  },
   render(){
-    console.log("#####"+this.state.cur_relative_path);
+    let spaceName = HdfsConf.getCurSpace(this);
+    let listStatusUrl = this.getUrlData({ type : "LIST_STATUS",
+                                          spaceName : spaceName,
+                                          relativePath : this.state.cur_relative_path
+                                        });
     return (
       <div className="hdfs-myfile">
-        <Head updateTableList={this.updateTableList} updateRandom={this.updateRandom} cur_path={this.state.cur_relative_path} updateSpace={this.updateSpace}  spaceData={this.state.spaceData}  cur_space={this.props.location.query.cur_space}  addTableData={this.addTableData}/>
+        <NavigationInPage headText={HdfsConf.getNavigationData({ pageName : this.requestArgs.pageName,
+                                                                 type : "headText"})}
+                          naviTexts={HdfsConf.getNavigationData({ pageName : this.requestArgs.pageName,
+                                                                  type : "navigationTexts",
+                                                                  spaceName : spaceName})} />
+        <Head updateTableList={this.updateTableList} getUrlData={this.getUrlData} updateRandom={this.updateRandom} cur_path={this.state.cur_relative_path} updateSpace={this.updateSpace}  spaceData={this.state.spaceData}  cur_space={spaceName}  addTableData={this.addTableData}/>
         <Navigate cur_path={this.state.cur_relative_path} is_first={this.state.is_first} num={this.state.num} updateSkipUrl={this.updateSkipUrl} />
-        <MyTable data={this.state.tableData} cur_path={this.state.cur_relative_path} cur_space={this.props.location.query.cur_space} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
-        <Fetch style={{minHeight:100}} url={`v1/hdfs/${this.state.cur_relative_path}/?op=LISTSTATUS&spaceName=${this.props.location.query.cur_space}&random=${this.state.random}`} onSuccess={this.getTableSuccess}>
+        <MyTable list="ALL" data={this.state.tableData} getUrlData={this.getUrlData} updateRandom={this.updateRandom} cur_path={this.state.cur_relative_path} cur_space={spaceName} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
+        <Fetch style={{minHeight:100}} url={`${listStatusUrl}&random=${this.state.random}`} onSuccess={this.getTableSuccess}>
         </Fetch>
       </div>
     )
