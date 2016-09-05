@@ -3,14 +3,16 @@ import React from 'react'
 import './index.less'
 import Button from 'bfd-ui/lib/Button'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
+import TextOverflow from 'bfd-ui/lib/TextOverflow'
+import {Create_volumes} from './volumes_create'
 
 import DataTable from 'bfd-ui/lib/DataTable'
+import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
 
    getInitialState: function () {
-    return {
-      
+    return {      
       test:"启动",
       data_test:"<h1>启动</h1>",
       url: "openstack/volumes/",
@@ -21,9 +23,11 @@ export default React.createClass({
       {
         title: '名称',
         order: true,
-        width: '20%',
+        //width: '20%',
         render: (text, item) => {
-          return <a href="javascript:void(0);" onClick={this.handleClick.bind(this, item)}>{text}</a>
+          return (<a href="javascript:void(0);" onClick={this.handleClick.bind(this, item)}>
+            <TextOverflow><p style={{width: '100px'}}>{text}</p>
+            </TextOverflow></a>)
         },
         key: 'name'
       }, {
@@ -33,7 +37,13 @@ export default React.createClass({
       }, {
         title: '状态',
         key: 'servername',
-        order: true
+        order: true,
+        render: (text, item) => {
+          return (
+            <span>已连接到
+            <TextOverflow><p style={{width: '100px'}}>{text}</p>
+            </TextOverflow></span>)
+        }
       }, {
         title: '盘符',
         key: 'device'      
@@ -100,13 +110,21 @@ export default React.createClass({
   },
 
   render() {
+      let naviTexts = [{  'url':'/','text':'概览'},
+        {'url':'','text':'云主机'},
+        {'url':'','text':'计算'},
+        {'url':'/openstack/volumes/','text':'磁盘列表'}]
     return (
+      
       <div className="function-data-moduleA">
+        <NavigationInPage naviTexts={naviTexts} headText="openstack" />
         <div>
-          <Button >创建</Button>
+          <Button onClick={this.handleOpen} style={{float:'left'}}>刷新</Button>
+          <Create_volumes/>
+          {/*<Button onClick={this.handleOpen} >创建</Button>
           <Button onClick={this.handleOpen} >挂载</Button>
-          <Button type="danger" onClick={this.handleOpen_re} >卸载</Button>
-          <Button type="danger" style={{float: 'right'}}>删除</Button>
+          <Button type="danger" onClick={this.handleOpen_re} >卸载</Button>*/}
+          <Button type="danger" >删除</Button>
           <Modal ref="modal">
               <ModalHeader>
                 <h4>{this.state.test}</h4>
@@ -118,13 +136,11 @@ export default React.createClass({
                  <div className="create_host">
                     <Button onClick={this.handleclean}>关闭</Button>
                   <Button>创建</Button>
-                
                  </div>
-
               </ModalBody>
           </Modal>
         </div>
-          <div>
+        <div>
           <DataTable 
             url={this.state.url} 
             onPageChange={this.onPageChange} 

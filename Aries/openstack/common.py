@@ -8,6 +8,7 @@ from openstack.middleware.vm.vm import Vm_manage
 
 def json_data(json_status):
     print len(json_status)
+    print json_status
     if len(json_status)==0:
         json_status={"data":json_status,"code":400}
         json_status=json.dumps(json_status)

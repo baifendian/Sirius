@@ -92,8 +92,6 @@ def instances(request):
     login.proid_login()
     login.token_login()
     vm_manage=Vm_manage()
-
-
     if request.method=="GET":
         imagess = Image()
         flavorss=Flavor()
@@ -187,7 +185,7 @@ def instances(request):
                     else:
                         ret[values]=True
                 else:
-                    ret[values]="active"
+                    ret[values]="stopped"
 
            # print request.POST.getlist("host_id")[0].split(',')[0]
            # host_id=request.POST.getlist("host_id")[0].split(',')[0]
@@ -246,10 +244,16 @@ def instances(request):
                     ret[values] = False
                 else:
                     ret[values] = True
-        if host_method == "update":
-            type=request.POST.get('type_vm')
+        elif host_method=="vnc":
+            host_id=eval(request.POST.get('data'))['host_id']
+            print host_id
+            vm_control = Vm_control()
+            host_vnc=vm_control.get_console(host_id)
+            ret=host_vnc
+        elif host_method == "update":
+            type_vm=request.POST.get('type_vm')
             print "type................",type
-            if type == "flavor":
+            if type_vm == "flavor":
                 flavors=Flavor()
                 host_vm_start = Vm_control()
              #   host_vm_start.resize('')
@@ -266,7 +270,7 @@ def instances(request):
               #  print host_vm_start.resize('b75c4e52-b031-454c-a4c6-07f83fb70a56','2')
                 print host_id,host_name,type
                 pass
-            elif type == "image":
+            elif type_vm == "image":
                 host_vm_start = Vm_control()
                 host_id = request.POST.get('host_id')
                 host_name = request.POST.get('host_name')
@@ -427,7 +431,7 @@ def volumes(request):
                 for disk_host  in disk['attachments']:
                   #  print disk_host
                     sys['device'] = disk_host['device']
-                    sys['servername']=disk_host['serverId']
+                    sys['servername']=vm_manage.show_detail(disk_host['serverId'])['server']['name']
             else:
                 sys['device'] = ''
                 sys['servername'] = ''

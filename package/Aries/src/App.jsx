@@ -139,14 +139,16 @@ const App = React.createClass({
                   </NavItem>
                 </NavItem>
 
-                <NavItem key={2} href="openstack" icon="th-large" title="计算">
-                  <NavItem href="openstack/instances" title="云主机" />
-                  <NavItem href="openstack/images" title="镜像" />
-                  <NavItem href="openstack/flavors" title="云类型" />
-                </NavItem>
-                <NavItem key={3} href="volumes" icon="credit-card-alt" title="存储">
-                  <NavItem href="openstack/volumes" title="云磁盘" />
-                  <NavItem href="#" title="备份" />
+                <NavItem key={2} href="openstack" icon="th-large" title="云主机">
+                  <NavItem key={1} href="title" icon="th-large" title="计算">
+                    <NavItem href="openstack/instances" title="虚拟机" />
+                    <NavItem href="openstack/images" title="镜像" />
+                    <NavItem href="openstack/flavors" title="云类型" />
+                  </NavItem>
+                  <NavItem key={2} href="volumes" icon="credit-card-alt" title="存储">
+                    <NavItem href="openstack/volumes" title="云磁盘" />
+                    <NavItem href="#" title="备份" />
+                  </NavItem>
                 </NavItem>
 
                 <NavItem key={4} href="UserAuth" icon="th-large" title="用户管理">
