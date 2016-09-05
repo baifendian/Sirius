@@ -62,42 +62,46 @@ export default render((
           })
         }}/>
       </Route>
-      <Route path="CalcManage">
-        <Route path="Overview" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/Overview').default)
-          })
-        }}/>
-        <Route path="PodInfo" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/ClusterInfo/podinfo').default)
-          })
-        }}/>
-        <Route path="ServiceInfo" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/ClusterInfo/serviceinfo').default)
-          })
-        }}/>
-        <Route path="ReplicationControllerInfo" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/ClusterInfo/rcinfo').default)
-          })
-        }}/>
-        <Route path="MyTask" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/MyTask').default)
-          })
-        }}/>
-        <Route path="CreateCluster">
+      <Route path="CloudContainer">
+        <Route path="CalcManage">
+          <Route path="Overview" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/Overview').default)
+            })
+          }}/>
+          <Route path="PodInfo" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/ClusterInfo/podinfo').default)
+            })
+          }}/>
+          <Route path="ServiceInfo" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/ClusterInfo/serviceinfo').default)
+            })
+          }}/>
+          <Route path="ReplicationControllerInfo" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/ClusterInfo/rcinfo').default)
+            })
+          }}/>
+        </Route>
+        <Route path="OffLineCalcTask">
+          <Route path="MyTask" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/MyTask').default)
+            })
+          }}/>
+        </Route>
+        <Route path="UserDoc">
           <Route path='CC1' getComponent={(location, cb) => {
             require.ensure([], require => {
               cb(null, require('./functions/CalcManage/CreateCluster/CC1').default)
-              })
+            })
           }}/>
           <Route path='CC2' getComponent={(location, cb) => {
             require.ensure([], require => {
               cb(null, require('./functions/CalcManage/CreateCluster/CC2').default)
-              })
+            })
           }}/>
         </Route>
        </Route>
