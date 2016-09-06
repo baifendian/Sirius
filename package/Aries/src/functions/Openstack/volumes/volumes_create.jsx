@@ -6,6 +6,7 @@ import message from 'bfd-ui/lib/message'
 import React from 'react'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import Button from 'bfd-ui/lib/Button'
+import OPEN from '../data_request/request.js'
 
 const Create_volumes=React.createClass({
   getInitialState() {
@@ -19,11 +20,11 @@ const Create_volumes=React.createClass({
     }
     return {
       formData: {
-        brand: 0
+        brand: 0,
+        method: 'CREATE'
       }
     }
   },
-
   handleDateSelect(date) {
     const formData = this.state.formData
     formData.date = date
@@ -37,14 +38,18 @@ const Create_volumes=React.createClass({
 
   handleSuccess(res) {
     console.log(res)
+    this.refs.modal_m.close()
     message.success('保存成功！')
   },
   handleOpen() {
     this.refs.modal_m.open()
+    console.log(OPEN.UrlList()['instances'])
   },
 
   render() {
     const { formData } = this.state
+    let url=OPEN.UrlList()['volumes_create']
+    console.log(url)
     return (
       <div style={{float:"left",margin: "0px 10px 0px 10px"}}>
       <button className="btn btn-primary" onClick={this.handleOpen}>创建</button>
@@ -55,7 +60,7 @@ const Create_volumes=React.createClass({
           <ModalBody>
             <Form 
               ref="form" 
-              action="/api/form" 
+              action={url}
               data={formData} 
               rules={this.rules} 
               onSuccess={this.handleSuccess}
@@ -63,6 +68,7 @@ const Create_volumes=React.createClass({
               <FormItem label="名称" required name="name">
                 <FormInput style={{width: '200px'}}></FormInput>
               </FormItem>
+              
               <FormItem label="数量" required name="count" >
                 <FormInput style={{width: '200px'}}></FormInput>
               </FormItem>
@@ -74,6 +80,9 @@ const Create_volumes=React.createClass({
               </FormItem>
               <FormItem label="容量" required name="size">
                 <FormInput style={{width: '200px'}}></FormInput>
+              </FormItem>
+              <FormItem label="描述" name="desc" help="500个字符以内">
+                <FormTextarea />
               </FormItem>
               <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>保存</button>
             </Form>

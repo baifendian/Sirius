@@ -8,13 +8,14 @@ import {Create_volumes} from './volumes_create'
 
 import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
+import { SplitPanel, SubSplitPanel } from 'bfd/SplitPanel'
+import OPEN from '../data_request/request.js'
+import ReactDOM from 'react-dom'
 
 export default React.createClass({
 
    getInitialState: function () {
     return {      
-      test:"启动",
-      data_test:"<h1>启动</h1>",
       url: "openstack/volumes/",
       column: [/*{
         title:'序号',
@@ -39,10 +40,11 @@ export default React.createClass({
         key: 'servername',
         order: true,
         render: (text, item) => {
-          return (
-            <span>已连接到
-            <TextOverflow><p style={{width: '100px'}}>{text}</p>
-            </TextOverflow></span>)
+          if (text){
+            return (<span>已连接到<TextOverflow><p style={{width: '100px'}}>{text}</p></TextOverflow></span>)
+          }else{
+            return(<span>未连接</span>)
+          }
         }
       }, {
         title: '盘符',
@@ -89,7 +91,15 @@ export default React.createClass({
   handleOrder(name, sort) {
     console.log(name, sort)
   },
+  refresh(){
+    OPEN.update_url(this,"volumes")
+  },
   handleOpen() {
+    //console.log(ReactDOM.findDOMNode( this.refs.data_table ))
+    let aa=ReactDOM.findDOMNode( this.refs.data_table )
+    console.log(aa.childNodes[1].childNodes[1])
+    aa.childNodes[1].childNodes[1].style.height="100px"
+    aa.childNodes[1].childNodes[1].style.overflow="auto"
     this.refs.modal.open()
     //console.log(this.refs.modal.getDOMNode())
     // console.log(this.refs.modal.reset())
@@ -101,25 +111,16 @@ export default React.createClass({
     // console.log(this.refs.modal.reset()
     this.refs.modal.close()
   },
-   handleOpen_re() {
-    this.refs.modal.open()
-    this.setState({test: "重启"});
-    //console.log(this.refs.modal.getDOMNode())
-    // console.log(this.refs.modal.reset()
-
-  },
-
   render() {
       let naviTexts = [{  'url':'/','text':'概览'},
         {'url':'','text':'云主机'},
         {'url':'','text':'计算'},
         {'url':'/openstack/volumes/','text':'磁盘列表'}]
-    return (
-      
+    return (  
       <div className="function-data-moduleA">
         <NavigationInPage naviTexts={naviTexts} headText="openstack" />
         <div>
-          <Button onClick={this.handleOpen} style={{float:'left'}}>刷新</Button>
+          <Button onClick={this.refresh} style={{float:'left'}}>刷新</Button>
           <Create_volumes/>
           {/*<Button onClick={this.handleOpen} >创建</Button>
           <Button onClick={this.handleOpen} >挂载</Button>
@@ -140,18 +141,18 @@ export default React.createClass({
               </ModalBody>
           </Modal>
         </div>
-        <div>
-          <DataTable 
+        <div className="DataTableFatherDiv">
+          <DataTable ref="data_table"
             url={this.state.url} 
             onPageChange={this.onPageChange} 
-            showPage="true" 
+            showPage='false' 
             column={this.state.column} 
             howRow={8}
             onRowClick={this.handleRowClick}
             onOrder={this.handleOrder}
             onCheckboxSelect={this.handleCheckboxSelect} >
           </DataTable>
-          </div>
+        </div>
       </div>
     )
   }
