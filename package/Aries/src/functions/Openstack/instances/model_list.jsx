@@ -144,7 +144,7 @@ const Vm_Type=React.createClass({
     this.props.self.setState({loading:false})
     for (var i in res){
       if (res[i] == true){
-        OPEN.update_url(this.props.self,"openstack/bfddashboard/instances/")
+        OPEN.update_url(this.props.self,"instances")
         message.success('修改成功！')
       }else{
         message.success('修改失败！')
@@ -220,7 +220,7 @@ const Vm_image=React.createClass({
     this.props.self.setState({loading:false})
     for (var i in res){
       if (res[i] == true){
-        OPEN.update_url(this.props.self,"openstack/bfddashboard/instances/")
+        OPEN.update_url(this.props.self,"instances")
         message.success('修改成功！')
       }else{
         message.success('修改失败！')

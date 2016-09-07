@@ -8,7 +8,8 @@ var Datarequest = {
       'instances':'openstack/bfddashboard/instances/',
       'images':'openstack/images/',
       'volumes':'openstack/volumes/',
-      'flavors':'openstack/flavors/'
+      'flavors':'openstack/flavors/',
+      'volumes_create':'openstack/volumes_create/'
     }
   },
   open_vnc(_this,select_host,fun){
@@ -26,7 +27,8 @@ var Datarequest = {
     this.xhrPostData(_this,url,host_select,host_status,this.dispose_data)
 	},
   update_url(_this,url,self){
-    _this.setState({url: url+'?'+Math.random(),})
+    let _url=this.UrlList()[url]
+    _this.setState({url: _url+'?'+Math.random(),})
   },
   dispose_data(_this,retu_data,host_status,url,self){
     _this.setState({

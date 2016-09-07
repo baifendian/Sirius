@@ -11,8 +11,6 @@ import NavigationInPage from 'public/NavigationInPage'
 
 export default React.createClass({
    getInitialState: function () {
- 
-
     return {
       loading:false, 
       url: "openstack/flavors/",
@@ -53,22 +51,24 @@ export default React.createClass({
       {'url':'/openstack/flavors/','text':'云类型'}]
       return (
       <div className="function-data-moduleA">
-      <NavigationInPage naviTexts={naviTexts} headText="openstack" />
-      <Spin spinning={this.state.loading}>
-      	<div>
-          <Button onClick={this.handleOpen.bind(this,5)} style={{float:"left",margin:'0px 10px 0px 0px'}}>刷新</Button>
-      	</div>
-      		<div>
-        	<DataTable
-		        url={this.state.url}
-		        showPage="true"
-		        column={this.state.column}
-		        howRow={10}
-		        onOrder={this.handleOrder}
-		        onCheckboxSelect={this.handleCheckboxSelect}  ref="Table">
-		      </DataTable>
+      <div>
+        <NavigationInPage naviTexts={naviTexts} headText="openstack" />
+        <Spin spinning={this.state.loading}>
+      	 <div>
+           <Button onClick={this.handleOpen.bind(this,5)} style={{float:"left",margin:'0px 10px 0px 0px'}}>刷新</Button>
+      	 </div>
+      	 	<div>
+          	<DataTable
+  		        url={this.state.url}
+  		        //showPage="true"
+  		        column={this.state.column}
+  		       // howRow={10}
+  		        onOrder={this.handleOrder}
+  		        onCheckboxSelect={this.handleCheckboxSelect}  ref="Table">
+  		      </DataTable>
 		      </div>
           </Spin>
+        </div>
       </div>
     )
   }
