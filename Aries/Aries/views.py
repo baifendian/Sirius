@@ -10,7 +10,15 @@ from user_auth.models import *
 from ldap_client import ldap_get_vaild
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-def is_admin(account,cur_space):
+def is_admin(account,cur_space_in):
+    if cur_space_in:
+        cur_space_1 =  Space.objects.filter(name=cur_space_in)
+        if cur_space_1:
+            cur_space = cur_space_in
+        else:
+            cur_space = ""
+    else: 
+        cur_space = cur_space_in
     flag = True
     if account.role.name.upper() in ["SUPERADMIN","ROOT"]:
         is_admin =1
@@ -25,9 +33,12 @@ def is_admin(account,cur_space):
     else:
         is_admin = 0
         if cur_space:
-            spaceUserRole = SpaceUserRole.objects.get(user=account,space=Space.objects.get(name=cur_space))
-            if spaceUserRole.role.name.upper() in ["SPACEADMIN"]:
-                is_admin =1
+            spaceUserRole = SpaceUserRole.objects.filter(user=account,space=Space.objects.get(name=cur_space))
+            if len(spaceUserRole) == 1:
+                if spaceUserRole[0].role.name.upper() in ["SPACEADMIN"]:
+                    is_admin =1
+            else:
+                flag = False
         else:
             spaceUserRole = SpaceUserRole.objects.filter(user=account)
             if spaceUserRole:
@@ -60,15 +71,17 @@ def login(request):
                 user = authenticate(username=username, password=password)
             if user:
                 auth_login(request, user)
-                try:
-                    account = Account.objects.get(name=username)
+                account_list = Account.objects.filter(name=username)
+                if len(account_list) == 1:
+                    account = account_list[0]
                     data = is_admin(account,account.cur_space)
-                except Exception,e:
-                    ac_logger.error(e)
+                else:
+                    if len(account_list) >1:
+                        Account.objects.filter(name=username).delete()
                     account = Account(name=username,email=email,is_active=1)
                     account.role = Role.objects.get(name="guest")
                     account.save()
-                    data = ""
+                    data = is_admin(account,account.cur_space)
                 ac_logger.info("user:{0}".format(data))
                 res["code"] = 200
                 res["data"] = data
