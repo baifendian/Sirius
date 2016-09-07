@@ -1,13 +1,12 @@
 # coding:utf-8
 import urllib
 import time
-from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog
+from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog,TIMEOUT
 from openstack.middleware.db.db import Db
 from openstack.middleware.image.image import Image
 from openstack.middleware.login.login import get_token, get_proid
 from openstack.middleware.volume.volume import Volume, Volume_attach
 
-TIMEOUT = 60
 
 
 # 虚拟机管理类
@@ -156,7 +155,7 @@ class Vm_manage:
                     t1 = run_in_thread(self.wait_complete, vm_id, timeout=TIMEOUT)
                     if t1 == 0:
                         vm_compele_flag = 1
-                t2 = run_in_thread(volume.wait_compele, volume_id,
+                t2 = run_in_thread(volume.wait_complete, volume_id,["available"],
                                    timeout=TIMEOUT)  # assert vm_compele_flag == 1, "vm status is not activate"
                 if not vm_compele_flag:
                     self.result[name]["status_vm"] = 2

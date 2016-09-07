@@ -1,14 +1,21 @@
 # coding:utf-8
 import time
 
-from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog
+from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog,run_in_thread,TIMEOUT, WorkPool
 from openstack.middleware.login.login import get_token, get_proid
-
 
 class Volume:
     def __init__(self):
+        '''
+        self.result为多快磁盘创建时记录创建状态
+        {
+            “name”:0|1|2   #0表示创建中，1为创建完成，2为创建失败
+        }
+        :return:
+        '''
         self.token = get_token()
         self.project_id = get_proid()
+        self.result = {}
 
     @plog("Volume.list")
     def list(self):
@@ -42,25 +49,41 @@ class Volume:
         assert ret != 1, "send_request error"
         return ret
 
-    def wait_compele(self, volume_id):
+    # def wait_compele(self, volume_id):
+    #     '''
+    #     等待磁盘创建完成
+    #     :return:
+    #     '''
+    #     flag = True
+    #     while flag:
+    #         tmp_ret = self.show_detail(volume_id)
+    #         if tmp_ret.get("volume", {}).get("status", "") == "available":
+    #             flag = False
+    #         else:
+    #             time.sleep(1)
+    #     return 0
+
+    @plog("Volume.wait_complete")
+    def wait_complete(self, volume_id, status):
         '''
-        等待磁盘创建完成
+        等待指定虚拟机创建完成,status为指定的状态
         :return:
         '''
         flag = True
         while flag:
             tmp_ret = self.show_detail(volume_id)
-            if tmp_ret.get("volume", {}).get("status", "") == "available":
+            if tmp_ret.get("volume", {}).get("status", "") in status:
                 flag = False
             else:
                 time.sleep(1)
         return 0
 
     @plog("Volume.create")
-    def create(self, size, availability_zone="", name="", des="", metadata="", volume_type="ceph", snapshot_id=""):
+    def create(self, size, availability_zone="", name="", des="", metadata="", volume_type="ceph", snapshot_id="",flag=0):
         '''
         创建虚拟卷
         :return:
+        :flag:阻塞标志，0表示非阻塞，1表示阻塞
         '''
         ret = 0
         assert self.token != "", "not login"
@@ -82,6 +105,38 @@ class Volume:
             params["volume"].update({"snapshot_id": snapshot_id})
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
+        if flag:
+            volume_id = ret["volume"].get("id","")
+            t = run_in_thread(self.wait_complete,volume_id,["available"],timeout=TIMEOUT)
+            if t != 0:
+                self.result.update({name:2})
+            else:
+                self.result.update({name:1})
+        return ret
+
+    @plog("Volume.create_multiple")
+    def create_multiple(self,name,num,size,availability_zone="", des="", metadata="", volume_type="ceph", snapshot_id=""):
+        '''
+        创建多块磁盘
+        :param name:
+        :param num:
+        :param size:
+        :param availability_zone:
+        :param des:
+        :param metadata:
+        :param volume_type:
+        :param snapshot_id:
+        :return:
+        '''
+        ret = 0
+        workpool = WorkPool()
+        workpool.work_add()
+        for i in range(num):
+            disk_name = "%s_%s"%(name,i)
+            self.result.update({disk_name:0})
+            workpool.task_add(self.create,(size,availability_zone,disk_name,des,metadata,volume_type,snapshot_id,1))
+        workpool.work_start()
+        workpool.work_wait()
         return ret
 
     @plog("Volume.list_detail")

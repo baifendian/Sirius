@@ -8,6 +8,7 @@ from openstack.middleware.volume.volume import Volume
 from openstack.middleware.image.image import Image
 from openstack.middleware.common.common import run_in_thread
 import json
+import base64
 
 
 def prints(msg):
@@ -39,6 +40,15 @@ class Test_Module():
         self.test_login()
         volume = Volume()
         volume.create(10, name="test_a")
+
+    def test_create_volume_multiple(self):
+        '''
+        创建多块磁盘
+        :return:
+        '''
+        self.test_login()
+        volume = Volume()
+        volume.create_multiple("test_disk",3,10)
 
     def test_list_volume(self):
         '''
@@ -77,6 +87,13 @@ class Test_Module():
         msg = vm.list()
         prints(msg)
 
+    def test_show_vm(self):
+        self.test_login()
+        vm_id = ""
+        vm = Vm_manage()
+        msg = vm.show_detail(vm_id)
+        prints(msg)
+
     def test_list_vm_detail(self):
         self.test_login()
         vm = Vm_manage()
@@ -92,7 +109,8 @@ class Test_Module():
         vm = Vm_manage()
         disk = [{"name": "disk_test2", "size": "10", "dev_name": "/dev/sdb"},
                 {"name": "disk_test3", "size": "10", "dev_name": "/dev/sdc"}]
-        msg = vm.create("test_zd3", "1", "222e2074-65e0-4ef2-b40e-a48e41181bce", "123456", disk)
+        tmp_str = base64.b64encode("test")
+        msg = vm.create("test_zd3", "1", "222e2074-65e0-4ef2-b40e-a48e41181bce", "123456",tmp_str, disk)
         prints(msg)
 
     def test_create_vm_multiple(self):
@@ -103,7 +121,8 @@ class Test_Module():
         vm = Vm_manage()
         disk = [{"name": "disk_test2", "size": "10", "dev_name": "/dev/sdb"},
                 {"name": "disk_test3", "size": "10", "dev_name": "/dev/sdc"}]
-        msg = vm.create_multiple("test_zd3", "1", "222e2074-65e0-4ef2-b40e-a48e41181bce", "123456", 3, 10, disk)
+        tmp_str = base64.b64encode("test")
+        msg = vm.create_multiple("test_zd3", "1", "222e2074-65e0-4ef2-b40e-a48e41181bce", "123456",tmp_str, 3, 10, disk)
         prints(msg)
 
     # def test_create_image(self):
