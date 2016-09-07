@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^volumes/$', volumes, name='volumes'),
     url(r'^flavors/$', flavors, name='flavors'),
     url(r'^images/$', images, name='images'),
-    url(r'^volumes_create/$',rests.volumes.as_view(),name="volumes_create"),
+    url(r'^volumes_post/$',rests.volumes.as_view(),name="volumes_port"),
+    #url(r'^volumes_post/$',rests.volumes.as_view(),name="volumes_create"),
     url(r'^test',test,name='test'),
 ]

@@ -21,6 +21,7 @@ class volumes(APIView):
         return HttpResponse('aaa')
         pass
     def post(self,request,format=None):
+        print request.POST
         method=request.POST.get('method')
         ret=Methods.get('POST').get(method)(request)
         return packageResponse(ret)

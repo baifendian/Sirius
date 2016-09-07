@@ -5,26 +5,25 @@ import Button from 'bfd-ui/lib/Button'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import TextOverflow from 'bfd-ui/lib/TextOverflow'
 import {Create_volumes} from './volumes_create'
+import {Delete_volumes} from './volumes_delete'
 
 import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
 import { SplitPanel, SubSplitPanel } from 'bfd/SplitPanel'
 import OPEN from '../data_request/request.js'
 import ReactDOM from 'react-dom'
+import Model_list from './volumes_model_list'
 
 export default React.createClass({
 
    getInitialState: function () {
     return {      
       url: "openstack/volumes/",
-      column: [/*{
-        title:'序号',
-        key:'sequence'
-      }, */
+      select_all:'',
+      column: [
       {
         title: '名称',
         order: true,
-        //width: '20%',
         render: (text, item) => {
           return (<a href="javascript:void(0);" onClick={this.handleClick.bind(this, item)}>
             <TextOverflow><p style={{width: '100px'}}>{text}</p>
@@ -84,6 +83,7 @@ export default React.createClass({
     for (var i=0; i<selectedRows.length;i++){
       console.log(selectedRows[i]['id'])
     }
+    this.setState({select_all:selectedRows})
   },
   handleRowClick(row) {
     console.log('rowclick', row)
@@ -98,8 +98,8 @@ export default React.createClass({
     //console.log(ReactDOM.findDOMNode( this.refs.data_table ))
     let aa=ReactDOM.findDOMNode( this.refs.data_table )
     console.log(aa.childNodes[1].childNodes[1])
-    aa.childNodes[1].childNodes[1].style.height="100px"
-    aa.childNodes[1].childNodes[1].style.overflow="auto"
+    //aa.childNodes[1].childNodes[1].style.height="100px"
+    //aa.childNodes[1].childNodes[1].style.overflow="auto"
     this.refs.modal.open()
     //console.log(this.refs.modal.getDOMNode())
     // console.log(this.refs.modal.reset())
@@ -110,6 +110,10 @@ export default React.createClass({
     //console.log(this.refs.modal.getDOMNode())
     // console.log(this.refs.modal.reset()
     this.refs.modal.close()
+  },
+  delete(){
+    console.log('select_all',this.state.select_all)
+    OPEN.volumes_data(this,this.state.select_all)
   },
   render() {
       let naviTexts = [{  'url':'/','text':'概览'},
@@ -122,24 +126,8 @@ export default React.createClass({
         <div>
           <Button onClick={this.refresh} style={{float:'left'}}>刷新</Button>
           <Create_volumes/>
-          {/*<Button onClick={this.handleOpen} >创建</Button>
-          <Button onClick={this.handleOpen} >挂载</Button>
-          <Button type="danger" onClick={this.handleOpen_re} >卸载</Button>*/}
-          <Button type="danger" >删除</Button>
-          <Modal ref="modal">
-              <ModalHeader>
-                <h4>{this.state.test}</h4>
-              </ModalHeader>
-              <ModalBody>
-                <div>
-                  <h4>您需要删除的机器有test，test2。</h4>
-                 </div>
-                 <div className="create_host">
-                    <Button onClick={this.handleclean}>关闭</Button>
-                  <Button>创建</Button>
-                 </div>
-              </ModalBody>
-          </Modal>
+          <Delete_volumes select_all={this.state.select_all}/>
+          <Model_list/>
         </div>
         <div className="DataTableFatherDiv">
           <DataTable ref="data_table"

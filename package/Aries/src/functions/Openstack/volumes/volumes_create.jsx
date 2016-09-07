@@ -55,7 +55,7 @@ const Create_volumes=React.createClass({
       <button className="btn btn-primary" onClick={this.handleOpen}>创建</button>
         <Modal ref="modal_m">
           <ModalHeader>
-            <h4>test</h4>
+            <h4>创建</h4>
           </ModalHeader>
           <ModalBody>
             <Form 
@@ -84,7 +84,7 @@ const Create_volumes=React.createClass({
               <FormItem label="描述" name="desc" help="500个字符以内">
                 <FormTextarea />
               </FormItem>
-              <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>保存</button>
+              <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>创建</button>
             </Form>
         </ModalBody>
         </Modal>

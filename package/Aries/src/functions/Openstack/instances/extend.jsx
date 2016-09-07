@@ -111,9 +111,9 @@ const Create_model_disk  = React.createClass({
   		disk_arr.pop();
 
   		disk_mm.splice(number_s['i']-1,1)
-  		console.log('disk_mm',disk_mm)
-      console.log('number_s',number_s['i'])
-      console.log(host_diskss)
+  		//console.log('disk_mm',disk_mm)
+      //console.log('number_s',number_s['i'])
+      //console.log(host_diskss)
   		if (arr.length==1){
   			disk_mm.pop();
   			disk_mm.push('--')
