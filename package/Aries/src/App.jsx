@@ -6,6 +6,7 @@ import auth from 'public/auth'
 import conf from 'public/Conf/Conf'
 import env from './env'
 import './App.less'
+import 'antd/dist/antd.less'
 import { Select ,Option} from 'bfd-ui/lib/Select2'
 
 const LOGIN_PATH = (env.basePath + '/login').replace(/\/\//, '/')
@@ -114,20 +115,22 @@ const App = React.createClass({
             <div className="sidebar col-md-2 col-sm-3">
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
-                  <NavItem key={10} href="Service" icon="cloud" title="云服务">
-                    <NavItem key={11} href="HDFS" icon="cubes" title="HDFS云">
-                      <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
-                      <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
-                      <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
-                      <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
-                      <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
-                      <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
-                    </NavItem>
-                    <NavItem key={12} href="CodisCloud" icon="skyatlas" title="Codis云">
-                      <NavItem href={`CodisCloud/HostInfo?${params}`} title="主机信息" />
-                      <NavItem href={`CodisCloud/CodisInfo?${params}`} title="Codis信息" />
-                    </NavItem>
+                <NavItem key={10} href="Service" icon="cloud" title="云服务">
+                  <NavItem key={11} href="HDFS" icon="cubes" title="HDFS云">
+                    <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
+                    <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
+                    <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
+                    <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
+                    <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
+                    <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
                   </NavItem>
+
+                  <NavItem key={12} href="CodisCloud" icon="skyatlas" title="Codis云">
+                    <NavItem href={`CodisCloud/HostInfo?${params}`} title="主机信息" />
+                    <NavItem href={`CodisCloud/CodisInfo?${params}`} title="Codis信息" />
+                  </NavItem>
+                </NavItem>
+
                   <NavItem key={20} href="CloudContainer" icon="sellsy" title="云容器">
                     <NavItem key={21} href="CloudContainer/CalcManage" icon="desktop" title="k8s相关监控">
                       <NavItem href={`CloudContainer/CalcManage/Overview?${params}`} title="概览" />
@@ -149,10 +152,24 @@ const App = React.createClass({
                       <NavItem href={`CloudContainer/UserDoc/CC1?${params}`} title="开始使用 " />
                       <NavItem href={`CloudContainer/UserDoc/CC2?${params}`} title="云中心计算集群" />
                     </NavItem>
+                   </NavItem>
+
+                <NavItem key={30} href="openstack" icon="th-large" title="云主机">
+                  <NavItem key={31} href="title" icon="th-large" title="计算">
+                    <NavItem href="openstack/instances" title="虚拟机" />
+                    <NavItem href="openstack/images" title="镜像" />
+                    <NavItem href="openstack/flavors" title="云类型" />
                   </NavItem>
-                  <NavItem key={30} href="UserAuth" icon="th-large" title="用户管理">
-                    <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
+                  <NavItem key={32} href="volumes" icon="credit-card-alt" title="存储">
+                    <NavItem href="openstack/volumes" title="云磁盘" />
+                    <NavItem href="#" title="备份" />
                   </NavItem>
+                </NavItem>
+
+                <NavItem key={40} href="UserAuth" icon="th-large" title="用户管理">
+                  <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
+                </NavItem>
+
               </Nav>
             </div>
             ] : null}
