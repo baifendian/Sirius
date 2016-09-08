@@ -124,33 +124,35 @@ const App = React.createClass({
                     <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
                     <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
                   </NavItem>
+
                   <NavItem key={12} href="CodisCloud" icon="skyatlas" title="Codis云">
                     <NavItem href={`CodisCloud/HostInfo?${params}`} title="主机信息" />
                     <NavItem href={`CodisCloud/CodisInfo?${params}`} title="Codis信息" />
                   </NavItem>
                 </NavItem>
-                <NavItem key={20} href="Container" icon="sellsy" title="云容器">
-                  <NavItem key={21} href="CalcManage" icon="desktop" title="k8s相关监控">
-                    <NavItem href={`CalcManage/Overview?${params}`} title="概览" />
-                    <NavItem href={`CalcManage/PodInfo?${params}`} title="Pod信息" />
-                    <NavItem href={`CalcManage/ServiceInfo?${params}`} title="Service信息" />
-                    <NavItem href={`CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
-                  </NavItem>
-                  {/* 暂时下面没有任何节点，因此注释掉
-                  <NavItem key={22} icon="equalizer" title="Docker Image" />
-                  */}
-                  <NavItem key={23} icon="tasks" title="离线计算任务" >
-                    <NavItem href={`CalcManage/MyTask?${params}`} title="我的任务" />                  
-                  </NavItem>
-                  {/** 暂时下面没有任何节点，因此注释掉
-                  <NavItem key={24} icon="equalizer" title="storm实时计算任务" />
-                  <NavItem key={25} icon="equalizer" title="Ceph" />
-                  */}
-                  <NavItem key={26} icon="book" title="使用说明" >
-                    <NavItem href={`CalcManage/CreateCluster/CC1?${params}`} title="开始使用 " />
-                    <NavItem href={`CalcManage/CreateCluster/CC2?${params}`} title="云中心计算集群" />
-                  </NavItem>
-                </NavItem>
+
+                  <NavItem key={20} href="CloudContainer" icon="sellsy" title="云容器">
+                    <NavItem key={21} href="CloudContainer/CalcManage" icon="desktop" title="k8s相关监控">
+                      <NavItem href={`CloudContainer/CalcManage/Overview?${params}`} title="概览" />
+                      <NavItem href={`CloudContainer/CalcManage/PodInfo?${params}`} title="Pod信息" />
+                      <NavItem href={`CloudContainer/CalcManage/ServiceInfo?${params}`} title="Service信息" />
+                      <NavItem href={`CloudContainer/CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
+                    </NavItem>
+                    {/* 暂时下面没有任何节点，因此注释掉
+                    <NavItem key={22} icon="equalizer" title="Docker Image" />
+                    */}
+                    <NavItem key={23} href="CloudContainer/OffLineCalcTask" icon="tasks" title="离线计算任务" >
+                      <NavItem href={`CloudContainer/OffLineCalcTask/MyTask?${params}`} title="我的任务" />                  
+                    </NavItem>
+                    {/** 暂时下面没有任何节点，因此注释掉
+                    <NavItem key={24} icon="equalizer" title="storm实时计算任务" />
+                    <NavItem key={25} icon="equalizer" title="Ceph" />
+                    */}
+                    <NavItem key={26} href="CloudContainer/UserDoc" icon="book" title="使用说明" >
+                      <NavItem href={`CloudContainer/UserDoc/CC1?${params}`} title="开始使用 " />
+                      <NavItem href={`CloudContainer/UserDoc/CC2?${params}`} title="云中心计算集群" />
+                    </NavItem>
+                   </NavItem>
 
                 <NavItem key={30} href="openstack" icon="th-large" title="云主机">
                   <NavItem key={31} href="title" icon="th-large" title="计算">

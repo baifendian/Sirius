@@ -4,6 +4,7 @@ import rests
 urlpatterns = format_suffix_patterns(patterns('hdfs.rests',
     url('^state/$', rests.HostState.as_view(), name='HostState-list' ),
     url('^relation/(?P<host_name>.+)/$', rests.Relation.as_view(), name='relation-info'),
+    url('^hostinfo/(?P<host_name>.+)/$', rests.HostInfo.as_view(), name='Host-info'),
     url('^operator/$', rests.OperateService.as_view(), name='operate'),
     url(r'^(?P<host_name>[\w|\-.\d-]+)/(?P<component_name>[A-Z]+)/(?P<operate>[A-Z]+)/$', rests.OperateComponent.as_view(),name="operate-component"),
     url(r'^capacity/(?P<space_name>.*)/$',rests.capacityRecovery.as_view()),
