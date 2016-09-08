@@ -450,7 +450,7 @@ handleSave4() {
       text = [['请选择Service']]
     }
     return  (
-      <div className="ServiceInfoChildRootDiv" ref="RootDiv">
+      <div className="CodisInfoChildRootDiv" ref="RootDiv">
         <NavigationInPage headText={CodisConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={CodisConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <div className="ButtonFatherDiv">
           <div className="SearchInputFatherDiv">
