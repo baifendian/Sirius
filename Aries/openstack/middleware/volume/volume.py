@@ -129,6 +129,7 @@ class Volume:
         :return:
         '''
         ret = 0
+        assert self.token != "", "not login"
         workpool = WorkPool()
         workpool.work_add()
         for i in range(num):
