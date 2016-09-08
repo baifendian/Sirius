@@ -19,6 +19,8 @@ IP_keystone = "192.168.190.11"
 PORT_keystone = "5000"
 IP_nova = "192.168.190.11"
 PORT_nova = "8774"
+IP_cinder = ""
+PORT_cinder = ""
 TIMEOUT = 60
 
 

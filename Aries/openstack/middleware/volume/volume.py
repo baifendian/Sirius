@@ -1,7 +1,7 @@
 # coding:utf-8
 import time
 
-from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog,run_in_thread,TIMEOUT, WorkPool
+from openstack.middleware.common.common import send_request, IP_nova, PORT_nova,IP_cinder,PORT_cinder, plog,run_in_thread,TIMEOUT, WorkPool
 from openstack.middleware.login.login import get_token, get_proid
 
 class Volume:
@@ -171,6 +171,21 @@ class Volume:
         assert ret != 1, "send_request error"
         return ret
 
+    @plog("Volume.extend")
+    def extend(self,volume_id,size):
+        '''
+        扩展虚拟卷容量
+        :param volume_id:
+        :return:
+        '''
+        assert self.token != "","not login"
+        path =  "/v2/%s/os-volumes/%s/action" % (self.project_id, volume_id)
+        method = "POST"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = {"os-extend":{"new_size":size}}
+        ret = send_request(method, IP_nova, PORT_nova, path, params, head)
+        assert ret != 1, "send_request error"
+        return ret
 
 class Volume_snaps():
     def __init__(self):
@@ -330,3 +345,80 @@ class Volume_attach():
         params = ""
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         return ret
+
+class Volume_backup():
+    def __init__(self):
+        self.token = get_token()
+        self.project_id = get_proid()
+
+    @plog("Volume_backup.list")
+    def list(self):
+        ret = 0
+        assert self.token != "", "not login"
+        path = "/v2/%s/backups" % self.project_id
+        method = "GET"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = ""
+        ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
+        return ret
+
+    @plog("Volume_backup.list_detail")
+    def list_detail(self):
+        ret = 0
+        assert self.token != "", "not login"
+        path = "/v2/%s/backups/detail" % self.project_id
+        method = "GET"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = ""
+        ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
+        return ret
+
+    @plog("Volume_backup.show_detail")
+    def show_detail(self,backup_id):
+        ret = 0
+        assert self.token != "", "not login"
+        path = "/v2/%s/backups/%s" % (self.project_id,backup_id)
+        method = "GET"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = ""
+        ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
+        return ret
+
+    @plog("Volume_backup.delete")
+    def delete(self,backup_id):
+        ret = 0
+        assert self.token != "", "not login"
+        path = "/v2/%s/backups/%s" % (self.project_id,backup_id)
+        method = "DELETE"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = ""
+        ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
+        return ret
+
+    @plog("Volume_backup.restore")
+    def restore(self,backup_id,volume_id,volume_name):
+        ret = 0
+        assert self.token != "", "not login"
+        path = "/v2/%s/backups/%s/restore" % (self.project_id,backup_id)
+        method = "POST"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = {"restore":{"name":volume_name}}
+        if volume_id:
+            params["restore"].update({"volume_id":volume_id})
+        ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
+        return ret
+
+    @plog("Volume_backup.create")
+    def create(self,volume_id,backup_name):
+        ret = 0
+        assert self.token != "", "not login"
+        path = "/v2/%s/backups" % self.project_id
+        method = "POST"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = {"buckup":{"container":"","description":"","name":backup_name,"volume_id":volume_id,"incremental":""}}
+        ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
+        return ret
+
+
+
+
