@@ -18,7 +18,11 @@ from service import *
 
 class volumes(APIView):
     def get(self,request,format=None):
-        return HttpResponse('aaa')
+        #print request.GET
+       # print request.GET.get('name')
+        method =  request.GET.get('name')
+        ret=Methods.get('GET').get(method)(request)
+        return packageResponse(ret)
         pass
     def post(self,request,format=None):
         print request.POST

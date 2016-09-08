@@ -20,10 +20,10 @@ export default React.createClass({
     return {      
       url: "openstack/volumes/",
       select_all:'',
+      button_status: true,
       column: [
       {
         title: '名称',
-        order: true,
         render: (text, item) => {
           return (<a href="javascript:void(0);" onClick={this.handleClick.bind(this, item)}>
             <TextOverflow><p style={{width: '100px'}}>{text}</p>
@@ -33,11 +33,9 @@ export default React.createClass({
       }, {
         title: '描述',
         key: 'displayDescription',
-        order: true
       }, {
         title: '状态',
         key: 'servername',
-        order: true,
         render: (text, item) => {
           if (text){
             return (<span>已连接到<TextOverflow><p style={{width: '100px'}}>{text}</p></TextOverflow></span>)
@@ -54,15 +52,12 @@ export default React.createClass({
       }, {
         title: '类型',
         key: 'voumetype',
-        order: true
       }, {
         title: '备份时间',        
-        order:true,
         key: 'backupd'
       },
       {
-        title: '创建时间',        
-        order:true,
+        title: '创建时间', 
         key: 'created'
       }
       ]
@@ -82,6 +77,11 @@ export default React.createClass({
     //console.log(selectedRows.html())
     for (var i=0; i<selectedRows.length;i++){
       console.log(selectedRows[i]['id'])
+    }
+    if (selectedRows.length == 1){
+      this.setState({button_status:false})
+    }else{
+      this.setState({button_status:true})
     }
     this.setState({select_all:selectedRows})
   },
@@ -127,7 +127,7 @@ export default React.createClass({
           <Button onClick={this.refresh} style={{float:'left'}}>刷新</Button>
           <Create_volumes/>
           <Delete_volumes select_all={this.state.select_all}/>
-          <Model_list/>
+          <Model_list select_all={this.state.select_all} button_status={this.state.button_status}/>
         </div>
         <div className="DataTableFatherDiv">
           <DataTable ref="data_table"

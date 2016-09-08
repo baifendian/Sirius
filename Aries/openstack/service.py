@@ -4,7 +4,7 @@ from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
 from common import json_data
 from openstack.middleware.vm.vm import Vm_manage,Vm_control
-from openstack.middleware.volume.volume import Volume,Volume_attach
+from openstack.middleware.volume.volume import Volume,Volume_attach,Volume_snaps
 from django.http import HttpResponse
 import json
 
@@ -70,17 +70,128 @@ def volumes_delete(request):
     print ret,'11111111111ret'
     return ret
 
+def volumes_amend(request):
+    #login()
+    print request.POST
+    size=request.POST.get('count')
+    volumes_id=eval(request.POST.get('data'))['id']
+    print size,volumes_id
+    pass
 
+def instances(request):
+    ret={}
+    login()
+    vm_manage=Vm_manage()
+#    print vm_manage.list()
+#    print json.dumps(vm_manage.list(),indent=4)
+    for i in vm_manage.list()['servers']:
+        ret[i['name']]=i['id']
+    ret = json_data(ret)
+    return ret
 
+def volumes_host(request):
+    print request.POST
+    ret={}
+    host_id=request.POST.get('host_id')
+    host_name=request.POST.get('host_name')
+    data=request.POST.get('data')
+    volumes_id=eval(data)['id']
+    volumes_name=eval(data)['name']
+    volume_attach=Volume_attach()
+    return_data=volume_attach.attach(host_id,volumes_id)
+    print return_data
+    if return_data !=1:
+        ret['vm']=host_name
+        ret['status']=True
+        ret['volumes']=volumes_name
+    else:
+        ret['vm']=host_name
+        ret['status']=False
+        ret['volumes']=volumes_name
+    ret = json_data(ret)
+    return ret
+    #print host_id,host_name,volumes_id,volumes_name
+
+    pass
+def volumes_uninstall(request):
+    login()
+    ret={}
+    data=eval(request.POST.get('data'))
+    print data
+    host_id=data['host_id']
+    host_name=data['host_name']
+    volumes_id=data['id']
+    volumes_name=data['name']
+    volume_attach=Volume_attach()
+    return_data=volume_attach.delete(host_id,volumes_id)
+    print return_data
+    if return_data != 1:
+        ret['host_name']=host_name
+        ret['status']=True
+        ret['volumes_name']=volumes_name
+    else:
+        ret['host_name'] = host_name
+        ret['status'] = False
+        ret['volumes_name'] = volumes_name
+    ret = json_data(ret)
+    return ret
+ #   print host_id,host_name,volumes_id,volumes_name
+    pass
+def volumes_backup(request):
+    ret={}
+    name = request.POST.get('name')
+    volumes_id = eval(request.POST.get('data'))['id']
+    volumes_name=eval(request.POST.get('data'))['name']
+    desc=request.POST.get('desc')
+    volume_snaps=Volume_snaps()
+    return_data=volume_snaps.create(volumes_id,name,desc)
+    print return_data
+    if return_data !=1:
+        ret['volumes_name']=volumes_name
+        ret['status']=True
+        ret['name']=name
+    else:
+        ret['volumes_name'] = volumes_name
+        ret['status'] = False
+        ret['name'] = name
+    ret = json_data(ret)
+    return ret
+def volumes_backup(request):
+    ret={}
+
+    login()
+    volume_snaps = Volume_snaps()
+    volume=Volume()
+    print json.dumps(volume_snaps.list_detail(),indent=4)
+    ret['totalList']=[]
+    for i in volume_snaps.list_detail()['snapshots']:
+        sys = {}
+        sys['displayName']=i['displayName']
+        sys['displayDescription']=i['displayDescription']
+        sys['size']=i['size']
+        sys['status']=i['status']
+        sys['volume_name']=volume.show_detail(i['volumeId'])['volume']['displayName']
+     #   print volume.show_detail(i['volumeId'])
+     #   print i
+        ret['totalList'].append(sys)
+   # ret['totalList']=volume_snaps.list_detail()['snapshots']
+    ret = json_data(ret)
+    print ret
+    return ret
+    pass
 
 Methods={
     "GET":{
-        "DELETE":'delete',
-        "SHARE":'share',
+        "instances":instances,
+        "backup":volumes_backup,
     },
     "POST":{
         "CREATE":volumes_create,
         "delete":volumes_delete,
+        "amend":volumes_amend,
+        'Loading_disk':volumes_host,
+        'uninstall':volumes_uninstall,
+        'backup':volumes_backup,
     },
     "PUT":{
         "UPSET":'upSet',

@@ -55,7 +55,7 @@ const Delete_volumes=React.createClass({
     let url=OPEN.UrlList()['volumes_post']
     console.log(url)
     return (
-      <div style={{float:"left",margin: "0px 0px 0px 10px"}}>
+      <div style={{float:"left",margin: "0px 10px 0px 0px"}}>
       <Button type="danger" className="btn btn-primary" onClick={this.handleOpen}>删除</Button>
         <Modal ref="modal_m">
           <ModalHeader>

@@ -18,6 +18,19 @@ var Datarequest = {
     //console.log('url',url,host_id,'vnc',fun)
     this.xhrPostData(_this,url,host_id,'vnc',fun)
   },
+  Get_instances(_this,fun){
+    let url=this.UrlList()['volumes_post']+"?name=instances"
+    console.log(url)
+    this.xhrGetData(_this,url,fun)
+    return 1
+  },
+  Get_volumes_backup(_this,fun){
+    let url=this.UrlList()['volumes_post']+"?name=backup"
+    this.xhrGetData(_this,url,fun)
+  },
+  return_data(_this,return_data){
+    return return_data
+  },
 	posthoststop(_this,url,data_select,host_status){
 	  let host_select={}
     for (var i in data_select){
