@@ -77,11 +77,14 @@ def login(request):
                     data = is_admin(account,account.cur_space)
                 else:
                     if len(account_list) >1:
-                        Account.objects.filter(name=username).delete()
-                    account = Account(name=username,email=email,is_active=1)
-                    account.role = Role.objects.get(name="guest")
-                    account.save()
-                    data = is_admin(account,account.cur_space)
+                        for one in account_list[1:]:
+                            one.delete()
+                        data = is_admin(account_list[0],account_list[0].cur_space)
+                    else:
+                        account = Account(name=username,email=email,is_active=1)
+                        account.role = Role.objects.get(name="guest")
+                        account.save()
+                        data = is_admin(account,account.cur_space)
                 ac_logger.info("user:{0}".format(data))
                 res["code"] = 200
                 res["data"] = data
