@@ -432,6 +432,7 @@ def volumes(request):
                   #  print disk_host
                     sys['device'] = disk_host['device']
                     sys['servername']=vm_manage.show_detail(disk_host['serverId'])['server']['name']
+                    sys['server_id']=disk_host['serverId']
             else:
                 sys['device'] = ''
                 sys['servername'] = ''

@@ -160,7 +160,10 @@ const App = React.createClass({
                   </NavItem>
                   <NavItem key={32} href="volumes" icon="credit-card-alt" title="存储">
                     <NavItem href={`openstack/volumes?${params}`} title="云磁盘" />
-                    <NavItem href="#" title="备份" />
+                    <NavItem href={`openstack/backup?${params}`} title="备份" />
+                  </NavItem>
+                   <NavItem key={33} href="project" icon="credit-card-alt" title="管理">
+                    <NavItem href={`openstack/project?${params}`} title="项目管理" />
                   </NavItem>
                 </NavItem>
 
