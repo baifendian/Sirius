@@ -9,7 +9,7 @@ var Datarequest = {
       'images':'openstack/images/',
       'volumes':'openstack/volumes/',
       'flavors':'openstack/flavors/',
-      'volumes_create':'openstack/volumes_create/'
+      'volumes_post':'openstack/volumes_post/'
     }
   },
   open_vnc(_this,select_host,fun){
@@ -67,6 +67,9 @@ var Datarequest = {
   },
   Get_image(_this,fun){
     this.xhrGetData(_this,"openstack/images/",fun)
+  },
+  volumes_data(_this,url,data_select,method,fun){
+      console.log(url,data_select,method,fun)
   },
 	xhrPostData(_this,url,data_select,host_status,fun) {
     let self=this
