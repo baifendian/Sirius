@@ -18,8 +18,48 @@ var CalcManageDataRequester = {
       'mytaskoldrecords':'k8s/api/v1/namespaces/mytasklist/getoldrecords',
       'mytaskhasnewrecords':'k8s/api/v1/namespaces/mytasklist/checkhasnewrecords',
       'mytasknewrecords':'k8s/api/v1/namespaces/mytasklist/getnewrecords',
+
+      'clustercpuinfo':'k8s/api/v1/namespaces/{nameSpace}/clusterinfo/cpu/{minutes}',
+      'clustermemoryinfo':'k8s/api/v1/namespaces/{nameSpace}/clusterinfo/memory/{minutes}',
+      'clusternetworkinfo':'k8s/api/v1/namespaces/{nameSpace}/clusterinfo/network/{minutes}',
+      'clusterfilesysteminfo':'k8s/api/v1/namespaces/{nameSpace}/clusterinfo/filesystem/{minutes}',
+
     }
   },
+
+  getClusterCPUInfo( _this,nameSpace,minutes,callback ){
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustercpuinfo'], {
+      'nameSpace': nameSpace,
+      'minutes':minutes
+    })
+    this.xhrGetData(url, _this, callback)
+  },
+  getClusterMemoryInfo( _this,nameSpace,minutes,callback ){
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustermemoryinfo'], {
+      'nameSpace': nameSpace,
+      'minutes':minutes
+    })
+    this.xhrGetData(url, _this, callback)
+  },
+  getClusterNetworkInfo( _this,nameSpace,minutes,callback ){
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusternetworkinfo'], {
+      'nameSpace': nameSpace,
+      'minutes':minutes
+    })
+    this.xhrGetData(url, _this, callback)
+  },
+  getClusterFilesystemInfo( _this,nameSpace,minutes,callback ){
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusterfilesysteminfo'], {
+      'nameSpace': nameSpace,
+      'minutes':minutes
+    })
+    this.xhrGetData(url, _this, callback)
+  },
+
+
+
+
+
 
   getMyTaskOldRecords( oldestrecordid,requestnumber,keywords,callback ) {
     let url = this.getUrlForm()['mytaskoldrecords']
