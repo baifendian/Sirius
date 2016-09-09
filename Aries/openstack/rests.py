@@ -18,23 +18,17 @@ from service import *
 
 class volumes(APIView):
     def get(self,request,format=None):
-        #print request.GET
-       # print request.GET.get('name')
         method =  request.GET.get('name')
         ret=Methods.get('GET').get(method)(request)
         return packageResponse(ret)
-        pass
+
     def post(self,request,format=None):
-        print request.POST
         method=request.POST.get('method')
         ret=Methods.get('POST').get(method)(request)
         return packageResponse(ret)
 
 class project(APIView):
     def get(self,request,format=None):
-        print request.GET
-       # print request.GET.get('name')
         ret=openstack_project(request)
         return packageResponse(ret)
-        #return HttpResponse('aa')
-        pass
+
