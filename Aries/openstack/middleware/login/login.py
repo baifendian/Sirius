@@ -3,15 +3,17 @@ from openstack.middleware.common.common import send_request, IP_keystone, PORT_k
 
 token = ""
 project_id = ""
+user_token = ""
 
 
 class Login:
     def __init__(self, name, password):
         global token
         global project_id
+        global user_token
         self.token = token
         self.project_id = project_id
-        self.user_token = ""
+        self.user_token = user_token
         self.name = name
         self.password = password
 
@@ -21,6 +23,7 @@ class Login:
         得到一个用户的token，但是没有对项目相关操作的权限
         :return:
         '''
+        global user_token
         method = "POST"
         path = "/v3/auth/tokens"
         params = {
@@ -49,6 +52,7 @@ class Login:
         head = {"Content-Type": "application/json"}
         ret = send_request(method, IP_keystone, PORT_keystone, path, params, head, flag=1)
         self.user_token = ret["token_id"]
+        user_token = self.user_token
 
     @plog("Login.get_proid")
     def proid_login(self):
@@ -113,9 +117,22 @@ class Login:
 def get_token():
     return token
 
-
 def get_proid():
     return project_id
+
+def get_user_token():
+    return user_token
+
+@plog("get_project")
+def get_project():
+    global user_token
+    assert user_token != "", "not login"
+    method = "GET"
+    path = "/v3/auth/projects"
+    params = ''
+    head = {"X-Auth-Token": user_token}
+    ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
+    return ret
 
 
 def login_out():
