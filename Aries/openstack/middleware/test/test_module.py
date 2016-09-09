@@ -69,6 +69,17 @@ class Test_Module():
         msg = volume.show_detail(volume_id)
         prints(msg)
 
+    def test_extend_volume(self):
+        '''
+        :return:
+        '''
+        self.test_login()
+        volume_id = ""
+        size = ""
+        volume = Volume()
+        msg = volume.extend(volume_id,size)
+        prints(msg)
+
     def test_create_flavor(self):
         '''
         :return:
