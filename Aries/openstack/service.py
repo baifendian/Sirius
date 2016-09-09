@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from openstack.middleware.login.login import Login,get_token
+from openstack.middleware.login.login import Login,get_token,get_project
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
 from common import json_data
@@ -71,11 +71,35 @@ def volumes_delete(request):
     return ret
 
 def volumes_amend(request):
-    #login()
+    login()
     print request.POST
+    ret={}
     size=request.POST.get('count')
+    volumes_size=eval(request.POST.get('data'))['size']
     volumes_id=eval(request.POST.get('data'))['id']
-    print size,volumes_id
+    volumes_name=eval(request.POST.get('data'))['name']
+    volume=Volume()
+    return_data= volume.extend(volumes_id,size)
+    print  volume.show_detail(volumes_id)
+    if volume.show_detail(volumes_id)['volume']['status'] == 'available':
+        if return_data !=1:
+            ret['name']=volumes_name
+            ret['status']=True
+            ret['size']=size
+            ret['volumes_size']=volumes_size
+        else:
+            ret['name']=volumes_name
+            ret['status']=False
+            ret['size']=size
+            ret['volumes_size']=volumes_size
+    else:
+        ret['name'] = volumes_name
+        ret['status'] = False
+        ret['totalList']="磁盘无法动态添加"
+    print  ret
+    ret = json_data(ret)
+    return ret
+   # print size,volumes_id,volumes_name,volumes_size
     pass
 
 def instances(request):
@@ -158,7 +182,6 @@ def volumes_backup(request):
     return ret
 def volumes_backup(request):
     ret={}
-
     login()
     volume_snaps = Volume_snaps()
     volume=Volume()
@@ -176,9 +199,25 @@ def volumes_backup(request):
         ret['totalList'].append(sys)
    # ret['totalList']=volume_snaps.list_detail()['snapshots']
     ret = json_data(ret)
-    print ret
     return ret
     pass
+
+def openstack_project(request):
+    ret={}
+    login()
+    return_data=get_project()
+    ret['totalList']=[]
+    for i in return_data['projects']:
+        sys = {}
+        print  i
+        sys['name']=i['name']
+        sys['id']=i['id']
+        sys['desc']=i['description']
+        sys['domain_id']=i['domain_id']
+        sys['domain_name']='default'
+        ret['totalList'].append(sys)
+    ret = json_data(ret)
+    return ret
 
 Methods={
     "GET":{

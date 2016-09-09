@@ -9,7 +9,8 @@ var Datarequest = {
       'images':'openstack/images/',
       'volumes':'openstack/volumes/',
       'flavors':'openstack/flavors/',
-      'volumes_post':'openstack/volumes_post/'
+      'volumes_post':'openstack/volumes_post/',
+      'project':'openstack/project/'
     }
   },
   open_vnc(_this,select_host,fun){

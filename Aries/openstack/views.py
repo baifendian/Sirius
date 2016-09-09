@@ -343,6 +343,7 @@ def images(request):
   #  print response1
     return response
 
+@csrf_exempt
 def flavors(request):
     ret={}
     login = Login("openstack", "baifendian2016")
@@ -411,6 +412,7 @@ def volumes(request):
     if request.method == "GET":
         ret['totalList'] = []
         volumes_list=volume_s.list_detail()
+        #print json.dumps(volume_s.list_detail(),indent=4)
         for disk in volumes_list['volumes']:
             sys={}
           #  sys['name']=''
@@ -466,7 +468,6 @@ def volumes(request):
                         sys['volumename'] = volume_d['volume']['displayName']
                     sys['status']=True
                 ret['totalList'].append(sys)
-
                 print ret
 
  #           print json.loads(disk)[0]

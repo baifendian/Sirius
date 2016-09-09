@@ -240,7 +240,7 @@ const Create_model = React.createClass({
       images(v){
         console.log(v)
           self.setState({
-            host_image:v
+            host_image:self.state.host_images[v]
           })
       },
   	count(v){
@@ -255,7 +255,7 @@ const Create_model = React.createClass({
   		console.log(v)
   		xhr({
  			 type: 'POST',
- 			 url: 'flavors/',
+ 			 url: 'openstack/flavors/',
  			 data: {
           method: 'single',
     			'id': v
@@ -443,7 +443,7 @@ const Create_model = React.createClass({
           </FormSelect>
         </FormItem>
         <FormItem label="镜像" name="images">
-          <FormSelect style={{width: '200px'}}>
+          <FormSelect style={{width: '200px'}} ref="images_s">
             <Option>请选择</Option>
             {Object.keys(images).map((str,i)=>{
               return (<Option value={str} key={i}>{images[str]}</Option>)

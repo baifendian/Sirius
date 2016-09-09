@@ -29,3 +29,12 @@ class volumes(APIView):
         method=request.POST.get('method')
         ret=Methods.get('POST').get(method)(request)
         return packageResponse(ret)
+
+class project(APIView):
+    def get(self,request,format=None):
+        print request.GET
+       # print request.GET.get('name')
+        ret=openstack_project(request)
+        return packageResponse(ret)
+        #return HttpResponse('aa')
+        pass
