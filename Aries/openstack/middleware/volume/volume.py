@@ -176,10 +176,9 @@ class Volume:
         '''
         扩展虚拟卷容量
         :param volume_id:
-        :return:
         '''
         assert self.token != "","not login"
-        path =  "/v2/%s/os-volumes/%s/action" % (self.project_id, volume_id)
+        path =  "/v2/%s/volumes/%s/action" % (self.project_id, volume_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"os-extend":{"new_size":size}}
