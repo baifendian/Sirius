@@ -183,7 +183,7 @@ class Volume:
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"os-extend":{"new_size":size}}
-        ret = send_request(method, IP_nova, PORT_nova, path, params, head)
+        ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
         assert ret != 1, "send_request error"
         return ret
 
@@ -415,7 +415,7 @@ class Volume_backup():
         path = "/v2/%s/backups" % self.project_id
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"buckup":{"container":"","description":"","name":backup_name,"volume_id":volume_id,"incremental":""}}
+        params = {"backup":{"container":"","description":"","name":backup_name,"volume_id":volume_id,"incremental":""}}
         ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
         return ret
 
