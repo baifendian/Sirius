@@ -49,20 +49,6 @@ class Volume:
         assert ret != 1, "send_request error"
         return ret
 
-    # def wait_compele(self, volume_id):
-    #     '''
-    #     等待磁盘创建完成
-    #     :return:
-    #     '''
-    #     flag = True
-    #     while flag:
-    #         tmp_ret = self.show_detail(volume_id)
-    #         if tmp_ret.get("volume", {}).get("status", "") == "available":
-    #             flag = False
-    #         else:
-    #             time.sleep(1)
-    #     return 0
-
     @plog("Volume.wait_complete")
     def wait_complete(self, volume_id, status):
         '''
