@@ -498,33 +498,6 @@ class Vm_snap:
         self.token = get_token()
         self.table = vm_id
 
-    # @plog("Vm_snap.search")
-    # def search(self,path):
-    #     head = self.tree
-    #     if path:
-    #         for i in path:
-    #             head = head["child"][int(i)]
-    #     return head
-    #
-    # @plog("Vm_snap.insert")
-    # def insert(self,name,time,id,parent_path):     #当父路径为root时,parent_path传空("")
-    #     head = self.search(parent_path)
-    #     now_path = parent_path+str(len(head["child"]))
-    #     node = {"name":name,"child":[],"time":time,"id":id,"path":now_path}
-    #     head["child"].append(node)
-    #     return node
-
-    # @plog("Vm_snap.delete")
-    # def delete(self,path):
-    #     parent_path = path[:-1]
-    #     node_path = path[-1]
-    #     parent_node = self.search(parent_path)
-    #     parent_node.pop(node_path)
-    #
-    # @plog("Vm_snap.change")
-    # def change(self,path,name):
-    #     head = self.search(path)
-    #     head["name"] = name
     def find_parent(self):
         '''
         找到当前主机所在的快照节点

@@ -7,7 +7,6 @@ import subprocess
 import httplib
 import os
 import errno
-
 import time
 
 pro_path = os.path.split(os.path.realpath(__file__))[0]
@@ -15,12 +14,12 @@ LOG_PATH = os.path.join(pro_path, "log")  # 日志路径
 DB_PATH = os.path.join(pro_path, "db.sqlite3")
 LOG_FLAG = True  # 日志开关
 POLL_TIME_INCR = 0.5
-IP_keystone = "192.168.190.11"
-PORT_keystone = "5000"
-IP_nova = "192.168.190.11"
-PORT_nova = "8774"
-IP_cinder = "192.168.190.11"
-PORT_cinder = "8776"
+IP_keystone = ""
+PORT_keystone = ""
+IP_nova = ""
+PORT_nova = ""
+IP_cinder = ""
+PORT_cinder = ""
 TIMEOUT = 60
 
 

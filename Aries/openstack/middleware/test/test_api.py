@@ -9,14 +9,12 @@ ip = ""
 
 def send_request(methods, ip, port, path, params, head={}, flag=0):
     try:
-        # params_str = urllib.urlencode(params)
         if params:
             params_str = json.dumps(params)
         else:
             params_str = ""
         print "str=%s" % params_str
         conn = httplib.HTTPConnection("%s:%s" % (ip, port))
-        # path = "%s?%s"%(path,params_str)
         if head:
             conn.request(methods, path, params_str, head)
         else:
@@ -34,7 +32,6 @@ def send_request(methods, ip, port, path, params, head={}, flag=0):
             except:
                 res_json = ""
                 pass
-        # print res_json
         ret = res_json
     except Exception, err:
         import traceback
@@ -60,7 +57,6 @@ class Test_Func():
         path = "/v3/auth/tokens"
         username = "demo"
         password = "demo"
-        # params = {"auth": {"identity": {"methods": ["password"],"password": {"user": {"id": "9c80675387304cd7a981d3a0afc43902","password": "demo"}}},"scope": {"project": {"id": "0a54ab42105748f4beefdcb631e9a866"}}}}
         params = {"auth": {"identity": {"methods": ["password"], "password": {
             "user": {"name": "openstack", "domain": {"name": "default"}, "password": "baifendian2016"}}}}}
         head = {"Content-Type": "application/json"}
