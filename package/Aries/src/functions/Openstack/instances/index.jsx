@@ -29,6 +29,7 @@ export default React.createClass({
       select_all:[],
       select_host:'',
       button_status:"disabled",
+      url_vnc:"",
     	url: "openstack/bfddashboard/instances/",
       column: [{
         title:'序号',
@@ -87,8 +88,8 @@ export default React.createClass({
   requestvnc(id,return_data,e){
     //window.location.href=return_data
     this.setState({loading:true})
-    if (id == '1'){OPEN.open_vnc(this,return_data,this.requestvnc)}else{
-      if($('#aObj-span').length != 0){
+    if (id == '1'){OPEN.open_vnc(this,return_data,this.requestvnc); this.refs.model_disk.open()}else{
+     /* if($('#aObj-span').length != 0){
         $('#aObj-span').parent().attr('href',return_data['console']['url']);
         $('#aObj-span').trigger('click');
         id.setState({loading:false})
@@ -96,10 +97,12 @@ export default React.createClass({
         let aObj = $('<a href="'+return_data['console']['url']+'" target="_blank"><span id="aObj-span"></span></a>');
         $('body').append(aObj);
         $('#aObj-span').trigger('click');
-        id.setState({loading:false})
-      }
+        id.setState({loading:false,url_vnc:return_data['console']['url']})
+      }*/
+      id.setState({loading:false,url_vnc:return_data['console']['url']})
     }
     //console.log('return_data',return_data)
+    //console.log(id.state.url_vnc)
   },
   handleCheckboxSelect(selectedRows) {
     console.log('rows:', selectedRows)
@@ -242,15 +245,17 @@ export default React.createClass({
         	</Modal>
           <Modal ref="model_disk">
               <ModalHeader>
-                <h4>{this.state.test}</h4>
+                <h4>vnc</h4>
               </ModalHeader>
               <ModalBody>
                 <div>
-                  <h4>{this.state.text_text}</h4>
+                    <div id= "iFrame" style={{}}>
+                     <iframe name= "iFrame" width="760" height="615" src={this.state.url_vnc} scrolling= "auto " frameborder= "0" style={{height: "436px"}}></iframe>
+                    </div>
                  </div>
                  <div className="create_host">
                   <Button onClick={this.handleclean.bind(this,'clean')}>关闭</Button>
-                  <Button onClick={this.handleclean.bind(this,this.state.host_post)}>{this.state.host_status}</Button>
+                 {/* <Button onClick={this.handleclean.bind(this,this.state.host_post)}></Button>*/}
                  </div>
               </ModalBody>
           </Modal>
