@@ -8,7 +8,9 @@ var Datarequest = {
       'instances':'openstack/bfddashboard/instances/',
       'images':'openstack/images/',
       'volumes':'openstack/volumes/',
-      'flavors':'openstack/flavors/'
+      'flavors':'openstack/flavors/',
+      'volumes_post':'openstack/volumes_post/',
+      'project':'openstack/project/'
     }
   },
   open_vnc(_this,select_host,fun){
@@ -16,6 +18,19 @@ var Datarequest = {
     let host_id={"host_id":select_host}
     //console.log('url',url,host_id,'vnc',fun)
     this.xhrPostData(_this,url,host_id,'vnc',fun)
+  },
+  Get_instances(_this,fun){
+    let url=this.UrlList()['volumes_post']+"?name=instances"
+    console.log(url)
+    this.xhrGetData(_this,url,fun)
+    return 1
+  },
+  Get_volumes_backup(_this,fun){
+    let url=this.UrlList()['volumes_post']+"?name=backup"
+    this.xhrGetData(_this,url,fun)
+  },
+  return_data(_this,return_data){
+    return return_data
   },
 	posthoststop(_this,url,data_select,host_status){
 	  let host_select={}
@@ -26,7 +41,8 @@ var Datarequest = {
     this.xhrPostData(_this,url,host_select,host_status,this.dispose_data)
 	},
   update_url(_this,url,self){
-    _this.setState({url: url+'?'+Math.random(),})
+    let _url=this.UrlList()[url]
+    _this.setState({url: _url+'?'+Math.random(),})
   },
   dispose_data(_this,retu_data,host_status,url,self){
     _this.setState({
@@ -65,6 +81,9 @@ var Datarequest = {
   },
   Get_image(_this,fun){
     this.xhrGetData(_this,"openstack/images/",fun)
+  },
+  volumes_data(_this,url,data_select,method,fun){
+      console.log(url,data_select,method,fun)
   },
 	xhrPostData(_this,url,data_select,host_status,fun) {
     let self=this

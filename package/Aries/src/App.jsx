@@ -154,15 +154,18 @@ const App = React.createClass({
                     </NavItem>
                    </NavItem>
 
-                <NavItem key={30} href="openstack" icon="th-large" title="云主机">
-                  <NavItem key={31} href="title" icon="th-large" title="计算">
-                    <NavItem href="openstack/instances" title="虚拟机" />
-                    <NavItem href="openstack/images" title="镜像" />
-                    <NavItem href="openstack/flavors" title="云类型" />
+                <NavItem key={30} href="service" icon="server" title="云主机">
+                  <NavItem key={31} href="openstack" icon="th-large" title="计算">
+                    <NavItem href={`openstack/instances?${params}`} title="虚拟机" />
+                    <NavItem href={`openstack/images?${params}`} title="镜像" />
+                    <NavItem href={`openstack/flavors?${params}`} title="云类型" />
                   </NavItem>
-                  <NavItem key={32} href="volumes" icon="credit-card-alt" title="存储">
-                    <NavItem href="openstack/volumes" title="云磁盘" />
-                    <NavItem href="#" title="备份" />
+                  <NavItem key={32} href="volumes" icon="hdd-o" title="存储">
+                    <NavItem href={`openstack/volumes?${params}`} title="云磁盘" />
+                    <NavItem href={`openstack/backup?${params}`} title="备份" />
+                  </NavItem>
+                   <NavItem key={33} href="project" icon="credit-card-alt" title="管理">
+                    <NavItem href={`openstack/project?${params}`} title="项目管理" />
                   </NavItem>
                 </NavItem>
 

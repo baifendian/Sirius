@@ -4,10 +4,11 @@ import time
 from openstack.middleware.flavor.flavor import Flavor
 from openstack.middleware.login.login import Login
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
-from openstack.middleware.volume.volume import Volume
+from openstack.middleware.volume.volume import Volume, Volume_backup
 from openstack.middleware.image.image import Image
 from openstack.middleware.common.common import run_in_thread
 import json
+import base64
 
 
 def prints(msg):
@@ -40,6 +41,15 @@ class Test_Module():
         volume = Volume()
         volume.create(10, name="test_a")
 
+    def test_create_volume_multiple(self):
+        '''
+        创建多块磁盘
+        :return:
+        '''
+        self.test_login()
+        volume = Volume()
+        volume.create_multiple("test_disk",3,10)
+
     def test_list_volume(self):
         '''
         :return:
@@ -57,6 +67,17 @@ class Test_Module():
         volume_id = ""
         volume = Volume()
         msg = volume.show_detail(volume_id)
+        prints(msg)
+
+    def test_extend_volume(self):
+        '''
+        :return:
+        '''
+        self.test_login()
+        volume_id = ""
+        size = ""
+        volume = Volume()
+        msg = volume.extend(volume_id,size)
         prints(msg)
 
     def test_create_flavor(self):
@@ -77,6 +98,13 @@ class Test_Module():
         msg = vm.list()
         prints(msg)
 
+    def test_show_vm(self):
+        self.test_login()
+        vm_id = ""
+        vm = Vm_manage()
+        msg = vm.show_detail(vm_id)
+        prints(msg)
+
     def test_list_vm_detail(self):
         self.test_login()
         vm = Vm_manage()
@@ -92,7 +120,8 @@ class Test_Module():
         vm = Vm_manage()
         disk = [{"name": "disk_test2", "size": "10", "dev_name": "/dev/sdb"},
                 {"name": "disk_test3", "size": "10", "dev_name": "/dev/sdc"}]
-        msg = vm.create("test_zd3", "1", "222e2074-65e0-4ef2-b40e-a48e41181bce", "123456", disk)
+        tmp_str = base64.b64encode("test")
+        msg = vm.create("test_zd3", "1", "222e2074-65e0-4ef2-b40e-a48e41181bce", "123456",tmp_str, disk)
         prints(msg)
 
     def test_create_vm_multiple(self):
@@ -103,7 +132,8 @@ class Test_Module():
         vm = Vm_manage()
         disk = [{"name": "disk_test2", "size": "10", "dev_name": "/dev/sdb"},
                 {"name": "disk_test3", "size": "10", "dev_name": "/dev/sdc"}]
-        msg = vm.create_multiple("test_zd3", "1", "222e2074-65e0-4ef2-b40e-a48e41181bce", "123456", 3, 10, disk)
+        tmp_str = base64.b64encode("test")
+        msg = vm.create_multiple("test_zd3", "1", "222e2074-65e0-4ef2-b40e-a48e41181bce", "123456",tmp_str, 3, 10, disk)
         prints(msg)
 
     # def test_create_image(self):
@@ -133,7 +163,7 @@ class Test_Module():
         vm = Vm_snap(vm_id)
         image_name = ""
         ret = vm.getinfo_node(image_name)
-        print ret
+        prints(ret)
 
     def test_change_snap(self):
         self.test_login()
@@ -142,7 +172,7 @@ class Test_Module():
         image_name = ""
         image_name_new = ""
         ret = vm.change_node(image_name, image_name_new)
-        print ret
+        prints(ret)
 
     def test_del_snap(self):
         self.test_login()
@@ -150,7 +180,7 @@ class Test_Module():
         vm = Vm_snap(vm_id)
         image_name = ""
         ret = vm.delete_node(image_name)
-        print ret
+        prints(ret)
 
     def test_vm_resize(self):
         self.test_login()
@@ -164,7 +194,7 @@ class Test_Module():
         vm_id = ""
         vm = Vm_control()
         ret = vm.get_console(vm_id)
-        print ret
+        prints(ret)
 
     def test_thread(self):
         def test_t(a):
@@ -174,6 +204,49 @@ class Test_Module():
 
         a = run_in_thread(test_t, (10,), timeout=10)
         print a
+
+    def test_vbackup_list(self):
+        self.test_login()
+        volume_backup = Volume_backup()
+        ret = volume_backup.list()
+        prints(ret)
+
+    def test_vbackup_list_detail(self):
+        self.test_login()
+        volume_backup = Volume_backup()
+        ret = volume_backup.list_detail()
+        prints(ret)
+
+    def test_vbackup_show_detail(self):
+        self.test_login()
+        volume_backup = Volume_backup()
+        volume_backup_id = ""
+        ret = volume_backup.show_detail(volume_backup_id)
+        prints(ret)
+
+    def test_vbackup_create(self):
+        self.test_login()
+        volume_backup = Volume_backup()
+        volume_id = ""
+        volume_backup_name = ""
+        ret = volume_backup.create(volume_id,volume_backup_name)
+        prints(ret)
+
+    def test_vbackup_restore(self):
+        self.test_login()
+        volume_backup = Volume_backup()
+        volume_backup_id = ""
+        volume_name = ""
+        volume_id = ""
+        ret = volume_backup.restore(volume_backup_id,volume_id,volume_name)
+        prints(ret)
+
+    def test_vbackup_delete(self):
+        self.test_login()
+        volume_backup = Volume_backup()
+        volume_backup_id = ""
+        ret = volume_backup.delete(volume_backup_id)
+        prints(ret)
 
     def no_found(self):
         """

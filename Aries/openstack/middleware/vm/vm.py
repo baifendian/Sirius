@@ -1,13 +1,12 @@
 # coding:utf-8
 import urllib
 import time
-from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog
+from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog,TIMEOUT
 from openstack.middleware.db.db import Db
 from openstack.middleware.image.image import Image
 from openstack.middleware.login.login import get_token, get_proid
 from openstack.middleware.volume.volume import Volume, Volume_attach
 
-TIMEOUT = 60
 
 
 # 虚拟机管理类
@@ -156,7 +155,7 @@ class Vm_manage:
                     t1 = run_in_thread(self.wait_complete, vm_id, timeout=TIMEOUT)
                     if t1 == 0:
                         vm_compele_flag = 1
-                t2 = run_in_thread(volume.wait_compele, volume_id,
+                t2 = run_in_thread(volume.wait_complete, volume_id,["available"],
                                    timeout=TIMEOUT)  # assert vm_compele_flag == 1, "vm status is not activate"
                 if not vm_compele_flag:
                     self.result[name]["status_vm"] = 2
@@ -499,33 +498,6 @@ class Vm_snap:
         self.token = get_token()
         self.table = vm_id
 
-    # @plog("Vm_snap.search")
-    # def search(self,path):
-    #     head = self.tree
-    #     if path:
-    #         for i in path:
-    #             head = head["child"][int(i)]
-    #     return head
-    #
-    # @plog("Vm_snap.insert")
-    # def insert(self,name,time,id,parent_path):     #当父路径为root时,parent_path传空("")
-    #     head = self.search(parent_path)
-    #     now_path = parent_path+str(len(head["child"]))
-    #     node = {"name":name,"child":[],"time":time,"id":id,"path":now_path}
-    #     head["child"].append(node)
-    #     return node
-
-    # @plog("Vm_snap.delete")
-    # def delete(self,path):
-    #     parent_path = path[:-1]
-    #     node_path = path[-1]
-    #     parent_node = self.search(parent_path)
-    #     parent_node.pop(node_path)
-    #
-    # @plog("Vm_snap.change")
-    # def change(self,path,name):
-    #     head = self.search(path)
-    #     head["name"] = name
     def find_parent(self):
         '''
         找到当前主机所在的快照节点

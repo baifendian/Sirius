@@ -5,25 +5,25 @@ import Button from 'bfd-ui/lib/Button'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import TextOverflow from 'bfd-ui/lib/TextOverflow'
 import {Create_volumes} from './volumes_create'
+import {Delete_volumes} from './volumes_delete'
 
 import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
+import { SplitPanel, SubSplitPanel } from 'bfd/SplitPanel'
+import OPEN from '../data_request/request.js'
+import ReactDOM from 'react-dom'
+import Model_list from './volumes_model_list'
 
 export default React.createClass({
 
    getInitialState: function () {
     return {      
-      test:"启动",
-      data_test:"<h1>启动</h1>",
       url: "openstack/volumes/",
-      column: [/*{
-        title:'序号',
-        key:'sequence'
-      }, */
+      select_all:'',
+      button_status: true,
+      column: [
       {
         title: '名称',
-        order: true,
-        //width: '20%',
         render: (text, item) => {
           return (<a href="javascript:void(0);" onClick={this.handleClick.bind(this, item)}>
             <TextOverflow><p style={{width: '100px'}}>{text}</p>
@@ -33,16 +33,15 @@ export default React.createClass({
       }, {
         title: '描述',
         key: 'displayDescription',
-        order: true
       }, {
         title: '状态',
         key: 'servername',
-        order: true,
         render: (text, item) => {
-          return (
-            <span>已连接到
-            <TextOverflow><p style={{width: '100px'}}>{text}</p>
-            </TextOverflow></span>)
+          if (text){
+            return (<span>已连接到<TextOverflow><p style={{width: '100px'}}>{text}</p></TextOverflow></span>)
+          }else{
+            return(<span>未连接</span>)
+          }
         }
       }, {
         title: '盘符',
@@ -53,15 +52,12 @@ export default React.createClass({
       }, {
         title: '类型',
         key: 'voumetype',
-        order: true
       }, {
         title: '备份时间',        
-        order:true,
         key: 'backupd'
       },
       {
-        title: '创建时间',        
-        order:true,
+        title: '创建时间', 
         key: 'created'
       }
       ]
@@ -82,6 +78,12 @@ export default React.createClass({
     for (var i=0; i<selectedRows.length;i++){
       console.log(selectedRows[i]['id'])
     }
+    if (selectedRows.length == 1){
+      this.setState({button_status:false})
+    }else{
+      this.setState({button_status:true})
+    }
+    this.setState({select_all:selectedRows})
   },
   handleRowClick(row) {
     console.log('rowclick', row)
@@ -89,7 +91,15 @@ export default React.createClass({
   handleOrder(name, sort) {
     console.log(name, sort)
   },
+  refresh(){
+    OPEN.update_url(this,"volumes")
+  },
   handleOpen() {
+    //console.log(ReactDOM.findDOMNode( this.refs.data_table ))
+    let aa=ReactDOM.findDOMNode( this.refs.data_table )
+    console.log(aa.childNodes[1].childNodes[1])
+    //aa.childNodes[1].childNodes[1].style.height="100px"
+    //aa.childNodes[1].childNodes[1].style.overflow="auto"
     this.refs.modal.open()
     //console.log(this.refs.modal.getDOMNode())
     // console.log(this.refs.modal.reset())
@@ -101,57 +111,36 @@ export default React.createClass({
     // console.log(this.refs.modal.reset()
     this.refs.modal.close()
   },
-   handleOpen_re() {
-    this.refs.modal.open()
-    this.setState({test: "重启"});
-    //console.log(this.refs.modal.getDOMNode())
-    // console.log(this.refs.modal.reset()
-
+  delete(){
+    console.log('select_all',this.state.select_all)
+    OPEN.volumes_data(this,this.state.select_all)
   },
-
   render() {
       let naviTexts = [{  'url':'/','text':'概览'},
         {'url':'','text':'云主机'},
         {'url':'','text':'计算'},
         {'url':'/openstack/volumes/','text':'磁盘列表'}]
-    return (
-      
+    return (  
       <div className="function-data-moduleA">
         <NavigationInPage naviTexts={naviTexts} headText="openstack" />
         <div>
-          <Button onClick={this.handleOpen} style={{float:'left'}}>刷新</Button>
+          <Button onClick={this.refresh} style={{float:'left'}}>刷新</Button>
           <Create_volumes/>
-          {/*<Button onClick={this.handleOpen} >创建</Button>
-          <Button onClick={this.handleOpen} >挂载</Button>
-          <Button type="danger" onClick={this.handleOpen_re} >卸载</Button>*/}
-          <Button type="danger" >删除</Button>
-          <Modal ref="modal">
-              <ModalHeader>
-                <h4>{this.state.test}</h4>
-              </ModalHeader>
-              <ModalBody>
-                <div>
-                  <h4>您需要删除的机器有test，test2。</h4>
-                 </div>
-                 <div className="create_host">
-                    <Button onClick={this.handleclean}>关闭</Button>
-                  <Button>创建</Button>
-                 </div>
-              </ModalBody>
-          </Modal>
+          <Delete_volumes select_all={this.state.select_all}/>
+          <Model_list select_all={this.state.select_all} button_status={this.state.button_status}/>
         </div>
-        <div>
-          <DataTable 
+        <div className="DataTableFatherDiv">
+          <DataTable ref="data_table"
             url={this.state.url} 
             onPageChange={this.onPageChange} 
-            showPage="true" 
+            showPage='false' 
             column={this.state.column} 
             howRow={8}
             onRowClick={this.handleRowClick}
             onOrder={this.handleOrder}
             onCheckboxSelect={this.handleCheckboxSelect} >
           </DataTable>
-          </div>
+        </div>
       </div>
     )
   }
