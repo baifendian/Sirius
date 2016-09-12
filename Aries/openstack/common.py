@@ -7,8 +7,6 @@ from middleware.flavor.flavor import Flavor
 from openstack.middleware.vm.vm import Vm_manage
 
 def json_data(json_status):
-    print len(json_status)
-    print json_status
     if len(json_status)==0:
         json_status={"data":json_status,"code":400}
         json_status=json.dumps(json_status)
@@ -28,7 +26,6 @@ class OpenAPI(object):
     def instances(self):
         ret={}
         host_list = Vm_manage().list_detail({})
-        #   print json.dumps(host_list,indent=4)
         ret['totalList'] = []
         test_list = []
         for host in host_list['servers']:
@@ -39,17 +36,11 @@ class OpenAPI(object):
             sys['flavor'] = host['flavor']['id']
             sys['created'] = host['created']
             sys['status'] = host['OS-EXT-STS:vm_state']
-            print host['id']
-            # sys[]
             for key, value in host['addresses'].items():
-                # sys['ip']={}
                 for ip in value:
-                    #  sys['ip'][ip['OS-EXT-IPS:type']] =ip['addr']
                     for keys, values in ip.items():
                         if keys == "addr":
-                            # print value
                             sys['ip'] = values
-                            # print sys
 
             ret['totalList'].append(sys)
             test_list.append(sys)

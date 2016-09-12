@@ -152,13 +152,13 @@ const App = React.createClass({
                   </NavItem>
                 </NavItem>
 
-                <NavItem key={30} href="service" icon="th-large" title="云主机">
+                <NavItem key={30} href="service" icon="server" title="云主机">
                   <NavItem key={31} href="openstack" icon="th-large" title="计算">
                     <NavItem href={`openstack/instances?${params}`} title="虚拟机" />
                     <NavItem href={`openstack/images?${params}`} title="镜像" />
                     <NavItem href={`openstack/flavors?${params}`} title="云类型" />
                   </NavItem>
-                  <NavItem key={32} href="volumes" icon="credit-card-alt" title="存储">
+                  <NavItem key={32} href="volumes" icon="hdd-o" title="存储">
                     <NavItem href={`openstack/volumes?${params}`} title="云磁盘" />
                     <NavItem href={`openstack/backup?${params}`} title="备份" />
                   </NavItem>

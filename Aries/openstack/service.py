@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from openstack.middleware.login.login import Login,get_token
+from openstack.middleware.login.login import Login,get_token,get_project
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
 from common import json_data
@@ -40,12 +40,10 @@ def volumes_create(request):
     volumes_des=request.POST.get('desc')
     volume=Volume()
     return_data=volume.create_multiple(volumes_name,volumes_count,volumes_size,'nova',volumes_des)
-    #print return_data,'.........return_data'
     if return_data != 1:
         ret[volumes_name] = True
     else:
         ret[volumes_name] = False
-    #print volumes_count,volumes_name,volumes_type,volumes_size
     ret=json_data(ret)
     return ret
 
@@ -54,36 +52,50 @@ def volumes_delete(request):
     ret={}
     sys={}
     volume = Volume()
-    print request.POST
-    print request.POST.get('volumes_object')
     volumes_dic=eval(request.POST.get('volumes_object'))
     print volumes_dic
     for key,value in volumes_dic.iteritems():
-        print key,value
         return_data=volume.delete(key)
-        print return_data
         if return_data !=1:
             ret[value]=True
         else:
             ret[value]=False
     ret = json_data(ret)
-    print ret,'11111111111ret'
     return ret
 
 def volumes_amend(request):
-    #login()
-    print request.POST
+    login()
+    ret={}
     size=request.POST.get('count')
+    volumes_size=eval(request.POST.get('data'))['size']
     volumes_id=eval(request.POST.get('data'))['id']
-    print size,volumes_id
-    pass
+    volumes_name=eval(request.POST.get('data'))['name']
+    volume=Volume()
+    return_data= volume.extend(volumes_id,size)
+    if volume.show_detail(volumes_id)['volume']['status'] == 'available':
+        if return_data !=1:
+            ret['name']=volumes_name
+            ret['status']=True
+            ret['size']=size
+            ret['volumes_size']=volumes_size
+        else:
+            ret['name']=volumes_name
+            ret['status']=False
+            ret['size']=size
+            ret['volumes_size']=volumes_size
+    else:
+        ret['name'] = volumes_name
+        ret['status'] = False
+        ret['totalList']="磁盘无法动态添加"
+    print  ret
+    ret = json_data(ret)
+    return ret
+
 
 def instances(request):
     ret={}
     login()
     vm_manage=Vm_manage()
-#    print vm_manage.list()
-#    print json.dumps(vm_manage.list(),indent=4)
     for i in vm_manage.list()['servers']:
         ret[i['name']]=i['id']
     ret = json_data(ret)
@@ -99,7 +111,6 @@ def volumes_host(request):
     volumes_name=eval(data)['name']
     volume_attach=Volume_attach()
     return_data=volume_attach.attach(host_id,volumes_id)
-    print return_data
     if return_data !=1:
         ret['vm']=host_name
         ret['status']=True
@@ -110,21 +121,19 @@ def volumes_host(request):
         ret['volumes']=volumes_name
     ret = json_data(ret)
     return ret
-    #print host_id,host_name,volumes_id,volumes_name
+
 
     pass
 def volumes_uninstall(request):
     login()
     ret={}
     data=eval(request.POST.get('data'))
-    print data
     host_id=data['host_id']
     host_name=data['host_name']
     volumes_id=data['id']
     volumes_name=data['name']
     volume_attach=Volume_attach()
     return_data=volume_attach.delete(host_id,volumes_id)
-    print return_data
     if return_data != 1:
         ret['host_name']=host_name
         ret['status']=True
@@ -135,8 +144,6 @@ def volumes_uninstall(request):
         ret['volumes_name'] = volumes_name
     ret = json_data(ret)
     return ret
- #   print host_id,host_name,volumes_id,volumes_name
-    pass
 def volumes_backup(request):
     ret={}
     name = request.POST.get('name')
@@ -145,7 +152,7 @@ def volumes_backup(request):
     desc=request.POST.get('desc')
     volume_snaps=Volume_snaps()
     return_data=volume_snaps.create(volumes_id,name,desc)
-    print return_data
+
     if return_data !=1:
         ret['volumes_name']=volumes_name
         ret['status']=True
@@ -158,7 +165,6 @@ def volumes_backup(request):
     return ret
 def volumes_backup(request):
     ret={}
-
     login()
     volume_snaps = Volume_snaps()
     volume=Volume()
@@ -171,14 +177,27 @@ def volumes_backup(request):
         sys['size']=i['size']
         sys['status']=i['status']
         sys['volume_name']=volume.show_detail(i['volumeId'])['volume']['displayName']
-     #   print volume.show_detail(i['volumeId'])
-     #   print i
         ret['totalList'].append(sys)
-   # ret['totalList']=volume_snaps.list_detail()['snapshots']
+
     ret = json_data(ret)
-    print ret
     return ret
-    pass
+
+def openstack_project(request):
+    ret={}
+    login()
+    return_data=get_project()
+    ret['totalList']=[]
+    for i in return_data['projects']:
+        sys = {}
+      #  print  i
+        sys['name']=i['name']
+        sys['id']=i['id']
+        sys['desc']=i['description']
+        sys['domain_id']=i['domain_id']
+        sys['domain_name']='default'
+        ret['totalList'].append(sys)
+    ret = json_data(ret)
+    return ret
 
 Methods={
     "GET":{

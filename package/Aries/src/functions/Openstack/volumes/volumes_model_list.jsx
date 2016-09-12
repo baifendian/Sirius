@@ -57,7 +57,7 @@ const Backup_disk = React.createClass({
 
   handleSuccess(res) {
     console.log(res)
-    //this.refs.modal_m.close()
+    this.props._this.refs.modal.close()
     message.success('保存成功！')
   },
   render() {
@@ -138,6 +138,7 @@ const Uninstall_disk=React.createClass({
   handleSuccess(res) {
     console.log(res)
     //this.refs.modal_m.close()
+    this.props._this.refs.modal.close()
     message.success('保存成功！')
   },
   handleOpen() {
@@ -238,10 +239,11 @@ const Loading_disk=React.createClass({
   handleSuccess(res) {
     console.log(res)
    // this.refs.modal_m.close()
+   this.props._this.refs.modal.close()
     message.success('保存成功！')
   },
   handleOpen() {
-    this.refs.modal_m.open()
+   // this.props._this.refs.modal.close()
     console.log(OPEN.UrlList()['instances'])
   },
   componentWillMount: function(){
@@ -327,7 +329,8 @@ const Extend = React.createClass({
 
   handleSuccess(res) {
     console.log(res)
-    this.refs.modal_m.close()
+    //this.refs.modal_m.close()
+    this.props._this.refs.modal.close()
     message.success('保存成功！')
   },
   render() {
@@ -376,10 +379,10 @@ const Model_list=React.createClass({
   },
   modulevalue(){
     return {
-      'Extend': <Extend volumes_all={this.props.select_all}/>,
-      'Loading_disk':<Loading_disk volumes_all={this.props.select_all}/>,
-      'Uninstall_disk':<Uninstall_disk volumes_all={this.props.select_all}/>,
-      'Backup_disk':<Backup_disk volumes_all={this.props.select_all}/>
+      'Extend': <Extend volumes_all={this.props.select_all} _this={this}/>,
+      'Loading_disk':<Loading_disk volumes_all={this.props.select_all} _this={this}/>,
+      'Uninstall_disk':<Uninstall_disk volumes_all={this.props.select_all} _this={this}/>,
+      'Backup_disk':<Backup_disk volumes_all={this.props.select_all} _this={this}/>
     }
   },
   handleButtonClick(e) {
