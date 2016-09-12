@@ -123,7 +123,7 @@ def volumes_host(request):
     return ret
 
 
-    pass
+
 def volumes_uninstall(request):
     login()
     ret={}

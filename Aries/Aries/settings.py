@@ -39,7 +39,6 @@ HADOOP_CLIENT="hlg3p64-lupan"
 AMBARI_USER="admin"
 AMBARI_PASSWORD="admin"
 LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 

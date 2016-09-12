@@ -42,7 +42,6 @@ def login(request):
     response = HttpResponse(json_status)
     response['Access-Control-Allow-Origin'] = '*'
     response['Content-Type'] = 'application/json'
-    #  print response
     return response
 
 
@@ -60,7 +59,6 @@ def logout(request):
 def create_host(request):
     ret={}
     if request.method == 'POST':
-
         type_name=request.POST.get('name')
         if type_name=='T1':
             ret={'cpu':"1","mem":"2","count":'0.14'}
@@ -139,7 +137,6 @@ def instances(request):
             host_password='bfd123'
             host_userdata=base64.b64encode('aaa')
             for keys,values in request.POST.items():
-              #  print keys,values
                 if 'disk' in keys:
                     disk.append({"size":values})
             host_create=vm_manage.create_multiple(host_name,host_flavor,host_image,host_password,host_userdata,int(host_count),int(host_count),disk)
@@ -161,14 +158,6 @@ def instances(request):
                         ret[values]=True
                 else:
                     ret[values]="stopped"
-
-           # print request.POST.getlist("host_id")[0].split(',')[0]
-           # host_id=request.POST.getlist("host_id")[0].split(',')[0]
-         #   host_vm_start= Vm_control()
-          #  print host_vm_start.start(host_id)
-          #  host_vm_start.stop(host_id)
-
-
         elif host_method == "stop":
             request_list = request.POST.getlist('data')[0]
             print request_list
@@ -218,7 +207,6 @@ def instances(request):
             ret=host_vnc
         elif host_method == "update":
             type_vm=request.POST.get('type_vm')
-            print "type................",type
             if type_vm == "flavor":
                 flavors=Flavor()
                 host_vm_start = Vm_control()
@@ -241,11 +229,8 @@ def instances(request):
                     ret[host_name]=False
                 else:
                     ret[host_name]=True
-                pass
 
         elif host_method == "host_status":
-            print vm_manage.result
-            print ret
             pass
     json_status = json_data(ret)
     response=HttpResponse(json_status)
@@ -349,7 +334,6 @@ def flavors(request):
     response["Access-Control-Allow-Headers"] = "*"
    # response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
     response['Content-Type'] = 'application/json'
-   # print response1
     return response
 
 def volumes(request):
@@ -375,10 +359,8 @@ def volumes(request):
             sys['created']=disk['createdAt'].split('.')[0]
             sys['backupd']=disk['createdAt'].split('.')[0]
             sys['displayDescription']=disk['displayDescription']
-          #  print "len attachments",len(disk['attachments'][0].keys())
             if len(disk['attachments'][0].keys()) == 4:
                 for disk_host  in disk['attachments']:
-                  #  print disk_host
                     sys['device'] = disk_host['device']
                     sys['servername']=vm_manage.show_detail(disk_host['serverId'])['server']['name']
                     sys['server_id']=disk_host['serverId']
@@ -444,22 +426,12 @@ def test(request):
 	     }
            aa={"code":200,'data':{'cpu':"1","mem":"2","count":'0.12'}}
            print type(aa)
-        #   aa=str(aa)
            aa=json.dumps(aa)
         if request.POST.get("name") == 'T2': 
            aa={"code":200,'data':{'cpu':"8","mem":"12","count":'0.36'}}
-           print type(aa)
            aa=json.dumps(aa)
-   # aa=json.loads(aa)
-   # aa= eval(aa) 
-   # print aa['totalList']
-  #  aa=json.loads(aa)
-   # aa=json.dumps(aa)
-    #print aa
     response = HttpResponse(aa)
     response['Access-Control-Allow-Origin'] = '*'
     response['Content-Type'] = 'application/json'
-#    return HttpResponseRedirect(reverse('index'))
     return response
-  #  return render_to_response('test.html',{})
 
