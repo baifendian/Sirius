@@ -205,6 +205,11 @@ def instances(request):
             vm_control = Vm_control()
             host_vnc=vm_control.get_console(host_id)
             ret=host_vnc
+            if ret == 1:
+                ret={}
+                ret['console']={}
+                ret['console']['url']=False
+            print ret
         elif host_method == "update":
             type_vm=request.POST.get('type_vm')
             if type_vm == "flavor":

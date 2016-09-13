@@ -15,6 +15,7 @@ import {Disk_model} from './model_list'
 import { Icon } from 'antd'
 import './jquery.min.js'
 import NavigationInPage from 'public/NavigationInPage'
+import ReactDOM from 'react-dom'
 
 
 export default React.createClass({
@@ -88,7 +89,7 @@ export default React.createClass({
   requestvnc(id,return_data,e){
     //window.location.href=return_data
     this.setState({loading:true})
-    if (id == '1'){OPEN.open_vnc(this,return_data,this.requestvnc); this.refs.model_disk.open()}else{
+    if (id == '1'){OPEN.open_vnc(this,return_data,this.requestvnc); }else{
      /* if($('#aObj-span').length != 0){
         $('#aObj-span').parent().attr('href',return_data['console']['url']);
         $('#aObj-span').trigger('click');
@@ -99,7 +100,13 @@ export default React.createClass({
         $('#aObj-span').trigger('click');
         id.setState({loading:false,url_vnc:return_data['console']['url']})
       }*/
-      id.setState({loading:false,url_vnc:return_data['console']['url']})
+      if (return_data['console']['url'] == false){
+         message.danger('vnc故障请联系管理员')
+         id.setState({loading:false})
+      }else{
+        this.refs.model_disk.open()
+        id.setState({loading:false,url_vnc:return_data['console']['url']})}
+        ReactDOM.findDOMNode(this.refs.iFrame).childNodes[0].focus()
     }
     //console.log('return_data',return_data)
     //console.log(id.state.url_vnc)
@@ -149,7 +156,7 @@ export default React.createClass({
     switch(name)
     {
     	case 1:
-        OPEN.posthoststop(this,'openstack/bfddashboard/instances/',this.state.select_all,"start")
+        OPEN.posthoststop(this,'instances',this.state.select_all,"start")
     		break;
     	case 2:
         this.refs.modal.open()
@@ -198,7 +205,7 @@ export default React.createClass({
    handleclean(name) {
     if (name=="clean"){this.refs.modal.close()}else{
       this.refs.modal.close()
-      OPEN.posthoststop(this,'openstack/bfddashboard/instances/',this.state.select_all,this.state.host_post)
+      OPEN.posthoststop(this,'instances',this.state.select_all,this.state.host_post)
     }
   },
    handleOpen_re() {
@@ -227,7 +234,7 @@ export default React.createClass({
       		<Button disabled={this.state.button_status} type="danger"  onClick={this.handleOpen.bind(this,4)} style={{float:"left"}} >删除</Button>
           <Disk_model vm_list={this.state.select_all} ref="model_model" _this={this}/>
           <div style={{float: 'right'}}>
-            <Extend/>
+            <Extend _this={this}/>
           </div>
           <Modal ref="modal">
           		<ModalHeader>
@@ -249,12 +256,12 @@ export default React.createClass({
               </ModalHeader>
               <ModalBody>
                 <div>
-                    <div id= "iFrame" style={{}}>
+                    <div id= "iFrame" style={{}} ref="iFrame">
                      <iframe name= "iFrame" width="760" height="615" src={this.state.url_vnc} scrolling= "auto " frameborder= "0" style={{height: "436px"}}></iframe>
                     </div>
                  </div>
-                 <div className="create_host">
-                  <Button onClick={this.handleclean.bind(this,'clean')}>关闭</Button>
+                 <div className="">
+                  {/*<Button onClick={this.handleclean.bind(this,'clean')}>关闭</Button>*/}
                  {/* <Button onClick={this.handleclean.bind(this,this.state.host_post)}></Button>*/}
                  </div>
               </ModalBody>

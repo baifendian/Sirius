@@ -211,11 +211,5 @@ Methods={
         'Loading_disk':volumes_host,
         'uninstall':volumes_uninstall,
         'backup':volumes_backup,
-    },
-    "PUT":{
-        "UPSET":'upSet',
-    },
-    "DELETE":{
-        "DELETE":'delete',
     }
 }
