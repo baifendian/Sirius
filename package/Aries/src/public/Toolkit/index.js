@@ -3,6 +3,33 @@
 var Toolkit = {
 
   /**
+   * 对 oriValue 进行单位转换
+   * oriValue(int)                原始数据值
+   * hex(int)                     进制（比如10、1024）
+   * unitArr(Array)               单位字符串列表，如 ['B','KB','MB','GB','TB',]
+   * significantFractionBit(int)  有效小数位位数
+   */
+  unitConversion:function( oriValue,hex,unitArr,significantFractionBit ){
+    let value = oriValue
+    let unitIndex = 0
+    while (1){
+      if ( value < hex ){     // 如果当前值小于hex，则说明无需再进行进制转换
+        break
+      }
+      if ( unitIndex >= unitArr.length-1 ){       // 如果发现提供的单位不够，则亦不会继续转换下去
+        break
+      }
+      
+      value = value / hex
+      unitIndex += 1
+    }
+    if (significantFractionBit){
+      value = value.toFixed( significantFractionBit )
+    }
+    return this.strFormatter.formatString( '{value} {unit}',{ 'value':value,'unit':unitArr[unitIndex] } )
+  },
+
+  /**
    * 根据给定的毫秒数，将其对应的日期转换成字符串，格式为  YYYY-MM-DDTHH:mm:SS
    * 如果milliseconds传入-1，则将其视为最新时间对应的毫秒数
    */

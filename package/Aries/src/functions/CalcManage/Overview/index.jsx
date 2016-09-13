@@ -1,6 +1,9 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import echarts from 'echarts'
 import Percentage from 'bfd-ui/lib/Percentage'
+import Button from 'bfd-ui/lib/Button'
+import ButtonGroup from 'bfd-ui/lib/ButtonGroup'
 
 import NavigationInPage from 'public/NavigationInPage'
 import Toolkit from 'public/Toolkit/index.js'
@@ -39,6 +42,7 @@ import './index.less'
 
 
 var mod = React.createClass({
+  /**
   getInitialState:function(){
     return CMDR.generateRandomData()
   },
@@ -67,49 +71,156 @@ var mod = React.createClass({
     }else {
       return '#FA7252'
     }
-  },
-
-  generateLineSeriesObj( lineName,dataArr ){
-    let obj = {
-      type: 'line',
-      itemStyle: {
-        normal: {
-          lineStyle:{            
-          },
-          areaStyle: {
-            type: 'default',
-            color: 'rgba(255,0,0,0.1)'
-          }
-        }
-      },    
-      name: lineName,
-      data: dataArr
-    }
-    return obj
-  },
+  }, */
 
   componentDidMount(){
+    this.calcDesiredHeight()
+    window.onresize = ()=>{ this.onWindowResize() }
+
     this.userData = {}
-    this.initColorPoll()
+    this.initUserData()
 
     this.initCharts()
-    this.checkToRequestData()
+    this.requestClusterInfoData()
   },
 
-  initColorPoll(){
+  onWindowResize(){
+    window.onresize = undefined
+    this.calcDesiredHeight()
+    window.onresize = ()=>{ this.onWindowResize() }
+  },
+
+  calcRootDivHeight(){
+    let totalHeight = document.body.clientHeight
+    totalHeight -= document.getElementById('header').clientHeight
+    totalHeight -= document.getElementById('footer').clientHeight
+    totalHeight -= 20*2               // 去掉设置的子页面padding
+    return totalHeight
+  },
+
+  calcDesiredHeight(){
+    let rootDivHeight = this.calcRootDivHeight()
+    ReactDOM.findDOMNode(this.refs.MyCalcManagerOverviewChildRootDiv).style.height = (rootDivHeight+'px')
+
+    let height = rootDivHeight - ReactDOM.findDOMNode(this.refs.NavigationInPage).clientHeight
+    let table = ReactDOM.findDOMNode(this.refs.EchartFatherDiv)
+    table.childNodes[0].style.height = (height + 'px')
+  },
+
+  initUserData(){
+    this.userData['clusterInfoTypes'] = ['cpu','memory','network','filesystem']
+
+    this.userData['clusterInfoDict'] = {
+      'cpu':'EchartCPUInfoDiv',
+      'memory':'EchartMemoryInfoDiv',
+      'network':'EchartNetworkInfoDiv',
+      'filesystem':'EchartFilesystemInfoDiv'
+    }
+
+    // 将url请求与回调都放到一起，便于管理
+    this.userData['clusterInfoCallBackFunc'] = {
+      'cpu':        ( value )=>{ 
+                      CMDR.getClusterCPUInfo( value,(executedData)=>{
+                        this.insertDataToChart( 'cpu',executedData )
+                      })  
+                    },
+      'memory':     ( value )=>{ 
+                      CMDR.getClusterMemoryInfo( value,(executedData)=>{
+                        this.insertDataToChart( 'memory',executedData )
+                      })
+                    },
+      'network':    ( value )=>{ 
+                      CMDR.getClusterNetworkInfo( value,(executedData)=>{
+                        this.insertDataToChart( 'network',executedData )
+                      })  
+                    },
+      'filesystem': ( value )=>{ 
+                      CMDR.getClusterFilesystemInfo( value ,(executedData)=>{
+                        this.insertDataToChart( 'filesystem',executedData )
+                      })
+                    },
+    }
+
+    this.userData['tooltipFormatterFunc'] = {
+      'cpu':        ( params, ticket, callback ) => {
+                      let templateStr = this.generateTooltipFormatterStr(3)
+                      let unitArr = ['','K','M','G','T','P']
+                      return this.tooltipFormatter( templateStr,params,1000,unitArr,0 )
+                    },
+      'memory':     ( params, ticket, callback ) => {
+                      let templateStr = this.generateTooltipFormatterStr(4)
+                      let unitArr = ['B','KB','MB','GB','TB','PB']
+                      return this.tooltipFormatter( templateStr,params,1000,unitArr,2 )
+                    },
+      'network':    ( params, ticket, callback ) => {
+                      let templateStr = this.generateTooltipFormatterStr(2)
+                      let unitArr = ['Bps','KBps','MBps','GBps','TBps','PBps']
+                      return this.tooltipFormatter( templateStr,params,1000,unitArr,2 )
+                    },
+      'filesystem': ( params, ticket, callback ) => {
+                      let templateStr = this.generateTooltipFormatterStr(2)
+                      let unitArr = ['B','KB','MB','GB','TB','PB']
+                      return this.tooltipFormatter( templateStr,params,1000,unitArr,2 )                      
+                    }
+    }
+
+  
+
+  
+    // 绘制集群信息图表的时候，将从以下颜色池中选择颜色
     this.userData['colorPoll'] = [{
-      'line':'rgb(255,0,0)',
-      'area':'rgba(255,0,0,0.3)'
+      'line':'rgb(229,115,115)',
+      'area':'rgba(229,115,115,0.1)'
     },{
-      'line':'rgb(255,255,0)',
-      'area':'rgba(255,255,0,0.3)'
+      'line':'rgb(126,87,194)',
+      'area':'rgba(126,87,194,0.1)'
     },{
-      'line':'rgb(0,255,255)',
-      'area':'rgba(0,255,255,0.3)'
+      'line':'rgb(77,208,225)',
+      'area':'rgba(77,208,225,0.1)'
     },{      
-      'line':'rgb(0,0,255)',
-      'area':'rgba(0,0,255,0.3)'
+      'line':'rgb(121,134,203)',
+      'area':'rgba(121,134,203,0.1)'
+    },{
+      'line':'rgb(212,225,87)',
+      'area':'rgba(212,225,87,0.1)'
+    },{
+      'line':'rgb(38,166,154)',
+      'area':'rgba(38,166,154,0.1)'
+    },{
+      'line':'rgb(253,216,53)',
+      'area':'rgba(253,216,53,0.1)'
+    },{
+      'line':'rgb(255,138,101)',
+      'area':'rgba(255,138,101,0.1)'
+    },{
+      'line':'rgb(66,165,245)',
+      'area':'rgba(66,165,245,0.1)'
+    },{
+      'line':'rgb(102,187,106)',
+      'area':'rgba(102,187,106,0.1)'
     }]
+  },
+
+  generateTooltipFormatterStr( seriesNumber ){
+    let templateStr = '<tr><td>{time}</td></tr>'
+    for ( let i = 0 ; i < seriesNumber ; i ++ ){
+      templateStr += '<tr>'
+      templateStr += '<td>{seriesName'+i+'}</td>'
+      templateStr += '<td class="SpaceTdDistraction"></td>'
+      templateStr += '<td>{seriesValue'+i+'}</td>'
+      templateStr += '</tr>'
+    }
+    return '<table class="TooltipTable"><tbody>' + templateStr + '</tbody></table>'
+  },
+
+  tooltipFormatter( templateStr,params,hex,unitArr,significantFractionBit ){
+    let dataObj = {}
+    dataObj['time'] = params[0]['name']
+    for ( let i = 0 ; i < params.length ; i ++ ){
+      dataObj['seriesName'+i] = params[i]['seriesName']
+      dataObj['seriesValue'+i] = Toolkit.unitConversion( params[i]['value'],hex,unitArr,significantFractionBit )
+    }
+    return Toolkit.strFormatter.formatString( templateStr,dataObj)
   },
 
   generateInitXAxisArr(){
@@ -123,39 +234,18 @@ var mod = React.createClass({
   },
 
   initCharts(){
-    let clusterInfoDict = {
-      'cpu':'EchartCPUInfoDiv',
-      'memory':'EchartMemoryInfoDiv',
-      'network':'EchartNetworkInfoDiv',
-      'filesystem':'EchartFilesystemInfoDiv'
-    }
     let xAxisData = this.generateInitXAxisArr()
-    for ( let identifyStr in clusterInfoDict ){
-      this.userData[identifyStr] = echarts.init(document.getElementById( clusterInfoDict[identifyStr] ))
+    for ( let identifyStr in this.userData['clusterInfoDict'] ){
+      this.userData[identifyStr] = echarts.init(document.getElementById( this.userData['clusterInfoDict'][identifyStr] ))
 
       // 在没有加载到数据的时候，先显示出来空白的图标，这样会比较好看
       let initOptions = {
         'title': { 
           'text': Toolkit.strFormatter.formatString('集群 {chartName} 使用情况',{ 'chartName':identifyStr })
         },
-        'toolbox': {  
-          'show' : true,
-          'feature' : {
-            'oneHour':{
-              'show':true,    
-              'title':'1小时',
-              'icon' : 'logo.png',
-              'onclick':function(option1) {
-                alert('1');
-              }
-            },
-            'saveAsImage':{
-              'show': true
-            }  
-          }  
-        },
         'tooltip' : {
-          'trigger': 'axis'
+          'trigger': 'axis',
+          'formatter': this.userData['tooltipFormatterFunc'][identifyStr]
         },
         'xAxis': [{
           'type' : 'category',
@@ -165,15 +255,31 @@ var mod = React.createClass({
       }
       this.userData[identifyStr].setOption(initOptions)
     }
-    this.userData['clusterInfoDict'] = clusterInfoDict
+  },
+
+  generateLineSeriesObj( lineName,dataArr ){
+    let obj = {
+      type: 'line',
+      itemStyle: {
+        normal: {
+          lineStyle:{  color: 'rgba(255,0,0)'   },
+          areaStyle:{  color: 'rgba(255,0,0,0.1)' , type: 'default'  }
+        }
+      },    
+      name: lineName,
+      data: dataArr
+    }
+    return obj
   },
 
   insertDataToChart( chartName,executedData ){
+    this.userData[chartName].hideLoading()
+
     let series = []
     let legend = []
     for ( let i = 0 ; i < executedData.series.length ; i ++ ){
       legend.push( executedData['series'][i]['legend'] )
-      
+
       let seriesDataObj = this.generateLineSeriesObj( executedData['series'][i]['legend'],executedData['series'][i]['data'] )
       seriesDataObj['itemStyle']['normal']['lineStyle']['color'] = this.userData['colorPoll'][i]['line']        // 线颜色
       seriesDataObj['itemStyle']['normal']['areaStyle']['color'] = this.userData['colorPoll'][i]['area']        // 区域颜色
@@ -194,55 +300,80 @@ var mod = React.createClass({
     })
   },
 
-  xhrCPUCallback(_this,executedData){
-    _this.insertDataToChart( 'cpu',executedData )
+  onTimeRangeChanged( value,clusterInfoType ){
+    this.userData[clusterInfoType].showLoading()
+    this.userData['clusterInfoCallBackFunc'][clusterInfoType]( value )
   },
-  xhrMemoryCallback(_this,executedData) {
-    _this.insertDataToChart( 'memory',executedData )
-  },
-  xhrNetworkCallback(_this,executedData) {
-    _this.insertDataToChart( 'network',executedData )
-  },
-  xhrFilesystemCallback(_this,executedData) {
-    _this.insertDataToChart( 'filesystem',executedData )
-  },
-  
-  checkToRequestData(){
-    // 如果当前保存的namespace与实时获取的namespace相同，则不再重新请求
-    // 否则，重新请求数据
-    let curNameSpace = CalcManageConf.getCurSpace(this);
-    if ( this.userData['nameSpace'] !== curNameSpace ){
-      this.userData['nameSpace'] = curNameSpace
 
-      CMDR.getClusterCPUInfo( this,curNameSpace,30,this.xhrCPUCallback )
-      CMDR.getClusterMemoryInfo( this,curNameSpace,30,this.xhrMemoryCallback )
-      CMDR.getClusterNetworkInfo( this,curNameSpace,30,this.xhrNetworkCallback )
-      CMDR.getClusterFilesystemInfo( this,curNameSpace,30,this.xhrFilesystemCallback )
+  requestClusterInfoData(){
+    for ( let i = 0 ; i < this.userData['clusterInfoTypes'].length ; i ++ ){
+      let tStr = this.userData['clusterInfoTypes'][i]
+      this.onTimeRangeChanged( 60,tStr )
     }
   },
-
+  
   render: function() {
-    let spaceName = CalcManageConf.getCurSpace(this);    
+    /** 
     let pod_percent = this.formatPercent( this.state.pod_used,this.state.pod_total )
     let task_percent = this.formatPercent( this.state.task_used,this.state.task_total)
     let memory_percent = this.formatPercent( this.state.memory_used,this.state.memory_total)
+    */
+
+    let ClusterInfoKeyWord = [ { 'type':'Button',   'str':'cpu'                   },
+                               { 'type':'Echart',   'str':'EchartCPUInfoDiv'      },
+                               { 'type':'Button',   'str':'memory'                },
+                               { 'type':'Echart',   'str':'EchartMemoryInfoDiv'   },
+                               { 'type':'Button',   'str':'network'               },
+                               { 'type':'Echart',   'str':'EchartNetworkInfoDiv'  },
+                               { 'type':'Button',   'str':'filesystem'            },
+                               { 'type':'Echart',   'str':'EchartFilesystemInfoDiv'  }]
 
     return (
-      <div className="MyCalcManagerOverviewChildRootDiv">
-          <NavigationInPage headText={CalcManageConf.getNavigationData({
+      <div className="MyCalcManagerOverviewChildRootDiv" 
+           ref="MyCalcManagerOverviewChildRootDiv">
+          <NavigationInPage ref="NavigationInPage"
+                          headText={CalcManageConf.getNavigationData({
                             pageName:'Overview',
                             type : 'headText'
                           })} 
                           naviTexts={CalcManageConf.getNavigationData({
                             pageName:'Overview',
                             type:'navigationTexts',
-                            spaceName:spaceName
+                            spaceName:CalcManageConf.getCurSpace(this)
                           })} />
-          <div id="EchartCPUInfoDiv"        className="EchartClusterInfoDiv"/>
-          <div id="EchartMemoryInfoDiv"     className="EchartClusterInfoDiv" />
-          <div id="EchartNetworkInfoDiv"    className="EchartClusterInfoDiv" />
-          <div id="EchartFilesystemInfoDiv" className="EchartClusterInfoDiv" />
+          <table className="EchartFatherDiv" ref="EchartFatherDiv">
+            <tbody>
+              {ClusterInfoKeyWord.map( (keyword)=>{
+                if ( keyword['type'] === 'Button' ){
+                  return (
+                    <tr key={Toolkit.generateGUID()}>
+                      <td>
+                        <ButtonGroup defaultValue="60" 
+                            onClick= {(value)=>{this.onTimeRangeChanged(value,keyword['str'])}} 
+                            onChange={(value)=>{this.onTimeRangeChanged(value,keyword['str'])}}  >
+                          <Button value={60}   >最近1小时</Button>
+                          <Button value={60*6} >最近6小时</Button>
+                          <Button value={60*24}>最近1天</Button>
+                        </ButtonGroup>
+                      </td>
+                    </tr>
+                  )
+                } else {
+                  return (
+                    <tr key={Toolkit.generateGUID()}>
+                      <td><div id={keyword['str']} ref={keyword['str']} /></td>
+                    </tr>
+                  )
+                }
+              } )}
+            </tbody>
+          </table>
 
+            
+            
+            
+
+          {/** 
           <table className="PercentageFatherDiv" style={{'display':'none'}}>
             <tbody>
               <tr className="PercentPic">
@@ -279,7 +410,7 @@ var mod = React.createClass({
                 <td>{this.state.memory_used}&nbsp;/&nbsp;{this.state.memory_total}</td>
               </tr>
             </tbody>
-          </table>
+          </table>*/}
       </div>
     )
   }

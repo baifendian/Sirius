@@ -1,13 +1,49 @@
 
 
+table.TooltipTable {
+  td{
+    min-width: 0px;
+  }
+  td.SpaceTdDistraction {
+    width: 10px;
+  } 
+}
+
+div.MyCalcManagerOverviewChildRootDiv > table.EchartFatherDiv{
+  width: 100%;
+  > tbody {
+    width: 100%;
+    display: block;
+
+    overflow: auto;
+    > tr{
+      width: 100%;
+      display: block;
+
+      > td{
+        width: 100%;
+        display: inline-block;
+      }
+    }
+
+    > tr:nth-child(odd) > td > *{
+      text-align: right;
+      padding-right: 100px;
+    }
+    > tr:nth-child(even) > td > *{
+      height: 400px;    
+    }
+
+  }
+}
+
+
+
+
 div.MyCalcManagerOverviewChildRootDiv > div.PercentageFatherDiv{
   border: 1px solid #ECECEC;
 }
 
-div.MyCalcManagerOverviewChildRootDiv > div.EchartClusterInfoDiv {
-  width: 1400px;
-  height: 400px;
-}
 
 div.MyCalcManagerOverviewChildRootDiv > table.PercentageFatherDiv {
   margin-top: 20px;

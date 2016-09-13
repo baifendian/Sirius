@@ -19,41 +19,37 @@ var CalcManageDataRequester = {
       'mytaskhasnewrecords':'k8s/api/v1/namespaces/mytasklist/checkhasnewrecords',
       'mytasknewrecords':'k8s/api/v1/namespaces/mytasklist/getnewrecords',
 
-      'clustercpuinfo':'k8s/api/v1/namespaces/{nameSpace}/clusterinfo/cpu/{minutes}',
-      'clustermemoryinfo':'k8s/api/v1/namespaces/{nameSpace}/clusterinfo/memory/{minutes}',
-      'clusternetworkinfo':'k8s/api/v1/namespaces/{nameSpace}/clusterinfo/network/{minutes}',
-      'clusterfilesysteminfo':'k8s/api/v1/namespaces/{nameSpace}/clusterinfo/filesystem/{minutes}',
+      'clustercpuinfo':'k8s/api/v1/clusterinfo/cpu/{minutes}',
+      'clustermemoryinfo':'k8s/api/v1/clusterinfo/memory/{minutes}',
+      'clusternetworkinfo':'k8s/api/v1/clusterinfo/network/{minutes}',
+      'clusterfilesysteminfo':'k8s/api/v1/clusterinfo/filesystem/{minutes}',
 
     }
   },
 
-  getClusterCPUInfo( _this,nameSpace,minutes,callback ){
+  getClusterCPUInfo( minutes,callback ){
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustercpuinfo'], {
-      'nameSpace': nameSpace,
       'minutes':minutes
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
-  getClusterMemoryInfo( _this,nameSpace,minutes,callback ){
+  getClusterMemoryInfo( minutes,callback ){
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustermemoryinfo'], {
-      'nameSpace': nameSpace,
       'minutes':minutes
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
-  getClusterNetworkInfo( _this,nameSpace,minutes,callback ){
+  getClusterNetworkInfo( minutes,callback ){
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusternetworkinfo'], {
-      'nameSpace': nameSpace,
       'minutes':minutes
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
-  getClusterFilesystemInfo( _this,nameSpace,minutes,callback ){
+  getClusterFilesystemInfo( minutes,callback ){
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusterfilesysteminfo'], {
-      'nameSpace': nameSpace,
       'minutes':minutes
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
 
 
@@ -131,6 +127,20 @@ var CalcManageDataRequester = {
       type: 'GET',
       success: (retu_data) => {
         callback(_this, retu_data)
+      }
+    })
+  },
+
+  /**
+   * xhrGetData用起来太麻烦，但是并没有限制
+   * xhrGetDataEnhanced用起来简单，不需要传入url，但是在实现的时候需要用注意一些点
+   */
+  xhrGetDataEnhanced(url, callback) {
+    xhr({
+      url: url,
+      type: 'GET',
+      success: (retu_data) => {
+        callback( retu_data)
       }
     })
   },
