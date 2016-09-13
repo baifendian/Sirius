@@ -58,7 +58,6 @@ def volumes_delete(request):
     sys = {}
     volume = Volume()
     volumes_dic = eval(request.POST.get('volumes_object'))
-    print volumes_dic
     for key, value in volumes_dic.iteritems():
         return_data = volume.delete(key)
         if return_data != 1:
@@ -93,7 +92,6 @@ def volumes_amend(request):
         ret['name'] = volumes_name
         ret['status'] = False
         ret['totalList'] = "磁盘无法动态添加"
-    print  ret
     ret = json_data(ret)
     return ret
 
@@ -109,7 +107,6 @@ def instances(request):
 
 
 def volumes_host(request):
-    print request.POST
     ret = {}
     host_id = request.POST.get('host_id')
     host_name = request.POST.get('host_name')
@@ -178,7 +175,6 @@ def volumes_backup(request):
     login()
     volume_snaps = Volume_snaps()
     volume = Volume()
-    print json.dumps(volume_snaps.list_detail(), indent=4)
     ret['totalList'] = []
     for i in volume_snaps.list_detail()['snapshots']:
         sys = {}
@@ -200,7 +196,6 @@ def openstack_project(request):
     ret['totalList'] = []
     for i in return_data['projects']:
         sys = {}
-        #  print  i
         sys['name'] = i['name']
         sys['id'] = i['id']
         sys['desc'] = i['description']

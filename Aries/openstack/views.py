@@ -27,7 +27,6 @@ openstack_log = logging.getLogger("openstack_log")
 
 def login(request):
     ret = {}
-    print request.POST
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -35,7 +34,6 @@ def login(request):
         longin_token = login.user_token_login()
         proid_token = login.proid_login()
         login_proid_token = login.token_login()
-        print login_proid_token
         if longin_token != 1 and proid_token != 1 and login_proid_token != 1:
             ret = {"name": username, "type": 2}
     json_status = json_data(ret)
@@ -46,8 +44,6 @@ def login(request):
 
 
 def logout(request):
-    print request.POST
-    print request.GET
     aa = {'aa': 'bb'}
     json_status = json_data(aa)
     response = HttpResponse(json_status)
@@ -112,7 +108,6 @@ def instances(request):
             sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
             sys['created'] = host['created']
             sys['status'] = host['OS-EXT-STS:vm_state']
-            print sys
             for key, value in host['addresses'].items():
                 # sys['ip']={}
                 for ip in value:
@@ -126,7 +121,6 @@ def instances(request):
         ret['totalPageNum'] = len(host_list['servers'])
 
     if request.method == "POST":
-        print request.POST
         host_method = request.POST.get('method')
         if host_method == "create":
             host_name = request.POST.get('name')
@@ -140,7 +134,6 @@ def instances(request):
                     disk.append({"size": values})
             host_create = vm_manage.create_multiple(host_name, host_flavor, host_image, host_password, host_userdata,
                                                     int(host_count), int(host_count), disk)
-            print host_create
             if host_create != 1:
                 ret['status'] = 'NO'
             else:
@@ -151,7 +144,6 @@ def instances(request):
             for keys, values in eval(request_list).items():
                 if vm_manage.show_detail(keys)['server']['OS-EXT-STS:vm_state'] != "active":
                     host_vm_startstatus = host_vm_start.start(keys)
-                    print vm_manage.show_detail(keys)['server']['OS-EXT-STS:vm_state']
                     if host_vm_startstatus == 1:
                         ret[values] = False
                     else:
@@ -160,7 +152,6 @@ def instances(request):
                     ret[values] = "stopped"
         elif host_method == "stop":
             request_list = request.POST.getlist('data')[0]
-            print request_list
             host_vm_start = Vm_control()
             for keys, values in eval(request_list).items():
                 if vm_manage.show_detail(keys)['server']['OS-EXT-STS:vm_state'] != "stopped":
@@ -177,8 +168,7 @@ def instances(request):
         elif host_method == "restart":
             type = request.POST.get('type')
             if type == "restart":
-                print 'restart'
-
+                pass
             else:
                 request_list = request.POST.getlist('data')[0]
                 host_vm_start = Vm_control()
@@ -192,7 +182,6 @@ def instances(request):
 
         elif host_method == "delete":
             request_list = request.POST.getlist('data')[0]
-            print request_list
             for keys, values in eval(request_list).items():
                 host_vm_delete = vm_manage.delete(keys)
 
@@ -252,7 +241,6 @@ def images(request):
     login.user_token_login()
     login.proid_login()
     login.token_login()
-    print get_token()
     image = Image()
     if request.method == 'GET':
         sys['totalList'] = []
@@ -305,7 +293,6 @@ def flavors(request):
     if request.method == 'GET':
         for i in flavor.list_detail()["flavors"]:
             sys = {}
-            print i
             ret['name'][i['id']] = i['name']
             sys['id'] = i['id']
             sys['name'] = i['name']
@@ -319,13 +306,10 @@ def flavors(request):
         ret['totalPageNum'] = len(ret['totalList'])
 
     if request.method == "POST":
-        print request.POST
         host_method = request.POST.get('method')
         if host_method == 'single':
             flavor_id = request.POST.get('id')
-            print flavor_id
             flavor_list = flavor.show_detail(flavor_id)
-            print flavor_list
             ret['cpu'] = flavor_list['flavor']['vcpus']
             ret['ram'] = flavor_list['flavor']['ram']
             ret['name'] = flavor_list['flavor']['name']
@@ -335,7 +319,6 @@ def flavors(request):
     json_status = json_data(ret)
     response = HttpResponse(json_status)
 
-    print type(response)
     # request['Access-Control-Allow-Headers']='Content-Type'
     response['Access-Control-Allow-Origin'] = '*'
     response["Access-Control-Allow-Headers"] = "*"
@@ -395,14 +378,12 @@ def volumes(request):
                     sys['device'] = return_data['volumeAttachment']['device']
                     sys['servername'] = vm_manage.show_detail(host)['server']['name']
                     volume_d = volume_s.show_detail(i)
-                    print volume_d
                     if volume_d['volume']['displayName'] == None:
                         sys['volumename'] = volume_d['volume']['id']
                     else:
                         sys['volumename'] = volume_d['volume']['displayName']
                     sys['status'] = True
                 ret['totalList'].append(sys)
-                print ret
     json_status = json_data(ret)
 
     response = HttpResponse(json_status)
@@ -412,9 +393,6 @@ def volumes(request):
 
 
 def test(request):
-    print request.POST
-    print type(request)
-    print request.GET.get('test')
     aa = open('openstack/aa.txt', 'r').read()
     if request.method == 'POST':
         if request.POST.get("name") == 'T1':
@@ -434,7 +412,6 @@ def test(request):
                 "code": 200
             }
             aa = {"code": 200, 'data': {'cpu': "1", "mem": "2", "count": '0.12'}}
-            print type(aa)
             aa = json.dumps(aa)
         if request.POST.get("name") == 'T2':
             aa = {"code": 200, 'data': {'cpu': "8", "mem": "12", "count": '0.36'}}
