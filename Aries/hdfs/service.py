@@ -15,6 +15,10 @@ from django.conf import settings
 from hdfs.function import HDFS
 from django.http import HttpResponse
 from tools import *
+
+import requests
+from requests.auth import HTTPBasicAuth
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 hdfs_logger = logging.getLogger("access_log")
@@ -413,7 +417,7 @@ def showShare(request,path):
         return result
 
 def HostStateGET(request):
-    dic = req()
+    dic = host_state_and_relation_req()
     result = {}
     if not dic.has_key('status'):
         all_host = []
@@ -438,7 +442,7 @@ def HostStateGET(request):
     return result
 
 def RelationGET(request, host_name):
-    dic = req()
+    dic = host_state_and_relation_req()
     relation = []
     result = {}
     allhost = []
@@ -459,6 +463,37 @@ def RelationGET(request, host_name):
         result["data"] = "主机关系获取失败"
     ac_logger.info('result........:%s'%result)
     return result
+
+def HostInfoGET(request, host_name):
+    import time
+    dic = host_desc_req()
+    relation = []
+    result = {}
+    data = {}
+    if dic.has_key('items'):
+        for i in dic['items']:
+            if i['Hosts']['host_name'] == host_name:
+                data['host_name'] = host_name
+                data['ip'] = i['Hosts']['ip']
+                data['cpu_count'] = i['Hosts']['cpu_count']
+                data['total_mem'] = format(i['Hosts']['total_mem'] / float(1024) / float(1024), '.2f') + 'GB'
+                data['os'] = i['Hosts']['os_type'] + ' '+ '(' + i['Hosts']['os_arch'] + ')'
+                last_heartbeat = ( int(str(time.time())[:10]) - int(str(i['Hosts']['last_heartbeat_time'])[:10]) )
+                if last_heartbeat < 60:
+                    data['last_heartbeat_time'] = str(last_heartbeat) + ' ' + 'seconds ago'
+                elif last_heartbeat > 60 :
+                    data['last_heartbeat_time'] = str(last_heartbeat / 60 ) + ' ' + 'minutes ago'
+                elif last_heartbeat > 3600 :
+                    data['last_heartbeat_time'] = str(last_heartbeat / 3600 ) + ' ' + 'hours ago'
+                data['load_avg'] = ''
+        result['code'] = StatusCode['SUCCESS']
+        result['data'] = data
+        return result
+    else:
+        result['code'] = StatusCode['FAILED']
+        result['data'] = '主机信息获取失败'
+    return result
+
 
 def OperateServicePOST(request, command, params):
     import requests
@@ -513,10 +548,15 @@ def OperateComponentPUT(request, host_name, component_name, operate):
         result["data"] = "操作失败"
     return result
 
-def req():
-    import requests
-    from requests.auth import HTTPBasicAuth
+def host_state_and_relation_req():
     r = requests.get('%shosts?fields=host_components/HostRoles/state,host_components/HostRoles/service_name' %settings.AMBARI_URL, auth=HTTPBasicAuth(settings.AMBARI_USER,settings.AMBARI_PASSWORD))
+    dic = eval(r.text)
+    return dic
+
+def host_desc_req():
+    import time
+    r = requests.get('%s/hosts?fields=Hosts/host_name,Hosts/public_host_name,Hosts/cpu_count,Hosts/ph_cpu_count,Hosts/host_status,Hosts/last_heartbeat_time,Hosts/ip,host_components/HostRoles/state,Hosts/total_mem,Hosts/os_arch,Hosts/os_type&sortBy=Hosts/host_name.asc&_=%s' \
+        %( settings.AMBARI_URL, int(time.time()) ), auth=HTTPBasicAuth(settings.AMBARI_USER,settings.AMBARI_PASSWORD) )
     dic = eval(r.text)
     return dic
 

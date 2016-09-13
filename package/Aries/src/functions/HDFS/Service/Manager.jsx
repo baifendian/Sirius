@@ -53,6 +53,15 @@ const TabManager = React.createClass({
         this.setState({"selectHost":hostName,"operatorType":"COMPONENT","componentData":data});
       }
     });
+    let hostinfoUrl = this.props.getUrlData({ type: "HOST_INFO", hostName: hostName});
+    xhr({
+      type: 'GET',
+      url: hostinfoUrl,
+      success:data=> {
+        this.setState({"hostInfo":data})
+      }
+    })
+
   },
   getInitialState: function() {
     return {
@@ -62,6 +71,7 @@ const TabManager = React.createClass({
       selectHost:"服务操作",
       serviceData:[],
       operatorType:"SERVICE",
+      hostInfo: {},
     };
   },
   render: function(){
@@ -72,7 +82,7 @@ const TabManager = React.createClass({
           <Head statusFilter={this.statusFilter}  />
           <div>
             <Top data={this.state.filterData} updateData={this.updateData} selectHost={this.state.selectHost} />
-            <Bottom getUrlData={this.props.getUrlData} data={this.state.componentData} operatorType={this.state.operatorType} selectHost={this.state.selectHost} />
+            <Bottom getUrlData={this.props.getUrlData} hostInfo={this.state.hostInfo} data={this.state.componentData} operatorType={this.state.operatorType} selectHost={this.state.selectHost} />
           </div>
         </div>
         <div className="div-Fetch">

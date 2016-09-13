@@ -90,27 +90,32 @@ def spaceMemberGet(request,pk):
     no_user_list = []
     result = {}
     for one in space_user_role:
-        accounts_space.append(one.user)
-    #if pk == "0":
-    #不属于space的用户
+        try:
+            accounts_space.append(one.user)
+        except Exception as e:
+            ac_logger.info("spaceMemberGet - error:%s"%e)
     accounts = Account.objects.filter(~Q(role__name__exact="superAdmin") & ~Q(role__name__exact="root"))
-    ac_logger.info(accounts)
     accounts = list((set(accounts)) - set(accounts_space))
+    ac_logger.info(accounts)
     for one in accounts:
         one_dict = {}
         one_dict["id"] = one.id
         one_dict["user_id"] = one.id
         one_dict["user_name"] = one.name
         no_user_list.append(one_dict)
-
+    
     for one in space_user_role:
-        one_dict = {}
-        one_dict["id"] = one.id
-        one_dict["user_id"] = one.user.id
-        one_dict["user_name"] = one.user.name
-        one_dict["role_id"] = one.role.id
-        one_dict["role_name"] = one.role.name
-        user_list.append(one_dict)
+        try:
+            one_dict = {}
+            one_dict["id"] = one.id
+            one_dict["user_id"] = one.user.id
+            one_dict["user_name"] = one.user.name
+            one_dict["role_id"] = one.role.id
+            one_dict["role_name"] = one.role.name
+            user_list.append(one_dict)
+        except Exception as e:
+            ac_logger.info("spaceMemberGet - error:%s"%e)
+            one.delete()
     data={}
     ac_logger.info("pk-----%s" %pk)
     if pk=="0":

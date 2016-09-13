@@ -62,45 +62,101 @@ export default render((
           })
         }}/>
       </Route>
-      <Route path="CalcManage">
-        <Route path="Overview" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/Overview').default)
-          })
-        }}/>
-        <Route path="PodInfo" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/ClusterInfo/podinfo').default)
-          })
-        }}/>
-        <Route path="ServiceInfo" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/ClusterInfo/serviceinfo').default)
-          })
-        }}/>
-        <Route path="ReplicationControllerInfo" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/ClusterInfo/rcinfo').default)
-          })
-        }}/>
-        <Route path="MyTask" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/CalcManage/MyTask').default)
-          })
-        }}/>
-        <Route path="CreateCluster">
+      <Route path="CloudContainer">
+        <Route path="CalcManage">
+          <Route path="Overview" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/Overview').default)
+            })
+          }}/>
+          <Route path="PodInfo" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/ClusterInfo/podinfo').default)
+            })
+          }}/>
+          <Route path="ServiceInfo" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/ClusterInfo/serviceinfo').default)
+            })
+          }}/>
+          <Route path="ReplicationControllerInfo" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/ClusterInfo/rcinfo').default)
+            })
+          }}/>
+        </Route>
+        <Route path="OffLineCalcTask">
+          <Route path="MyTask" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/MyTask').default)
+            })
+          }}/>
+        </Route>
+        <Route path="UserDoc">
           <Route path='CC1' getComponent={(location, cb) => {
             require.ensure([], require => {
               cb(null, require('./functions/CalcManage/CreateCluster/CC1').default)
-              })
+            })
           }}/>
           <Route path='CC2' getComponent={(location, cb) => {
             require.ensure([], require => {
               cb(null, require('./functions/CalcManage/CreateCluster/CC2').default)
-              })
+            })
           }}/>
         </Route>
        </Route>
+
+
+
+      <Route path="openstack">
+        <Route path="instances" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/instances').default)
+          })
+        }}/>
+         <Route path="create" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/create_host').default)
+          })
+        }}/>
+
+        <Route path="images" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/images').default)
+          })
+        }}/>
+
+        <Route path="flavors" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/flavors').default)
+          })
+        }}/>
+        
+        <Route path="volumes" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/volumes').default)
+          })
+        }}/>
+
+        <Route path="backup" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/volumes/backup').default)
+          })
+        }}/>
+
+        <Route path="project" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/project').default)
+          })
+        }}/>
+        
+        <Route path=":id" getComponent={(location, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./functions/Openstack/host_list').default)
+          })
+        }}/>
+      </Route>
+
        <Route path="CodisCloud">
          <Route path="CodisInfo" getComponent={(location, cb) => {
            require.ensure([], require => {
