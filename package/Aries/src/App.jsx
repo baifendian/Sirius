@@ -119,11 +119,13 @@ const App = React.createClass({
                       <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
                       <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
                       <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
-                      <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
-                      {/* 增加管理员验证 */}
-                      {auth.user.type ===1 ?[
-                        <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
-                      ]:""}
+                      {/* 增加管理员验证. 这里受到react的限制只能分开判断. */}
+                      {auth.user.type == 1 ?[
+                          <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
+                      ]:null}
+                      {auth.user.type === 1 ?[
+                          <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
+                      ]:null}
                       <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
                     </NavItem>
                     <NavItem key={12} href="CodisCloud" icon="skyatlas" title="Codis云">
