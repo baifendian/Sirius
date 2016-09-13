@@ -39,7 +39,7 @@ class HostInfo(APIView):
     获取所有host信息
     '''
     def get(self, request, format=None):
-        is_super = is_super(getUser(request).username)
+        issuper = is_super(getUser(request).username)
         host_list = Host.objects.all().order_by('host_id') 
         host_ret = []
         for host in host_list:
@@ -54,7 +54,7 @@ class HostInfo(APIView):
         result = {
             "code":200,
             "msg":"OK",
-            "data":{'host_list':host_ret,'is_super':is_super}
+            "data":{'host_list':host_ret,'is_super':issuper}
         }
         return packageResponse(result) 
 
@@ -116,7 +116,7 @@ class CodisInfo(APIView):
     查看codis列表
     '''
     def get(self, request, format=None):
-        is_super = is_super(getUser(request).username)
+        issuper = is_super(getUser(request).username)
         codis_list = Codis.objects.all().order_by('codis_id')
         codis_ret = []
         for one in codis_list:
@@ -133,7 +133,7 @@ class CodisInfo(APIView):
         result = {
             "code":200,
             "msg":"OK",
-            "data":{"codis_list":codis_ret,"is_super":is_super}
+            "data":{"codis_list":codis_ret,"is_super":issuper}
         }
         return packageResponse(result)
  
