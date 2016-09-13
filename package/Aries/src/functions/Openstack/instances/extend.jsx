@@ -21,7 +21,8 @@ import {Spin} from 'antd'
 
 const Extend = React.createClass({
   handleClick(value) {
-    console.log(value)  
+    console.log(value)
+    console.log(this.props._this)
   },
   handleChange(value) {
     console.log("change:", value)
@@ -383,8 +384,8 @@ const Create_model = React.createClass({
 
 
         <div className="right_host">
-        	<div style={{padding: "10px"}}>
-        	<h4>信息展示</h4>
+        	<div style={{}}>
+        	<h4>展示</h4>
         	</div>
         <div className="border_right"></div>
           <Row style={{margin: "5px 0px 0px 0px"}}>

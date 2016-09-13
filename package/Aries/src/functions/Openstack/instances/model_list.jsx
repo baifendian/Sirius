@@ -426,7 +426,7 @@ const Disk_model=React.createClass({
  
     return (       
     	<div style={{float:"left"}}>  	
-     	<DropdownButton overlay={menu} type="primary" style={{margin: '0px 0px 0px 10px'}} className="operation_host">
+     	<DropdownButton overlay={menu} type="primary" trigger={['click']} style={{margin: '0px 0px 0px 10px'}} className="operation_host">
          	更多操作
         </DropdownButton>
           <Modal ref="model_disk">
