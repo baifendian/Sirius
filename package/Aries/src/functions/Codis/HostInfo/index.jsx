@@ -26,6 +26,7 @@ export default React.createClass({
                { title:'Mem_total',  key:'memory_total',	order:true },
                { title:'Codis_home',   key:'codis_home',  order:true }],
       showPage:'false',
+      is_super:0,
       data:{"totalList": [],"totalPageNum":0},
       formData: {},
       detailText:'',
@@ -77,9 +78,10 @@ export default React.createClass({
   xhrCallback:(_this,executedData) => {
     _this.setState ( {
       'data': {
-        "totalList": executedData,
-        "totalPageNum":executedData.length
-      }
+        "totalList": executedData["host_list"],
+        "totalPageNum":executedData["host_list"].length
+      },
+      'is_super':executedData['is_super']
     })
     _this.oriData = executedData
   },
@@ -118,9 +120,16 @@ export default React.createClass({
     this.checkToRequestData()
   },
 
+
+ is_super_button:{
+    1:function(){return <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>},
+    0:()=>{return <div style={{height: 35}}></div>}
+  },
+
   checkToRequestData(){
     // 如果当前保存的namespace与实时获取的namespace相同，则不再重新请求
     // 否则，重新请求数据
+    console.log("is_super:"+this.state.is_super);
     if ( this.curNameSpace !== CMDR.getCurNameSpace(this) ){
       CMDR.getHostList( this,this.xhrCallback )
       this.curNameSpace = CMDR.getCurNameSpace(this)
@@ -148,13 +157,13 @@ export default React.createClass({
       <div className="HostInfoChildRootDiv" >
         <NavigationInPage headText={CodisConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={CodisConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <div className="ButtonFatherDiv">
-            <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>
             <div className="SearchInputFatherDiv">
               <SearchInput placeholder="请输入查询关键字"
                            onChange={function(){}}
                            onSearch={this.onSearchByKey}
                            label="查询" />
             </div>
+            {this.is_super_button[this.state.is_super].call(this)}
         </div>
             <div className="DataTableFatherDiv">
               <DataTable ref="DataTable" data={this.state.data}

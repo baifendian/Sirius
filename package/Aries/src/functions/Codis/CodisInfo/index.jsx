@@ -25,7 +25,7 @@ import Editable from 'bfd-ui/lib/Editable'
 
 export default React.createClass({
   getInitialState: function () {
-    this.checkToRequestData()
+    
     this.oriData = []
     let state_dict = {
       // 表格信息
@@ -34,8 +34,12 @@ export default React.createClass({
                { title:'addr',	                key:'dashboard',	            order:true },
                { title:'proxy_addr', key:'dashboard_proxy_addr', order:true ,
                render: (text, item) => {
-          return <a href="javascript:void(0);" >
+          if(this.state.is_super==1){
+            return  <a href="javascript:void(0);" >
           <Editable onChange={value=>{this.handleEdit(item.product_id,value)}} defaultValue={text} /></a>
+          }else{
+            return <p>{text} </p>  
+          }
         }},
                { title:'Mem_used/Mem_total',	key:'memory_used_to_total',      order:true }],
       showPage:'false',
@@ -46,14 +50,21 @@ export default React.createClass({
       value:'',
       p_id:'',
       product_id:'',
-      mem:''
+      mem:'',
+      is_super:0
     }
     return state_dict
   },
 
+
   componentDidMount(){
+    this.checkToRequestData()
     this.calcDesiredHeight()
     window.onresize = ()=>{ this.onWindowResize() }
+  },
+
+  componentDidUpdate(){
+    this.checkToRequestData()
   },
 
   onWindowResize(){
@@ -68,6 +79,16 @@ export default React.createClass({
     totalHeight -= document.getElementById('footer').clientHeight
     totalHeight -= 20*2               // 去掉设置的子页面padding
     return totalHeight
+  },
+
+ is_super_codis_button:{
+    1:function(){return <div> <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>           <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addmem}>扩容</button>
+          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addproxy}>添加proxy</button>
+          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.deletecodis}>删除codis</button>
+          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.autorebalance}>Auto Rebalance</button> 
+        </div>  
+},
+    0:()=>{return <div></div>}
   },
 
   calcDesiredHeight(){
@@ -133,9 +154,10 @@ export default React.createClass({
   xhrCallback:(_this,executedData) => {
     _this.setState ( {
       'data': {
-        "totalList": executedData,
-        "totalPageNum":executedData.length
-      }
+        "totalList": executedData["codis_list"],
+        "totalPageNum":executedData["codis_list"].length
+      },
+      'is_super':executedData["is_super"]
     })
     _this.oriData = executedData
   },
@@ -143,6 +165,7 @@ export default React.createClass({
   checkToRequestData(){
         // 如果当前保存的namespace与实时获取的namespace相同，则不再重新请求
     // 否则，重新请求数据
+    console.log("is_super:"+this.state.is_super);
     if ( this.curNameSpace !== CMDR.getCurNameSpace(this) ){
       CMDR.getCodisList( this,this.xhrCallback )
       this.curNameSpace = CMDR.getCurNameSpace(this)
@@ -223,7 +246,7 @@ onTableRowClick( record ){
       })
     });
     CMDR.getServerData(this.state.codis_id,( executedData ) => {
-      let serverlist = executedData
+      let serverlist = executedData;
       let serverinfo = [];
       for (var j=0; j < serverlist.length; j++) {
          serverinfo.push(<ObjectRow  serverlist = {serverlist[j]}/>);
@@ -454,16 +477,12 @@ handleSave4() {
         <NavigationInPage headText={CodisConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={CodisConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <div className="ButtonFatherDiv">
           <div className="SearchInputFatherDiv">
-            <SearchInput placeholder="请输入查询关键字"
+            <SearchInput style={{margin:5}} placeholder="请输入查询关键字"
                        onChange={function(){}}
                        onSearch={this.onSearchByKey}
                        label="查询" />
           </div>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addmem}>扩容</button>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addproxy}>添加proxy</button>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.deletecodis}>删除codis</button>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.autorebalance}>Auto Rebalance</button>
+          {this.is_super_codis_button[this.state.is_super].call(this)}
           <Modal ref="modal">
             <ModalHeader>
               <h4>创建codis集群</h4>
