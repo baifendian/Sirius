@@ -118,6 +118,13 @@ class Relation(APIView):
         result = RelationGET(request, host_name)
         return packageResponse(result)
 
+class HostInfo(APIView):
+    '''
+    主机描述
+    '''
+    def get(self, request, host_name, format=None):
+        result = HostInfoGET(request, host_name)
+        return packageResponse(result)
 
 class OperateService(APIView):
     '''
