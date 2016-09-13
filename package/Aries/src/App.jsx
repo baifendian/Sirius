@@ -124,7 +124,7 @@ const App = React.createClass({
                       {auth.user.type == 1 ?[
                           <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
                       ]:null}
-                      {auth.user.type === 1 ?[
+                      {auth.user.type == 1 ?[
                           <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
                       ]:null}
                       <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
