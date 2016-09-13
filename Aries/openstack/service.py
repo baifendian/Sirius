@@ -205,11 +205,60 @@ def openstack_project(request):
     ret = json_data(ret)
     return ret
 
+def instances_search(request):
+    login()
+    ret={}
+    print request.GET
+    vm_manage=Vm_manage()
+    key=request.GET.get('keys')
+    value=request.GET.get('value')
+    #dict_d={}
+    dict_d={key:value}
+    print dict_d,type(dict_d)
+    print json.dumps(vm_manage.list_detail(dict_d),indent=4)
+    currentPages = request.GET.get('currentPage')
+    pageSizes = request.GET.get('pageSize')
+    if currentPages and pageSizes:
+        minpageSizes = (int(currentPages) - 1) * int(pageSizes)
+        maxpageSizes = int(currentPages) * int(pageSizes)
+    else:
+        minpageSizes = 0
+        maxpageSizes = 0
+    host_list=vm_manage.list_detail(dict_d)
+    ret['totalList'] = []
+    test_list = []
+    imagess = Image()
+    flavorss = Flavor()
+    for host in host_list['servers'][minpageSizes:maxpageSizes]:
+        sys = {}
+        sys['id'] = host['id']
+        sys['name'] = host['name']
+        try:
+            sys['image'] = imagess.show_detail(host['image']['id'])['image']['name']
+        except:
+            sys['image'] = '-'
+        sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
+        sys['created'] = host['created']
+        sys['status'] = host['OS-EXT-STS:vm_state']
+        for key, value in host['addresses'].items():
+            # sys['ip']={}
+            for ip in value:
+                #  sys['ip'][ip['OS-EXT-IPS:type']] =ip['addr']
+                for keys, values in ip.items():
+                    if keys == "addr":
+                        sys['ip'] = values
+        ret['totalList'].append(sys)
+    ret['currentPage'] = 1
+    ret['totalPageNum'] = len(host_list['servers'])
+    print  key,value
+    ret = json_data(ret)
+    return ret
 
 Methods = {
     "GET": {
         "instances": instances,
         "backup": volumes_backup,
+        "instances_search":instances_search
     },
     "POST": {
         "CREATE": volumes_create,

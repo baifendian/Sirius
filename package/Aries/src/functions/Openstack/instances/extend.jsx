@@ -3,6 +3,7 @@ import React from 'react'
 import './index.less'
 import './extend.less'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
+import OPEN from '../data_request/request.js'
 
 import { Progress, Button } from 'antd'
 const ButtonGroup = Button.Group
@@ -22,14 +23,17 @@ import {Spin} from 'antd'
 const Extend = React.createClass({
   handleClick(value) {
     console.log(value)
-    console.log(this.props._this)
+    console.log(this.props._this.state.url)
+    let _url=OPEN.UrlList()['search']+"?name=instances_search&keys=name&value="+value
+    console.log(_url)
+    this.props._this.setState({url:_url})
   },
   handleChange(value) {
     console.log("change:", value)
   },
   render() {    
     return (
-    		<SearchInput className="extend_class" placeholder="请" onSearch={this.handleClick}  onChange={this.handleChange} size="sm" />
+    		<SearchInput className="extend_class" placeholder="请" onSearch={this.handleClick}  onChange={this.handleChange} size="lg" />
     	)
   }
 })
@@ -384,8 +388,8 @@ const Create_model = React.createClass({
 
 
         <div className="right_host">
-        	<div style={{}}>
-        	<h4>展示</h4>
+        	<div style={{padding: "10px"}}>
+        	<h4>信息展示</h4>
         	</div>
         <div className="border_right"></div>
           <Row style={{margin: "5px 0px 0px 0px"}}>
