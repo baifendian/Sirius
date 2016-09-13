@@ -145,7 +145,7 @@ export default React.createClass({
     const { formData } = this.state
 
     return (
-      <div className="PodInfoChildRootDiv" >
+      <div className="HostInfoChildRootDiv" >
         <NavigationInPage headText={CodisConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={CodisConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <div className="ButtonFatherDiv">
             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>

@@ -38,7 +38,7 @@ HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
 HADOOP_CLIENT="hlg3p64-lupan"
 AMBARI_USER="admin"
 AMBARI_PASSWORD="admin"
-LOG_BASE_DIR="/tmp/sirius/"
+LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 
@@ -58,7 +58,7 @@ ALLOWED_HOSTS = []
 APPEND_SLASH=False
 # Application definition
 INSTALLED_APPS = (
-    'django_admin_bootstrapped.bootstrap3',
+#    'django_admin_bootstrapped.bootstrap3',
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -70,6 +70,7 @@ INSTALLED_APPS = (
     'user_auth',
     'hdfs',
     'kd_agent',
+	'openstack',
     'codis',
 )
 
@@ -161,6 +162,12 @@ LOGGING = {
             'formatter': 'complete',
             'filename' :'{0}/service.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
+        'openstack_log': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'complete',
+            'filename': '{0}/openstack.log'.format(LOG_BASE_DIR).replace('\\', '/')
+        },
         'console':{
             'level':'DEBUG',
             'class':'logging.StreamHandler',
@@ -196,6 +203,11 @@ LOGGING = {
             'handlers':['kd_agent_file','console'],
             'propagate': False,
             'level':'DEBUG',
+        },
+        'openstack_log': {
+            'handlers': ['openstack_log'],
+            'propagate': False,
+            'level': 'DEBUG',
         },
         'django.request': {
             'handlers': ['ac_file', 'mail_admins'],
@@ -284,15 +296,15 @@ KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx_1_2_4')
 KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')
 
 #codis设置
-CODIS_LOCAL_DIR = '/opt/jingxia.sun/codis/redisconf/'
-CODIS_COMMOND_DIR = '/root/jingxia.sun/Sirius/Aries/codis/commandlog/'
-CODIS_DATADIR = '/opt/jingxia.sun/codis/serverconf/data/'
-CODIS_LOGFILE_DIR = '/opt/jingxia.sun/codis/serverconf/log/'
-CODIS_PIDFILE_DIR = '/opt/jingxia.sun/codis/serverconf/pid/'
-CODIS_ZK_ADDR = '172.24.2.236:2181'
+CODIS_LOCAL_DIR = os.path.join(BASE_DIR, "codis/redisconf/")
+CODIS_COMMOND_DIR = os.path.join(BASE_DIR, "codis/commandlog/")
+CODIS_DATADIR = os.path.join(BASE_DIR, "codis/serverconf/data/")
+CODIS_LOGFILE_DIR = os.path.join(BASE_DIR, "codis/serverconf/log/")
+CODIS_PIDFILE_DIR = os.path.join(BASE_DIR, "codis/serverconf/pid/")
+CODIS_SHOME = os.path.join(BASE_DIR, "codis/")
 CODIS_INDEX_LINE = 1
+CODIS_ZK_ADDR = '172.24.3.64:2181'
 CODIS_HOST_INFO = [0,'172.24.3.64','root','',0,'a',0]
-CODIS_SHOME='/root/jingxia.sun/dev/Sirius/Aries/codis/'
 CODIS_MEMORY_MAX = 10
 PENTSDB_URL = "http://172.24.4.33:4242"
 SSH_PKEY = '/root/.ssh/id_rsa'

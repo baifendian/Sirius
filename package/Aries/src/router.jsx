@@ -120,7 +120,54 @@ export default render((
           }}/>
         </Route>
        </Route>
-
+      <Route path="CloudHost">
+        <Route path="Calculation">
+          <Route path="Instances" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Openstack/instances').default)
+            })
+          }}/>
+          <Route path="Create" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Openstack/create_host').default)
+            })
+          }}/>
+          <Route path="Images" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Openstack/images').default)
+            })
+          }}/>
+          <Route path="Flavors" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Openstack/flavors').default)
+            })
+          }}/>
+          <Route path=":id" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Openstack/host_list').default)
+            })
+          }}/>
+        </Route>
+        <Route path="Storage">
+          <Route path="Volumes" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Openstack/volumes').default)
+            })
+          }}/>
+          <Route path="Backup" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Openstack/volumes/backup').default)
+            })
+          }}/>
+        </Route>
+        <Route path="Manage">
+          <Route path="Project" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Openstack/project').default)
+            })
+          }}/>   
+        </Route>
+      </Route>
       <Route path="login" getComponent={(location, cb) => {
         require.ensure([], require => {
           cb(null, require('./functions/Login').default)

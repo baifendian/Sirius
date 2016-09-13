@@ -6,6 +6,7 @@ import auth from 'public/auth'
 import conf from 'public/Conf/Conf'
 import env from './env'
 import './App.less'
+import 'antd/dist/antd.less'
 import { Select ,Option} from 'bfd-ui/lib/Select2'
 
 const LOGIN_PATH = (env.basePath + '/login').replace(/\/\//, '/')
@@ -128,6 +129,7 @@ const App = React.createClass({
                       <NavItem href={`CloudService/Codis/CodisInfo?${params}`} title="Codis信息" />
                     </NavItem>
                   </NavItem>
+
                   <NavItem key={20} href="CloudContainer" icon="sellsy" title="云容器">
                     <NavItem key={21} href="CloudContainer/CalcManage" icon="desktop" title="k8s相关监控">
                       <NavItem href={`CloudContainer/CalcManage/Overview?${params}`} title="概览" />
@@ -149,10 +151,27 @@ const App = React.createClass({
                       <NavItem href={`CloudContainer/UserDoc/CC1?${params}`} title="开始使用 " />
                       <NavItem href={`CloudContainer/UserDoc/CC2?${params}`} title="云中心计算集群" />
                     </NavItem>
+                   </NavItem>
+
+                <NavItem key={30} href="CloudHost" icon="server" title="云主机">
+                  <NavItem key={31} href="CloudHost/Calculation" icon="th-large" title="计算">
+                    <NavItem href={`CloudHost/Calculation/Instances?${params}`} title="虚拟机" />
+                    <NavItem href={`CloudHost/Calculation/Images?${params}`} title="镜像" />
+                    <NavItem href={`CloudHost/Calculation/Flavors?${params}`} title="云类型" />
                   </NavItem>
-                  <NavItem key={30} href="UserAuth" icon="th-large" title="用户管理">
-                    <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
+                  <NavItem key={32} href="CloudHost/Storage" icon="hdd-o" title="存储">
+                    <NavItem href={`CloudHost/Storage/Volumes?${params}`} title="云磁盘" />
+                    <NavItem href={`CloudHost/Storage/Backup?${params}`} title="备份" />
                   </NavItem>
+                   <NavItem key={33} href="CloudHost/Manage" icon="credit-card-alt" title="管理">
+                    <NavItem href={`CloudHost/Manage/Project?${params}`} title="项目管理" />
+                  </NavItem>
+                </NavItem>
+
+                <NavItem key={40} href="UserAuth" icon="th-large" title="用户管理">
+                  <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
+                </NavItem>
+
               </Nav>
             </div>
             ] : null}
