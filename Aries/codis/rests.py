@@ -22,7 +22,7 @@ from models import *
 from service import *
 ac_logger = logging.getLogger("access_log")
 
-def isSuper(user_name):
+def is_super(user_name):
     # 1 yes 0 no 2 error
     try:
         account = Account.objects.get(name=user_name)
@@ -39,7 +39,7 @@ class HostInfo(APIView):
     获取所有host信息
     '''
     def get(self, request, format=None):
-        is_super = isSuper(getUser(request).username)
+        is_super = is_super(getUser(request).username)
         host_list = Host.objects.all().order_by('host_id') 
         host_ret = []
         for host in host_list:
@@ -116,7 +116,7 @@ class CodisInfo(APIView):
     查看codis列表
     '''
     def get(self, request, format=None):
-        is_super = isSuper(getUser(request).username)
+        is_super = is_super(getUser(request).username)
         codis_list = Codis.objects.all().order_by('codis_id')
         codis_ret = []
         for one in codis_list:
