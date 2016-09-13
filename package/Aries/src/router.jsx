@@ -25,43 +25,58 @@ export default render((
           })
         }}/>
       </Route>
-      <Route path="HDFS">
-        <Route path="Myfile" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/HDFS/Myfile').default)
+      <Route path="CloudService">
+        <Route path="HDFS">
+          <Route path="Myfile" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/HDFS/Myfile').default)
+              })
+          }}/>
+          <Route path="Share" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/HDFS/Share').default)
             })
-        }}/>
-        <Route path="Share" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/HDFS/Share').default)
-          })
-        }}/>
-        <Route path="ShowShare/:hash" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/HDFS/ShowShare').default)
-          })
-        }}/>
-        <Route path="ShareCenter" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/HDFS/ShareCenter').default)
-          })
-        }}/>
-        <Route path="Trash" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/HDFS/Trash').default)
-          })
-        }}/>
-        <Route path="Service" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/HDFS/Service').default)
-          })
-        }}/>
-        <Route path="Capacity" getComponent={(location, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./functions/HDFS/Capacity').default)
-          })
-        }}/>
-      </Route>
+          }}/>
+          <Route path="ShowShare/:hash" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/HDFS/ShowShare').default)
+            })
+          }}/>
+          <Route path="ShareCenter" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/HDFS/ShareCenter').default)
+            })
+          }}/>
+          <Route path="Trash" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/HDFS/Trash').default)
+            })
+          }}/>
+          <Route path="Service" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/HDFS/Service').default)
+            })
+          }}/>
+          <Route path="Capacity" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/HDFS/Capacity').default)
+            })
+          }}/>
+        </Route>
+        <Route path="Codis">
+          <Route path="CodisInfo" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Codis/CodisInfo').default)
+             })
+          }}/>
+          <Route path="HostInfo" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Codis/HostInfo').default)
+            })
+          }}/>
+          </Route>
+        </Route>
+      
       <Route path="CloudContainer">
         <Route path="CalcManage">
           <Route path="Overview" getComponent={(location, cb) => {
@@ -104,18 +119,6 @@ export default render((
             })
           }}/>
         </Route>
-       </Route>
-       <Route path="CodisCloud">
-         <Route path="CodisInfo" getComponent={(location, cb) => {
-           require.ensure([], require => {
-             cb(null, require('./functions/Codis/CodisInfo').default)
-           })
-         }}/>
-         <Route path="HostInfo" getComponent={(location, cb) => {
-           require.ensure([], require => {
-             cb(null, require('./functions/Codis/HostInfo').default)
-           })
-         }}/>
        </Route>
 
       <Route path="login" getComponent={(location, cb) => {
