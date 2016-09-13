@@ -74,41 +74,57 @@ var mod = React.createClass({
   }, */
 
   componentDidMount(){
-    this.calcDesiredHeight()
-    window.onresize = ()=>{ this.onWindowResize() }
-
     this.userData = {}
     this.initUserData()
 
     this.initCharts()
     this.requestClusterInfoData()
+
+    this.calcDesiredSize()
+    window.onresize = ()=>{ this.onWindowResize() }
   },
 
   onWindowResize(){
     window.onresize = undefined
-    this.calcDesiredHeight()
+    this.calcDesiredSize()
     window.onresize = ()=>{ this.onWindowResize() }
   },
 
-  calcRootDivHeight(){
+  calcRootDivSize(){
     let totalHeight = document.body.clientHeight
     totalHeight -= document.getElementById('header').clientHeight
     totalHeight -= document.getElementById('footer').clientHeight
     totalHeight -= 20*2               // 去掉设置的子页面padding
-    return totalHeight
+
+    let totalWidth = document.getElementById('body').childNodes[1].clientWidth
+    totalWidth -= 20*2
+
+    return { 'width':totalWidth,'height':totalHeight }
   },
 
-  calcDesiredHeight(){
-    let rootDivHeight = this.calcRootDivHeight()
-    ReactDOM.findDOMNode(this.refs.MyCalcManagerOverviewChildRootDiv).style.height = (rootDivHeight+'px')
+  calcDesiredSize(){
+    let rootSize = this.calcRootDivSize()
+    let rootDivHeight = rootSize['height']
+    let rootDivWidth = rootSize['width']
+
+    let rootDivObj = ReactDOM.findDOMNode(this.refs.MyCalcManagerOverviewChildRootDiv)
+    rootDivObj.style.height = (rootDivHeight+'px')
 
     let height = rootDivHeight - ReactDOM.findDOMNode(this.refs.NavigationInPage).clientHeight
     let table = ReactDOM.findDOMNode(this.refs.EchartFatherDiv)
     table.childNodes[0].style.height = (height + 'px')
+    table.childNodes[0].style.width = (rootDivWidth + 'px')
+
+    // 窗口大小改变之后，需要调用echart对象的resize函数，使其适应新的宽度
+    for ( let i = 0 ; i < this.userData['clusterInfoTypes'].length ; i ++ ){
+      this.userData['echartObj'][ this.userData['clusterInfoTypes'][i] ].resize()
+    }
   },
 
   initUserData(){
     this.userData['clusterInfoTypes'] = ['cpu','memory','network','filesystem']
+
+    this.userData['echartObj'] = {}
 
     this.userData['clusterInfoDict'] = {
       'cpu':'EchartCPUInfoDiv',
@@ -164,9 +180,25 @@ var mod = React.createClass({
                     }
     }
 
-  
-
-  
+    this.userData['yAxisLabelFormatter'] = {
+      'cpu':        (value,index) => {
+                      let unitArr = ['','K','M','G','T','P']
+                      return Toolkit.unitConversion( value,1000,unitArr,0 )
+                    },
+      'memory':     (value,index) => {
+                      let unitArr = ['B','KB','MB','GB','TB','PB']
+                      return Toolkit.unitConversion( value,1000,unitArr,2 )
+                    },
+      'network':    (value,index) => {
+                      let unitArr = ['Bps','KBps','MBps','GBps','TBps','PBps']
+                      return Toolkit.unitConversion( value,1000,unitArr,2 )
+                    },
+      'filesystem': (value,index) => {
+                      let unitArr = ['B','KB','MB','GB','TB','PB']
+                      return Toolkit.unitConversion( value,1000,unitArr,2 )
+                    }
+    }
+    
     // 绘制集群信息图表的时候，将从以下颜色池中选择颜色
     this.userData['colorPoll'] = [{
       'line':'rgb(229,115,115)',
@@ -201,6 +233,7 @@ var mod = React.createClass({
     }]
   },
 
+  // 生成用于显示tooltip的html文本结构
   generateTooltipFormatterStr( seriesNumber ){
     let templateStr = '<tr><td>{time}</td></tr>'
     for ( let i = 0 ; i < seriesNumber ; i ++ ){
@@ -223,20 +256,9 @@ var mod = React.createClass({
     return Toolkit.strFormatter.formatString( templateStr,dataObj)
   },
 
-  generateInitXAxisArr(){
-    let xAxisArr = []
-    let curTimeStamp = new Date().getTime()
-    for ( let i = 0 ; i < 30+1 ; i ++ ){
-      let ts = curTimeStamp-(30-i)*60*1000
-      xAxisArr.push( Toolkit.generateTimeStrByMilliSeconds( ts )   )
-    }
-    return xAxisArr
-  },
-
   initCharts(){
-    let xAxisData = this.generateInitXAxisArr()
     for ( let identifyStr in this.userData['clusterInfoDict'] ){
-      this.userData[identifyStr] = echarts.init(document.getElementById( this.userData['clusterInfoDict'][identifyStr] ))
+      this.userData['echartObj'][identifyStr] = echarts.init(document.getElementById( this.userData['clusterInfoDict'][identifyStr] ))
 
       // 在没有加载到数据的时候，先显示出来空白的图标，这样会比较好看
       let initOptions = {
@@ -249,11 +271,16 @@ var mod = React.createClass({
         },
         'xAxis': [{
           'type' : 'category',
-          'data': xAxisData
+          'data': []
         }],
-        'yAxis':{},
+        'yAxis':{
+          'axisLabel':{
+            'show':true,
+            'formatter':this.userData['yAxisLabelFormatter'][identifyStr]
+          }
+        },
       }
-      this.userData[identifyStr].setOption(initOptions)
+      this.userData['echartObj'][identifyStr].setOption(initOptions)
     }
   },
 
@@ -273,7 +300,7 @@ var mod = React.createClass({
   },
 
   insertDataToChart( chartName,executedData ){
-    this.userData[chartName].hideLoading()
+    this.userData['echartObj'][chartName].hideLoading()
 
     let series = []
     let legend = []
@@ -285,8 +312,8 @@ var mod = React.createClass({
       seriesDataObj['itemStyle']['normal']['areaStyle']['color'] = this.userData['colorPoll'][i]['area']        // 区域颜色
       series.push( seriesDataObj )
     }
-    
-    this.userData[chartName].setOption({
+
+    this.userData['echartObj'][chartName].setOption({
       'legend': { 
         'data':legend
       },
@@ -301,14 +328,13 @@ var mod = React.createClass({
   },
 
   onTimeRangeChanged( value,clusterInfoType ){
-    this.userData[clusterInfoType].showLoading()
+    this.userData['echartObj'][clusterInfoType].showLoading()
     this.userData['clusterInfoCallBackFunc'][clusterInfoType]( value )
   },
 
   requestClusterInfoData(){
     for ( let i = 0 ; i < this.userData['clusterInfoTypes'].length ; i ++ ){
-      let tStr = this.userData['clusterInfoTypes'][i]
-      this.onTimeRangeChanged( 60,tStr )
+      this.onTimeRangeChanged( 60,this.userData['clusterInfoTypes'][i] )
     }
   },
   

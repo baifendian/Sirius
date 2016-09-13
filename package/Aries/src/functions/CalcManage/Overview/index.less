@@ -1,21 +1,15 @@
 
 
-table.TooltipTable {
-  td{
-    min-width: 0px;
-  }
-  td.SpaceTdDistraction {
-    width: 10px;
-  } 
+table.TooltipTable td.SpaceTdDistraction {
+  width: 10px;
 }
 
 div.MyCalcManagerOverviewChildRootDiv > table.EchartFatherDiv{
   width: 100%;
   > tbody {
-    width: 100%;
     display: block;
-
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     > tr{
       width: 100%;
       display: block;
@@ -39,7 +33,7 @@ div.MyCalcManagerOverviewChildRootDiv > table.EchartFatherDiv{
 
 
 
-
+/*
 div.MyCalcManagerOverviewChildRootDiv > div.PercentageFatherDiv{
   border: 1px solid #ECECEC;
 }
@@ -67,7 +61,7 @@ div.MyCalcManagerOverviewChildRootDiv > table.PercentageFatherDiv {
     padding-top: 6px;
     padding-bottom: 36px;
   }
-}
+}*/
 
 
 
