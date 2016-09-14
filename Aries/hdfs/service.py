@@ -221,7 +221,7 @@ def de_delete(request, path):
     exitCode,data = run_hadoop(user_name=exec_user,operator="rmr",args=[path])
     ac_logger.info("data:%s" %data)
     if exitCode != 0:
-	result["code"] = StatusCode["FAILED"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "删除失败!"
     else:
         o_type = FileOperatorType.objects.get(name='delete')
