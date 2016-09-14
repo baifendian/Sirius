@@ -28,24 +28,17 @@ const Extend = React.createClass({
     }
   },
   handleClick(value) {
-    console.log(value)
-    console.log(this.props._this.state.url)
-    console.log(this.refs.type_input)
     let _value=this.state._value
     let _property=this.refs.type_property.state.value
     if (!_property){
       _property="name"
     }
     let _url=OPEN.UrlList()['search']+"?name=instances_search&keys="+_property+"&value="+_value
-    console.log(_url,_property)
     this.props._this.setState({url:_url})
   },
   handleChange(value) {
     console.log("change:", value)
     this.setState({'_value':value})
-  },
-  headleSelect(){
-    console.log('aa')
   },
   render() {    
     return (
