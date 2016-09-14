@@ -31,6 +31,5 @@ urlpatterns = [
     url(r'^images/$', images, name='images'),
     url(r'^volumes_post/$',rests.volumes.as_view(),name="volumes_port"),
     url(r'^project/$',rests.project.as_view(),name="project"),
-    url(r'^search/$',rests.search.as_view(),name="search"),
-    url(r'^test',test,name='test'),
+    url(r'^search/$',rests.search.as_view(),name="search")
 ]

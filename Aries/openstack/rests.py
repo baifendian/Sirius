@@ -39,4 +39,3 @@ class search(APIView):
         name=request.GET.get('name')
         ret=Methods.get('GET').get(name)(request)
         return packageResponse(ret)
-        pass
