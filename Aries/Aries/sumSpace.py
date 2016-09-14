@@ -11,7 +11,7 @@ sys.setdefaultencoding('utf-8')
 hdfs_logger = logging.getLogger("hdfs_log")
 
 def sumSpace(operator='du'):
-    hdfs_logger.info("##########sumSpace 统计开始.")
+    hdfs_logger.info("##########sumSpace count start.")
     spaces = Space.objects.all()
     for space in spaces:
         path = space.address
@@ -33,7 +33,7 @@ def sumSpace(operator='du'):
                 hdfs_logger.info("spaceName:{0}, path:{1}, capacity:{2}".format(name,path,capacity))
                 space.capacity = capacity
                 space.save()
-    hdfs_logger.info("###########sumSpace 统计结束.")
+    hdfs_logger.info("###########sumSpace count end.")
 
 def setInterval(func, sec):
     def func_wrapper():
