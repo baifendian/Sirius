@@ -72,8 +72,8 @@ export default React.createClass({
              },{
               title: '操作',
               render:(item, component)=> {
-                return <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(item.id,`你确定删除 ${item.id} 吗?`,this.trash,item)}}>
-                        <Icon type="trash" />
+                return <a href="javascript:" style={{marginRight: '20px'}} onClick={()=>{this.confirm_handler(item.id,`你确定要取消分享 ${item.id} 吗?`,this.trash,item)}}>
+                        <img src={require('public/HDFS_Share/cancle_share_blue.png')} />
                        </a>
               },
               key: 'operation'
