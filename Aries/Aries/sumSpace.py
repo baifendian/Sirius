@@ -25,7 +25,7 @@ def sumSpace(operator='du'):
         except Exception,e:
             hdfs_logger.error(traceback.format_exc())
         else:
-            if exitCode!=0:
+            if exitCode != 0:
                 hdfs_logger.log("path:{0}.".format(path))
                 continue
             else:
