@@ -17,35 +17,15 @@ import './index.less'
 /**
  * 页面大改：
  * 饼图只保留 Pod的已创建个数和最大创建个数，其它的删掉
- * 线图变更为四个：
- *    集群CPU使用率
- *    集群内存使用率
- *    集群网络使用情况
- *    集群FileSystem使用情况
  * 页面可以参考：
  *    http://grafana.bfdcloud.com/          （Cluster显示集群的信息，Pods显示Pod的信息）
  *    http://k8sinflux.bfdcloud.com/
- * 
- * 其中的一些字段的含义：
- *    Request：申请的量
- *    Limit：实际分配的量
- *    Usage：实际使用的量
  * influxdb官方提供的dashboard
  *    http://k8sinflux.bfdcloud.com/
  *    http://k8sinfluxapi.bfdcloud.com/ , 80
- *        账号 admin
- *        密码 admin
- * 
- * 
  */
 
-
-
-var mod = React.createClass({
-  /**
-  getInitialState:function(){
-    return CMDR.generateRandomData()
-  },
+  /** 以下代码是 pod 信息需要的部分函数，但是未来pod信息如何显示暂时还没确定，因此这里的代码暂时先注释保留
   load_data(dataDict){
     console.dir(dataDict)
     this.setState({
@@ -71,7 +51,16 @@ var mod = React.createClass({
     }else {
       return '#FA7252'
     }
-  }, */
+  }, 
+
+  getInitialState:function(){
+    //return CMDR.generateRandomData()
+  },
+  */
+
+
+
+var mod = React.createClass({
 
   componentDidMount(){
     this.userData = {}
@@ -82,6 +71,13 @@ var mod = React.createClass({
 
     this.calcDesiredSize()
     window.onresize = ()=>{ this.onWindowResize() }
+  },
+
+  // 当namespace切换的时候，将会导致页面重新render。而重新render之后echart图对应的对象将会被释放
+  // 因此在render之后，再重新初始化echart并请求数据
+  componentDidUpdate(){
+    this.initCharts()
+    this.requestClusterInfoData()    
   },
 
   onWindowResize(){
@@ -126,11 +122,26 @@ var mod = React.createClass({
 
     this.userData['echartObj'] = {}
 
+    // 保存一些echart的状态数据，方便和其它组件交互
+    this.userData['echartState'] = {
+      'cpu':{'loading':false},
+      'memory':{'loading':false},
+      'network':{'loading':false},
+      'filesystem':{'loading':false}
+    }
+    
     this.userData['clusterInfoDict'] = {
       'cpu':'EchartCPUInfoDiv',
       'memory':'EchartMemoryInfoDiv',
       'network':'EchartNetworkInfoDiv',
       'filesystem':'EchartFilesystemInfoDiv'
+    }
+
+    this.userData['echartTitleText'] = {
+      'cpu':'CPU',
+      'memory':'Memory',
+      'network':'Network',
+      'filesystem':'Filesystem'
     }
 
     // 将url请求与回调都放到一起，便于管理
@@ -235,7 +246,7 @@ var mod = React.createClass({
 
   // 生成用于显示tooltip的html文本结构
   generateTooltipFormatterStr( seriesNumber ){
-    let templateStr = '<tr><td>{time}</td></tr>'
+    let templateStr = '<tr><td colspan="3">{time}</td></tr>'
     for ( let i = 0 ; i < seriesNumber ; i ++ ){
       templateStr += '<tr>'
       templateStr += '<td>{seriesName'+i+'}</td>'
@@ -263,7 +274,7 @@ var mod = React.createClass({
       // 在没有加载到数据的时候，先显示出来空白的图标，这样会比较好看
       let initOptions = {
         'title': { 
-          'text': Toolkit.strFormatter.formatString('集群 {chartName} 使用情况',{ 'chartName':identifyStr })
+          'text': this.userData['echartTitleText'][identifyStr]
         },
         'tooltip' : {
           'trigger': 'axis',
@@ -300,7 +311,7 @@ var mod = React.createClass({
   },
 
   insertDataToChart( chartName,executedData ){
-    this.userData['echartObj'][chartName].hideLoading()
+    this.echartHideLoading( chartName )
 
     let series = []
     let legend = []
@@ -327,17 +338,36 @@ var mod = React.createClass({
     })
   },
 
-  onTimeRangeChanged( value,clusterInfoType ){
-    this.userData['echartObj'][clusterInfoType].showLoading()
-    this.userData['clusterInfoCallBackFunc'][clusterInfoType]( value )
-  },
-
   requestClusterInfoData(){
     for ( let i = 0 ; i < this.userData['clusterInfoTypes'].length ; i ++ ){
       this.onTimeRangeChanged( 60,this.userData['clusterInfoTypes'][i] )
     }
   },
-  
+
+  onTimeRangeChanged( value,echartIdentifyStr ){
+    // 由于发现当点击ButtonGroup右侧的时候，也会回调onClick、onChange函数，因此这里需要判断value是否是需要的值
+    if ( typeof(value) === typeof(0) ){
+      if ( this.userData['echartState'][echartIdentifyStr]['loading'] === false ){
+        this.echartShowLoading( echartIdentifyStr )
+        this.userData['clusterInfoCallBackFunc'][echartIdentifyStr]( value )
+      }
+    }
+  },
+
+  echartShowLoading( echartIdentifyStr ){  this.echartDisLoadingIcon( echartIdentifyStr,true ) },
+  echartHideLoading( echartIdentifyStr ){  this.echartDisLoadingIcon( echartIdentifyStr,false )  },
+
+  echartDisLoadingIcon( echartIdentifyStr,showLoadingIcon = true ){
+    this.userData['echartState'][echartIdentifyStr]['loading'] = showLoadingIcon    
+    let echartObj = this.userData['echartObj'][echartIdentifyStr]
+    showLoadingIcon ? echartObj.showLoading() : echartObj.hideLoading()
+
+    let buttonGroupObj = ReactDOM.findDOMNode(this.refs[echartIdentifyStr+'TimeRangeButtonGroup'])
+    for ( let i = 0 ; i < buttonGroupObj.childNodes.length ; i ++ ){
+      buttonGroupObj.childNodes[i].disabled = showLoadingIcon
+    }    
+  },
+
   render: function() {
     /** 
     let pod_percent = this.formatPercent( this.state.pod_used,this.state.pod_total )
@@ -345,15 +375,13 @@ var mod = React.createClass({
     let memory_percent = this.formatPercent( this.state.memory_used,this.state.memory_total)
     */
 
-    let ClusterInfoKeyWord = [ { 'type':'Button',   'str':'cpu'                   },
-                               { 'type':'Echart',   'str':'EchartCPUInfoDiv'      },
-                               { 'type':'Button',   'str':'memory'                },
-                               { 'type':'Echart',   'str':'EchartMemoryInfoDiv'   },
-                               { 'type':'Button',   'str':'network'               },
-                               { 'type':'Echart',   'str':'EchartNetworkInfoDiv'  },
-                               { 'type':'Button',   'str':'filesystem'            },
-                               { 'type':'Echart',   'str':'EchartFilesystemInfoDiv'  }]
-
+    let ClusterInfoKeyWord = [
+          [{ 'type':'Button','str':'cpu'                  },{ 'type':'Button','str':'memory'                  }],                               
+          [{ 'type':'Echart','str':'EchartCPUInfoDiv'     },{ 'type':'Echart','str':'EchartMemoryInfoDiv'     }],
+          [{ 'type':'Button','str':'network'              },{ 'type':'Button','str':'filesystem'              }],                               
+          [{ 'type':'Echart','str':'EchartNetworkInfoDiv' },{ 'type':'Echart','str':'EchartFilesystemInfoDiv' }]
+    ]
+                      
     return (
       <div className="MyCalcManagerOverviewChildRootDiv" 
            ref="MyCalcManagerOverviewChildRootDiv">
@@ -369,37 +397,38 @@ var mod = React.createClass({
                           })} />
           <table className="EchartFatherDiv" ref="EchartFatherDiv">
             <tbody>
-              {ClusterInfoKeyWord.map( (keyword)=>{
-                if ( keyword['type'] === 'Button' ){
+                {ClusterInfoKeyWord.map( (lineElementsKeyWord)=>{
                   return (
                     <tr key={Toolkit.generateGUID()}>
-                      <td>
-                        <ButtonGroup defaultValue="60" 
-                            onClick= {(value)=>{this.onTimeRangeChanged(value,keyword['str'])}} 
-                            onChange={(value)=>{this.onTimeRangeChanged(value,keyword['str'])}}  >
-                          <Button value={60}   >最近1小时</Button>
-                          <Button value={60*6} >最近6小时</Button>
-                          <Button value={60*24}>最近1天</Button>
-                        </ButtonGroup>
-                      </td>
+                      {lineElementsKeyWord.map( (keyword)=>{
+                        if ( keyword['type'] === 'Button' ){
+                          let buttonGroupRefName = keyword['str']+'TimeRangeButtonGroup'
+                          return (
+                            <td key={Toolkit.generateGUID()}>
+                              <ButtonGroup defaultValue="60" ref={buttonGroupRefName}  key={Toolkit.generateGUID()}
+                                    onClick= {(value)=>{this.onTimeRangeChanged(value,keyword['str'])}} 
+                                    onChange={(value)=>{this.onTimeRangeChanged(value,keyword['str'])}}  >
+                                <Button value={60}    size="sm" >最近1小时</Button>
+                                <Button value={60*6}  size="sm" >最近6小时</Button>
+                                <Button value={60*24} size="sm" >最近1天</Button>
+                              </ButtonGroup>
+                            </td>
+                          )
+                        } else {
+                          return (
+                            <td key={Toolkit.generateGUID()}><div id={keyword['str']} ref={keyword['str']} /></td>
+                          )
+                        }
+                      })}
                     </tr>
                   )
-                } else {
-                  return (
-                    <tr key={Toolkit.generateGUID()}>
-                      <td><div id={keyword['str']} ref={keyword['str']} /></td>
-                    </tr>
-                  )
-                }
-              } )}
+                })}
             </tbody>
           </table>
 
             
-            
-            
 
-          {/** 
+          {/** 具体pod信息该如何显示暂时不清除，因此这里的代码暂时保留，以后可能会用到
           <table className="PercentageFatherDiv" style={{'display':'none'}}>
             <tbody>
               <tr className="PercentPic">
