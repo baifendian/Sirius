@@ -18,6 +18,12 @@ def json_data(json_status):
         json_status = json.dumps(json_status)
     return json_status
 
+def image_id():
+    pass
+
+def flavor_id():
+    pass
+
 
 def packageResponse(result):
     response = HttpResponse(content_type='application/json')
@@ -208,14 +214,29 @@ def openstack_project(request):
 def instances_search(request):
     login()
     ret={}
-    print request.GET
+    imagess = Image()
+    flavorss = Flavor()
     vm_manage=Vm_manage()
     key=request.GET.get('keys')
     value=request.GET.get('value')
-    #dict_d={}
-    dict_d={key:value}
-    print dict_d,type(dict_d)
-    print json.dumps(vm_manage.list_detail(dict_d),indent=4)
+    if not value:
+        key="name"
+        pass
+    if key == 'image':
+        image_list=imagess.list()
+        for i in image_list['images']:
+            if i['name'] == value:
+                value=i['id']
+                break
+    elif key=="flavor":
+        flavor_list=flavorss.list()
+        for i in flavor_list['flavors']:
+            if i['name'] == value:
+                value=i['id']
+                break
+    elif key=="status":
+        value=value.upper()
+    dict_d = {key: value}
     currentPages = request.GET.get('currentPage')
     pageSizes = request.GET.get('pageSize')
     if currentPages and pageSizes:
@@ -226,9 +247,6 @@ def instances_search(request):
         maxpageSizes = 0
     host_list=vm_manage.list_detail(dict_d)
     ret['totalList'] = []
-    test_list = []
-    imagess = Image()
-    flavorss = Flavor()
     for host in host_list['servers'][minpageSizes:maxpageSizes]:
         sys = {}
         sys['id'] = host['id']
@@ -250,7 +268,6 @@ def instances_search(request):
         ret['totalList'].append(sys)
     ret['currentPage'] = 1
     ret['totalPageNum'] = len(host_list['servers'])
-    print  key,value
     ret = json_data(ret)
     return ret
 

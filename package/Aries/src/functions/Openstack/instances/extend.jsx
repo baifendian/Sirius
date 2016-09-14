@@ -19,22 +19,46 @@ import Icon from 'bfd-ui/lib/Icon'
 import { Row, Col } from 'bfd-ui/lib/Layout'
 import xhr from 'bfd-ui/lib/xhr'
 import {Spin} from 'antd'
+import { Select, Option as Optionb } from 'bfd/Select'
 
 const Extend = React.createClass({
+  getInitialState() {
+    return {
+      _value:""
+    }
+  },
   handleClick(value) {
     console.log(value)
     console.log(this.props._this.state.url)
-    let _url=OPEN.UrlList()['search']+"?name=instances_search&keys=name&value="+value
-    console.log(_url)
+    console.log(this.refs.type_input)
+    let _value=this.state._value
+    let _property=this.refs.type_property.state.value
+    if (!_property){
+      _property="name"
+    }
+    let _url=OPEN.UrlList()['search']+"?name=instances_search&keys="+_property+"&value="+_value
+    console.log(_url,_property)
     this.props._this.setState({url:_url})
   },
   handleChange(value) {
     console.log("change:", value)
+    this.setState({'_value':value})
+  },
+  headleSelect(){
+    console.log('aa')
   },
   render() {    
     return (
-    		<SearchInput className="extend_class" placeholder="请" onSearch={this.handleClick}  onChange={this.handleChange} size="lg" />
-    	)
+      <div>
+        <Select ref="type_property" className="type_property">
+          <Option >主机名=</Option>
+          <Option value="status">状态=</Option>
+          <Option value="image">镜像=</Option>
+          <Option value="flavor">类型=</Option>
+        </Select>
+    		<SearchInput className="extend_class" placeholder="请" onSearch={this.handleClick}  onChange={this.handleChange} size="sm" ref="type_input" />
+    	</div>
+      )
   }
 })
 
