@@ -56,12 +56,14 @@ def deleteshare(request,path):
         exitCode,data = share_cmd(space_name,source_path,"700")
         if exitCode != 0:
             result["data"] = "删除分享失败."
+            result["code"] = StatusCode["FAILED"]
             hdfs_logger.error("share failed:{0}".format(data))
             return result
         dataShare.delete()
         result["data"] = "删除分享成功."
     except Exception,e:
         hdfs_logger.error(e)
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "删除分享失败."
     return result
 
@@ -219,7 +221,7 @@ def de_delete(request, path):
     exitCode,data = run_hadoop(user_name=exec_user,operator="rmr",args=[path])
     ac_logger.info("data:%s" %data)
     if exitCode != 0:
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "删除失败!"
     else:
         o_type = FileOperatorType.objects.get(name='delete')
@@ -278,7 +280,7 @@ def upSet(request, path):
         result["data"] = "配额扩容成功"
     except:
         hdfs_logger.error(traceback.format_exc())
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "配额扩容失败."
     return result
 
@@ -305,7 +307,7 @@ def sumSpace(request, path):
         result["code"] = StatusCode["SUCCESS"]
         result["data"] = data
     else:
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "容量获取失败"
     return result
    
@@ -342,15 +344,15 @@ def mv_or_cp(request, path):
                 result["code"] = StatusCode["SUCCESS"]
                 result["data"] = "移动成功!"
             else:
-                result["code"] = StatusCode["SUCCESS"]
+                result["code"] = StatusCode["FAILED"]
                 result["data"] = "移动失败!"
         except:
             hdfs_logger.debug(traceback.format_exc())
-            result["code"] = StatusCode["SUCCESS"]
+            result["code"] = StatusCode["FAILED"]
             result["data"] = "移动失败!"
     else:
         hdfs_logger.info("用户%s的请求：目的路径不明确!"%(getUser(request)))
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "移动失败!"
     return result
 
@@ -502,7 +504,7 @@ def OperateServicePOST(request, command, params):
         result["code"] = StatusCode["SUCCESS"]
         result["data"] = "操作成功"
     else:
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "操作失败"
     ac_logger.info('result........:%s'%result)
     return result
@@ -519,7 +521,7 @@ def OperateComponentPOST(request, host_name, component_name, operate):
         result["code"] = StatusCode["SUCCESS"]
         result["data"] = "操作成功"
     else:
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "操作失败"
     ac_logger.info('result........:%s'%result)
     return result
@@ -539,7 +541,7 @@ def OperateComponentPUT(request, host_name, component_name, operate):
         result["code"] = StatusCode["SUCCESS"]
         result["data"] = "操作成功"
     else:
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "操作失败"
     return result
 
