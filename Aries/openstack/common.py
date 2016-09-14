@@ -1,30 +1,34 @@
-#-*- coding: UTF-8 -*-
+# -*- coding: UTF-8 -*-
 import json
 from openstack.middleware.login.login import Login
 from middleware.image.image import Image
 from middleware.flavor.flavor import Flavor
-#from common import json_data
+# from common import json_data
 from openstack.middleware.vm.vm import Vm_manage
 
+
 def json_data(json_status):
-    if len(json_status)==0:
-        json_status={"data":json_status,"code":400}
-        json_status=json.dumps(json_status)
+    if len(json_status) == 0:
+        json_status = {"data": json_status, "code": 400}
+        json_status = json.dumps(json_status)
     else:
-        json_status={"data":json_status,"code":200}
-        json_status=json.dumps(json_status)
+        json_status = {"data": json_status, "code": 200}
+        json_status = json.dumps(json_status)
     return json_status
+
 
 class OpenAPI(object):
     def __init__(self):
         pass
+
     def Login(self):
         login = Login("openstack", "baifendian2016")
         login.user_token_login()
         login.proid_login()
         login.token_login()
+
     def instances(self):
-        ret={}
+        ret = {}
         host_list = Vm_manage().list_detail({})
         ret['totalList'] = []
         test_list = []

@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
-from django.shortcuts import render,get_object_or_404,render_to_response
+from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
-from django.template import loader,Context,RequestContext
+from django.template import loader, Context, RequestContext
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -16,19 +16,20 @@ from django.conf import settings
 import json
 from service import *
 
+
 class volumes(APIView):
-    def get(self,request,format=None):
-        method =  request.GET.get('name')
-        ret=Methods.get('GET').get(method)(request)
+    def get(self, request, format=None):
+        method = request.GET.get('name')
+        ret = Methods.get('GET').get(method)(request)
         return packageResponse(ret)
 
-    def post(self,request,format=None):
-        method=request.POST.get('method')
-        ret=Methods.get('POST').get(method)(request)
+    def post(self, request, format=None):
+        method = request.POST.get('method')
+        ret = Methods.get('POST').get(method)(request)
         return packageResponse(ret)
+
 
 class project(APIView):
-    def get(self,request,format=None):
-        ret=openstack_project(request)
+    def get(self, request, format=None):
+        ret = openstack_project(request)
         return packageResponse(ret)
-
