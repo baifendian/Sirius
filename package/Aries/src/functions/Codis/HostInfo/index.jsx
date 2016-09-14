@@ -120,12 +120,6 @@ export default React.createClass({
     this.checkToRequestData()
   },
 
-
- is_super_button:{
-    1:function(){return <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>},
-    0:()=>{return <div style={{height: 35}}></div>}
-  },
-
   checkToRequestData(){
     // 如果当前保存的namespace与实时获取的namespace相同，则不再重新请求
     // 否则，重新请求数据
@@ -163,7 +157,9 @@ export default React.createClass({
                            onSearch={this.onSearchByKey}
                            label="查询" />
             </div>
-            {this.is_super_button[this.state.is_super].call(this)}
+            {this.state.is_super==1 ?
+              <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>
+              :<div className="querystyle"></div>}
         </div>
             <div className="DataTableFatherDiv">
               <DataTable ref="DataTable" data={this.state.data}

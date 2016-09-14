@@ -81,16 +81,6 @@ export default React.createClass({
     return totalHeight
   },
 
- is_super_codis_button:{
-    1:function(){return <div> <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>           <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addmem}>扩容</button>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addproxy}>添加proxy</button>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.deletecodis}>删除codis</button>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.autorebalance}>Auto Rebalance</button> 
-        </div>  
-},
-    0:()=>{return <div></div>}
-  },
-
   calcDesiredHeight(){
     let rootDivHeight = this.calcRootDivHeight()
     ReactDOM.findDOMNode(this.refs.RootDiv).style.height = (rootDivHeight+'px')
@@ -477,12 +467,20 @@ handleSave4() {
         <NavigationInPage headText={CodisConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={CodisConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <div className="ButtonFatherDiv">
           <div className="SearchInputFatherDiv">
-            <SearchInput style={{margin:5}} placeholder="请输入查询关键字"
+            <SearchInput className="queryclass" placeholder="请输入查询关键字"
                        onChange={function(){}}
                        onSearch={this.onSearchByKey}
                        label="查询" />
           </div>
-          {this.is_super_codis_button[this.state.is_super].call(this)}
+          {this.state.is_super==1?
+           <div> 
+             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>           
+             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addmem}>扩容</button>
+             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addproxy}>添加proxy</button>
+             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.deletecodis}>删除codis</button>
+             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.autorebalance}>Auto Rebalance</button> 
+           </div>  
+           :<div></div>}
           <Modal ref="modal">
             <ModalHeader>
               <h4>创建codis集群</h4>
