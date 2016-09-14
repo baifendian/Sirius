@@ -18,8 +18,10 @@ def json_data(json_status):
         json_status = json.dumps(json_status)
     return json_status
 
+
 def image_id():
     pass
+
 
 def flavor_id():
     pass
@@ -211,31 +213,32 @@ def openstack_project(request):
     ret = json_data(ret)
     return ret
 
+
 def instances_search(request):
     login()
-    ret={}
+    ret = {}
     imagess = Image()
     flavorss = Flavor()
-    vm_manage=Vm_manage()
-    key=request.GET.get('keys')
-    value=request.GET.get('value')
+    vm_manage = Vm_manage()
+    key = request.GET.get('keys')
+    value = request.GET.get('value')
     if not value:
-        key="name"
+        key = "name"
         pass
     if key == 'image':
-        image_list=imagess.list()
+        image_list = imagess.list()
         for i in image_list['images']:
             if i['name'] == value:
-                value=i['id']
+                value = i['id']
                 break
-    elif key=="flavor":
-        flavor_list=flavorss.list()
+    elif key == "flavor":
+        flavor_list = flavorss.list()
         for i in flavor_list['flavors']:
             if i['name'] == value:
-                value=i['id']
+                value = i['id']
                 break
-    elif key=="status":
-        value=value.upper()
+    elif key == "status":
+        value = value.upper()
     dict_d = {key: value}
     currentPages = request.GET.get('currentPage')
     pageSizes = request.GET.get('pageSize')
@@ -245,7 +248,7 @@ def instances_search(request):
     else:
         minpageSizes = 0
         maxpageSizes = 0
-    host_list=vm_manage.list_detail(dict_d)
+    host_list = vm_manage.list_detail(dict_d)
     ret['totalList'] = []
     for host in host_list['servers'][minpageSizes:maxpageSizes]:
         sys = {}
@@ -271,11 +274,12 @@ def instances_search(request):
     ret = json_data(ret)
     return ret
 
+
 Methods = {
     "GET": {
         "instances": instances,
         "backup": volumes_backup,
-        "instances_search":instances_search
+        "instances_search": instances_search
     },
     "POST": {
         "CREATE": volumes_create,
