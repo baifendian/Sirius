@@ -28,8 +28,6 @@ kd_logger = logging.getLogger("kd_agent_log")
 kd_logger.setLevel( logging.DEBUG )
 
 
-
-
 # 一个装饰器，将原函数返回的json封装成response对象
 def return_http_json(func):
     def wrapper( *arg1,**arg2 ):
@@ -143,7 +141,6 @@ def get_overview_info(request,namespace):
 
     return generate_success( data=retu_dict )
 
-
 @csrf_exempt
 @return_http_json
 def get_pod_list(request,namespace):
@@ -188,7 +185,6 @@ def get_pod_list(request,namespace):
     kd_logger.info( 'call get_pod_list query k8s data successful' )
     return generate_success( data = retu_data )
 
-
 @csrf_exempt
 @return_http_json
 def get_service_list(request,namespace):
@@ -225,7 +221,6 @@ def get_service_list(request,namespace):
     kd_logger.debug( 'call get_service_list query k8s data : %s' % retu_data )
     kd_logger.info( 'call get_service_list query k8s data successful' )
     return generate_success( data = retu_data )
-
 
 @csrf_exempt
 @return_http_json
@@ -386,7 +381,6 @@ def download(request):
         kd_logger.error('Download Error')
     return response
 
-
 @csrf_exempt
 @return_http_json
 def mytask_get_old_records(request):
@@ -439,7 +433,6 @@ def mytask_get_old_records(request):
                 'status':trans_result_to_status(record.result)
             })
     return generate_success( data = {'records': retu_data} )
-
 
 def format_datetime_obj(datetime_obj):
     if datetime_obj:
@@ -506,7 +499,6 @@ def mytask_check_has_new_records(request):
                                       new=True )
     filtered_records = filtered_records.filter( task_id__in=filtered_tasks )
     return generate_success( data = {'hasnew': 0 if filtered_records.count() == 0 else 1 } )
- 
 
 @csrf_exempt
 @return_http_json
@@ -553,7 +545,6 @@ def mytask_get_new_records(request):
             })  
     return generate_success( data = {'records': retu_data} )
 
-
 #查询脚本类型
 #def get_scripttype(name):
 #    try:
@@ -596,7 +587,6 @@ def convert_dict(keywords):
     keywords['enddate'] = datetime.strptime(keywords['enddate'], '%Y-%m-%dT%H:%M:%S')
     return keywords
 
-
 def filter_valid_data( influxdb_data_dict ):
     try:
         columns = influxdb_data_dict['results'][0]['series'][0]['columns']
@@ -610,7 +600,6 @@ def filter_valid_data( influxdb_data_dict ):
         return generate_success( data=retu_data )
     except Exception as reason:
         return generate_failure( str(reason) )
-
 
 def trans_struct_to_easy_dis( filter_data_dict ):
     def map_timestamp_to_localtime( time_stamp ):
@@ -648,7 +637,6 @@ def trans_struct_to_easy_dis( filter_data_dict ):
     retu_data['xaxis'] = map( map_timestamp_to_localtime,time_points )
     return retu_data
 
-
 def execute_clusterinfo_request( sql_str_dict ):
     retu_obj = {}
     for m,sql in sql_str_dict.items():
@@ -667,7 +655,6 @@ def execute_clusterinfo_request( sql_str_dict ):
         retu_obj[m] = retu_data['data']
 
     return generate_success( data=trans_struct_to_easy_dis(retu_obj) )
-
 
 def generate_time_range( minutes ):
     time_end = int(time.time())
@@ -705,7 +692,6 @@ def get_cluster_memory_info(request,minutes):
                                 type=ISM.T_NODE )
     return execute_clusterinfo_request( sql_str_dict )
 
-
 @csrf_exempt
 @return_http_json
 def get_cluster_network_info(request,minutes):
@@ -720,7 +706,6 @@ def get_cluster_network_info(request,minutes):
                                 type=ISM.T_POD )
     return execute_clusterinfo_request( sql_str_dict )
 
-
 @csrf_exempt
 @return_http_json
 def get_cluster_filesystem_info(request,minutes):
@@ -734,16 +719,3 @@ def get_cluster_filesystem_info(request,minutes):
                                 time_end=time_range['time_end'],
                                 type=ISM.T_NODE )
     return execute_clusterinfo_request( sql_str_dict )
-
-
-
-
-
-
-
-
-
-
-
-
-

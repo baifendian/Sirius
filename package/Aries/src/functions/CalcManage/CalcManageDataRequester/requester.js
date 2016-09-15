@@ -33,29 +33,27 @@ var CalcManageDataRequester = {
     })
     this.xhrGetDataEnhanced(url, callback)
   },
+  
   getClusterMemoryInfo( minutes,callback ){
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustermemoryinfo'], {
       'minutes':minutes
     })
     this.xhrGetDataEnhanced(url, callback)
   },
+
   getClusterNetworkInfo( minutes,callback ){
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusternetworkinfo'], {
       'minutes':minutes
     })
     this.xhrGetDataEnhanced(url, callback)
   },
+
   getClusterFilesystemInfo( minutes,callback ){
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusterfilesysteminfo'], {
       'minutes':minutes
     })
     this.xhrGetDataEnhanced(url, callback)
   },
-
-
-
-
-
 
   getMyTaskOldRecords( oldestrecordid,requestnumber,keywords,callback ) {
     let url = this.getUrlForm()['mytaskoldrecords']
@@ -66,6 +64,7 @@ var CalcManageDataRequester = {
     }
     this.xhrPostData(url, data, callback)
   },
+
   checkMyTaskHasNewRecords( newestrecordid,keywords,callback ) {
     let url = this.getUrlForm()['mytaskhasnewrecords']
     let data = {
@@ -74,6 +73,7 @@ var CalcManageDataRequester = {
     }
     this.xhrPostData(url, data, callback)
   },
+
   getMyTaskNewRecords( newestrecordid,keywords,callback ) {
     let url = this.getUrlForm()['mytasknewrecords']
     let data = {
@@ -155,8 +155,6 @@ var CalcManageDataRequester = {
       }
     })
   },
-
-
 
 
   generate_temp_point(i) {
