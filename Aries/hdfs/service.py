@@ -269,15 +269,20 @@ def upSet(request, path):
         capacity_value = body_data["capacity"]
         hdfs_logger.info("upSet capacity_value:{0}".format(capacity_value))
         space_name = request.GET.get("spaceName","")
-        #total = int(body_data['capacity'])
         if capacity_value > 0:
             space = Space.objects.get(name=space_name)
             capacity = eval(space.capacity)
-            capacity["total"] = capacity_value
-            space.capacity = capacity
-            space.save()
-        result["code"] = StatusCode["SUCCESS"]
-        result["data"] = "配额扩容成功"
+            used = capacity["used"]
+            hdfs_logger.info("used: {0}, total: {1}, plan: {2}".format(used,capacity_value,capacity["plan"]))
+            if int(used) > int(capacity_value):
+                result["code"] = StatusCode["SUCCESS"]
+                result["data"] = "配额扩容失败. 扩容后的容量小于当前已经使用的容量"
+            else:
+                capacity["total"] = capacity_value
+                space.capacity = capacity
+                space.save()
+                result["code"] = StatusCode["SUCCESS"]
+                result["data"] = "配额扩容成功"
     except:
         hdfs_logger.error(traceback.format_exc())
         result["code"] = StatusCode["FAILED"]
