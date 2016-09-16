@@ -225,6 +225,10 @@ LOGGING = {
 # 提供k8s服务的地址
 K8S_IP = '172.24.3.150'
 K8S_PORT = 8080
+INFLUXDB_IP = 'k8sinfluxapi.bfdcloud.com'
+INFLUXDB_PORT = 80
+INFLUXDB_DATABASE = 'k8s'
+
 BDMS_IP = '172.24.100.40'
 BDMS_PORT = '10001'
 BDMS_USERNAME = 'aiping.liang'
