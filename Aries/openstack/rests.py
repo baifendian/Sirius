@@ -33,3 +33,9 @@ class project(APIView):
     def get(self, request, format=None):
         ret = openstack_project(request)
         return packageResponse(ret)
+
+class search(APIView):
+    def get(self,request,format=None):
+        name=request.GET.get('name')
+        ret=Methods.get('GET').get(name)(request)
+        return packageResponse(ret)

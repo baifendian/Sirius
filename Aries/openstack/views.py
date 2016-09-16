@@ -392,31 +392,3 @@ def volumes(request):
     return response
 
 
-def test(request):
-    aa = open('openstack/aa.txt', 'r').read()
-    if request.method == 'POST':
-        if request.POST.get("name") == 'T1':
-            a1a = {
-                'data': {
-                    "totalList": [{
-                        "id": "1",
-                        "name": "张三",
-                        "age": "11",
-                        "country": "中国",
-                        "height": "185cm",
-                        "weight": "65kg",
-                        "school": "六安一中",
-                        "birthday": "1990-03-16"
-                    }]
-                },
-                "code": 200
-            }
-            aa = {"code": 200, 'data': {'cpu': "1", "mem": "2", "count": '0.12'}}
-            aa = json.dumps(aa)
-        if request.POST.get("name") == 'T2':
-            aa = {"code": 200, 'data': {'cpu': "8", "mem": "12", "count": '0.36'}}
-            aa = json.dumps(aa)
-    response = HttpResponse(aa)
-    response['Access-Control-Allow-Origin'] = '*'
-    response['Content-Type'] = 'application/json'
-    return response

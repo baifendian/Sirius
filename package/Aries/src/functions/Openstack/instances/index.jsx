@@ -224,6 +224,9 @@ export default React.createClass({
     return (
       <div className="function-data-moduleA">
       <NavigationInPage naviTexts={naviTexts} headText="openstack" />
+      <div className="class_extend">
+        <Extend _this={this}/>
+      </div>
       <Spin spinning={this.state.loading}>
       	<div>
           <Button onClick={this.handleOpen.bind(this,5)} style={{float:"left",margin:'0px 10px 0px 0px'}}>刷新</Button>
@@ -233,9 +236,9 @@ export default React.createClass({
       		<Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this,3)} style={{float:"left"}}>停止</Button>
       		<Button disabled={this.state.button_status} type="danger"  onClick={this.handleOpen.bind(this,4)} style={{float:"left"}} >删除</Button>
           <Disk_model vm_list={this.state.select_all} ref="model_model" _this={this}/>
-          <div style={{float: 'right'}}>
+          {/*<div style={{float: 'right'}}>
             <Extend _this={this}/>
-          </div>
+          </div>*/}
           <Modal ref="modal">
           		<ModalHeader>
             		<h4>{this.state.test}</h4>
