@@ -51,7 +51,7 @@ export default React.createClass({
     let naviTexts = [{  'url':'/','text':'概览'},
       {'url':'','text':'云主机'},  
       {'url':'','text':'计算'},
-      {'url':'/openstack/images/','text':'镜像'}]
+      {'url':'/CloudHost/Storage/Backup','text':'备份'}]
       return (
       <div className="function-data-moduleA">
       <NavigationInPage naviTexts={naviTexts} headText="openstack" />

@@ -115,29 +115,24 @@ const App = React.createClass({
             <div className="sidebar col-md-2 col-sm-3">
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
-                  <NavItem key={10} href="Service" icon="cloud" title="云服务">
-                    <NavItem key={11} href="HDFS" icon="cubes" title="HDFS云">
-                      <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
-                      <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
-                      <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
+                  <NavItem key={10} href="CloudService" icon="cloud" title="云服务">
+                    <NavItem key={11} href="CloudService/HDFS" icon="cubes" title="HDFS云">
+                      <NavItem href={`CloudService/HDFS/Myfile?${params}`} title="我的文件" />
+                      <NavItem href={`CloudService/HDFS/Share?${params}`} title="我的分享" />
+                      <NavItem href={`CloudService/HDFS/Trash?${params}`} title="我的回收站" />
                       {/* 增加管理员验证. 这里受到react的限制只能分开判断. */}
                       {auth.user.type == 1 ?[
-                          <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
+                          <NavItem href={`CloudService/HDFS/Service?${params}`} title="服务管理" />
                       ]:null}
                       {auth.user.type == 1 ?[
-                          <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
+                          <NavItem href={`CloudService/HDFS/Capacity?${params}`} title="配额管理" />
                       ]:null}
-                      <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
+                      <NavItem href={`CloudService/HDFS/ShareCenter?${params}`} title="共享中心" />
                     </NavItem>
-                    <NavItem key={12} href="CodisCloud" icon="skyatlas" title="Codis云">
-                      <NavItem href={`CodisCloud/HostInfo?${params}`} title="主机信息" />
-                      <NavItem href={`CodisCloud/CodisInfo?${params}`} title="Codis信息" />
+                    <NavItem key={12} href="CloudService/Codis" icon="skyatlas" title="Codis云">
+                      <NavItem href={`CloudService/Codis/HostInfo?${params}`} title="主机信息" />
+                      <NavItem href={`CloudService/Codis/CodisInfo?${params}`} title="Codis信息" />
                     </NavItem>
-                  </NavItem>
-
-                  <NavItem key={12} href="CodisCloud" icon="skyatlas" title="Codis云">
-                    <NavItem href={`CodisCloud/HostInfo?${params}`} title="主机信息" />
-                    <NavItem href={`CodisCloud/CodisInfo?${params}`} title="Codis信息" />
                   </NavItem>
 
                   <NavItem key={20} href="CloudContainer" icon="sellsy" title="云容器">
@@ -163,18 +158,18 @@ const App = React.createClass({
                     </NavItem>
                    </NavItem>
 
-                <NavItem key={30} href="service" icon="server" title="云主机">
-                  <NavItem key={31} href="openstack" icon="th-large" title="计算">
-                    <NavItem href={`openstack/instances?${params}`} title="虚拟机" />
-                    <NavItem href={`openstack/images?${params}`} title="镜像" />
-                    <NavItem href={`openstack/flavors?${params}`} title="云类型" />
+                <NavItem key={30} href="CloudHost" icon="server" title="云主机">
+                  <NavItem key={31} href="CloudHost/Calculation" icon="th-large" title="计算">
+                    <NavItem href={`CloudHost/Calculation/Instances?${params}`} title="虚拟机" />
+                    <NavItem href={`CloudHost/Calculation/Images?${params}`} title="镜像" />
+                    <NavItem href={`CloudHost/Calculation/Flavors?${params}`} title="云类型" />
                   </NavItem>
-                  <NavItem key={32} href="volumes" icon="hdd-o" title="存储">
-                    <NavItem href={`openstack/volumes?${params}`} title="云磁盘" />
-                    <NavItem href={`openstack/backup?${params}`} title="备份" />
+                  <NavItem key={32} href="CloudHost/Storage" icon="hdd-o" title="存储">
+                    <NavItem href={`CloudHost/Storage/Volumes?${params}`} title="云磁盘" />
+                    <NavItem href={`CloudHost/Storage/Backup?${params}`} title="备份" />
                   </NavItem>
-                   <NavItem key={33} href="project" icon="credit-card-alt" title="管理">
-                    <NavItem href={`openstack/project?${params}`} title="项目管理" />
+                   <NavItem key={33} href="CloudHost/Manage" icon="credit-card-alt" title="管理">
+                    <NavItem href={`CloudHost/Manage/Project?${params}`} title="项目管理" />
                   </NavItem>
                 </NavItem>
 

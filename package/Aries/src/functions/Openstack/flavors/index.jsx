@@ -48,7 +48,7 @@ export default React.createClass({
     let naviTexts = [{  'url':'/','text':'概述'},
       {'url':'','text':'云主机'},
       {'url':'','text':'计算'},
-      {'url':'/openstack/flavors/','text':'云类型'}]
+      {'url':'/CloudHost/Calculation/flavors/','text':'云类型'}]
       return (
       <div className="function-data-moduleA">
       <div>
