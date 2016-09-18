@@ -21,7 +21,10 @@ urlpatterns = [
     url(r'^UserAuth/.*$',views.index),
     url(r'^CalcManage/.*$',views.index),
 	url(r'^CodisCloud/.*$',views.index),
-    url(r'^openstack/.*$',views.index)
+    url(r'^openstack/.*$',views.index),
+    url(r'^CloudService/.*$',views.index),
+    url(r'^CloudContainer/.*$',views.index),
+    url(r'^CloudHost/.*$',views.index)
 ]
 
 # 可浏览式登录API
