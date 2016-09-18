@@ -223,7 +223,7 @@ const conf = {
       instances: {
         headText: "虚拟机",
         navigationTexts: [{
-          text: "虚拟机主机",
+          text: "虚拟机",
           url: "/CloudHost/Calculation/Instances?cur_space=${spaceName}"
         }]
       },
