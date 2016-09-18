@@ -52,10 +52,6 @@ export default React.createClass({
     pageName : "backup",
   },
   render() {
-    let naviTexts = [{  'url':'/','text':'概览'},
-      {'url':'','text':'云主机'},  
-      {'url':'','text':'计算'},
-      {'url':'/CloudHost/Storage/Backup','text':'备份'}]
     let spaceName = Openstackconf.getCurSpace(this)
       return (
       <div className="function-data-moduleA">
