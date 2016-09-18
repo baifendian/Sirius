@@ -6,7 +6,6 @@ import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import { Spin } from 'antd'
 import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
-import Openstackconf from '../Conf/Openstackconf'
 
 
 
@@ -47,14 +46,16 @@ export default React.createClass({
   handleOpen(name) {
     console.log(this.state.images_list)
   },
-  requestArgs:{
-    pageName : "image",
-  },
+
+
   render() {
-      let spaceName = Openstackconf.getCurSpace(this)
+    let naviTexts = [{  'url':'/','text':'概览'},
+      {'url':'','text':'云主机'},  
+      {'url':'','text':'计算'},
+      {'url':'/CloudHost/Calculation/Images','text':'镜像'}]
       return (
       <div className="function-data-moduleA">
-      <NavigationInPage headText={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
+      <NavigationInPage naviTexts={naviTexts} headText="openstack" />
       <Spin spinning={this.state.loading}>
       	<div>
           <Button onClick={this.handleOpen.bind(this,5)} style={{float:"left",margin:'0px 10px 0px 0px'}}>刷新</Button>

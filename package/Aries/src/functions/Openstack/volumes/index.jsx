@@ -13,7 +13,6 @@ import { SplitPanel, SubSplitPanel } from 'bfd/SplitPanel'
 import OPEN from '../data_request/request.js'
 import ReactDOM from 'react-dom'
 import Model_list from './volumes_model_list'
-import Openstackconf from '../Conf/Openstackconf'
 
 export default React.createClass({
 
@@ -116,14 +115,14 @@ export default React.createClass({
     console.log('select_all',this.state.select_all)
     OPEN.volumes_data(this,this.state.select_all)
   },
-  requestArgs:{
-    pageName : "volumes",
-  },
   render() {
-    let spaceName = Openstackconf.getCurSpace(this) 
+      let naviTexts = [{  'url':'/','text':'概览'},
+        {'url':'','text':'云主机'},
+        {'url':'','text':'计算'},
+        {'url':'/CloudHost/Storage/Volumes/','text':'磁盘列表'}]
     return (  
       <div className="function-data-moduleA">
-        <NavigationInPage headText={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
+        <NavigationInPage naviTexts={naviTexts} headText="openstack" />
         <div>
           <Button onClick={this.refresh} style={{float:'left'}}>刷新</Button>
           <Create_volumes/>
