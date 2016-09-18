@@ -16,6 +16,7 @@ import { Icon } from 'antd'
 import './jquery.min.js'
 import NavigationInPage from 'public/NavigationInPage'
 import ReactDOM from 'react-dom'
+import Openstackconf from '../Conf/Openstackconf'
 
 
 export default React.createClass({
@@ -215,15 +216,14 @@ export default React.createClass({
   disk_model_open(){
       this.refs.model_disk.open()
     },
-
+  requestArgs:{
+    pageName : "instances",
+  },
   render() {
-    let naviTexts = [{  'url':'/','text':'概览'   },
-      {'url':'','text':'云主机'   },
-      {'url':'','text':'计算'   },
-      {'url':'/CloudHost/Calculation/Instances','text':'虚拟机'   }]
+    let spaceName = Openstackconf.getCurSpace(this)
     return (
       <div className="function-data-moduleA">
-      <NavigationInPage naviTexts={naviTexts} headText="openstack" />
+      <NavigationInPage headText={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
       <div className="class_extend">
         <Extend _this={this}/>
       </div>

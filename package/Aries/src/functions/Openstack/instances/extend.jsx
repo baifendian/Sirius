@@ -180,10 +180,9 @@ const Create_model_disk  = React.createClass({
 		});
 
 		return (
-
 			<div>
 				<div>{nav}</div>
-        	 	<Icon type="plus-square" onClick={this.create_disk.bind(this,1)}/><span>您还可选配</span><span className="disk_span">{this.state.test_mum}</span><span>快</span>
+        	 	<Icon type="plus-square" onClick={this.create_disk.bind(this,1)}/><span>您还可选配</span><span className="disk_span">{this.state.disk_number}</span><span>快</span>
 	     	</div>    
 			)
 		}	
