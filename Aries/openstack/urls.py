@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 #from web.views import index,test,server_s,error_r,application,applications,login,logout,manage,manage_host,volumes
-from openstack.views import test,instances,create_host,volumes,login,logout,images,flavors
+from openstack.views import instances,create_host,volumes,login,logout,images,flavors
 import rests
 
 
