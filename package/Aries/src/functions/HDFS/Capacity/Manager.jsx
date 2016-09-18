@@ -5,15 +5,17 @@ import Slider from 'bfd-ui/lib/Slider'
 import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd-ui/lib/message'
 
-const TabMonitor = React.createClass({
+const TabManager = React.createClass({
   handleSlid(value,spaceName){
     console.log(`slid:${value}, spaceName:${spaceName}`);
     let upsetUrl = this.props.getUrlData({ type : "UPSET",
                                            spaceName : spaceName
                                           });
     xhr({type: 'PUT',url: upsetUrl,data:{"capacity":value},
-      success(data) {
+      success: data => {
         message.success(data);
+        //刷新配额管理
+        this.props.refreshCapacity();
       }
     });
   },
@@ -30,4 +32,4 @@ const TabMonitor = React.createClass({
   }
 });
 
-export default TabMonitor
+export default TabManager

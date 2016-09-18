@@ -115,21 +115,30 @@ const App = React.createClass({
             <div className="sidebar col-md-2 col-sm-3">
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
-                <NavItem key={10} href="Service" icon="cloud" title="云服务">
-                  <NavItem key={11} href="HDFS" icon="cubes" title="HDFS云">
-                    <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
-                    <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
-                    <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
-                    <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
-                    <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
-                    <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
+                  <NavItem key={10} href="Service" icon="cloud" title="云服务">
+                    <NavItem key={11} href="HDFS" icon="cubes" title="HDFS云">
+                      <NavItem href={`HDFS/Myfile?${params}`} title="我的文件" />
+                      <NavItem href={`HDFS/Share?${params}`} title="我的分享" />
+                      <NavItem href={`HDFS/Trash?${params}`} title="我的回收站" />
+                      {/* 增加管理员验证. 这里受到react的限制只能分开判断. */}
+                      {auth.user.type == 1 ?[
+                          <NavItem href={`HDFS/Service?${params}`} title="服务管理" />
+                      ]:null}
+                      {auth.user.type == 1 ?[
+                          <NavItem href={`HDFS/Capacity?${params}`} title="配额管理" />
+                      ]:null}
+                      <NavItem href={`HDFS/ShareCenter?${params}`} title="共享中心" />
+                    </NavItem>
+                    <NavItem key={12} href="CodisCloud" icon="skyatlas" title="Codis云">
+                      <NavItem href={`CodisCloud/HostInfo?${params}`} title="主机信息" />
+                      <NavItem href={`CodisCloud/CodisInfo?${params}`} title="Codis信息" />
+                    </NavItem>
                   </NavItem>
 
                   <NavItem key={12} href="CodisCloud" icon="skyatlas" title="Codis云">
                     <NavItem href={`CodisCloud/HostInfo?${params}`} title="主机信息" />
                     <NavItem href={`CodisCloud/CodisInfo?${params}`} title="Codis信息" />
                   </NavItem>
-                </NavItem>
 
                   <NavItem key={20} href="CloudContainer" icon="sellsy" title="云容器">
                     <NavItem key={21} href="CloudContainer/CalcManage" icon="desktop" title="k8s相关监控">
@@ -142,7 +151,7 @@ const App = React.createClass({
                     <NavItem key={22} icon="equalizer" title="Docker Image" />
                     */}
                     <NavItem key={23} href="CloudContainer/OffLineCalcTask" icon="tasks" title="离线计算任务" >
-                      <NavItem href={`CloudContainer/OffLineCalcTask/MyTask?${params}`} title="我的任务" />                  
+                      <NavItem href={`CloudContainer/OffLineCalcTask/MyTask?${params}`} title="我的任务" />
                     </NavItem>
                     {/** 暂时下面没有任何节点，因此注释掉
                     <NavItem key={24} icon="equalizer" title="storm实时计算任务" />
