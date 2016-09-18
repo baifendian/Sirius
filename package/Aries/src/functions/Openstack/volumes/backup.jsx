@@ -7,7 +7,7 @@ import { Spin } from 'antd'
 import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
 import OPEN from '../data_request/request.js'
-
+import Openstackconf from '../Conf/Openstackconf'
 
 
 export default React.createClass({
@@ -47,14 +47,14 @@ export default React.createClass({
   handleOpen(name) {
     console.log(this.state.images_list)
   },
+  requestArgs:{
+    pageName : "backup",
+  },
   render() {
-    let naviTexts = [{  'url':'/','text':'概览'},
-      {'url':'','text':'云主机'},  
-      {'url':'','text':'计算'},
-      {'url':'/CloudHost/Storage/Backup','text':'备份'}]
+      let spaceName = Openstackconf.getCurSpace(this)
       return (
       <div className="function-data-moduleA">
-      <NavigationInPage naviTexts={naviTexts} headText="openstack" />
+      <NavigationInPage headText={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
       <Spin spinning={this.state.loading}>
       	<div>
           <Button onClick={this.handleOpen.bind(this,5)} style={{float:"left",margin:'0px 10px 0px 0px'}}>刷新</Button>
