@@ -159,7 +159,7 @@ export default React.createClass({
             </div>
             {this.state.is_super==1 ?
               <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>
-              :<div className="querystyle"></div>}
+              :null}
         </div>
             <div className="DataTableFatherDiv">
               <DataTable ref="DataTable" data={this.state.data}

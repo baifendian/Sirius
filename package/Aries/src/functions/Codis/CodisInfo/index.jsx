@@ -467,20 +467,20 @@ handleSave4() {
         <NavigationInPage headText={CodisConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={CodisConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <div className="ButtonFatherDiv">
           <div className="SearchInputFatherDiv">
-            <SearchInput className="queryclass" placeholder="请输入查询关键字"
+            <SearchInput  placeholder="请输入查询关键字"
                        onChange={function(){}}
                        onSearch={this.onSearchByKey}
                        label="查询" />
           </div>
           {this.state.is_super==1?
            <div> 
-             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>           
+             <button type="button" className=" ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>           
              <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addmem}>扩容</button>
              <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addproxy}>添加proxy</button>
              <button type="button" className="ButtonDiv btn btn-primary" onClick={this.deletecodis}>删除codis</button>
              <button type="button" className="ButtonDiv btn btn-primary" onClick={this.autorebalance}>Auto Rebalance</button> 
            </div>  
-           :<div></div>}
+           : null}
           <Modal ref="modal">
             <ModalHeader>
               <h4>创建codis集群</h4>
