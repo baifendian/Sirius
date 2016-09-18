@@ -120,8 +120,13 @@ const App = React.createClass({
                       <NavItem href={`CloudService/HDFS/Myfile?${params}`} title="我的文件" />
                       <NavItem href={`CloudService/HDFS/Share?${params}`} title="我的分享" />
                       <NavItem href={`CloudService/HDFS/Trash?${params}`} title="我的回收站" />
-                      <NavItem href={`CloudService/HDFS/Service?${params}`} title="服务管理" />
-                      <NavItem href={`CloudService/HDFS/Capacity?${params}`} title="配额管理" />
+                      {/* 增加管理员验证. 这里受到react的限制只能分开判断. */}
+                      {auth.user.type == 1 ?[
+                          <NavItem href={`CloudService/HDFS/Service?${params}`} title="服务管理" />
+                      ]:null}
+                      {auth.user.type == 1 ?[
+                          <NavItem href={`CloudService/HDFS/Capacity?${params}`} title="配额管理" />
+                      ]:null}
                       <NavItem href={`CloudService/HDFS/ShareCenter?${params}`} title="共享中心" />
                     </NavItem>
                     <NavItem key={12} href="CloudService/Codis" icon="skyatlas" title="Codis云">
@@ -141,7 +146,7 @@ const App = React.createClass({
                     <NavItem key={22} icon="equalizer" title="Docker Image" />
                     */}
                     <NavItem key={23} href="CloudContainer/OffLineCalcTask" icon="tasks" title="离线计算任务" >
-                      <NavItem href={`CloudContainer/OffLineCalcTask/MyTask?${params}`} title="我的任务" />                  
+                      <NavItem href={`CloudContainer/OffLineCalcTask/MyTask?${params}`} title="我的任务" />
                     </NavItem>
                     {/** 暂时下面没有任何节点，因此注释掉
                     <NavItem key={24} icon="equalizer" title="storm实时计算任务" />

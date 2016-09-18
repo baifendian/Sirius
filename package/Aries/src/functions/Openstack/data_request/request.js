@@ -10,7 +10,8 @@ var Datarequest = {
       'volumes':'openstack/volumes/',
       'flavors':'openstack/flavors/',
       'volumes_post':'openstack/volumes_post/',
-      'project':'openstack/project/'
+      'project':'openstack/project/',
+      'search':'openstack/search/'
     }
   },
   open_vnc(_this,select_host,fun){
@@ -34,11 +35,13 @@ var Datarequest = {
   },
 	posthoststop(_this,url,data_select,host_status){
 	  let host_select={}
+    let _url=this.UrlList()[url]
     for (var i in data_select){
       host_select[data_select[i]['id']]=data_select[i]['name']
     }
     _this.setState({loading:true})
-    this.xhrPostData(_this,url,host_select,host_status,this.dispose_data)
+    //console.log('url........',url)
+    this.xhrPostData(_this,_url,host_select,host_status,this.dispose_data)
 	},
   update_url(_this,url,self){
     let _url=this.UrlList()[url]
@@ -50,7 +53,7 @@ var Datarequest = {
       button_status: true,
       button_statuss:true
     })
-    self.update_url(_this,url)
+    _this.setState({url: url+'?'+Math.random(),})
     let successful=''
     let error=''
     let same=''
