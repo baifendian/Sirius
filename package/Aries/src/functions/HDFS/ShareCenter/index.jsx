@@ -1,7 +1,7 @@
 import React from 'react'
 import Task from 'public/Task'
 import './index.less'
-import DataTable from 'bfd-ui/lib/DataTable'
+import FixedTable from 'bfd/FixedTable'
 import confirm from 'bfd-ui/lib/confirm'
 import Fetch from 'bfd-ui/lib/Fetch'
 import TextOverflow from 'bfd-ui/lib/TextOverflow'
@@ -78,7 +78,7 @@ export default React.createClass({
         <div>
           <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
           <Fetch style={{minHeight:0}} url={shareUrl} onSuccess={this.handleSuccess}>
-            <DataTable data={this.state.data} column={this.state.column}></DataTable>
+            <FixedTable height={300} data={this.state.data} column={this.state.column}></FixedTable>
           </Fetch>
         </div>
     )

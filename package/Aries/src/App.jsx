@@ -8,6 +8,7 @@ import env from './env'
 import './App.less'
 import 'antd/dist/antd.less'
 import { Select ,Option} from 'bfd-ui/lib/Select2'
+import 'bfd-bootstrap'
 
 const LOGIN_PATH = (env.basePath + '/login').replace(/\/\//, '/')
 

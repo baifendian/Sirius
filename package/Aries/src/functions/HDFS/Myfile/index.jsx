@@ -1,5 +1,6 @@
 import React from 'react'
 import Task from 'public/Task'
+import Toolkit from 'public/Toolkit'
 import './index.less'
 import { Select, Option } from 'bfd-ui/lib/Select2'
 import Upload from 'bfd-ui/lib/Upload'
@@ -67,9 +68,10 @@ export default React.createClass({
     this.setState({tableData:data,num:cur_num});
   },
   addTableData(){
-    //debugger;
     let data = this.state.tableData;
-    let row = {"name":"new_dir","create_time":"2015-02-10 10:11","size":"-","is_dir":"1","is_new":0};
+    let create_time = Toolkit.generateTimeStrByMilliSeconds(-1);
+    create_time = create_time.replace("T"," "); //工具包中的函数不满足需求故临时处理一下
+    let row = {"name":"new_dir","create_time":create_time,"size":"-","is_dir":"1","is_new":0};
     let totalList = data.totalList;
     totalList.unshift(row);
     data.totalList =totalList;

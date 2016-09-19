@@ -7,7 +7,8 @@
     },
     "dependencies": {
         "antd": "^1.8.0",
-        "bfd-ui": "^0.7.7",
+        "bfd-bootstrap": "0.0.22",
+        "bfd-ui": "^0.10.0",
         "echarts": "^3.2.3",
         "js-cookie": "^2.1.2",
         "react-copy-to-clipboard": "^4.2.2",

@@ -4,6 +4,7 @@ import './index.less'
 import Upload from 'bfd-ui/lib/Upload'
 import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd-ui/lib/message'
+import Button from 'bfd/Button'
 
 const Head = React.createClass({
   source_path:"",
@@ -34,9 +35,7 @@ const Head = React.createClass({
     return (
       <div className="head">
       <div className="table-div">
-        <button type="button"
-                onClick={this.mkdir}
-                className="btn btn-primary" >新建文件夹</button>
+        <Button onClick={this.mkdir}>新建文件夹</Button>
       </div>
        <div className="table-div">
            <Upload className="table-div" {...props} />
