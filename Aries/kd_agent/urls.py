@@ -13,4 +13,10 @@ urlpatterns = patterns('',
     url(r'^api/v1/namespaces/mytasklist/getoldrecords', views.mytask_get_old_records),
     url(r'^api/v1/namespaces/mytasklist/checkhasnewrecords', views.mytask_check_has_new_records),
     url(r'^api/v1/namespaces/mytasklist/getnewrecords', views.mytask_get_new_records),
+
+    url(r'^api/v1/clusterinfo/cpu/(?P<minutes>\d{1,5})',views.get_cluster_cpu_info ),
+    url(r'^api/v1/clusterinfo/memory/(?P<minutes>\d{1,5})',views.get_cluster_memory_info ),
+    url(r'^api/v1/clusterinfo/network/(?P<minutes>\d{1,5})',views.get_cluster_network_info ),
+    url(r'^api/v1/clusterinfo/filesystem/(?P<minutes>\d{1,5})',views.get_cluster_filesystem_info ),
+
 )

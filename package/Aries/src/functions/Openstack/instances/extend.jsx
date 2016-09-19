@@ -3,6 +3,7 @@ import React from 'react'
 import './index.less'
 import './extend.less'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
+import OPEN from '../data_request/request.js'
 
 import { Progress, Button } from 'antd'
 const ButtonGroup = Button.Group
@@ -18,19 +19,39 @@ import Icon from 'bfd-ui/lib/Icon'
 import { Row, Col } from 'bfd-ui/lib/Layout'
 import xhr from 'bfd-ui/lib/xhr'
 import {Spin} from 'antd'
+import { Select, Option as Optionb } from 'bfd/Select'
 
 const Extend = React.createClass({
+  getInitialState() {
+    return {
+      _value:""
+    }
+  },
   handleClick(value) {
-    console.log(value)
-    console.log(this.props._this)
+    let _value=this.state._value
+    let _property=this.refs.type_property.state.value
+    if (!_property){
+      _property="name"
+    }
+    let _url=OPEN.UrlList()['search']+"?name=instances_search&keys="+_property+"&value="+_value
+    this.props._this.setState({url:_url})
   },
   handleChange(value) {
     console.log("change:", value)
+    this.setState({'_value':value})
   },
   render() {    
     return (
-    		<SearchInput className="extend_class" placeholder="请" onSearch={this.handleClick}  onChange={this.handleChange} size="sm" />
-    	)
+      <div>
+        <Select ref="type_property" className="type_property">
+          <Option >主机名=</Option>
+          <Option value="status">状态=</Option>
+          <Option value="image">镜像=</Option>
+          <Option value="flavor">类型=</Option>
+        </Select>
+    		<SearchInput className="extend_class" placeholder="请" onSearch={this.handleClick}  onChange={this.handleChange} size="sm" ref="type_input" />
+    	</div>
+      )
   }
 })
 
@@ -159,10 +180,9 @@ const Create_model_disk  = React.createClass({
 		});
 
 		return (
-
 			<div>
 				<div>{nav}</div>
-        	 	<Icon type="plus-square" onClick={this.create_disk.bind(this,1)}/><span>您还可选配</span><span className="disk_span">{this.state.test_mum}</span><span>快</span>
+        	 	<Icon type="plus-square" onClick={this.create_disk.bind(this,1)}/><span>您还可选配</span><span className="disk_span">{this.state.disk_number}</span><span>快</span>
 	     	</div>    
 			)
 		}	
@@ -384,8 +404,8 @@ const Create_model = React.createClass({
 
 
         <div className="right_host">
-        	<div style={{}}>
-        	<h4>展示</h4>
+        	<div style={{padding: "10px"}}>
+        	<h4>信息展示</h4>
         	</div>
         <div className="border_right"></div>
           <Row style={{margin: "5px 0px 0px 0px"}}>

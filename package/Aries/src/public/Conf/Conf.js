@@ -119,42 +119,42 @@ const conf = {
         headText: "我的文件",
         navigationTexts: [{
           text: "我的文件",
-          url: "/HDFS/Myfile?cur_space=${spaceName}"
+          url: "/CloudService/HDFS/Myfile?cur_space=${spaceName}"
         }]
       },
       Service: {
         headText: "服务管理",
         navigationTexts: [{
           text: "服务管理",
-          url: "/HDFS/Service?cur_space=${spaceName}",
+          url: "/CloudService/HDFS/Service?cur_space=${spaceName}",
         }]
       },
       Share: {
         headText: "我的分享",
         navigationTexts: [{
           text: "我的分享",
-          url: "/HDFS/Share?cur_space=${spaceName}"
+          url: "/CloudService/HDFS/Share?cur_space=${spaceName}"
         }]
       },
       ShareCenter: {
         headText: "共享中心",
         navigationTexts: [{
           text: "共享中心",
-          url: "/HDFS/ShareCenter?cur_space=${spaceName}"
+          url: "/CloudService/HDFS/ShareCenter?cur_space=${spaceName}"
         }]
       },
       Trash: {
         headText: "我的回收站",
         navigationTexts: [{
           text: "我的回收站",
-          url: "/HDFS/Trash?cur_space=${spaceName}"
+          url: "/CloudService/HDFS/Trash?cur_space=${spaceName}"
         }]
       },
       Capacity: {
         headText: "配额管理",
         navigationTexts: [{
           text: "配额管理",
-          url: "/HDFS/Capacity?cur_space=${spaceName}"
+          url: "/CloudService/HDFS/Capacity?cur_space=${spaceName}"
         }]
       }
     },
@@ -194,14 +194,104 @@ const conf = {
         headText: "Codis信息",
         navigationTexts: [{
           text: "Codis信息",
-          url: "/CodisCloud/CodisInfo?cur_space=${spaceName}"
+          url: "/CloudService/Codis/CodisInfo?cur_space=${spaceName}"
         }]
       },
       HostInfo: {
         headText: "主机信息",
         navigationTexts: [{
           text: "主机信息",
-          url: "/CodisCloud/HostInfo?cur_space=${spaceName}"
+          url: "/CloudService/Codis/HostInfo?cur_space=${spaceName}"
+        }]
+      },
+    },
+    //openstack Instances面包屑
+    Instances:{
+      Base: {
+        headText: "",
+        navigationTexts: [{
+          text: "概览",
+          url: "/?cur_space=${spaceName}"
+        }, {
+          text: "云主机",
+          url: ""
+        }, {
+          text: "计算",
+          url: ""
+        }]
+      },
+      instances: {
+        headText: "虚拟机",
+        navigationTexts: [{
+          text: "虚拟机",
+          url: "/CloudHost/Calculation/Instances?cur_space=${spaceName}"
+        }]
+      },
+      image: {
+        headText: "镜像",
+        navigationTexts: [{
+          text: "镜像",
+          url: "/CloudHost/Calculation/Images?cur_space=${spaceName}"
+        }]
+      },
+      flavors: {
+        headText: "类型",
+        navigationTexts: [{
+          text: "类型",
+          url: "/CloudHost/Calculation/Flavors?cur_space=${spaceName}"
+        }]
+      },
+    },
+    //openstack Volumes面包屑
+    Volumes:{
+      Base: {
+        headText: "12",
+        navigationTexts: [{
+          text: "概览",
+          url: "/?cur_space=${spaceName}"
+        }, {
+          text: "云主机",
+          url: ""
+        }, {
+          text: "存储",
+          url: ""
+        }]
+      },
+      volumes: {
+        headText: "云磁盘",
+        navigationTexts: [{
+          text: "云磁盘",
+          url: "/CloudHost/Storage/Volumes?cur_space=${spaceName}"
+        }]
+      },
+      backup: {
+        headText: "备份",
+        navigationTexts: [{
+          text: "备份",
+          url: "/CloudHost/Storage/Backup?cur_space=${spaceName}"
+        }]
+      },
+    },
+    //openstack Project面包屑
+    Project:{
+      Base: {
+        headText: "11",
+        navigationTexts: [{
+          text: "概览",
+          url: "/?cur_space=${spaceName}"
+        }, {
+          text: "云主机",
+          url: ""
+        }, {
+          text: "管理",
+          url: ""
+        }]
+      },
+      project: {
+        headText: "项目管理",
+        navigationTexts: [{
+          text: "项目管理",
+          url: "/CloudHost/Manage/Project?cur_space=${spaceName}"
         }]
       },
     },
@@ -224,28 +314,28 @@ const conf = {
         headText: "K8s监控概览",
         navigationTexts: [{
           text: "K8s监控概览",
-          url: "/CalcManage/Overview?cur_space=${spaceName}"
+          url: "/CloudContainer/CalcManage/Overview?cur_space=${spaceName}"
         }]
       },
       PodInfo: {
         headText: "Pod信息",
         navigationTexts: [{
           text: "Pod信息",
-          url: "/CalcManage/PodInfo?cur_space=${spaceName}"
+          url: "/CloudContainer/CalcManage/PodInfo?cur_space=${spaceName}"
         }]
       },
       ServiceInfo: {
         headText: "Service信息",
         navigationTexts: [{
           text: "Service信息",
-          url: "/CalcManage/ServiceInfo?cur_space=${spaceName}"
+          url: "/CloudContainer/CalcManage/ServiceInfo?cur_space=${spaceName}"
         }]
       },
       ReplicationControllerInfo: {
         headText: "RC信息",
         navigationTexts: [{
           text: "RC信息",
-          url: "/CalcManage/ReplicationControllerInfo?cur_space=${spaceName}"
+          url: "/CloudContainer/CalcManage/ReplicationControllerInfo?cur_space=${spaceName}"
         }]
       },
     },
@@ -267,14 +357,14 @@ const conf = {
         headText: "开始使用",
         navigationTexts: [{
           text: "开始使用",
-          url: "/CalcManage/CreateCluster/CC1?cur_space=${spaceName}"
+          url: "/CloudContainer/UserDoc/CC1?cur_space=${spaceName}"
         }]
       },
       CC2: {
         headText: "云中心计算集群",
         navigationTexts: [{
           text: "云中心计算集群",
-          url: "/CalcManage/CreateCluster/CC2?cur_space=${spaceName}"
+          url: "/CloudContainer/UserDoc/CC2?cur_space=${spaceName}"
         }]
       }
     },
@@ -296,7 +386,7 @@ const conf = {
         headText: "我的任务",
         navigationTexts: [{
           text: "我的任务",
-          url: "/CalcManage/MyTask?cur_space=${spaceName}"
+          url: "/CloudContainer/OffLineCalcTask/MyTask?cur_space=${spaceName}"
         }]
       }
     }

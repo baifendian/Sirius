@@ -71,8 +71,8 @@ const TabLiebiao = React.createClass({
       taskname:this.userData['curTaskName'] ? this.userData['curTaskName'] : '',
       shelltype:this.userData['curShellType'] ? this.userData['curShellType'] : 'ALL',
       executeresult:this.userData['curExecutedResult'] ? this.userData['curExecutedResult'] : 'ALL',
-      startdate:this.userData['curStartDate'] ? this.userData['curStartDate'] : Toolkit.generateTimeStrBySeconds(0),
-      enddate:this.userData['curEndDate'] ? this.userData['curEndDate'] : Toolkit.generateTimeStrBySeconds(-1).split('T')[0] + 'T23:59:59'
+      startdate:this.userData['curStartDate'] ? this.userData['curStartDate'] : Toolkit.generateTimeStrByMilliSeconds(0),
+      enddate:this.userData['curEndDate'] ? this.userData['curEndDate'] : Toolkit.generateTimeStrByMilliSeconds(-1).split('T')[0] + 'T23:59:59'
     }
     this.userData['curSearchCondition'] = searchConditions
     return searchConditions
@@ -148,8 +148,8 @@ const TabLiebiao = React.createClass({
         taskname:'',
         shelltype:'ALL',
         executeresult:'ALL',
-        startdate:Toolkit.generateTimeStrBySeconds(0),
-        enddate:Toolkit.generateTimeStrBySeconds(-1)
+        startdate:Toolkit.generateTimeStrByMilliSeconds(0),
+        enddate:Toolkit.generateTimeStrByMilliSeconds(-1)
       }
     } 
     return this.userData['curSearchCondition']
@@ -256,14 +256,14 @@ const TabLiebiao = React.createClass({
 
   onDateRangeChanged( startDate,endDate ){
     if (startDate){
-      this.userData['curStartDate'] = Toolkit.generateTimeStrBySeconds( startDate ).split('T')[0] + 'T00:00:00'
+      this.userData['curStartDate'] = Toolkit.generateTimeStrByMilliSeconds( startDate ).split('T')[0] + 'T00:00:00'
     } else {
-      this.userData['curStartDate'] = Toolkit.generateTimeStrBySeconds( 0 )
+      this.userData['curStartDate'] = Toolkit.generateTimeStrByMilliSeconds( 0 )
     }
     if ( endDate ){
-      this.userData['curEndDate'] = Toolkit.generateTimeStrBySeconds( endDate ).split('T')[0] + 'T23:59:59'
+      this.userData['curEndDate'] = Toolkit.generateTimeStrByMilliSeconds( endDate ).split('T')[0] + 'T23:59:59'
     } else {
-      this.userData['curEndDate'] = Toolkit.generateTimeStrBySeconds( -1 ).split('T')[0] + 'T23:59:59'
+      this.userData['curEndDate'] = Toolkit.generateTimeStrByMilliSeconds( -1 ).split('T')[0] + 'T23:59:59'
     }
 
     this.markDataRangeControlState( true )

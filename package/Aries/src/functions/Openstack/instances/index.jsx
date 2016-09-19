@@ -16,6 +16,7 @@ import { Icon } from 'antd'
 import './jquery.min.js'
 import NavigationInPage from 'public/NavigationInPage'
 import ReactDOM from 'react-dom'
+import Openstackconf from '../Conf/Openstackconf'
 
 
 export default React.createClass({
@@ -215,15 +216,17 @@ export default React.createClass({
   disk_model_open(){
       this.refs.model_disk.open()
     },
-
+  requestArgs:{
+    pageName : "instances",
+  },
   render() {
-    let naviTexts = [{  'url':'/','text':'概览'   },
-      {'url':'','text':'云主机'   },
-      {'url':'','text':'计算'   },
-      {'url':'/openstack/instances','text':'虚拟机'   }]
+    let spaceName = Openstackconf.getCurSpace(this)
     return (
       <div className="function-data-moduleA">
-      <NavigationInPage naviTexts={naviTexts} headText="openstack" />
+      <NavigationInPage headText={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
+      <div className="class_extend">
+        <Extend _this={this}/>
+      </div>
       <Spin spinning={this.state.loading}>
       	<div>
           <Button onClick={this.handleOpen.bind(this,5)} style={{float:"left",margin:'0px 10px 0px 0px'}}>刷新</Button>
@@ -233,9 +236,9 @@ export default React.createClass({
       		<Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this,3)} style={{float:"left"}}>停止</Button>
       		<Button disabled={this.state.button_status} type="danger"  onClick={this.handleOpen.bind(this,4)} style={{float:"left"}} >删除</Button>
           <Disk_model vm_list={this.state.select_all} ref="model_model" _this={this}/>
-          <div style={{float: 'right'}}>
+          {/*<div style={{float: 'right'}}>
             <Extend _this={this}/>
-          </div>
+          </div>*/}
           <Modal ref="modal">
           		<ModalHeader>
             		<h4>{this.state.test}</h4>
