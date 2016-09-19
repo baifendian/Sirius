@@ -8,6 +8,8 @@ import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
 import OPEN from '../data_request/request.js'
 import Openstackconf from '../Conf/Openstackconf'
+import ReactDOM from 'react-dom'
+import TextOverflow from 'bfd/TextOverflow'
 
 
 
@@ -19,7 +21,6 @@ export default React.createClass({
       column: [{
         title: '名称',
         order: false,
-       // width: '200px',
         key: 'displayName'
       }, {
         title: '描述',
@@ -28,7 +29,14 @@ export default React.createClass({
       }, {
         title: '大小',
         key: 'size',
-        order: false
+        order: false,
+        render: (text, item) => {
+          return (
+            <div>
+              <TextOverflow><p style={{width: '204px'}}>{text}GB</p>
+              </TextOverflow>
+            </div>)
+        }
       }, {
         title: '状态',
         key: 'status',
@@ -40,13 +48,26 @@ export default React.createClass({
       }, {
         title: '操作',
         key: 'size',
-        order: false
+        order: false,
+     //   width: "18.25%"
       }
       ]
     }
   },
   handleOpen(name) {
     console.log(this.state.images_list)
+  },
+  componentDidMount(){
+    console.log(document.body.clientHeight)
+    let totalHeight = document.body.clientHeight
+    //let totalwidth=1053.36-21.18
+    totalHeight -= document.getElementById('header').clientHeight
+    totalHeight -= document.getElementById('footer').clientHeight
+    let backup_nav = ReactDOM.findDOMNode(this.refs.backup_nav).clientHeight
+    let backup_bu = ReactDOM.findDOMNode(this.refs.backup_bu).clientHeight
+    totalHeight = totalHeight - backup_nav - backup_bu - 120
+    ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.width=totalwidth+'px'
   },
   requestArgs:{
     pageName : "backup",
@@ -55,12 +76,12 @@ export default React.createClass({
     let spaceName = Openstackconf.getCurSpace(this)
       return (
       <div className="function-data-moduleA">
-      <NavigationInPage headText={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
+      <NavigationInPage ref="backup_nav" headText={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
       <Spin spinning={this.state.loading}>
-      	<div>
-          <Button onClick={this.handleOpen.bind(this,5)} style={{float:"left",margin:'0px 10px 0px 0px'}}>刷新</Button>
+      	<div ref="backup_bu">
+          <Button onClick={this.handleOpen.bind(this,5)} style={{margin:'0px 10px 0px 0px'}}>刷新</Button>
       	</div>
-      		<div>
+      	<div className="DataTableFatherDiv_backup">
         	<DataTable
 		        url={this.state.url}
 		        showPage="false"

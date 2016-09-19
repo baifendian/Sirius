@@ -97,7 +97,8 @@ def instances(request):
             maxpageSizes = 0
         ret['totalList'] = []
         test_list = []
-        for host in host_list['servers'][minpageSizes:maxpageSizes]:
+       # for host in host_list['servers'][minpageSizes:maxpageSizes]:
+        for host in host_list['servers']:
             sys = {}
             sys['id'] = host['id']
             sys['name'] = host['name']
@@ -246,10 +247,12 @@ def images(request):
         sys['totalList'] = []
         sys['name'] = {}
         for i in image.list_detail()["images"]:
+            openstack_log.info(i)
             ret = {}
-
             if len(i['metadata']) > 0:
-                continue
+                try:
+                    if i['metadata']['image_type'] =="snapshot":
+                        continue
                 # ret['public'] ='NO'
                 # ret['type_image']='快照'
                 # sys['name'][i['id']] = i['name']
@@ -259,6 +262,15 @@ def images(request):
                 # ret['image_status'] = i['status']
                 # ret['id'] = i['id']
                 # ret['size'] = i['OS-EXT-IMG-SIZE:size']
+                except:
+                    ret['public'] = "YES"
+                    ret['type_image'] = "镜像"
+                    sys['name'][i['id']] = i['name']
+                    ret['name'] = i['name']
+                    ret['format'] = 'QCOW2'
+                    ret['image_status'] = i['status']
+                    ret['id'] = i['id']
+                    ret['size'] = str((round(Decimal(int(i['OS-EXT-IMG-SIZE:size'])) / Decimal(1024) / Decimal(1024), 2))) + 'MB'
             else:
                 ret['public'] = "YES"
                 ret['type_image'] = "镜像"
@@ -267,8 +279,7 @@ def images(request):
                 ret['format'] = 'QCOW2'
                 ret['image_status'] = i['status']
                 ret['id'] = i['id']
-                ret['size'] = str(
-                    (round(Decimal(int(i['OS-EXT-IMG-SIZE:size'])) / Decimal(1024) / Decimal(1024), 2))) + 'MB'
+                ret['size'] = str((round(Decimal(int(i['OS-EXT-IMG-SIZE:size'])) / Decimal(1024) / Decimal(1024), 2))) + 'MB'
             sys['totalList'].append(ret)
         sys['currentPage'] = 1
         sys['totalPageNum'] = len(sys['totalList'])

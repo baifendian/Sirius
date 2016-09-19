@@ -1,12 +1,13 @@
 import React from 'react'
 import { Menu, Dropdown as Dropdown1 ,Icon } from 'antd'
-//import './index.less'
+import './index.less'
 import Button from 'bfd-ui/lib/Button'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import { Spin } from 'antd'
 import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
 import OPEN from '../data_request/request.js'
+import ReactDOM from 'react-dom'
 import Openstackconf from '../Conf/Openstackconf'
 
 
@@ -19,7 +20,6 @@ export default React.createClass({
       column: [{
         title: '名称',
         order: false,
-       // width: '200px',
         key: 'name'
       }, {
         title: '描述',
@@ -32,13 +32,26 @@ export default React.createClass({
       }, {
         title: '域名',
         key: 'domain_name',
-        order: false
+        order: false,
+      //  width: "26.25%"
       }
       ]
     }
   },
   handleOpen(name) {
     console.log(this.state.images_list)
+  },
+  componentDidMount(){
+    console.log(document.body.clientHeight)
+    let totalHeight = document.body.clientHeight
+    //let totalwidth=1053.36-21.18
+    totalHeight -= document.getElementById('header').clientHeight
+    totalHeight -= document.getElementById('footer').clientHeight
+    let project_nav = ReactDOM.findDOMNode(this.refs.project_nav).clientHeight
+    let project_bu = ReactDOM.findDOMNode(this.refs.project_bu).clientHeight
+    totalHeight = totalHeight - project_nav - project_bu - 120
+    ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.width=totalwidth+'px'
   },
   requestArgs:{
     pageName : "project",
@@ -47,12 +60,12 @@ export default React.createClass({
     let spaceName = Openstackconf.getCurSpace(this)
       return (
       <div className="function-data-moduleA">
-      <NavigationInPage headText={Openstackconf.getNavigationDatap({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationDatap({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
+      <NavigationInPage ref="project_nav" headText={Openstackconf.getNavigationDatap({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationDatap({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
       <Spin spinning={this.state.loading}>
-      	<div>
-          <Button onClick={this.handleOpen.bind(this,5)} style={{float:"left",margin:'0px 10px 0px 0px'}}>刷新</Button>
+      	<div ref="project_bu">
+          <Button onClick={this.handleOpen.bind(this,5)} style={{margin:'0px 10px 0px 0px'}}>刷新</Button>
       	</div>
-      		<div>
+      		<div className="DataTableFatherDiv_project">
         	<DataTable
 		        url={this.state.url}
 		        showPage="false"
