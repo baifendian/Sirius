@@ -68,7 +68,6 @@ export default React.createClass({
     this.setState({tableData:data,num:cur_num});
   },
   addTableData(){
-    debugger;
     let data = this.state.tableData;
     let create_time = Toolkit.generateTimeStrBySeconds(-1);
     create_time = create_time.replace("T"," "); //工具包中的函数不满足需求故临时处理一下
