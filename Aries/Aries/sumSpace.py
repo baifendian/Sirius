@@ -35,7 +35,7 @@ def sumSpace(operator='du'):
                 space.save()
     hdfs_logger.info("###########sumSpace count end.")
 
-def setInterval(func, sec):
+def set_interval(func, sec):
     def func_wrapper():
         set_interval(func, sec)
         func()
@@ -44,4 +44,4 @@ def setInterval(func, sec):
     return t
 
 def run(pollTime):
-    setInterval(sumSpace,pollTime)
+    set_interval(sumSpace,pollTime)
