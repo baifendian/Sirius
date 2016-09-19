@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import ReactMarkdown from 'react-markdown'
-import './index.less'
+import '../index.less'
 import NavigationInPage from 'public/NavigationInPage'
 import CalcManageConf from '../../UrlConf'
 
@@ -53,9 +53,9 @@ export default React.createClass({
 'Heapster is running at https://172.17.4.101:443/api/v1/proxy/namespaces/kube-system/services/heapster',
 'KubeDNS is running at https://172.17.4.101:443/api/v1/proxy/namespaces/kube-system/services/kube-dns',
 '```',
-'`172.17.4.101`是运行了Kubernetes master的虚拟IP地址',
+'`172.17.4.101`是运行了Kubernetes master的虚拟IP地址。',
 '## Nodes',
-'我们可以使用 `kubectl get nodes`获得nodes信息',
+'我们可以使用 `kubectl get nodes`获得nodes信息：',
 '```',
 'yi@WangYis-iMac:~/work/k8sp/kubernetes $ kubectl get nodes',
 'NAME           STATUS                     AGE',
@@ -63,9 +63,9 @@ export default React.createClass({
 '172.17.4.201   Ready                      5h',
 '```',
 '每个node都有一个IP地址，是因为每台虚拟机都有一个IP地址。当我们创建虚拟集群时，应该在Vagrant配置中指定node的IP地址。如果Kubernetes集群是用Vagrant创建的，我们可以在主机上 `ping 172.17.4.101`或 `ping 172.17.4.201`。',
-'请注意，node的IP地址与pod的IP地址是不一样的，为了更多的了解pod IP，让我们来创建一些pods',
+'请注意，node的IP地址与pod的IP地址是不一样的，为了更多的了解pod IP，让我们来创建一些pods。',
 '## Pods',
-'我们可以通过 `kubectl create -f pod_description.yaml`这条命令去创建一个pod。这里有一个示例yaml文件[pod_nginx.yaml](https://github.com/k8sp/kubernetes/blob/master/pod_nginx.yaml)',
+'我们可以通过 `kubectl create -f pod_description.yaml`这条命令去创建一个pod。示例yaml文件[pod_nginx.yaml](https://github.com/k8sp/kubernetes/blob/master/pod_nginx.yaml)。',
 '```',
 'apiVersion: v1',
 'kind: Pod',
@@ -319,7 +319,7 @@ export default React.createClass({
     let spaceName = CalcManageConf.getCurSpace(this);
 
     return (
-      <div className='mdRootDiv1' ref='mdRootDiv1'>
+      <div className='mdRootDiv' ref='mdRootDiv1'>
         <NavigationInPage ref='NavigationInPage'
                           headText={CalcManageConf.getNavigationData({
                             moduleName:'UserDoc',
@@ -333,8 +333,8 @@ export default React.createClass({
                             spaceName:spaceName
                           })} />
                           
-          <div className='Big1' ref='Big1'>
-            <ReactMarkdown className='mdChildDiv1' source={str} />
+          <div className='Big' ref='Big1'>
+            <ReactMarkdown className='mdChildDiv' source={str} />
           </div>
       </div>
     )
