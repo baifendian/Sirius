@@ -69,7 +69,7 @@ export default React.createClass({
   },
   addTableData(){
     let data = this.state.tableData;
-    let create_time = Toolkit.generateTimeStrBySeconds(-1);
+    let create_time = Toolkit.generateTimeStrByMilliSeconds(-1);
     create_time = create_time.replace("T"," "); //工具包中的函数不满足需求故临时处理一下
     let row = {"name":"new_dir","create_time":create_time,"size":"-","is_dir":"1","is_new":0};
     let totalList = data.totalList;
