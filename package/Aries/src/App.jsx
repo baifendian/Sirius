@@ -8,6 +8,7 @@ import env from './env'
 import './App.less'
 import 'antd/dist/antd.less'
 import { Select ,Option} from 'bfd-ui/lib/Select2'
+import 'bfd-bootstrap'
 
 const LOGIN_PATH = (env.basePath + '/login').replace(/\/\//, '/')
 
@@ -142,7 +143,7 @@ const App = React.createClass({
                     <NavItem key={22} icon="equalizer" title="Docker Image" />
                     */}
                     <NavItem key={23} href="CloudContainer/OffLineCalcTask" icon="tasks" title="离线计算任务" >
-                      <NavItem href={`CloudContainer/OffLineCalcTask/MyTask?${params}`} title="我的任务" />                  
+                      <NavItem href={`CloudContainer/OffLineCalcTask/MyTask?${params}`} title="我的任务" />
                     </NavItem>
                     {/** 暂时下面没有任何节点，因此注释掉
                     <NavItem key={24} icon="equalizer" title="storm实时计算任务" />
