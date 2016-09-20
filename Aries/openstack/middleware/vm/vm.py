@@ -346,7 +346,7 @@ class Vm_control:
         return ret
 
     @plog("vm_control.reboot")
-    def reboot(self, vm_id):
+    def reboot(self, vm_id,type="HARD"):
         '''
         重启虚拟机
         :param vm_id:
@@ -357,7 +357,7 @@ class Vm_control:
         path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"reboot": {"type": "HARD"}}
+        params = {"reboot": {"type": type}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
         return ret

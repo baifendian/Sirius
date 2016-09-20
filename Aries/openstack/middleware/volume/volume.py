@@ -172,6 +172,25 @@ class Volume:
         assert ret != 1, "send_request error"
         return ret
 
+    @plog("Volume.change")
+    def change(self,volume_id,name="",description=""):
+        '''
+        修改磁盘信息
+        :return:
+        '''
+        assert self.token != "","not login"
+        path = "/v2/%s/volumes/%s"%(self.project_id, volume_id)
+        method = "PUT"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = {"volume":{}}
+        if name:
+            params["volume"].update({"name":name})
+        if description:
+            params["volume"].update({"description":description})
+        ret = send_request(method,IP_cinder,PORT_cinder,path,params,head)
+        assert ret != 1,"send_request error"
+        return ret
+
 class Volume_snaps():
     def __init__(self):
         self.token = get_token()
