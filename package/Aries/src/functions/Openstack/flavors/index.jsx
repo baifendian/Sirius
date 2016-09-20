@@ -51,7 +51,6 @@ export default React.createClass({
         title: '公有',
         key: 'public',
         order:false,
-        width: "20%"
       }
       ],
       width_t:""
@@ -61,19 +60,30 @@ export default React.createClass({
     console.log(this.state.flavors_list)
   },
   componentDidMount(){
-    console.log(document.body.clientHeight)
-    console.log(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes[0].clientHeight)
-    console.log(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes[0].scrollWidth)
-    console.log(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth)
-    console.log(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientHeight)
+    let table_trlengt=ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
+    let totallength=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes.length
+    let tdheight=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].scrollHeight
+    let height_table=(totallength)*tdheight
+    let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-17)/table_trlengt
     let totalHeight = document.body.clientHeight
     totalHeight -= document.getElementById('header').clientHeight
     totalHeight -= document.getElementById('footer').clientHeight
     let flavors_nav = ReactDOM.findDOMNode(this.refs.flavors_nav).clientHeight
     let flavors_bu = ReactDOM.findDOMNode(this.refs.flavors_bu).clientHeight
     totalHeight = totalHeight - flavors_nav - flavors_bu - 110
-    ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    console.log('totalHeight',totalHeight)
+    if (totalHeight>height_table){
+      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    }else{
+      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
+      if (i==(table_trlengt-1)){
+        totalwidth=totalwidth+17
+        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }else{
+        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }
+    }
+  }
   },
   requestArgs:{
     pageName : "flavors",

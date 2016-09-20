@@ -131,7 +131,13 @@ export default React.createClass({
     OPEN.volumes_data(this,this.state.select_all)
   },
   componentDidMount(){
-    console.log(document.body.clientHeight)
+    let table_trlengt=ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
+    let totallength=ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].childNodes.length
+    console.log(ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].childNodes)
+    let tdheight=ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].scrollHeight
+    let height_table=(totallength+1)*tdheight
+    let totalwidth=(ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].clientWidth-17)/table_trlengt
+     console.log(',,,11',table_trlengt,totallength)
     let totalHeight = document.body.clientHeight
     //let totalwidth=1053.36-21.18
     totalHeight -= document.getElementById('header').clientHeight
@@ -139,8 +145,25 @@ export default React.createClass({
     let volumes_nav = ReactDOM.findDOMNode(this.refs.volumes_nav).clientHeight
     let volumes_bu = ReactDOM.findDOMNode(this.refs.volumes_bu).clientHeight
     totalHeight = totalHeight - volumes_nav - volumes_bu - 120
-    ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    //ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.width=totalwidth+'px'
+    if (totalHeight>height_table){
+      ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+      console.log('l..........test11111')
+      console.log('tes1233',totalHeight,height_table)
+    }else{
+      console.log('l..........test1111111111333')
+      console.log('tes1233',totalHeight,height_table)
+    ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    for (let i in ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes){
+      if (i==(table_trlengt-1)){
+        totalwidth=totalwidth+17
+        ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }else{
+        ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }
+    }
+  }
   },
   requestArgs:{
     pageName : "volumes",

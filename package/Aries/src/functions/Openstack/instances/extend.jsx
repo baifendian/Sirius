@@ -4,9 +4,7 @@ import './index.less'
 import './extend.less'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import OPEN from '../data_request/request.js'
-
-import { Progress, Button } from 'antd'
-const ButtonGroup = Button.Group
+import Button from 'bfd-ui/lib/Button'
 
 import { Form, FormItem } from 'bfd-ui/lib/Form'
 import FormInput from 'bfd-ui/lib/FormInput'
@@ -392,7 +390,7 @@ const Create_model = React.createClass({
 
     return (
       <div style={{float: "left",margin:'0px 10px 0px 0px'}}>
-        <button className="btn btn-primary" onClick={this.handleOpen}>创建</button>
+        <Button className="" onClick={this.handleOpen}>创建</Button>
         <Modal ref="modal">
           <ModalHeader>
             <h2>云主机创建</h2>
