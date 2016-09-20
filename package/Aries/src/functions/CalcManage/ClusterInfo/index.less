@@ -20,6 +20,30 @@ div.RCInfoChildRootDiv div.DataTableFatherDiv table {
   }
 }
 
+div.IngressInfoChildRootDiv div.DataTableFatherDiv > table {
+  > thead > tr > th, > tbody > tr > td { 
+    width: 33.33%; 
+  }
+}
+
+div.IngressInfoChildRootDiv div.DataTableFatherDiv table table {
+  width: 100%;
+  tbody{
+    width: 100%;
+    tr{
+      background-color: transparent;
+      width: 100%;
+    }
+  }
+    
+  td:nth-child(1){
+    width: 60%;
+  }
+  td:nth-child(2){
+    width: 40%;
+  }
+
+}
 
 
 
@@ -32,7 +56,7 @@ div.RCInfoChildRootDiv div.DataTableFatherDiv table {
     background-color: #BBDEFB !important; 
 }
 
-div.PodInfoChildRootDiv,div.ServiceInfoChildRootDiv,div.RCInfoChildRootDiv {
+div.PodInfoChildRootDiv,div.ServiceInfoChildRootDiv,div.RCInfoChildRootDiv,div.IngressInfoChildRootDiv {
   
   div.SearchInputFatherDiv{
 	  float:right;
@@ -83,33 +107,33 @@ div.PodInfoChildRootDiv,div.ServiceInfoChildRootDiv,div.RCInfoChildRootDiv {
     padding-right:8px;
   }
 
-  div.DataTableFatherDiv table {
-    th,td{
+  div.DataTableFatherDiv > table {
+    > thead > th , > tbody > td{
       font-family: '微软雅黑';
       font-size: 12px;
       color:#666666;
     }
-    thead{
-      tr{
+    > thead{
+      > tr{
         display: block;
         width: 100%;
-        th{
+        > th{
           display: inline-block;
           border-bottom: 3px solid #DDEEFD;
         }
       }
     }
 
-    tbody {
+    > tbody {
       display: block;
       width: 100%;
       overflow-x: hidden;
       overflow-y: auto;
-      tr{
+      > tr{
         display: block;
         width: 100%;
         border-bottom: 1px solid #EFF3F8;
-        td{
+        > td{
           display: inline-block;
           border-top: 0px;
         }

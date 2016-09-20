@@ -10,8 +10,9 @@ var CalcManageDataRequester = {
     return {
       'k8soverview': 'k8s/api/v1/namespaces/{nameSpace}/getk8soverview',
       'podlist': 'k8s/api/v1/namespaces/{nameSpace}/pods',
-      'serviceList': 'k8s/api/v1/namespaces/{nameSpace}/services',
+      'servicelist': 'k8s/api/v1/namespaces/{nameSpace}/services',
       'rclist': 'k8s/api/v1/namespaces/{nameSpace}/replicationcontrollers',
+      'ingresslist':'k8s/apis/extensions/v1beta1/namespaces/{nameSpace}/ingresses',
       'mytasklist': 'k8s/api/v1/namespaces/mytasklist',
       'mytaskgraph': 'k8s/api/v1/namespaces/mytaskgraph',
 
@@ -108,7 +109,7 @@ var CalcManageDataRequester = {
   },
 
   getServiceList(_this, callback, nameSpace ) {
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['serviceList'], {
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['servicelist'], {
       'nameSpace': nameSpace
     })
     this.xhrGetData(url, _this, callback)
@@ -121,6 +122,14 @@ var CalcManageDataRequester = {
     this.xhrGetData(url, _this, callback)
   },
 
+  getIngressList(_this, callback, nameSpace ) {
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['ingresslist'], {
+      //'nameSpace': nameSpace
+      'nameSpace': 'default'
+    })
+    this.xhrGetData(url, _this, callback)
+  },
+  
   xhrGetData(url, _this, callback) {
     xhr({
       url: url,
