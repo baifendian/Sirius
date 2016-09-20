@@ -370,7 +370,7 @@ const Model_list=React.createClass({
   },
   values(){
     return {
-      'redact':"编辑云盘",
+      'Redact':"编辑云盘",
       'Extend':"扩展云硬盘",
       'Loading_disk':"加载云磁盘",
       'Uninstall_disk':"卸载云磁盘",
@@ -410,7 +410,7 @@ const Model_list=React.createClass({
     const DropdownButton = Dropdown.Button;
     const menu = (
           <Menu onClick={this.handleMenuClick}>
-            <Menu.Item key="1" disabled={this.props.button_status}>编辑云硬盘</Menu.Item>
+            <Menu.Item key="Redact" disabled={this.props.button_status}>编辑云硬盘</Menu.Item>
             <Menu.Item key="Extend" disabled={this.props.button_status} >扩展云硬盘</Menu.Item>
             <Menu.Item key="Loading_disk" disabled={this.props.button_status}>加载硬盘</Menu.Item>
             <Menu.Item key="Uninstall_disk" disabled={this.props.button_status} >卸载硬盘</Menu.Item>
