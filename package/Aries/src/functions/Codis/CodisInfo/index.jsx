@@ -20,6 +20,7 @@ import ObjectPic from './ObjectPic'
 import ObjectLog from './ObjectLog'
 import message from 'bfd-ui/lib/message'
 import Editable from 'bfd-ui/lib/Editable'
+import NavigationInPage from 'public/NavigationInPage'
 
 
 export default React.createClass({
