@@ -17,6 +17,7 @@ import './jquery.min.js'
 import NavigationInPage from 'public/NavigationInPage'
 import ReactDOM from 'react-dom'
 import Openstackconf from '../Conf/Openstackconf'
+import TextOverflow from 'bfd/TextOverflow'
 
 
 export default React.createClass({
@@ -34,17 +35,22 @@ export default React.createClass({
       url_vnc:"",
     	url: "openstack/bfddashboard/instances/",
       column: [{
-        title:'序号',
-        key:'sequence'
-      }, {
         title: '名称',
-        order: true,
-        width: '100px',
+        order: false,
         render: (text, item) => {
             let path="/openstack/"+item['id']+'/'
           return ( 
               <div>
-                <a href={path} >{text}</a><a href="javascript:void(0);" style={{"margin-left":"20px"}} onClick={this.requestvnc.bind(this,1,item['id'])}><Icon type="desktop" /></a>
+                <div>
+                <a href="#">
+                  <TextOverflow>
+                    <p style={{width:'110px'}}>{text} </p>
+                  </TextOverflow>
+                </a>
+                </div>
+                <div>
+                <a href="javascript:void(0);" style={{}} onClick={this.requestvnc.bind(this,1,item['id'])}><Icon type="desktop" /></a>
+                </div>
               </div>
             )
         },
@@ -52,19 +58,18 @@ export default React.createClass({
       }, {
         title: '类型',
         key: 'flavor',
-        order: true
+        order: false
       }, {
         title: '镜像名',
         key: 'image',
-        order: true
+        order: false
       }, {
         title: 'IP地址',
         key: 'ip',
-        width: '15%'
       }, {
         title: '状态',
         key: 'status',
-        order:true,
+        order:false,
         render: (text,item)=>{
           console.log('text_text',text)
          if (text=="active" || text == "error" || text=="stopped"){return (<span>{text}</span>)}else{
@@ -73,7 +78,7 @@ export default React.createClass({
       }, {
         title: '创建时间',
         key: 'created',
-        order: true
+        order: false,
       }
       ]
     }
@@ -147,7 +152,6 @@ export default React.createClass({
   },
   handleRowClick(row) {
     console.log('rowclick', row)
-    //OPEN.open_vnc(this,row,this.requestvnc)
   },
   handleOrder(name, sort) {
     console.log(name, sort)
@@ -214,8 +218,34 @@ export default React.createClass({
     this.setState({test: "重启"})
   },
   disk_model_open(){
-      this.refs.model_disk.open()
-    },
+    this.refs.model_disk.open()
+  },
+  componentDidMount(){
+    let table_trlengt=ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
+    let totallength=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes.length
+    let tdheight=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].scrollHeight
+    let height_table=(totallength+1)*tdheight
+    let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/table_trlengt
+    let totalHeight = document.body.clientHeight
+    totalHeight -= document.getElementById('header').clientHeight
+    totalHeight -= document.getElementById('footer').clientHeight
+    let instances_nav = ReactDOM.findDOMNode(this.refs.instances_nav).clientHeight
+    let instances_bu = ReactDOM.findDOMNode(this.refs.instances_bu).clientHeight
+    totalHeight = totalHeight-instances_nav-instances_bu-140
+    if (totalHeight>height_table){
+      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    }else{
+      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
+      if (i==(table_trlengt-1)){
+        totalwidth=totalwidth+18.5
+        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }else{
+        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }
+    }
+  }
+  },
   requestArgs:{
     pageName : "instances",
   },
@@ -223,12 +253,12 @@ export default React.createClass({
     let spaceName = Openstackconf.getCurSpace(this)
     return (
       <div className="function-data-moduleA">
-      <NavigationInPage headText={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
+      <NavigationInPage ref="instances_nav" headText={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
       <div className="class_extend">
         <Extend _this={this}/>
       </div>
       <Spin spinning={this.state.loading}>
-      	<div>
+      	<div ref="instances_bu">
           <Button onClick={this.handleOpen.bind(this,5)} style={{float:"left",margin:'0px 10px 0px 0px'}}>刷新</Button>
           <Create_model _this={this}/>
       		<Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this,1)} style={{float:"left"}}>启动</Button>
@@ -263,18 +293,15 @@ export default React.createClass({
                      <iframe name= "iFrame" width="760" height="615" src={this.state.url_vnc} scrolling= "auto " frameborder= "0" style={{height: "436px"}}></iframe>
                     </div>
                  </div>
-                 <div className="">
-                  {/*<Button onClick={this.handleclean.bind(this,'clean')}>关闭</Button>*/}
-                 {/* <Button onClick={this.handleclean.bind(this,this.state.host_post)}></Button>*/}
-                 </div>
               </ModalBody>
           </Modal>
       	</div>
-      		<div>
+        <div style={{clear:"both"}}></div>
+      	<div className="DataTableFatherDiv_instances">
         	<DataTable 
 		        url={this.state.url} 
 		        onPageChange={this.onPageChange} 
-		        showPage="true" 
+		        showPage="false" 
 		        column={this.state.column} 
 		        howRow={8}
 		        onRowClick={this.handleRowClick}

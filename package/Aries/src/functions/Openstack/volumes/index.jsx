@@ -15,6 +15,7 @@ import ReactDOM from 'react-dom'
 import Model_list from './volumes_model_list'
 import Openstackconf from '../Conf/Openstackconf'
 
+
 export default React.createClass({
 
    getInitialState: function () {
@@ -27,13 +28,18 @@ export default React.createClass({
         title: '名称',
         render: (text, item) => {
           return (<a href="javascript:void(0);" onClick={this.handleClick.bind(this, item)}>
-            <TextOverflow><p style={{width: '100px'}}>{text}</p>
+            <TextOverflow><p style={{width: '85px'}}>{text}</p>
             </TextOverflow></a>)
         },
         key: 'name'
       }, {
         title: '描述',
         key: 'displayDescription',
+        render: (text, item) => {
+          return (
+            <TextOverflow><p style={{width: '85px'}}>{text}</p>
+            </TextOverflow>)
+        },
       }, {
         title: '状态',
         key: 'servername',
@@ -49,7 +55,14 @@ export default React.createClass({
         key: 'device'      
       }, {
         title: '容量',
-        key: 'size'
+        key: 'size',
+        render: (text, item) => {
+          return (
+            <div>
+              <TextOverflow><p style={{width: '85px'}}>{text}GB</p>
+              </TextOverflow>
+            </div>)
+        }
       }, {
         title: '类型',
         key: 'voumetype',
@@ -59,7 +72,8 @@ export default React.createClass({
       },
       {
         title: '创建时间', 
-        key: 'created'
+        key: 'created',
+      //  width: '12%'
       }
       ]
     }
@@ -116,6 +130,36 @@ export default React.createClass({
     console.log('select_all',this.state.select_all)
     OPEN.volumes_data(this,this.state.select_all)
   },
+  componentDidMount(){
+    let table_trlengt=ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
+    let totallength=ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].childNodes.length
+    let tdheight=ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].scrollHeight
+    let height_table=(totallength)*tdheight
+    let totalwidth=(ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].clientWidth-17)/table_trlengt
+     console.log(',,,11',table_trlengt,totallength)
+    let totalHeight = document.body.clientHeight
+    //let totalwidth=1053.36-21.18
+    totalHeight -= document.getElementById('header').clientHeight
+    totalHeight -= document.getElementById('footer').clientHeight
+    let volumes_nav = ReactDOM.findDOMNode(this.refs.volumes_nav).clientHeight
+    let volumes_bu = ReactDOM.findDOMNode(this.refs.volumes_bu).clientHeight
+    totalHeight = totalHeight - volumes_nav - volumes_bu - 120
+    //ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.width=totalwidth+'px'
+    if (totalHeight>height_table){
+      ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    }else{
+    ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    for (let i in ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes){
+      if (i==(table_trlengt-1)){
+        totalwidth=totalwidth+17
+        ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }else{
+        ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }
+    }
+  }
+  },
   requestArgs:{
     pageName : "volumes",
   },
@@ -123,14 +167,14 @@ export default React.createClass({
     let spaceName = Openstackconf.getCurSpace(this)
     return (  
       <div className="function-data-moduleA">
-        <NavigationInPage headText={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})}/>
-        <div>
+        <NavigationInPage ref="volumes_nav" headText={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})}/>
+        <div style={{margin: "0px 0px 5px 0px"}} ref="volumes_bu">
           <Button onClick={this.refresh} style={{float:'left'}}>刷新</Button>
           <Create_volumes/>
           <Delete_volumes select_all={this.state.select_all}/>
           <Model_list select_all={this.state.select_all} button_status={this.state.button_status}/>
         </div>
-        <div className="DataTableFatherDiv">
+        <div className="DataTableFatherDiv_t">
           <DataTable ref="data_table"
             url={this.state.url} 
             onPageChange={this.onPageChange} 
@@ -139,7 +183,7 @@ export default React.createClass({
             howRow={8}
             onRowClick={this.handleRowClick}
             onOrder={this.handleOrder}
-            onCheckboxSelect={this.handleCheckboxSelect} >
+            onCheckboxSelect={this.handleCheckboxSelect} ref="volumes_table" >
           </DataTable>
         </div>
       </div>

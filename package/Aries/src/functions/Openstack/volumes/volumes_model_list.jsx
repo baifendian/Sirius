@@ -254,9 +254,6 @@ const Loading_disk=React.createClass({
       dataTableDataArr:executedData,
     })
   },
-  select_test(e){
-    console.log('.......e',e)
-  },
   render() {
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
