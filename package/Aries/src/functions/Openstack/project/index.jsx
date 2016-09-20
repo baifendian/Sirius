@@ -43,7 +43,7 @@ export default React.createClass({
     console.log(this.state.images_list)
   },
   componentDidMount(){
-    let table_trlengt=ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
+    let table_trlengt=ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
     let totalHeight = document.body.clientHeight
     let totallength=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes.length
     let tdheight=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].scrollHeight
