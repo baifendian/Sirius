@@ -55,14 +55,14 @@ export default React.createClass({
           <Tabs>
             <TabList>
               <Tab>配额监控</Tab>
-              {auth.user.type == 1 ?[
+              {auth.user.is_supper == 1 ?[
                 <Tab>配额管理</Tab>
               ]:null}
             </TabList>
             <TabPanel><TabMonitor percentData={this.state.percentData} /></TabPanel>
-            {auth.user.type == 1 ?[
+            {auth.user.is_supper == 1 ?[
               <TabPanel><TabManager getUrlData={this.getUrlData} refreshCapacity={this.refreshCapacity} sliderData={this.state.sliderData} /></TabPanel>
-            ]:null}    
+            ]:null}
           </Tabs>
         </div>
         <div className="div-Fetch">
