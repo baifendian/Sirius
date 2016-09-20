@@ -20,30 +20,20 @@ CORS_ORIGIN_WHITELIST = (
     'google.com',
     '192.168.164.120:4001'
 )
-
-AUTH_LDAP_SERVER_URI = 'ldap://192.168.49.241:389'
-AUTH_LDAP_USER_DN_TEMPLATE = 'uid=%(user)s,ou=mrbs,dc=baifendian,dc=com'
-AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = True
-AUTH_LDAP_CACHE_GROUPS = True
-AUTH_LDAP_GROUP_CACHE_TIMEOUT = 3600
-AUTH_LDAP_USER_ATTR_MAP = {
-"username": "givenName",
-"password": "password"
-}
-
-REST_BASE_URI="172.24.3.64:10012"
-SHARE_PROXY_BASE_URI="http://172.24.3.64:10012"
-AMBARI_URL="http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/"
-HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
-HADOOP_CLIENT="hlg3p64-lupan"
-AMBARI_USER="admin"
-AMBARI_PASSWORD="admin"
 #LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
+import yaml
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_BASE_DIR=os.path.join(BASE_DIR.rstrip("Aries"), "log")
+FTP_LOCAL_DIR=os.path.join(BASE_DIR.rstrip("Aries"), "download/")
+
+FILE_PATH=os.path.join(BASE_DIR.rstrip("Aries"), "sbin")
+file_name='{0}/Aries.yaml'.format(FILE_PATH).replace('\\','/')
+yaml_file = open(file_name)
+SETTINGS = yaml.load(yaml_file)
+print SETTINGS
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -223,37 +213,21 @@ LOGGING = {
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 # 提供k8s服务的地址
-K8S_IP = '172.24.3.150'
-K8S_PORT = 8080
-INFLUXDB_IP = 'k8sinfluxapi.bfdcloud.com'
-INFLUXDB_PORT = 80
-INFLUXDB_DATABASE = 'k8s'
+K8S_SETTINGS = SETTINGS["K8S"]
+K8S_IP = K8S_SETTINGS["K8S_IP"]
+K8S_PORT = K8S_SETTINGS["K8S_PORT"]
+INFLUXDB_IP = K8S_SETTINGS["INFLUXDB_IP"]
+INFLUXDB_PORT = K8S_SETTINGS["INFLUXDB_PORT"]
+INFLUXDB_DATABASE = K8S_SETTINGS["INFLUXDB_DATABASE"]
 
-BDMS_IP = '172.24.100.40'
-BDMS_PORT = '10001'
-BDMS_USERNAME = 'aiping.liang'
-BDMS_PASSWORD = 'aiping.liang'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'aries',
-        'HOST':'172.24.3.64',
-        'PORT':'3306',
-        'USER':'root',
-        'PASSWORD':'baifendian'
-    },
-    # used by app : kd_agent 
-    'kd_agent_bdms': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'bdms_web10010',                   # Or path to database file if using sqlite3.
-        'USER': 'bdms',                       # Not used with sqlite3.
-        'PASSWORD': 'bdms',                   # Not used with sqlite3.
-        'HOST': '172.24.100.40',             # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '3306',                       # Set to empty string for default. Not used with sqlite3.
-    }
-}
+BDMS_SETTINGS = SETTINGS["BDMS"]
+BDMS_IP = BDMS_SETTINGS["IP"]
+BDMS_PORT =  BDMS_SETTINGS["PORT"]
+BDMS_USERNAME =  BDMS_SETTINGS["USERNAME"]
+BDMS_PASSWORD =  BDMS_SETTINGS["PASSWORD"]
 
+DATABASES = SETTINGS["DATABASES"]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -273,28 +247,43 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
+AUTH_LDAP_SETTINGS = SETTINGS["AUTH_LDAP"]
+AUTH_LDAP_SERVER_URI = AUTH_LDAP_SETTINGS["SERVER_URI"]
+AUTH_LDAP_USER_DN_TEMPLATE = AUTH_LDAP_SETTINGS["USER_DN_TEMPLATE"]
+AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = AUTH_LDAP_SETTINGS["BIND_AS_AUTHENTICATING_USER"]
+AUTH_LDAP_CACHE_GROUPS = AUTH_LDAP_SETTINGS["CACHE_GROUPS"]
+AUTH_LDAP_GROUP_CACHE_TIMEOUT = AUTH_LDAP_SETTINGS["GROUP_CACHE_TIMEOUT"]
+AUTH_LDAP_USER_ATTR_MAP = AUTH_LDAP_SETTINGS["USER_ATTR_MAP"]
+
+REST_BASE_URI = SETTINGS["REST_BASE_URI"]
+SHARE_PROXY_BASE_URI = SETTINGS["SHARE_PROXY_BASE_URI"]
+
+AMBARI_SETTINGS = SETTINGS["AMBARI"]
+AMBARI_URL = AMBARI_SETTINGS["AMBARI_URL"]
+HDFS_URL = AMBARI_SETTINGS["HDFS_URL"]
+HADOOP_CLIENT = AMBARI_SETTINGS["HADOOP_CLIENT"]
+AMBARI_USER = AMBARI_SETTINGS["AMBARI_USER"]
+AMBARI_PASSWORD = AMBARI_SETTINGS["AMBARI_PASSWORD"]
+
 ########################
 #   webhdfs settigns   #
 ########################
 
+
 # the webhdfs node maybe more than one node, so webhdfs hosts is a list
 # the item of webhdfs hosts list is "ip:port", default port is 50070
-WEBHDFS_HOSTS = [
-    "172.24.3.155:50070",
-    "172.24.3.156:50070",
-]
+WEBHDFS_SETTINGS = SETTINGS["WEBHDFS"]
+WEBHDFS_HOSTS = WEBHDFS_SETTINGS["HOSTS"]
 # webhdfs port, it`s default value is 50070
-WEBHDFS_PORT = 50070
-WEBHDFS_PATH = "/webhdfs/v1"
-WEBHDFS_USER = "hadoop"
-WEBHDFS_TIMEOUT = 10
-WEBHDFS_MAX_TRIES = 2
-WEBHDFS_RETRY_DELAY = 3
+WEBHDFS_PORT = WEBHDFS_SETTINGS["PORT"]
+WEBHDFS_PATH = WEBHDFS_SETTINGS["PATH"]
+WEBHDFS_USER = WEBHDFS_SETTINGS["USER"]
+WEBHDFS_TIMEOUT = WEBHDFS_SETTINGS["TIMEOUT"]
+WEBHDFS_MAX_TRIES = WEBHDFS_SETTINGS["MAX_TRIES"]
+WEBHDFS_RETRY_DELAY = WEBHDFS_SETTINGS["RETRY_DELAY"]
 # HADOOP_RUN_SCRIPT = os.path.join(BASE_DIR, os.path.pardir, 'sbin/hadoop-run.sh')
 HADOOP_RUN_SCRIPT = "hadoop-run.sh"
-
 SESSION_COOKIE_AGE=60*30
-FTP_LOCAL_DIR="/tmp/Aries/download/"
 #kubectl_file
 KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx_1_2_4')
 KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')
@@ -306,13 +295,17 @@ CODIS_DATADIR = os.path.join(BASE_DIR, "codis/serverconf/data/")
 CODIS_LOGFILE_DIR = os.path.join(BASE_DIR, "codis/serverconf/log/")
 CODIS_PIDFILE_DIR = os.path.join(BASE_DIR, "codis/serverconf/pid/")
 CODIS_SHOME = os.path.join(BASE_DIR, "codis/")
-CODIS_INDEX_LINE = 1
-CODIS_ZK_ADDR = '172.24.3.64:2181'
-CODIS_HOST_INFO = [0,'172.24.3.64','root','',0,'a',0]
-CODIS_MEMORY_MAX = 10
-PENTSDB_URL = "http://172.24.4.33:4242"
-SSH_PKEY = '/root/.ssh/id_rsa'
-SSH_KNOWN_HOSTS = '/root/.ssh/known_hosts' 
+
+CODIS_SETTINGS = SETTINGS["CODIS"]
+CODIS_INDEX_LINE = CODIS_SETTINGS["INDEX_LINE"]
+CODIS_ZK_ADDR = CODIS_SETTINGS["ZK_ADDR"]
+#CODIS_HOST_INFO = [0,'172.24.3.64','root','',0,'a',0]
+CODIS_HOST_INFO = CODIS_SETTINGS["HOST_INFO"]
+CODIS_MEMORY_MAX = CODIS_SETTINGS["MEMORY_MAX"]
+PENTSDB_URL = CODIS_SETTINGS["PENTSDB_URL"]
+SSH_PKEY = CODIS_SETTINGS["SSH_PKEY"] 
+SSH_KNOWN_HOSTS =  CODIS_SETTINGS['SSH_KNOWN_HOSTS']
+
 #启动一个线程开始定时统计配额. default: 10m
 POLL_TIME = 600
 import sumSpace

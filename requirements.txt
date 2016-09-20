@@ -11,3 +11,4 @@ paramiko==1.7.7.1
 pycrypto==2.6
 kazoo==2.2.1
 supervisor==3.2.0
+pyyaml==3.12
