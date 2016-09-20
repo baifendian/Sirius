@@ -8,18 +8,23 @@ import httplib
 import os
 import errno
 import time
+import ConfigParser
 
 pro_path = os.path.split(os.path.realpath(__file__))[0]
 LOG_PATH = os.path.join(pro_path, "log")  # 日志路径
 DB_PATH = os.path.join(pro_path, "db.sqlite3")
+CONFIG_PATH = os.path.join(pro_path,"setting.conf")
 LOG_FLAG = True  # 日志开关
 POLL_TIME_INCR = 0.5
-IP_keystone = "192.168.190.11"
-PORT_keystone = "5000"
-IP_nova = "192.168.190.11"
-PORT_nova = "8774"
-IP_cinder = "192.168.190.11"
-PORT_cinder = "8774"
+#读取配置文件
+cf = ConfigParser.ConfigParser()
+cf.read(CONFIG_PATH)
+IP_keystone = cf.get("global","IP_keystone")
+PORT_keystone = cf.get("global","PORT_keystone")
+IP_nova = cf.get("global","IP_nova")
+PORT_nova = cf.get("global","PORT_nova")
+IP_cinder = cf.get("global","IP_cinder")
+PORT_cinder = cf.get("global","PORT_cinder")
 TIMEOUT = 60
 
 
