@@ -87,10 +87,12 @@ const SpaceManager = React.createClass({
       },{
         title: '操作',
         render:(item, component)=> {
+          let RoleListUrl = this.props.getUrlData({ type : "ROLE_LIST"});
+          console.log(`RoleListUrl: ${RoleListUrl}`);
           if(this.props.is_admin==1){
-            return  <Select url="v1/user_auth/roles/" disabled={false} onChange={value=>{this.updateRole(item.user_id,value)}} defaultValue={item.role_id}  render={item => <Option value={item.role_id}>{item.role_name}</Option>} />
+            return  <Select url={RoleListUrl} disabled={false} onChange={value=>{this.updateRole(item.user_id,value)}} defaultValue={item.role_id}  render={item => <Option value={item.role_id}>{item.role_name}</Option>} />
           }else{
-            return  <Select url="v1/user_auth/roles/" disabled={true} onChange={value=>{this.updateRole(item.user_id,value)}} defaultValue={item.role_id}  render={item => <Option value={item.role_id}>{item.role_name}</Option>} />
+            return  <Select url={RoleListUrl} disabled={true} onChange={value=>{this.updateRole(item.user_id,value)}} defaultValue={item.role_id}  render={item => <Option value={item.role_id}>{item.role_name}</Option>} />
           }
         },
         key: 'operation'

@@ -25,6 +25,7 @@ const conf = {
         SPACE_MEMBER_NO: "v1/user_auth/spaces/member/${spaceId}/", //属于当前space的人员信息
         SPACE_MEMBER_POST: "v1/user_auth/spaces/member/${spaceId}/", //添加成员
         SPACE_MEMBER_PUT: "v1/user_auth/spaces/member/${spaceId}/", //修改成员角色
+        ROLE_LIST: "v1/user_auth/roles/", //获取角色列表
       },
     },
     //HDFS模块url模版

@@ -14,7 +14,7 @@ export default React.createClass({
       tableData:{"totalList":[],"currentPage": 1,"totalPageNum": 0},
       cur_relative_path:"/",
       is_first:0,
-      num:10,
+      num:0,
       treePath:"/",
       random:0,
     };

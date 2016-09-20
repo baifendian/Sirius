@@ -7,6 +7,7 @@ import TabMonitor from './Monitor'
 import Fetch from 'bfd-ui/lib/Fetch'
 import HdfsConf from '../Conf/HdfsConf'
 import NavigationInPage from 'public/NavigationInPage'
+import auth from 'public/auth'
 
 export default React.createClass({
   sliderDataSccuess(data){
@@ -54,10 +55,14 @@ export default React.createClass({
           <Tabs>
             <TabList>
               <Tab>配额监控</Tab>
-              <Tab>配额管理</Tab>
+              {auth.user.type == 1 ?[
+                <Tab>配额管理</Tab>
+              ]:null}
             </TabList>
             <TabPanel><TabMonitor percentData={this.state.percentData} /></TabPanel>
-            <TabPanel><TabManager getUrlData={this.getUrlData} refreshCapacity={this.refreshCapacity} sliderData={this.state.sliderData} /></TabPanel>
+            {auth.user.type == 1 ?[
+              <TabPanel><TabManager getUrlData={this.getUrlData} refreshCapacity={this.refreshCapacity} sliderData={this.state.sliderData} /></TabPanel>
+            ]:null}    
           </Tabs>
         </div>
         <div className="div-Fetch">

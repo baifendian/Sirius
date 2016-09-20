@@ -125,9 +125,7 @@ const App = React.createClass({
                       {auth.user.type == 1 ?[
                           <NavItem href={`CloudService/HDFS/Service?${params}`} title="服务管理" />
                       ]:null}
-                      {auth.user.type == 1 ?[
-                          <NavItem href={`CloudService/HDFS/Capacity?${params}`} title="配额管理" />
-                      ]:null}
+                      <NavItem href={`CloudService/HDFS/Capacity?${params}`} title="配额管理" />
                       <NavItem href={`CloudService/HDFS/ShareCenter?${params}`} title="共享中心" />
                     </NavItem>
                     <NavItem key={12} href="CloudService/Codis" icon="skyatlas" title="Codis云">
