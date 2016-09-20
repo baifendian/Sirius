@@ -225,23 +225,20 @@ export default React.createClass({
     let totallength=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes.length
     let tdheight=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].scrollHeight
     let height_table=(totallength+1)*tdheight
-    let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-17)/table_trlengt
-    console.log(',,,11',table_trlengt,totallength)
-    console.log(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth)
+    let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/table_trlengt
     let totalHeight = document.body.clientHeight
     totalHeight -= document.getElementById('header').clientHeight
     totalHeight -= document.getElementById('footer').clientHeight
     let instances_nav = ReactDOM.findDOMNode(this.refs.instances_nav).clientHeight
     let instances_bu = ReactDOM.findDOMNode(this.refs.instances_bu).clientHeight
-    totalHeight = totalHeight - instances_nav - instances_bu - 140
+    totalHeight = totalHeight-instances_nav-instances_bu-140
     if (totalHeight>height_table){
       ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-      console.log(totalHeight,height_table,'........111')
     }else{
       ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
       if (i==(table_trlengt-1)){
-        totalwidth=totalwidth+17
+        totalwidth=totalwidth+18.5
         ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
       }else{
         ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
