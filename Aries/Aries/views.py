@@ -11,6 +11,7 @@ from ldap_client import ldap_get_vaild
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 def is_admin(account,cur_space_in):
+    is_supper = 0
     if cur_space_in:
         cur_space_1 =  Space.objects.filter(name=cur_space_in)
         if cur_space_1:
@@ -22,6 +23,7 @@ def is_admin(account,cur_space_in):
     flag = True
     if account.role.name.upper() in ["SUPERADMIN","ROOT"]:
         is_admin =1
+        is_supper = 1
         if not cur_space:
             spaces = Space.objects.all()
             if spaces:
@@ -50,9 +52,9 @@ def is_admin(account,cur_space_in):
             else:
                 flag = False
     if flag:
-        return {"name":account.name,"cur_space":cur_space,"type":is_admin}
+        return {"name":account.name,"cur_space":cur_space,"type":is_admin,"is_supper":is_supper}
     else:
-        return {"cur_space":"","type":0}
+        return {"cur_space":"","type":0,"is_supper":is_supper}
 
 #@ensure_csrf_cookie
 def login(request):
