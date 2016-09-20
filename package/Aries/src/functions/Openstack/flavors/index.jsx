@@ -53,7 +53,8 @@ export default React.createClass({
         order:false,
         width: "20%"
       }
-      ]
+      ],
+      width_t:""
     }
   },
   handleOpen(name) {
@@ -62,6 +63,8 @@ export default React.createClass({
   componentDidMount(){
     console.log(document.body.clientHeight)
     console.log(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes[0].clientHeight)
+    console.log(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes[0].scrollWidth)
+    console.log(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth)
     console.log(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientHeight)
     let totalHeight = document.body.clientHeight
     totalHeight -= document.getElementById('header').clientHeight
@@ -70,7 +73,7 @@ export default React.createClass({
     let flavors_bu = ReactDOM.findDOMNode(this.refs.flavors_bu).clientHeight
     totalHeight = totalHeight - flavors_nav - flavors_bu - 110
     ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    console.log(totalHeight)
+    console.log('totalHeight',totalHeight)
   },
   requestArgs:{
     pageName : "flavors",

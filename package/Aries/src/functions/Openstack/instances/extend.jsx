@@ -49,7 +49,7 @@ const Extend = React.createClass({
           <Option value="image">镜像=</Option>
           <Option value="flavor">类型=</Option>
         </Select>
-    		<SearchInput className="extend_class" placeholder="请" onSearch={this.handleClick}  onChange={this.handleChange} size="sm" ref="type_input" />
+    		<SearchInput className="extend_class" placeholder="" onSearch={this.handleClick}  onChange={this.handleChange} size="sm" ref="type_input" />
     	</div>
       )
   }
