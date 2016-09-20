@@ -262,9 +262,7 @@ def instances_search(request):
         sys['created'] = host['created']
         sys['status'] = host['OS-EXT-STS:vm_state']
         for key, value in host['addresses'].items():
-            # sys['ip']={}
             for ip in value:
-                #  sys['ip'][ip['OS-EXT-IPS:type']] =ip['addr']
                 for keys, values in ip.items():
                     if keys == "addr":
                         sys['ip'] = values

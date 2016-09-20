@@ -97,7 +97,6 @@ def instances(request):
             maxpageSizes = 0
         ret['totalList'] = []
         test_list = []
-       # for host in host_list['servers'][minpageSizes:maxpageSizes]:
         for host in host_list['servers']:
             sys = {}
             sys['id'] = host['id']
@@ -110,9 +109,7 @@ def instances(request):
             sys['created'] = host['created']
             sys['status'] = host['OS-EXT-STS:vm_state']
             for key, value in host['addresses'].items():
-                # sys['ip']={}
                 for ip in value:
-                    #  sys['ip'][ip['OS-EXT-IPS:type']] =ip['addr']
                     for keys, values in ip.items():
                         if keys == "addr":
                             sys['ip'] = values
@@ -253,15 +250,6 @@ def images(request):
                 try:
                     if i['metadata']['image_type'] =="snapshot":
                         continue
-                # ret['public'] ='NO'
-                # ret['type_image']='快照'
-                # sys['name'][i['id']] = i['name']
-                # ret['name'] = i['name']
-                # ret['type_image']=i['image_type']
-                # ret['format'] = 'QCOW2'
-                # ret['image_status'] = i['status']
-                # ret['id'] = i['id']
-                # ret['size'] = i['OS-EXT-IMG-SIZE:size']
                 except:
                     ret['public'] = "YES"
                     ret['type_image'] = "镜像"
@@ -330,10 +318,8 @@ def flavors(request):
     json_status = json_data(ret)
     response = HttpResponse(json_status)
 
-    # request['Access-Control-Allow-Headers']='Content-Type'
     response['Access-Control-Allow-Origin'] = '*'
     response["Access-Control-Allow-Headers"] = "*"
-    # response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
     response['Content-Type'] = 'application/json'
     return response
 
