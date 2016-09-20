@@ -6,7 +6,6 @@ import DataTable from 'bfd-ui/lib/DataTable'
 import SearchInput from 'bfd-ui/lib/SearchInput'
 
 import DynamicTable from 'public/DynamicTable'
-import NavigationInPage from 'public/NavigationInPage'
 import CodisConf from '../Conf/CodisConf'
 import Toolkit from 'public/Toolkit/index.js'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
@@ -85,7 +84,7 @@ export default React.createClass({
     let rootDivHeight = this.calcRootDivHeight()
     ReactDOM.findDOMNode(this.refs.RootDiv).style.height = (rootDivHeight+'px')
 
-    let splitPanelHeight = rootDivHeight - ReactDOM.findDOMNode(this.refs.NavigationInPage).clientHeight - 60
+    let splitPanelHeight = rootDivHeight - 60
 
     let splitPanel = ReactDOM.findDOMNode( this.refs.SplitPanel )
     let topHeight = parseInt(splitPanelHeight/3) * 2
