@@ -18,6 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 
 from kd_agent.models import Schedule_Log
+from kd_agent.models import Schedule_Status
 from kd_agent.models import Task
 from kd_agent.influxdbquerystrmanager import InfluxDBQueryStrManager as ISM
 
@@ -586,6 +587,16 @@ def convert_dict(keywords):
     keywords['startdate'] = datetime.strptime(keywords['startdate'], '%Y-%m-%dT%H:%M:%S')
     keywords['enddate'] = datetime.strptime(keywords['enddate'], '%Y-%m-%dT%H:%M:%S')
     return keywords
+
+@csrf_exempt
+@return_http_json
+def dashboard_taskinfo(request):
+    retu_data = {}
+    retu_data['today_running_task'] = Schedule_Status.objects.filter(category = time.strftime('%Y-%m-%d',time.localtime(time.time())), status = 3).count()
+    retu_data['today_succeed_task'] = Schedule_Log.objects.filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 1).count()
+    retu_data['today_failed_task'] = Schedule_Log.objects.filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 2).count()
+    retu_data['today_total_task'] = retu_data['today_succeed_task'] + retu_data['today_failed_task']
+    return generate_success( data = retu_data )
 
 def filter_valid_data( influxdb_data_dict ):
     try:

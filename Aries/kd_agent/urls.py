@@ -19,4 +19,6 @@ urlpatterns = patterns('',
     url(r'^api/v1/clusterinfo/network/(?P<minutes>\d{1,5})',views.get_cluster_network_info ),
     url(r'^api/v1/clusterinfo/filesystem/(?P<minutes>\d{1,5})',views.get_cluster_filesystem_info ),
 
+    url(r'^api/v1/dashboard/taskinfo', views.dashboard_taskinfo ),
+
 )
