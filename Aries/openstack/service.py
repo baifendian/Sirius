@@ -3,11 +3,12 @@ from openstack.middleware.login.login import Login, get_token, get_project
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
 from common import json_data
-from openstack.middleware.vm.vm import Vm_manage, Vm_control
+from openstack.middleware.vm.vm import Vm_manage, Vm_control,Vm_snap
 from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps
 from django.http import HttpResponse
 import json
-
+import logging
+openstack_log = logging.getLogger("openstack_log")
 
 def json_data(json_status):
     if len(json_status) == 0:
@@ -213,6 +214,42 @@ def openstack_project(request):
     ret = json_data(ret)
     return ret
 
+def volumes_Redact(request):
+    ret = {}
+    login()
+    openstack_log.info(request.POST)
+    volumes_id = request.POST.get('id')
+    volumes_name = request.POST.get('name')
+    volumes_desc = request.POST.get('desc')
+    volume=Volume()
+    return_data=volume.change(volumes_id,name=volumes_name,description=volumes_desc)
+    openstack_log.info(return_data)
+    if return_data != 1:
+        ret['name']=volumes_name
+        ret['status']=True
+        ret['desc']=volumes_desc
+    else:
+        ret['status']=False
+    ret=json_data(ret)
+    return ret
+
+def instances_backup(request):
+    ret={}
+    login()
+    instances_id=request.POST.get('id')
+    instances_name = request.POST.get('name')
+    instances_name_b = request.POST.get('name_bakup')
+    openstack_log.info(request.POST)
+    vm_snap=Vm_snap(instances_id)
+    return_data=vm_snap.create(instances_name_b)
+    if return_data !=1:
+        ret['name']=instances_name
+        ret['status']=True
+    else:
+        ret['name']=instances_name
+        ret['status']=False
+    ret=json_data(ret)
+    return ret
 
 def instances_search(request):
     login()
@@ -279,7 +316,7 @@ Methods = {
     "GET": {
         "instances": instances,
         "backup": volumes_backup,
-        "instances_search": instances_search
+        "instances_search": instances_search,
     },
     "POST": {
         "CREATE": volumes_create,
@@ -288,5 +325,7 @@ Methods = {
         'Loading_disk': volumes_host,
         'uninstall': volumes_uninstall,
         'backup': volumes_backup,
+        'Redact':volumes_Redact,
+        'instances_backup':instances_backup,
     }
 }

@@ -82,24 +82,21 @@ const Disk_list = React.createClass({
     return (
       <Spin size="large" spinning={this.state.loading}> 
         <div>
-            <div>
-             { /*<h3>选择加载到{this.state.host_name}虚拟机上的硬盘</h3>*/}
-            </div>
         <div style={{"margin-top": "10px"}}>
           <Row>
-            <Col col="md-6"  style={{"text-align":"right", "padding-right":"20px"}}><h3>虚拟机:</h3></Col>
-            <Col col="md-6" ><h3>{this.state.host_name}</h3></Col>
+            <Col col="md-6"  style={{"text-align":"right", "padding-right":"20px"}}>虚拟机:</Col>
+            <Col col="md-6" >{this.state.host_name}</Col>
           </Row>
         </div>
         <div style={{"margin-top": "10px"}}> 
-          <span><h3 className="select_disk">选择磁盘:</h3></span>
+          <div className="select_disk">选择磁盘:</div>
           <MultipleSelect onChange={this.handleChange} style={{'margin-left': '22px'}}>
             {disk_display}
           </MultipleSelect>
           </div>
           <div className="create_host">
+                  <Button onClick={this.handlerequest}>确认</Button>
                   <Button onClick={this.handleclose}>取消</Button>
-                  <Button onClick={this.handlerequest}>加载</Button>
           </div>
         </div>
         </Spin> 
@@ -176,12 +173,83 @@ const Vm_Type=React.createClass({
             {type_display}
           </FormSelect>
         </FormItem>
-       
         <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>确定</button>
+        <button type="button" style={{marginLeft: '150px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
       </Form>
     )
   }
 })
+
+
+const Vm_Backup=React.createClass({
+  getInitialState() {
+    this.rules = {
+      name(v) {
+        if (!v) return '请填写用户群'
+      },
+      date(v) {
+        if (!v) return '日期不能为空'
+      }
+    }
+    return {
+      formData: {
+        name: this.volumes_id()['name'],
+        id:this.volumes_id()['id'],
+        method: 'instances_backup'
+      },
+      volumes_id: this.volumes_id()
+    }
+  },
+  volumes_id(){
+    let volumes_id={}
+    let volumes_size={}
+    console.log(this.props.vm_list)
+    for (let i in this.props.vm_list){
+      console.log(this.props.vm_list[i])
+      volumes_id['name']=this.props.vm_list[i]['name']
+      volumes_id['id']=this.props.vm_list[i]['id']
+    }
+    console.log('volumes_id',volumes_id)
+    return volumes_id
+  },
+  handleDateSelect(date) {
+    const formData = this.state.formData
+    formData.date = date
+    this.setState({ formData })
+  },
+
+  handleSave() {
+    console.log(this.state.formData)
+    this.refs.form.save()
+  },
+
+  handleSuccess(res) {
+    console.log(res)
+    this.props._this.refs.modal.close()
+    message.success('保存成功！')
+  },
+  render() {
+    const { formData } = this.state
+    let url=OPEN.UrlList()['volumes_post']
+    return (
+      <div >
+            <Form 
+              ref="form" 
+              action={url}
+              data={formData} 
+              rules={this.rules} 
+              onSuccess={this.handleSuccess}
+            >
+              <FormItem label="备份名称" required name="name_bakup" >
+                <FormInput style={{width: '200px'}} ></FormInput>
+              </FormItem>  
+              <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>创建</button>
+            </Form>
+      </div>
+    )
+  }
+})
+
 
 const Vm_image=React.createClass({
   getInitialState() {
@@ -249,6 +317,7 @@ const Vm_image=React.createClass({
           </FormSelect>
         </FormItem> 
         <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>确定</button>
+        <button type="button" style={{marginLeft: '150px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
       </Form>
     )
   }
@@ -305,12 +374,11 @@ const Forced_vm=React.createClass({
         rules={this.rules} 
         onSuccess={this.handleSuccess}
       >
-       <div><h5>确定{this.props.title}{this.state.host_name}虚拟机？</h5></div>
-        <div><Icon type="fa-exclamation-circle" /><h5><Icon type="weixin" />{this.props.title}将直接断开虚拟机电源重新启动，虚拟机可能丢失数据，请确认数据已保存。</h5></div>
-        {/*<button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>保存</button>*/}
+       <div>确定{this.props.title}{this.state.host_name}虚拟机？</div>
+        <div><Icon type="fa-exclamation-circle" /><Icon type="weixin" />{this.props.title}将直接断开虚拟机电源重新启动，虚拟机可能丢失数据，请确认数据已保存。</div>
        <div className="create_host">
-          <Button >取消</Button>
           <Button onClick={this.handleSave}>确定</Button>
+          <Button onClick={this.handleclose}>取消</Button>
         </div>
       </Form>
 
@@ -361,7 +429,7 @@ const Disk_model=React.createClass({
               })
           console.log('this.state.disk_list',this.state.disk_list)
           this.setState({
-            title:'磁盘添加',model:[2]
+            title:'加载云硬盘',model:[2]
           })
       }
       if (event['key'] == 3){
@@ -381,7 +449,7 @@ const Disk_model=React.createClass({
               }
               })
         this.setState({
-            title:'修改类型',
+            title:'更改配置',
             model:[3]
           })
       }
@@ -389,10 +457,19 @@ const Disk_model=React.createClass({
         this.setState({loading:true})
         OPEN.Get_image(this,this.handlerequest)
         this.setState({
-         title:'重置虚拟机',
+         title:'重置云主机',
           model:[4]
         })
       }
+      if (event['key'] == 1){
+        this.setState({loading:true})
+        OPEN.Get_image(this,this.handlerequest)
+        this.setState({
+         title:'虚拟机备份',
+          model:[1]
+        })
+      }
+
       if (event['key'] == 5){
         this.setState({
          title:'强制重启',
@@ -417,10 +494,10 @@ const Disk_model=React.createClass({
     const menu = (
           <Menu onClick={this.handleOpen}>
             <Menu.Item disabled={this.state.button_status} key="1">创建备份</Menu.Item>
-            <Menu.Item disabled={this.state.button_status} key="2">加载硬盘</Menu.Item>
+            <Menu.Item disabled={this.state.button_status} key="2">加载云硬盘</Menu.Item>
             <Menu.Item disabled={this.state.button_status} key="3">更改配置</Menu.Item>
-            <Menu.Item disabled={this.state.button_status} key="4">重置系统</Menu.Item>
-            <Menu.Item disabled={this.state.button_statuss} key="5">强制重启</Menu.Item>
+            <Menu.Item disabled={this.state.button_status} key="4">重置云主机</Menu.Item>
+            <Menu.Item disabled={this.state.button_status} key="5">强制重启</Menu.Item>
           </Menu>
          );
  
@@ -437,6 +514,9 @@ const Disk_model=React.createClass({
               <ModalBody>
                 <div>
                   { this.state.model.map((item,i)=>{
+                    if(item==1){
+                      return(<Vm_Backup key={i} vm_list={this.props.vm_list} _this={this}/>)
+                    }
                     if (item == 2){
                     return (<Disk_list key={i} vm_list={this.props.vm_list} disk_list={this.state.disk_list} disk_object={this.state.disk_object} _this={this}/>)
                   }
@@ -452,8 +532,7 @@ const Disk_model=React.createClass({
                 })}
                  </div>
               </ModalBody>
-              </Spin> 
-              
+              </Spin>
           </Modal>
         </div>
     )
