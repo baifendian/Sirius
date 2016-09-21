@@ -339,6 +339,13 @@ const conf = {
           url: "/CloudContainer/CalcManage/ReplicationControllerInfo?cur_space=${spaceName}"
         }]
       },
+      IngressInfo: {
+        headText: "Ingress信息",
+        navigationTexts: [{
+          text: "Ingress信息",
+          url: "/CloudContainer/CalcManage/IngressInfo?cur_space=${spaceName}"
+        }]
+      },
     },
     UserDoc: {
       Base: {

@@ -140,6 +140,7 @@ const App = React.createClass({
                       <NavItem href={`CloudContainer/CalcManage/PodInfo?${params}`} title="Pod信息" />
                       <NavItem href={`CloudContainer/CalcManage/ServiceInfo?${params}`} title="Service信息" />
                       <NavItem href={`CloudContainer/CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
+                      <NavItem href={`CloudContainer/CalcManage/IngressInfo?${params}`} title="Ingress信息" />
                     </NavItem>
                     {/* 暂时下面没有任何节点，因此注释掉
                     <NavItem key={22} icon="equalizer" title="Docker Image" />

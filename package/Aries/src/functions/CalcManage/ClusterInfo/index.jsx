@@ -201,7 +201,7 @@ var ClusterCommonInfo = React.createClass({
                     direct="hor">
           <SubSplitPanel>
             <div className="DataTableFatherDiv">
-              <DataTable ref="DataTable" data={data} 
+              <DataTable className="DataTable" ref="DataTable" data={data} 
                          onRowClick={this.onTableRowClick}
                          onOrder={this.onTableHeadOrder}
                          showPage={this.storeConstData.dataTableConfigDict.showPage} 

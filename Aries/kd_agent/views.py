@@ -118,28 +118,6 @@ def get_influxdb_data(sql_str,db = settings.INFLUXDB_DATABASE,epoch='s',timeout 
 def restore_k8s_path(p):
     return p.replace('/k8s','')
 
-@csrf_exempt
-@return_http_json
-def get_overview_info(request,namespace):
-    kd_logger.info( 'call get_overview_info request.path : %s , namespace : %s' % (request.path,namespace) )
-    retu_dict = {
-        'pod_used':0,
-        'pod_total':100,
-        'task_used':0,
-        'task_total':100,
-        'memory_used':0,
-        'memory_total':100
-    }
-
-    # 获取pod个数
-    url = '/api/v1/namespaces/%s/pods' % namespace
-    pod_list = get_k8s_data( url )
-    if pod_list['code'] == RETU_INFO_ERROR:
-        kd_logger.error( 'call %s query k8s pod info error : %s' % ( url,pod_list['msg']) )
-        return generate_failure( pod_list['msg'] )
-    retu_dict['pod_used'] = len( pod_list['data']['items'] )
-
-    return generate_success( data=retu_dict )
 
 @csrf_exempt
 @return_http_json
@@ -260,6 +238,62 @@ def get_rc_list(request,namespace):
     
     kd_logger.debug( 'call get_rc_list query k8s data : %s' % retu_data )
     kd_logger.info( 'call get_rc_list query k8s data successful' )
+    return generate_success( data = retu_data )
+
+def get_ingress_detail_host_info( rules ):
+    if type( rules ) != list:
+        return []
+    ingress_detail_host_info = []
+    for r in rules:
+        host = r.get('host')
+        if host == None:
+            continue
+        
+        try:    paths = r['http']['paths']
+        except: paths = []
+        for p in paths:
+            obj = {
+                'protocal':'http',
+                'host':host,
+                'port':p['backend']['servicePort'],
+                'path':p['path']
+            }
+            obj['Url'] = '%s://%s:%s%s' % ( obj['protocal'],obj['host'],obj['port'],obj['path'] )
+            obj['ServiceName'] = p['backend']['serviceName']
+            
+            ingress_detail_host_info.append( obj ) 
+    return ingress_detail_host_info
+
+@csrf_exempt
+@return_http_json
+def get_ingress_list(request,namespace):
+    kd_logger.info( 'call get_ingress_list request.path : %s , namespace : %s' % (request.path,namespace) )
+    ingress_detail_info = get_k8s_data( restore_k8s_path(request.path) )
+    if ingress_detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_ingress_list query k8s data error : %s' % ingress_detail_info['msg'] )
+        return generate_failure( ingress_detail_info['msg'] )
+
+    retu_data = []
+    for item in ingress_detail_info['data']['items']:
+        record = {}
+        retu_data.append(record)
+        record['Name'] = item['metadata']['name']
+
+        try:    
+            record['Ingress'] = []
+            for ing in item['status']['loadBalancer']['ingress']:
+                record['Ingress'].append( ing['ip'] )
+        except: 
+            record['Ingress'] = '<None>'
+
+        try:    record['Rules'] = get_ingress_detail_host_info( item['spec']['rules'] )
+        except: record['Rules'] = []
+         
+        record['CreationTime'] = trans_time_str(item['metadata']['creationTimestamp'])
+        record['DetailInfo'] = trans_obj_to_easy_dis(item)
+    
+    kd_logger.debug( 'call get_ingress_list query k8s data : %s' % retu_data )
+    kd_logger.info( 'call get_ingress_list query k8s data successful' )
     return generate_success( data = retu_data )
 
 def trans_obj_to_easy_dis(obj_info):
