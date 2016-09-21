@@ -27,15 +27,10 @@ const TabGraph = React.createClass({
     })
   }, 
   render() {
-    console.log( 'canvas height is: ' + this.props.height);
     if ( this.height !== this.props.height ){
       setTimeout( ()=>{
         let graphPanel = ReactDOM.findDOMNode( this.refs.Graph2Name )
         graphPanel.childNodes[0].style.height = (this.props.height - 50)  + 'px'
-        //graphPanel.childNodes[0].style.background-image = 'public/background.png'
-        // /graphPanel.childNodes[0].style. = '15px'
-        
-
       } )
       this.height = this.props.height
     }

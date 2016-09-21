@@ -11,6 +11,7 @@ import CodisConf from '../Conf/CodisConf'
 import Toolkit from 'public/Toolkit/index.js'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import { Tabs, TabList, Tab, TabPanel } from 'bfd-ui/lib/Tabs'
+import { SplitPanel, SubSplitPanel } from 'bfd-ui/lib/SplitPanel'
 
 import CMDR from '../CodisCloudDataRequester/requester.js'
 import './index.less'
@@ -24,7 +25,7 @@ import Editable from 'bfd-ui/lib/Editable'
 
 export default React.createClass({
   getInitialState: function () {
-    this.checkToRequestData()
+    
     this.oriData = []
     let state_dict = {
       // 表格信息
@@ -33,8 +34,12 @@ export default React.createClass({
                { title:'addr',	                key:'dashboard',	            order:true },
                { title:'proxy_addr', key:'dashboard_proxy_addr', order:true ,
                render: (text, item) => {
-          return <a href="javascript:void(0);" >
+          if(this.state.is_super==1){
+            return  <a href="javascript:void(0);" >
           <Editable onChange={value=>{this.handleEdit(item.product_id,value)}} defaultValue={text} /></a>
+          }else{
+            return <p>{text} </p>  
+          }
         }},
                { title:'Mem_used/Mem_total',	key:'memory_used_to_total',      order:true }],
       showPage:'false',
@@ -45,22 +50,112 @@ export default React.createClass({
       value:'',
       p_id:'',
       product_id:'',
-      mem:''
+      mem:'',
+      is_super:0
     }
     return state_dict
   },
+
+
+  componentDidMount(){
+    this.checkToRequestData()
+    this.calcDesiredHeight()
+    window.onresize = ()=>{ this.onWindowResize() }
+  },
+
+  componentDidUpdate(){
+    this.checkToRequestData()
+  },
+
+  onWindowResize(){
+    window.onresize = undefined
+    this.calcDesiredHeight()
+    window.onresize = ()=>{ this.onWindowResize() }
+  },
+
+  calcRootDivHeight(){
+    let totalHeight = document.body.clientHeight
+    totalHeight -= document.getElementById('header').clientHeight
+    totalHeight -= document.getElementById('footer').clientHeight
+    totalHeight -= 20*2               // 去掉设置的子页面padding
+    return totalHeight
+  },
+
+  calcDesiredHeight(){
+    let rootDivHeight = this.calcRootDivHeight()
+    ReactDOM.findDOMNode(this.refs.RootDiv).style.height = (rootDivHeight+'px')
+
+    let splitPanelHeight = rootDivHeight - ReactDOM.findDOMNode(this.refs.NavigationInPage).clientHeight - 60
+
+    let splitPanel = ReactDOM.findDOMNode( this.refs.SplitPanel )
+    let topHeight = parseInt(splitPanelHeight/3) * 2
+    let bottomHeight = splitPanelHeight - topHeight
+    splitPanel.style.height = splitPanelHeight + 'px'
+    splitPanel.childNodes[0].style.height = topHeight + 'px'
+    splitPanel.childNodes[1].style.top = topHeight + 'px'
+    splitPanel.childNodes[2].style.height = bottomHeight + 'px'
+
+    this.onSplitPanelHeightChange( 0,0,topHeight,bottomHeight )
+  },
+
+  onTableHeadOrder(name, sort){
+    let oriArr = this.state.filteredData !== undefined ? this.state.filteredData : this.props.dataTableDataArr
+
+    // 从oriArr克隆一个数组出来（因为slice不会在原数组上进行操作，因此可以直接slice(0)来实现克隆）
+    let sortedArr = oriArr.slice(0)
+
+    sortedArr.sort( function(r1,r2){
+      let comparedStr = Toolkit.calcValueSort( r1[name],r2[name],'asc','desc' )
+      return comparedStr === sort ? -1 : 1
+    } )
+    this.setState({ filteredData:sortedArr })
+  },
+
+  hightlightNewClickedItemAndShowDetailInfo( record ){
+    let detail = record['DetailInfo']
+    let detailInfoToShow = []
+    for ( let k = 0 ; k < detail.length ; k ++ ){
+      detailInfoToShow.push( [detail[k]] )
+    }
+    this.setState({ detailText:detailInfoToShow })
+
+    let curTr = this.findDataTableItemByRecordName( record['Name'] )
+    this.highlightTr( curTr )
+    this.curSelectDataTableItem = curTr
+  },
+
+  findDataTableItemByRecordName( name ){
+    let dataTableNode = ReactDOM.findDOMNode( this.refs.DataTable )
+    let tbody = dataTableNode.childNodes[1].childNodes[1]
+    for ( let i = 0 ; i < tbody.childNodes.length ; i ++ ){
+      let tr = tbody.childNodes[i]
+      if ( tr.childNodes[0].innerHTML === name ){
+        return tr
+      }
+    }
+    return undefined
+  },
+
+	onSplitPanelHeightChange( oldTopHeight,oldBottomHeight,newTopHeight,newBottomHeight ){
+    let dataTable = ReactDOM.findDOMNode( this.refs.DataTable )
+    dataTable.childNodes[1].childNodes[1].style.height = (newTopHeight-65) + 'px'
+  },
+
   xhrCallback:(_this,executedData) => {
     _this.setState ( {
       'data': {
-        "totalList": executedData,
-        "totalPageNum":executedData.length
-      }
+        "totalList": executedData["codis_list"],
+        "totalPageNum":executedData["codis_list"].length
+      },
+      'is_super':executedData["is_super"]
     })
     _this.oriData = executedData
   },
+
   checkToRequestData(){
         // 如果当前保存的namespace与实时获取的namespace相同，则不再重新请求
     // 否则，重新请求数据
+    console.log("is_super:"+this.state.is_super);
     if ( this.curNameSpace !== CMDR.getCurNameSpace(this) ){
       CMDR.getCodisList( this,this.xhrCallback )
       this.curNameSpace = CMDR.getCurNameSpace(this)
@@ -141,7 +236,7 @@ onTableRowClick( record ){
       })
     });
     CMDR.getServerData(this.state.codis_id,( executedData ) => {
-      let serverlist = executedData
+      let serverlist = executedData;
       let serverinfo = [];
       for (var j=0; j < serverlist.length; j++) {
          serverinfo.push(<ObjectRow  serverlist = {serverlist[j]}/>);
@@ -173,7 +268,7 @@ onTableRowClick( record ){
     let a = ReactDOM.findDOMNode( this.refs.textdiv )
     let b = ReactDOM.findDOMNode( this.refs.tablediv )
     a.className = "nonediv"
-    b.className = "borderclass tablediv"
+    b.className = "tablediv"
   },
 
 
@@ -368,20 +463,24 @@ handleSave4() {
       text = [['请选择Service']]
     }
     return  (
-      <div className="ServiceInfoChildRootDiv">
+      <div className="CodisInfoChildRootDiv" ref="RootDiv">
         <NavigationInPage headText={CodisConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={CodisConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
         <div className="ButtonFatherDiv">
           <div className="SearchInputFatherDiv">
-            <SearchInput placeholder="请输入查询关键字"
+            <SearchInput  placeholder="请输入查询关键字"
                        onChange={function(){}}
                        onSearch={this.onSearchByKey}
                        label="查询" />
           </div>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addmem}>扩容</button>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addproxy}>添加proxy</button>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.deletecodis}>删除codis</button>
-          <button type="button" className="ButtonDiv btn btn-primary" onClick={this.autorebalance}>Auto Rebalance</button>
+          {this.state.is_super==1?
+           <div> 
+             <button type="button" className=" ButtonDiv btn btn-primary" onClick={this.handleOpen}>新增</button>           
+             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addmem}>扩容</button>
+             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.addproxy}>添加proxy</button>
+             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.deletecodis}>删除codis</button>
+             <button type="button" className="ButtonDiv btn btn-primary" onClick={this.autorebalance}>Auto Rebalance</button> 
+           </div>  
+           : null}
           <Modal ref="modal">
             <ModalHeader>
               <h4>创建codis集群</h4>
@@ -466,7 +565,7 @@ handleSave4() {
                         <td colSpan="5" style={{height:20}}></td>
                     </tr>
                 </table>
-
+         
             </div>
             <div className="function-UserAuth-Button-Div">
                <Button className="left-Button" onClick={this.handleSave}>保存</Button>
@@ -551,45 +650,53 @@ handleSave4() {
             </ModalBody>
           </Modal>
         </div>
-        <div className="borderclass">
-          <div className="borderclass  DataTableFatherDiv">
-            <DataTable ref="DataTable" data={this.state.data}
-                         showPage={this.state.showPage}
-                         onRowClick={this.onTableRowClick}
-                         column= { this.state.column } >
-            </DataTable>
-          </div>
-          <div className="Text">详情</div>
-            <div ref="textdiv" className="blockdiv">
-            <DynamicTable ref='DynamicTable' dynamicTableTextArray={text}/>
-            </div>
-            <div ref="tablediv" className="borderclass nonediv">
-            <Tabs>
-              <TabList>
-                  <Tab>Overview</Tab>
-                  <Tab>Server Groups</Tab>
-                  <Tab>Proxy Status</Tab>
-                  <Tab>Log Info</Tab>
-              </TabList>
-              <TabPanel>
-              {picinfo}
-              </TabPanel>
-              <TabPanel>
-              {serverinfo}
-              </TabPanel>
-              <TabPanel>
-                  <h3> <b>Proxy Status</b> </h3>
-              {proxyinfo}
-              </TabPanel>
-              <TabPanel>
-                  <div className="logdiv">
-                    {loginfo}
-                  </div>
-              </TabPanel>
-              </Tabs>
-              </div>
-          </div>
+        <div>
+          <SplitPanel ref='SplitPanel'
+                    onSplit={this.onSplitPanelHeightChange}
+                    className='SplitPanel'
+                    direct="hor">
+              <SubSplitPanel>
+                <div className="DataTableFatherDiv">
+                    <DataTable ref="DataTable" data={this.state.data}
+                                 showPage={this.state.showPage}
+                                 onRowClick={this.onTableRowClick}
+                                 column= { this.state.column } />
+                </div>
+              </SubSplitPanel>
+              <SubSplitPanel>
+                <div className="Text">详情</div>
+                <div ref="textdiv" className="blockdiv">
+                    <DynamicTable ref='DynamicTable' dynamicTableTextArray={text}/>
+                </div>
+                <div ref="tablediv" className="nonediv">
+                    <Tabs>
+                      <TabList>
+                          <Tab>Overview</Tab>
+                          <Tab>Server Groups</Tab>
+                          <Tab>Proxy Status</Tab>
+                          <Tab>Log Info</Tab>
+                      </TabList>
+                      <TabPanel>
+                      {picinfo}
+                      </TabPanel>
+                      <TabPanel>
+                      {serverinfo}
+                      </TabPanel>
+                      <TabPanel>
+                          <h3> <b>Proxy Status</b> </h3>
+                      {proxyinfo}
+                      </TabPanel>
+                      <TabPanel>
+                          <div className="logdiv">
+                            {loginfo}
+                          </div>
+                      </TabPanel>
+                      </Tabs>
+                </div>
+              </SubSplitPanel>
+          </SplitPanel>
         </div>
+      </div>
     )
   }
 });

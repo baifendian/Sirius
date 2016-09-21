@@ -9,14 +9,14 @@ import message from 'bfd-ui/lib/message'
 const Bottom = React.createClass({
   componentState:{
     STARTED:function(){
-        return <Select defaultValue="STARTED" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
-          <Option value="STARTED">START</Option>
+        return <Select defaultValue="START" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
+          <Option value="START">START</Option>
           <Option value="STOP">STOP</Option>
           <Option value="RESTART">RESTART</Option>
         </Select>
     },
     STOPED:function(){
-        return <Select defaultValue="STOPED" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
+        return <Select defaultValue="STOP" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
                   <Option value="STOP">STOP</Option>
                   <Option value="START">START</Option>
               </Select>
@@ -80,7 +80,15 @@ const Bottom = React.createClass({
             主机描述
         </div>
         <div className="desc">
-            这里是描述模块
+          <table className="HostInfoTable">
+            <tr><td>Host Name:  </td>  <td>{this.props.hostInfo.host_name}          </td> </tr>
+            <tr><td>IP:         </td>  <td>{this.props.hostInfo.ip}                 </td> </tr>
+            <tr><td>OS:         </td>  <td>{this.props.hostInfo.os}                 </td> </tr>
+            <tr><td>Cores(CPU): </td>  <td>{this.props.hostInfo.cpu_count}          </td> </tr>
+            <tr><td>Memory:     </td>  <td>{this.props.hostInfo.total_mem}          </td> </tr>
+            <tr><td>Load Avg:   </td>  <td>{this.props.hostInfo.load_avg}           </td> </tr>
+            <tr><td>Heartbeat:  </td>  <td>{this.props.hostInfo.last_heartbeat_time}</td> </tr>
+          </table>
         </div>
       </div>
     </div>

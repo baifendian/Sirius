@@ -1,5 +1,5 @@
 
-div.ServiceInfoChildRootDiv div.ButtonFatherDiv div.SearchInputFatherDiv{
+div.CodisInfoChildRootDiv div.ButtonFatherDiv div.SearchInputFatherDiv{
   float:right;
   margin-top:-0.1%;
 }
@@ -10,6 +10,17 @@ div.borderclass{
   border-style: solid;
   border-width:0.1px;
   border-color:#ddd;
+  display: block;
+  overflow-x: inherit;
+  overflow-y: scroll;
+  overflow: hidden;
+}
+
+
+div.showscoll{
+  overflow-x: inherit;
+  overflow-y: scroll;
+  overflow: hidden;
 }
 
 div.nonediv{
@@ -17,6 +28,10 @@ div.nonediv{
 }
 
 div.blockdiv{
+  display: block;
+}
+
+div.tablediv{
   display: block;
 }
 
@@ -118,9 +133,9 @@ div.panel-heading {
   }
 }
 
-div.ServiceInfoChildRootDiv .SplitPanel{
+div.CodisInfoChildRootDiv .SplitPanel{
   border: 1px solid #ECECEC;
-  height: 320px;
+  height: 80%;
   .top {
     overflow-x: hidden;
     overflow-y: hidden;
@@ -137,7 +152,7 @@ div.ServiceInfoChildRootDiv .SplitPanel{
   }
 }
 
-div.ServiceInfoChildRootDiv div.Text{
+div.CodisInfoChildRootDiv div.Text{
   font-family: '微软雅黑';
   color: #333333;
   font-size: 14px;
@@ -145,7 +160,7 @@ div.ServiceInfoChildRootDiv div.Text{
   margin-left: 5px;
 }
 
-div.ServiceInfoChildRootDiv div.DynamicTableClass{
+div.CodisInfoChildRootDiv div.DynamicTableClass{
   margin: 5px;
   border: 1px solid #ECECEC;
   background-color: #FCFCFC;
@@ -157,19 +172,20 @@ div.ServiceInfoChildRootDiv div.DynamicTableClass{
   overflow-y: auto;
 }
 
-div.ServiceInfoChildRootDiv div.DataTableFatherDiv div.logdiv{
+
+div.CodisInfoChildRootDiv div.DataTableFatherDiv div.logdiv{
   padding-top:13px;   // DataTable的表头文本距离上边框为17px
   padding-left:20px;
   padding-right:8px;
 }
 
-div.ServiceInfoChildRootDiv div.ButtonFatherDiv {
+div.CodisInfoChildRootDiv div.ButtonFatherDiv {
   padding-top:13px;
   padding-left:0px;
   padding-right:8px;
 }
 
-div.ServiceInfoChildRootDiv div.ButtonFatherDiv .ButtonDiv {
+div.CodisInfoChildRootDiv div.ButtonFatherDiv .ButtonDiv {
   padding-top: 10px;
   padding-bottom: 8px;
   margin-left: 1%;
@@ -179,7 +195,7 @@ div.ServiceInfoChildRootDiv div.ButtonFatherDiv .ButtonDiv {
     background-color: #BBDEFB !important;
 }
 
-div.ServiceInfoChildRootDiv div.DataTableFatherDiv table {
+div.CodisInfoChildRootDiv div.DataTableFatherDiv table {
   th,td{
     font-family: '微软雅黑';
     font-size: 12px;
@@ -190,11 +206,11 @@ div.ServiceInfoChildRootDiv div.DataTableFatherDiv table {
   thead{
 	  tr{
       display: block;
-      width: 120%;
+      width: 100%;
 
       th{
         display: inline-block;
-        width: 16.66%;
+        width: 20%;
 
         border-bottom: 3px solid #DDEEFD;
       }
@@ -209,12 +225,12 @@ div.ServiceInfoChildRootDiv div.DataTableFatherDiv table {
   	overflow-y: auto;
     tr{
       display: block;
-      width: 120%;
+      width: 100%;
       border-bottom: 1px solid #EFF3F8;
 
       td{
         display: inline-block;
-        width: 16.66%;
+        width: 20%;
         border-top: 0px;
       }
     }
@@ -222,6 +238,101 @@ div.ServiceInfoChildRootDiv div.DataTableFatherDiv table {
     tr.oddTr{   background-color: #FFFFFF; }
     tr.evenTr{  background-color: #FCFCFC; }
   }
+}
+
+// 共有的样式：pod、service、rc共有的样式
+
+.selectedDataTableItem{
+    background-color: #BBDEFB !important;
+}
+
+div.HostInfoChildRootDiv,div.CodisInfoChildRootDiv {
+
+  div.SearchInputFatherDiv{
+	  float:right;
+    margin: 5px;
+  }
+
+  .SplitPanel{
+    border: 1px solid #ECECEC;
+    width: 100% !important;
+    .top {
+      overflow-x: hidden;
+      overflow-y: hidden;
+    }
+    .horline {
+      background: #ECECEC;
+      height: 2px;
+    }
+    .bottom{
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+  }
+
+  div.Text{
+    font-family: '微软雅黑';
+    color: #333333;
+    font-size: 14px;
+    margin-top: 10px;
+    margin-left: 5px;
+  }
+
+  div.DynamicTableClass{
+    margin: 8px;
+    border: 1px solid #ECECEC;
+    background-color: #FCFCFC;
+    padding-top: 20px;
+    padding-left: 22px;
+    padding-bottom: 20px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  div.DataTableFatherDiv {
+    padding-top:13px;   // DataTable的表头文本距离上边框为17px
+    padding-left:20px;
+    padding-right:8px;
+  }
+
+  div.DataTableFatherDiv table {
+    th,td{
+      font-family: '微软雅黑';
+      font-size: 12px;
+      color:#666666;
+    }
+    thead{
+      tr{
+        display: block;
+        width: 100%;
+        th{
+          display: inline-block;
+          border-bottom: 3px solid #DDEEFD;
+        }
+      }
+    }
+
+    tbody {
+      display: block;
+      width: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      tr{
+        display: block;
+        width: 100%;
+        border-bottom: 1px solid #EFF3F8;
+        td{
+          display: inline-block;
+          border-top: 0px;
+        }
+      }
+
+    }
+  }
+
 }
 
 

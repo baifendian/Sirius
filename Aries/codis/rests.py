@@ -15,18 +15,31 @@ from rest_framework.reverse import reverse
 from rest_framework import generics
 from django.conf import settings
 import redis
+from hdfs.tools import *
 import logging
 import json,re,requests
 from models import *
 from service import *
 ac_logger = logging.getLogger("access_log")
 
+def is_super(user_name):
+    # 1 yes 0 no 2 error
+    try:
+        account = Account.objects.get(name=user_name)
+        if account.role.name.upper() in ["ROOT","SUPERADMIN"]:
+            return 1
+        else:
+            return 0
+    except Exception,e:
+        ac_logger.error("%s" %e)
+        return 0
 
 class HostInfo(APIView):
     '''
     获取所有host信息
     '''
     def get(self, request, format=None):
+        issuper = is_super(getUser(request).username)
         host_list = Host.objects.all().order_by('host_id') 
         host_ret = []
         for host in host_list:
@@ -41,7 +54,7 @@ class HostInfo(APIView):
         result = {
             "code":200,
             "msg":"OK",
-            "data":host_ret
+            "data":{'host_list':host_ret,'is_super':issuper}
         }
         return packageResponse(result) 
 
@@ -103,6 +116,7 @@ class CodisInfo(APIView):
     查看codis列表
     '''
     def get(self, request, format=None):
+        issuper = is_super(getUser(request).username)
         codis_list = Codis.objects.all().order_by('codis_id')
         codis_ret = []
         for one in codis_list:
@@ -119,7 +133,7 @@ class CodisInfo(APIView):
         result = {
             "code":200,
             "msg":"OK",
-            "data":codis_ret
+            "data":{"codis_list":codis_ret,"is_super":issuper}
         }
         return packageResponse(result)
  
@@ -181,7 +195,6 @@ class CodisLog(APIView):
         product_id = request.POST.get("product_id","")
         try:
             log=open(settings.CODIS_COMMOND_DIR+('command%s.log')%product_id,'a+')
-            print settings.CODIS_COMMOND_DIR+('command%s.log')%product_id
             codislog=[]
             if log:
                 for line in log:
@@ -297,7 +310,7 @@ class GetAllCodisInfo(APIView):
                      "tags":{"db":codis_info.product_id}}]} 
         latency_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.proxy.command.spent",\
                              "tags":{"db":codis_info.product_id,"cmd":"*"}}]}
-        total_expired_keys = {"start":"2h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_expired_keys",\
+        total_expired_keys = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_expired_keys",\
                              "tags":{"db":codis_info.product_id}}]}
         total_keys = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_keys",\
                              "tags":{"db":codis_info.product_id}}]}
@@ -327,11 +340,22 @@ class GetAllCodisInfo(APIView):
             a["ops"] = v
             a["date"] = otherStyleTime
             opsdata.append(a)
-        #for j in json.loads(latency_info.text):
-        #    b = {}
-        #    
-        #    for k,v in j['dps'].items():
-        #    
+        count = 0
+        for j in json.loads(latency_info.text):
+            list_ops = sorted(j['dps'].items(),key=lambda d:d[0],reverse=False)
+            for k,v in list_ops:
+                timeArray = time.localtime(int(k))
+                otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+                if count == 0:
+                    b = {}
+                    b[j['tags']['cmd']] = v
+                    b['date'] = otherStyleTime
+                    latencydata.append(b)
+                else:
+                    for m in latencydata:
+                        if m['date'] == otherStyleTime:
+                            m[j['tags']['cmd']] = v
+            count += 1
         for k,v in json.loads(expired_keys.text)[0]['dps'].items():
             expiredkeysdata = v
             break
@@ -344,7 +368,7 @@ class GetAllCodisInfo(APIView):
         for k,v in json.loads(maxmemory.text)[0]['dps'].items():
             maxmemorydata = v/(1024*1024*1024)
             break
-        data={"ops":opsdata,"expiredkeysdata":expiredkeysdata,"allkeysdata":allkeysdata,"usedmemorydata":usedmemorydata,"maxmemorydata":maxmemorydata}
+        data={"ops":opsdata,"expiredkeysdata":expiredkeysdata,"allkeysdata":allkeysdata,"usedmemorydata":usedmemorydata,"maxmemorydata":maxmemorydata,"latency":latencydata}
         result={
             "msg":"OK",
             "code":200,

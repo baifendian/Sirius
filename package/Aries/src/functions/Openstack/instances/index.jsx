@@ -15,6 +15,8 @@ import {Disk_model} from './model_list'
 import { Icon } from 'antd'
 import './jquery.min.js'
 import NavigationInPage from 'public/NavigationInPage'
+import ReactDOM from 'react-dom'
+import Openstackconf from '../Conf/Openstackconf'
 
 
 export default React.createClass({
@@ -29,6 +31,7 @@ export default React.createClass({
       select_all:[],
       select_host:'',
       button_status:"disabled",
+      url_vnc:"",
     	url: "openstack/bfddashboard/instances/",
       column: [{
         title:'序号',
@@ -87,8 +90,8 @@ export default React.createClass({
   requestvnc(id,return_data,e){
     //window.location.href=return_data
     this.setState({loading:true})
-    if (id == '1'){OPEN.open_vnc(this,return_data,this.requestvnc)}else{
-      if($('#aObj-span').length != 0){
+    if (id == '1'){OPEN.open_vnc(this,return_data,this.requestvnc); }else{
+     /* if($('#aObj-span').length != 0){
         $('#aObj-span').parent().attr('href',return_data['console']['url']);
         $('#aObj-span').trigger('click');
         id.setState({loading:false})
@@ -96,10 +99,18 @@ export default React.createClass({
         let aObj = $('<a href="'+return_data['console']['url']+'" target="_blank"><span id="aObj-span"></span></a>');
         $('body').append(aObj);
         $('#aObj-span').trigger('click');
-        id.setState({loading:false})
-      }
+        id.setState({loading:false,url_vnc:return_data['console']['url']})
+      }*/
+      if (return_data['console']['url'] == false){
+         message.danger('vnc故障请联系管理员')
+         id.setState({loading:false})
+      }else{
+        this.refs.model_disk.open()
+        id.setState({loading:false,url_vnc:return_data['console']['url']})}
+        ReactDOM.findDOMNode(this.refs.iFrame).childNodes[0].focus()
     }
     //console.log('return_data',return_data)
+    //console.log(id.state.url_vnc)
   },
   handleCheckboxSelect(selectedRows) {
     console.log('rows:', selectedRows)
@@ -146,7 +157,7 @@ export default React.createClass({
     switch(name)
     {
     	case 1:
-        OPEN.posthoststop(this,'openstack/bfddashboard/instances/',this.state.select_all,"start")
+        OPEN.posthoststop(this,'instances',this.state.select_all,"start")
     		break;
     	case 2:
         this.refs.modal.open()
@@ -195,7 +206,7 @@ export default React.createClass({
    handleclean(name) {
     if (name=="clean"){this.refs.modal.close()}else{
       this.refs.modal.close()
-      OPEN.posthoststop(this,'openstack/bfddashboard/instances/',this.state.select_all,this.state.host_post)
+      OPEN.posthoststop(this,'instances',this.state.select_all,this.state.host_post)
     }
   },
    handleOpen_re() {
@@ -205,15 +216,17 @@ export default React.createClass({
   disk_model_open(){
       this.refs.model_disk.open()
     },
-
+  requestArgs:{
+    pageName : "instances",
+  },
   render() {
-    let naviTexts = [{  'url':'/','text':'概览'   },
-      {'url':'','text':'云主机'   },
-      {'url':'','text':'计算'   },
-      {'url':'/openstack/instances','text':'虚拟机'   }]
+    let spaceName = Openstackconf.getCurSpace(this)
     return (
       <div className="function-data-moduleA">
-      <NavigationInPage naviTexts={naviTexts} headText="openstack" />
+      <NavigationInPage headText={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
+      <div className="class_extend">
+        <Extend _this={this}/>
+      </div>
       <Spin spinning={this.state.loading}>
       	<div>
           <Button onClick={this.handleOpen.bind(this,5)} style={{float:"left",margin:'0px 10px 0px 0px'}}>刷新</Button>
@@ -223,9 +236,9 @@ export default React.createClass({
       		<Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this,3)} style={{float:"left"}}>停止</Button>
       		<Button disabled={this.state.button_status} type="danger"  onClick={this.handleOpen.bind(this,4)} style={{float:"left"}} >删除</Button>
           <Disk_model vm_list={this.state.select_all} ref="model_model" _this={this}/>
-          <div style={{float: 'right'}}>
-            <Extend/>
-          </div>
+          {/*<div style={{float: 'right'}}>
+            <Extend _this={this}/>
+          </div>*/}
           <Modal ref="modal">
           		<ModalHeader>
             		<h4>{this.state.test}</h4>
@@ -235,22 +248,24 @@ export default React.createClass({
            			 	<h4>{this.state.text_text}</h4>
            			 </div>
            			 <div className="create_host">
-                         <Button onClick={this.handleclean.bind(this,this.state.host_post)}>{this.state.host_status}</Button>
-                         <Button onClick={this.handleclean.bind(this,'clean')}>取消</Button>
+           			 	<Button onClick={this.handleclean.bind(this,'clean')}>关闭</Button>
+      					  <Button onClick={this.handleclean.bind(this,this.state.host_post)}>{this.state.host_status}</Button>
            			 </div>
           		</ModalBody>
         	</Modal>
           <Modal ref="model_disk">
               <ModalHeader>
-                <h4>{this.state.test}</h4>
+                <h4>vnc</h4>
               </ModalHeader>
               <ModalBody>
                 <div>
-                  <h4>{this.state.text_text}</h4>
+                    <div id= "iFrame" style={{}} ref="iFrame">
+                     <iframe name= "iFrame" width="760" height="615" src={this.state.url_vnc} scrolling= "auto " frameborder= "0" style={{height: "436px"}}></iframe>
+                    </div>
                  </div>
-                 <div className="create_host">
-                  <Button onClick={this.handleclean.bind(this,this.state.host_post)}>{this.state.host_status}</Button>
-                  <Button onClick={this.handleclean.bind(this,'clean')}>取消</Button>
+                 <div className="">
+                  {/*<Button onClick={this.handleclean.bind(this,'clean')}>关闭</Button>*/}
+                 {/* <Button onClick={this.handleclean.bind(this,this.state.host_post)}></Button>*/}
                  </div>
               </ModalBody>
           </Modal>

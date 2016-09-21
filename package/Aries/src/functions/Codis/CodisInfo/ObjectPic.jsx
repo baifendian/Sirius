@@ -17,7 +17,6 @@ const ObjectPic =  React.createClass({
     }
   },
     render: function () {
-        let result = [{user:300,sales:100,date:"2016-1-1"},{user:200,sales:300,date:"2016-1-2"},{user:100,sales:200,date:"2016-1-3"},{user:200,sales:300,date:"2016-1-4"},{user:200,sales:300,date:"2016-1-5"}]
         let pod_percent = this.formatPercent( this.props.piclist.expiredkeysdata,this.props.piclist.allkeysdata )
         let task_percent = this.formatPercent( this.props.piclist.usedmemorydata,this.props.piclist.maxmemorydata)
         return (
@@ -37,7 +36,7 @@ const ObjectPic =  React.createClass({
                     <td style={{width:'50px'}} className="MidTdDiv"><div /></td>
                     <td style={{width:'600px'}}>
                       <div className="borderclass">
-                      <LineChart style={{height: '300px'}} category="date" cols={{user: '用户', sales: '销量'}} data={result} />
+                      <LineChart style={{height: '300px'}} category="date" cols={{user: '用户', sales: '销量'}} data={this.props.piclist.latency} />
                       </div>
                     </td>
                   </tr>

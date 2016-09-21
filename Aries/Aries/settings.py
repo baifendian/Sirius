@@ -38,12 +38,12 @@ HDFS_URL="http://172.24.3.156:50070/webhdfs/v1/"
 HADOOP_CLIENT="hlg3p64-lupan"
 AMBARI_USER="admin"
 AMBARI_PASSWORD="admin"
-LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
+#LOG_BASE_DIR="/opt/pan.lu/gitsource/Sirius-dev/Sirius/log"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os,sys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+LOG_BASE_DIR=os.path.join(BASE_DIR.rstrip("Aries"), "log")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -225,6 +225,10 @@ LOGGING = {
 # 提供k8s服务的地址
 K8S_IP = '172.24.3.150'
 K8S_PORT = 8080
+INFLUXDB_IP = 'k8sinfluxapi.bfdcloud.com'
+INFLUXDB_PORT = 80
+INFLUXDB_DATABASE = 'k8s'
+
 BDMS_IP = '172.24.100.40'
 BDMS_PORT = '10001'
 BDMS_USERNAME = 'aiping.liang'
@@ -296,16 +300,20 @@ KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx_1_2_4')
 KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')
 
 #codis设置
-CODIS_LOCAL_DIR = '/opt/jingxia.sun/codis/redisconf/'
-CODIS_COMMOND_DIR = '/root/jingxia.sun/Sirius/Aries/codis/commandlog/'
-CODIS_DATADIR = '/opt/jingxia.sun/codis/serverconf/data/'
-CODIS_LOGFILE_DIR = '/opt/jingxia.sun/codis/serverconf/log/'
-CODIS_PIDFILE_DIR = '/opt/jingxia.sun/codis/serverconf/pid/'
-CODIS_ZK_ADDR = '172.24.2.236:2181'
+CODIS_LOCAL_DIR = os.path.join(BASE_DIR, "codis/redisconf/")
+CODIS_COMMOND_DIR = os.path.join(BASE_DIR, "codis/commandlog/")
+CODIS_DATADIR = os.path.join(BASE_DIR, "codis/serverconf/data/")
+CODIS_LOGFILE_DIR = os.path.join(BASE_DIR, "codis/serverconf/log/")
+CODIS_PIDFILE_DIR = os.path.join(BASE_DIR, "codis/serverconf/pid/")
+CODIS_SHOME = os.path.join(BASE_DIR, "codis/")
 CODIS_INDEX_LINE = 1
+CODIS_ZK_ADDR = '172.24.3.64:2181'
 CODIS_HOST_INFO = [0,'172.24.3.64','root','',0,'a',0]
-CODIS_SHOME='/root/jingxia.sun/dev/Sirius/Aries/codis/'
 CODIS_MEMORY_MAX = 10
 PENTSDB_URL = "http://172.24.4.33:4242"
 SSH_PKEY = '/root/.ssh/id_rsa'
 SSH_KNOWN_HOSTS = '/root/.ssh/known_hosts' 
+#启动一个线程开始定时统计配额. default: 10m
+POLL_TIME = 600
+import sumSpace
+sumSpace.run(POLL_TIME)
