@@ -9,8 +9,10 @@ import os
 import errno
 import time
 import ConfigParser
+from Aries.settings import BASE_DIR
 
-pro_path = os.path.split(os.path.realpath(__file__))[0]
+pro_path = os.path.join(BASE_DIR,"openstack/middleware/common")
+# pro_path = os.path.split(os.path.realpath(__file__))[0]    //模块测试时用这个
 LOG_PATH = os.path.join(pro_path, "log")  # 日志路径
 DB_PATH = os.path.join(pro_path, "db.sqlite3")
 CONFIG_PATH = os.path.join(pro_path,"setting.conf")
