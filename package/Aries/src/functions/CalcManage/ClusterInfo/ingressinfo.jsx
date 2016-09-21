@@ -55,7 +55,7 @@ export default React.createClass({
         order:true,
         render:(ipList,item)=>{
           return (
-            <table>
+            <table className="InnerTable">
               <tbody>
                 {ipList.map( (ip)=>{
                   return <tr><td>{ip}</td></tr>} 
@@ -70,7 +70,7 @@ export default React.createClass({
         order:true,
         render:(ruleDataList,item) => {
           return (
-            <table>
+            <table className="InnerTable">
               <tbody>
                 {ruleDataList.map( (ruleInfo)=>{
                   return (

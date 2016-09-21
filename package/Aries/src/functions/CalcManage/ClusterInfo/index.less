@@ -1,32 +1,34 @@
 
 
 // 私有的样式
-
-div.PodInfoChildRootDiv div.DataTableFatherDiv table {
+div.PodInfoChildRootDiv div.DataTableFatherDiv .DataTable {
   thead tr th,tbody tr td { 
     width: 16.66%;
   }
 }
 
-div.ServiceInfoChildRootDiv div.DataTableFatherDiv table {
+div.ServiceInfoChildRootDiv div.DataTableFatherDiv .DataTable {
   thead tr th,tbody tr td { 
     width: 16.66%;
   }
 }
 
-div.RCInfoChildRootDiv div.DataTableFatherDiv table {
+div.RCInfoChildRootDiv div.DataTableFatherDiv .DataTable {
   thead tr th,tbody tr td { 
     width: 14.28%; 
   }
 }
 
-div.IngressInfoChildRootDiv div.DataTableFatherDiv > table {
+div.IngressInfoChildRootDiv div.DataTableFatherDiv .DataTable {
   > thead > tr > th, > tbody > tr > td { 
-    width: 33.33%; 
+    width: 17%; 
+  }
+  > thead > tr > th:nth-child(3), > tbody > tr > td:nth-child(3) { 
+    width: 49%;
   }
 }
 
-div.IngressInfoChildRootDiv div.DataTableFatherDiv table table {
+div.IngressInfoChildRootDiv div.DataTableFatherDiv .DataTable .InnerTable {
   width: 100%;
   tbody{
     width: 100%;
@@ -107,9 +109,8 @@ div.PodInfoChildRootDiv,div.ServiceInfoChildRootDiv,div.RCInfoChildRootDiv,div.I
     padding-right:8px;
   }
 
-  div.DataTableFatherDiv > table {
+  div.DataTableFatherDiv .DataTable {
     > thead > th , > tbody > td{
-      font-family: '微软雅黑';
       font-size: 12px;
       color:#666666;
     }
