@@ -4,12 +4,15 @@ import './index.less'
 import './extend.less'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import OPEN from '../data_request/request.js'
-import Button from 'bfd-ui/lib/Button'
 
-import { Form, FormItem } from 'bfd-ui/lib/Form'
-import FormInput from 'bfd-ui/lib/FormInput'
-import FormTextarea from 'bfd-ui/lib/FormTextarea'
-import { FormSelect, Option } from 'bfd-ui/lib/FormSelect'
+import { Progress, Button } from 'antd'
+const ButtonGroup = Button.Group
+
+//import { Form, FormItem } from 'bfd-ui/lib/Form'
+import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
+//import FormInput from 'bfd-ui/lib/FormInput'
+//import FormTextarea from 'bfd-ui/lib/FormTextarea'
+//import { FormSelect, Option } from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 //import React from 'react'
 //import './index.less'
@@ -18,6 +21,7 @@ import { Row, Col } from 'bfd-ui/lib/Layout'
 import xhr from 'bfd-ui/lib/xhr'
 import {Spin} from 'antd'
 import { Select, Option as Optionb } from 'bfd/Select'
+import Input from 'bfd/Input'
 
 const Extend = React.createClass({
   getInitialState() {
@@ -47,7 +51,7 @@ const Extend = React.createClass({
           <Option value="image">镜像=</Option>
           <Option value="flavor">类型=</Option>
         </Select>
-    		<SearchInput className="extend_class" placeholder="" onSearch={this.handleClick}  onChange={this.handleChange} size="sm" ref="type_input" />
+    		<SearchInput className="extend_class" placeholder="请" onSearch={this.handleClick}  onChange={this.handleChange} size="sm" ref="type_input" />
     	</div>
       )
   }
@@ -60,9 +64,9 @@ const Create_model_disk  = React.createClass({
 			disk_number: 3,
 			disk_list: [10],
 			host_disk:['--'],
-			formData: {
-        		brand: 0
-     		 }
+		//	formData: {
+     //   		brand: 0
+    // 		 }
 		}
 	},
 	crate_html(){
@@ -127,9 +131,8 @@ const Create_model_disk  = React.createClass({
   		let disk_numbers=this.state.disk_number+1
   		arr.splice(number_s['i'],1)
       host_diskss.splice(number_s['i']-1,1)
-  		delete this.refs[number['item']].context.form.props.data[number['item']]
+  		//delete this.refs[number['item']].context.form.props.data[number['item']]
   		disk_arr.pop();
-
   		disk_mm.splice(number_s['i']-1,1)
   		//console.log('disk_mm',disk_mm)
       //console.log('number_s',number_s['i'])
@@ -163,6 +166,7 @@ const Create_model_disk  = React.createClass({
 	render(){
 		let nav = this.state.disk_list.map((item, i) => {
 		let disk='disk'+i
+    console.log(disk,item,'............aaa')
 	 	if (i==0){
 	 		return (
 	 				<h1 key={i}></h1>
@@ -171,8 +175,8 @@ const Create_model_disk  = React.createClass({
 				return (
 				<div key={ i }  >
 					<FormItem label="数据盘" name={item} className="disk_create" >
-          				<FormInput  placeholder="10GB~1TB" ref={item} ></FormInput><Icon type=" fa-times" onClick={this.create_disk.bind(this,2,{item},{i})} />
-        			</FormItem>
+          	<FormInput  placeholder="10GB~1TB" ></FormInput><Icon type=" fa-times" onClick={this.create_disk.bind(this,2,{item},{i})} />
+        	</FormItem>
 				</div>
 			)}
 		});
@@ -216,6 +220,7 @@ const Create_model = React.createClass({
               disk_arr.splice(i,1,v)
           }
         }
+        console.log(v,'sssssssssssssss')
         console.log(self.state.host_disks)
   	  	self.setState({
   			host_disk:disk_arr
@@ -390,7 +395,7 @@ const Create_model = React.createClass({
 
     return (
       <div style={{float: "left",margin:'0px 10px 0px 0px'}}>
-        <Button className="" onClick={this.handleOpen}>创建</Button>
+        <button className="btn btn-primary" onClick={this.handleOpen}>创建</button>
         <Modal ref="modal">
           <ModalHeader>
             <h2>云主机创建</h2>
@@ -462,7 +467,7 @@ const Create_model = React.createClass({
           </FormSelect>
         </FormItem>
         <FormItem label="镜像" name="images">
-          <FormSelect style={{width: '200px'}} ref="images_s">
+          <FormSelect style={{width: '200px'}} >
             <Option>请选择</Option>
             {Object.keys(images).map((str,i)=>{
               return (<Option value={str} key={i}>{images[str]}</Option>)
@@ -470,7 +475,7 @@ const Create_model = React.createClass({
           }
           </FormSelect>
         </FormItem>
-        <FormItem label="磁盘" name="name" className="disk_left" style={{height:'200px', overflow: 'auto'}}>
+        <FormItem label="磁盘" name="name1" >
 	     	<Create_model_disk disks_m={this}/>      		
         </FormItem>
         <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>创建</button>

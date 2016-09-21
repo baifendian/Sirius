@@ -18,6 +18,8 @@ import NavigationInPage from 'public/NavigationInPage'
 import ReactDOM from 'react-dom'
 import Openstackconf from '../Conf/Openstackconf'
 import TextOverflow from 'bfd/TextOverflow'
+import { SplitPanel, SubSplitPanel } from 'bfd/SplitPanel'
+import {Tabs_List} from './instanses_tabs'
 
 
 export default React.createClass({
@@ -31,8 +33,10 @@ export default React.createClass({
       loading:false,
       select_all:[],
       select_host:'',
+      host_desc:'',
       button_status:"disabled",
       url_vnc:"",
+      height_h:"",
     	url: "openstack/bfddashboard/instances/",
       column: [{
         title: '名称',
@@ -93,19 +97,8 @@ export default React.createClass({
      console.log('aaaaa')
   },
   requestvnc(id,return_data,e){
-    //window.location.href=return_data
     this.setState({loading:true})
     if (id == '1'){OPEN.open_vnc(this,return_data,this.requestvnc); }else{
-     /* if($('#aObj-span').length != 0){
-        $('#aObj-span').parent().attr('href',return_data['console']['url']);
-        $('#aObj-span').trigger('click');
-        id.setState({loading:false})
-      }else{
-        let aObj = $('<a href="'+return_data['console']['url']+'" target="_blank"><span id="aObj-span"></span></a>');
-        $('body').append(aObj);
-        $('#aObj-span').trigger('click');
-        id.setState({loading:false,url_vnc:return_data['console']['url']})
-      }*/
       if (return_data['console']['url'] == false){
          message.danger('vnc故障请联系管理员')
          id.setState({loading:false})
@@ -114,20 +107,20 @@ export default React.createClass({
         id.setState({loading:false,url_vnc:return_data['console']['url']})}
         ReactDOM.findDOMNode(this.refs.iFrame).childNodes[0].focus()
     }
-    //console.log('return_data',return_data)
-    //console.log(id.state.url_vnc)
   },
   handleCheckboxSelect(selectedRows) {
     console.log('rows:', selectedRows)
-    console.log(this.refs['model_model'])
     console.log(selectedRows.length)
     if (selectedRows.length == 1 ){
       this.refs['model_model'].setState({
-       button_status: false
-    })}else{
+      button_status: false})
+      this.setState({host_desc:selectedRows[0]})
+      this.count_height()
+    }else{
         this.refs['model_model'].setState({
-       button_status: true
-    })}
+        button_status: true})
+        this.count_initialization()
+      }
     if (selectedRows.length > 0){
       this.refs['model_model'].setState({
        button_statuss: false
@@ -149,6 +142,71 @@ export default React.createClass({
         button_status: button_s,
         select_all:selectedRows
   	})
+  },
+  count_height(){
+    let table_trlengt=ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
+    let totallength=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes.length
+    let tdheight=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].scrollHeight
+    let height_table=(totallength+1)*tdheight
+    let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/table_trlengt
+    let totalHeight = document.body.clientHeight
+    totalHeight -= document.getElementById('header').clientHeight
+    totalHeight -= document.getElementById('footer').clientHeight
+    let instances_nav = ReactDOM.findDOMNode(this.refs.instances_nav).clientHeight
+    let instances_bu = ReactDOM.findDOMNode(this.refs.instances_bu).clientHeight
+    let totalHeight1=totalHeight-120
+    console.log('1........',totalHeight1)
+    totalHeight = totalHeight-instances_nav-instances_bu-140-93
+    let totalHeight2=totalHeight+82
+    this.setState({height_h:totalHeight})
+    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).style.height=totalHeight1+"px")
+    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height=totalHeight2+"px")
+    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top=totalHeight2+"px")
+    console.log(this.refs.SplitPanel)
+    if (totalHeight>height_table){
+      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    }else{
+      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
+      if (i==(table_trlengt-1)){
+        totalwidth=totalwidth+18.5
+        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }else{
+        //ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }
+    }
+  }
+  },
+  count_initialization(){
+    let table_trlengt=ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
+    let totallength=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes.length
+    let tdheight=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].scrollHeight
+    let height_table=(totallength+1)*tdheight
+    let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/table_trlengt
+    let totalHeight = document.body.clientHeight
+    totalHeight -= document.getElementById('header').clientHeight
+    totalHeight -= document.getElementById('footer').clientHeight
+    let instances_nav = ReactDOM.findDOMNode(this.refs.instances_nav).clientHeight
+    let instances_bu = ReactDOM.findDOMNode(this.refs.instances_bu).clientHeight
+    let totalHeight1=totalHeight-120
+    totalHeight = totalHeight-instances_nav-instances_bu-140-10
+    let totalHeight2=totalHeight+82
+    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).style.height=totalHeight1+"px")
+    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height=totalHeight1+"px")
+    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top=totalHeight1+"px")
+    if (totalHeight>height_table){
+      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    }else{
+      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
+      if (i==(table_trlengt-1)){
+        totalwidth=totalwidth+18.5
+        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }else{
+        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }
+    }
+  }
   },
   handleRowClick(row) {
     console.log('rowclick', row)
@@ -221,36 +279,15 @@ export default React.createClass({
     this.refs.model_disk.open()
   },
   componentDidMount(){
-    let table_trlengt=ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
-    let totallength=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes.length
-    let tdheight=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].scrollHeight
-    let height_table=(totallength+1)*tdheight
-    let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/table_trlengt
-    let totalHeight = document.body.clientHeight
-    totalHeight -= document.getElementById('header').clientHeight
-    totalHeight -= document.getElementById('footer').clientHeight
-    let instances_nav = ReactDOM.findDOMNode(this.refs.instances_nav).clientHeight
-    let instances_bu = ReactDOM.findDOMNode(this.refs.instances_bu).clientHeight
-    totalHeight = totalHeight-instances_nav-instances_bu-140
-    if (totalHeight>height_table){
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    }else{
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
-      if (i==(table_trlengt-1)){
-        totalwidth=totalwidth+18.5
-        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
-      }else{
-        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
-      }
-    }
-  }
+    this.count_initialization()
   },
   requestArgs:{
     pageName : "instances",
   },
   render() {
     let spaceName = Openstackconf.getCurSpace(this)
+    console.log('111',this.state.height_h)
+    let height_ht=this.state.height_h
     return (
       <div className="function-data-moduleA">
       <NavigationInPage ref="instances_nav" headText={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
@@ -297,6 +334,8 @@ export default React.createClass({
           </Modal>
       	</div>
         <div style={{clear:"both"}}></div>
+        <SplitPanel direct="hor" style={{border: '1px solid rgb(224, 224, 224)'}}  onSplit={this.handleSplit} ref="SplitPanel">
+        <SubSplitPanel  ref="SubSplitPanel">
       	<div className="DataTableFatherDiv_instances">
         	<DataTable 
 		        url={this.state.url} 
@@ -309,7 +348,12 @@ export default React.createClass({
 		        onCheckboxSelect={this.handleCheckboxSelect}  ref="Table">
 		      </DataTable>
 		      </div>
-          </Spin>
+          </SubSplitPanel>
+          <SubSplitPanel ref="SubSplitPanel">
+            <Tabs_List host_desc={this.state.host_desc}/>
+          </SubSplitPanel>
+          </SplitPanel> 
+        </Spin>
       </div>
     )
   }
