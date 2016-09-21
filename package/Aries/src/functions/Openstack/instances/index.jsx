@@ -235,8 +235,8 @@ export default React.createClass({
            			 	<h4>{this.state.text_text}</h4>
            			 </div>
            			 <div className="create_host">
-           			 	<Button onClick={this.handleclean.bind(this,'clean')}>关闭</Button>
-      					  <Button onClick={this.handleclean.bind(this,this.state.host_post)}>{this.state.host_status}</Button>
+                         <Button onClick={this.handleclean.bind(this,this.state.host_post)}>{this.state.host_status}</Button>
+                         <Button onClick={this.handleclean.bind(this,'clean')}>取消</Button>
            			 </div>
           		</ModalBody>
         	</Modal>
@@ -249,8 +249,8 @@ export default React.createClass({
                   <h4>{this.state.text_text}</h4>
                  </div>
                  <div className="create_host">
-                  <Button onClick={this.handleclean.bind(this,'clean')}>关闭</Button>
                   <Button onClick={this.handleclean.bind(this,this.state.host_post)}>{this.state.host_status}</Button>
+                  <Button onClick={this.handleclean.bind(this,'clean')}>取消</Button>
                  </div>
               </ModalBody>
           </Modal>
