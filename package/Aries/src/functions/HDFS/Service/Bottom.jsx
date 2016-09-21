@@ -39,7 +39,6 @@ const Bottom = React.createClass({
       let selectData = this.props.data;
       let selectComponents = selectData.map((data)=>{
           this.componentData = data;
-          console.log(`component: ${data.component}, state: ${data.state}`);
           let component =<div className="component">
                   <div className="left">
                     {data.component}
