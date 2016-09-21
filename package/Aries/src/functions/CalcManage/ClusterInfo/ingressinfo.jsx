@@ -18,30 +18,27 @@ export default React.createClass({
     // 否则，重新请求数据
     let curNameSpace = CMDR.getCurNameSpace(this)
     if ( this.curNameSpace !== curNameSpace ){
-      // CMDR.getIngressList( this,this.xhrCallback,curNameSpace )
-      
-      // 此处代码仅用于测试
-      let executedData = [{
-        'Name':'Name1',
-        'Ingress':['ip1','ip2','ip3'],
-        'Rules':[{'Url':'url1','ServiceName':'ServiceName1'}],
-        'DetailInfo':['DetailInfo1']
-      },{
-        'Name':'Name2',
-        'Ingress':['ip21','ip22','ip23'],
-        'Rules':[{'Url':'url2','ServiceName':'ServiceName2'}],
-        'DetailInfo':['DetailInfo12']
-      }]
-      this.xhrCallback( this,executedData )
-
       this.curNameSpace = curNameSpace
-    }
-  },
+      CMDR.getIngressList( curNameSpace,( executedData )=>{
 
-  xhrCallback:(_this,executedData) => {
-    _this.setState ( { 
-      dataTableDataArr:executedData,
-    })
+        /**       
+        // 此处代码仅用于测试
+        let executedData = [{
+          'Name':'Name1',
+          'Ingress':['ip1','ip2','ip3'],
+          'Rules':[{'Url':'url1','ServiceName':'ServiceName1'}],
+          'DetailInfo':['DetailInfo1']
+        },{
+          'Name':'Name2',
+          'Ingress':['ip21','ip22','ip23'],
+          'Rules':[{'Url':'url2','ServiceName':'ServiceName2'}],
+          'DetailInfo':['DetailInfo12']
+        }]
+        */
+
+        this.setState ({ 'dataTableDataArr':executedData })
+      } )
+    }
   },
 
   // 当namespace切换的时候，将会强制调用这个render函数

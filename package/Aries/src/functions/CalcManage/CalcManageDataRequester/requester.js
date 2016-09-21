@@ -8,7 +8,6 @@ var CalcManageDataRequester = {
   },
   getUrlForm() {
     return {
-      'k8soverview': 'k8s/api/v1/namespaces/{nameSpace}/getk8soverview',
       'podlist': 'k8s/api/v1/namespaces/{nameSpace}/pods',
       'servicelist': 'k8s/api/v1/namespaces/{nameSpace}/services',
       'rclist': 'k8s/api/v1/namespaces/{nameSpace}/replicationcontrollers',
@@ -94,40 +93,32 @@ var CalcManageDataRequester = {
     this.xhrGetData(url, _this, callback)
   },
 
-  getK8sOverview(_this, callback, nameSpace){
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['k8soverview'],{
-      'nameSpace': nameSpace      
-    })
-    this.xhrGetData(url, _this, callback)    
-  },
-
-  getPodList(_this, callback, nameSpace ) {
+  getPodList( nameSpace,callback ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podlist'], {
       'nameSpace': nameSpace
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
 
-  getServiceList(_this, callback, nameSpace ) {
+  getServiceList( nameSpace,callback ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['servicelist'], {
       'nameSpace': nameSpace
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url,callback)
   },
 
-  getRCList(_this, callback, nameSpace ) {
+  getRCList( nameSpace,callback ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['rclist'], {
       'nameSpace': nameSpace
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
 
-  getIngressList(_this, callback, nameSpace ) {
+  getIngressList( nameSpace ,callback ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['ingresslist'], {
-      //'nameSpace': nameSpace
-      'nameSpace': 'default'
+      'nameSpace': nameSpace
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
   
   xhrGetData(url, _this, callback) {
