@@ -3,7 +3,7 @@ from openstack.middleware.login.login import Login, get_token, get_project
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
 from common import json_data
-from openstack.middleware.vm.vm import Vm_manage, Vm_control
+from openstack.middleware.vm.vm import Vm_manage, Vm_control,Vm_snap
 from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps
 from django.http import HttpResponse
 import json
@@ -233,6 +233,23 @@ def volumes_Redact(request):
     ret=json_data(ret)
     return ret
 
+def instances_backup(request):
+    ret={}
+    login()
+    instances_id=request.POST.get('id')
+    instances_name = request.POST.get('name')
+    instances_name_b = request.POST.get('name_bakup')
+    openstack_log.info(request.POST)
+    vm_snap=Vm_snap(instances_id)
+    return_data=vm_snap.create(instances_name_b)
+    if return_data !=1:
+        ret['name']=instances_name
+        ret['status']=True
+    else:
+        ret['name']=instances_name
+        ret['status']=False
+    ret=json_data(ret)
+    return ret
 
 def instances_search(request):
     login()
@@ -309,5 +326,6 @@ Methods = {
         'uninstall': volumes_uninstall,
         'backup': volumes_backup,
         'Redact':volumes_Redact,
+        'instances_backup':instances_backup,
     }
 }

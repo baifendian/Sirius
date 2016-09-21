@@ -196,8 +196,9 @@ const Vm_Backup=React.createClass({
     }
     return {
       formData: {
-        data: this.volumes_id(),
-        method: 'backup'
+        name: this.volumes_id()['name'],
+        id:this.volumes_id()['id'],
+        method: 'instances_backup'
       },
       volumes_id: this.volumes_id()
     }
@@ -205,13 +206,13 @@ const Vm_Backup=React.createClass({
   volumes_id(){
     let volumes_id={}
     let volumes_size={}
-    console.log(this.props.volumes_all)
-    for (let i in this.props.volumes_all){
-      console.log(this.props.volumes_all[i])
-      volumes_id['size']=this.props.volumes_all[i]['size']
-      volumes_id['name']=this.props.volumes_all[i]['name']
-      volumes_id['id']=this.props.volumes_all[i]['id']
+    console.log(this.props.vm_list)
+    for (let i in this.props.vm_list){
+      console.log(this.props.vm_list[i])
+      volumes_id['name']=this.props.vm_list[i]['name']
+      volumes_id['id']=this.props.vm_list[i]['id']
     }
+    console.log('volumes_id',volumes_id)
     return volumes_id
   },
   handleDateSelect(date) {
@@ -233,7 +234,6 @@ const Vm_Backup=React.createClass({
   render() {
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
-    console.log('aaa',this.props.volumes_all,this.state.volumes_id)
     return (
       <div >
             <Form 
@@ -243,7 +243,7 @@ const Vm_Backup=React.createClass({
               rules={this.rules} 
               onSuccess={this.handleSuccess}
             >
-              <FormItem label="备份名称" required name="name" >
+              <FormItem label="备份名称" required name="name_bakup" >
                 <FormInput style={{width: '200px'}} ></FormInput>
               </FormItem>  
               <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>创建</button>
@@ -518,7 +518,7 @@ const Disk_model=React.createClass({
                 <div>
                   { this.state.model.map((item,i)=>{
                     if(item==1){
-                      return(<Vm_Backup key={i} />)
+                      return(<Vm_Backup key={i} vm_list={this.props.vm_list} _this={this}/>)
                     }
                     if (item == 2){
                     return (<Disk_list key={i} vm_list={this.props.vm_list} disk_list={this.state.disk_list} disk_object={this.state.disk_object} _this={this}/>)
