@@ -45,7 +45,6 @@ export default React.createClass({
       let title = component.title;
       let contentData = component.content;
       let contentComponent = contentData.map((d,i)=>{
-        console.log(this);
         let value = d.value;
         return <Row key={i}>
                  <Col col="md-7" >{d.label}</Col>
@@ -99,7 +98,7 @@ export default React.createClass({
     let codis_count = `${data.nice_codis_count}/${data.all_codis_count}`;
     let codis_memory_used = data.memory_used_count.toFixed(2)/data.memory_total_count;
     this.setState({
-      codis_count: ,codis_count,
+      codis_count: codis_count,
       codis_memory_used: codis_memory_used,
     });
   },
@@ -136,15 +135,20 @@ export default React.createClass({
     let hdfs_url = this.getUrlData({ type: "HDFS_OVERVIEW",
                                      spaceName: spaceName
                   });
+    let user_url = this.getUrlData({ type: "USER_AUTH_OVERVIEW",
+                                     spaceName: spaceName
+                  });
 
     //根据space获取对应的指标信息
     let conent = this.index();
     return (
         <div className="overview">
           {conent}
-          {/*
           <Fetch defaultHeight={0} url={`${bdms_url}&random=${this.state.random}`} onSuccess={this.getBdmsData} />
           <Fetch defaultHeight={0} url={`${hdfs_url}&random=${this.state.random}`} onSuccess={this.getHdfsData} />
+          <Fetch defaultHeight={0} url={`${codis_url}&random=${this.state.random}`} onSuccess={this.getCodisData} />
+          <Fetch defaultHeight={0} url={`${user_url}&random=${this.state.random}`} onSuccess={this.getUserAuthData} />
+          {/*
           <Fetch defaultHeight={0} url={`${k8sp_url}&random=${this.state.random}`} onSuccess={this.getK8spData} />
           <Fetch defaultHeight={0} url={`${codis_url}&random=${this.state.random}`} onSuccess={this.getOpenstackData} />
           */}
