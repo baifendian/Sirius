@@ -295,7 +295,36 @@ class AutoReblanceApi(APIView):
             }
         finally:
             return packageResponse(result) 
-
+			
+			
+class CodisOverview(APIView):
+    '''
+       获取概览信息
+    '''
+    def get(self, request, format=None):
+        query_url = settings.OPENTSDB_URL + "/api/query/"
+        host_list = Host.objects.all()
+        allcodis_count = Codis.objects.all().count()
+        badcodis_count = 0
+        memory_used_count = 0
+        memory_total_count = 0
+        for host in host_list:
+            memory_used_count += host.memory_used
+            memory_total_count += host.memory_total
+        badcodis_query_args = {"start":"6h-ago","end":"","queries":[{"metric":"codis.badcluster","aggregator": "sum",\
+                               "tags":{"bad":"true"}}]}
+        badcodis = requests.post(query_url,data=json.dumps(badcodis_query_args),timeout=10)
+        for k,v in json.loads(badcodis.text)[0]['dps'].items():
+            badcodis_count = v
+            break
+        data = {"memory_used_count":memory_used_count,"memory_total_count":memory_total_count,\
+                "all_codis_count":allcodis_count,"nice_codis_count":allcodis_count-badcodis_count}        
+        result={
+            "msg":"OK",
+            "code":200,
+            "data":data
+        }
+        return packageResponse(result)			
 
 
 class GetAllCodisInfo(APIView):
