@@ -26,7 +26,7 @@ def sumSpace(operator='du'):
             hdfs_logger.error(traceback.format_exc())
         else:
             if exitCode != 0:
-                hdfs_logger.log("path:{0}.".format(path))
+                hdfs_logger.info("path:{0}.".format(path))
                 continue
             else:
                 capacity["used"] = int(data)/1024.0/1024/1024
