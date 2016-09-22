@@ -16,6 +16,16 @@ const conf = {
         SPACE_SWITCH: "v1/user_auth/user/${spaceName}/", //head部分的space切换
       },
     },
+    //概览部分模版url模版
+    Overview:{ //总览模块
+      Overview:{ //总览页面
+        HDFS_OVERVIEW: "v1/hdfs/overview/?spaceName=${spaceName}",
+        BDMS_OVERVIEW: "k8s/api/v1/dashboard/taskinfo",
+        K8SP_OVERVIEW: "",
+        CODIS_OVERVIEW: "",
+        USER_AUTH_OVERVIEW:""
+      }
+    },
     //用户管理模块url模版
     UserAuth: {
       SpaceList: {
