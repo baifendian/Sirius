@@ -48,6 +48,9 @@ var NavigationInPage = React.createClass({
           )
         })}
         <strong>{lastPropNaviText['text']}</strong>
+        <div id="NavigationInPageHeadText" className="NavigationInPageHeadTextDiv"  >
+          {this.props.headText}
+        </div>
       </div>
     )
   }
