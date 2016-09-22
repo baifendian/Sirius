@@ -25,6 +25,20 @@ def packageResponse(result):
     response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
     return response
 
+def getOverview(request):
+    result = {}
+    data = {}
+    spaceName = request.GET.get("spaceName","")
+    try:
+        space = Space.objects.get(name=spaceName)
+        count = SpaceUserRole.objects.filter(space=space).count()
+    except Exception,e:
+        ac_logger.info(e)
+        count = 0;
+    data["count"] = count
+    result["code"] = 200
+    result["data"] = data
+    return result
 #spaceList
 def spaceListGet(request):
     result={}
