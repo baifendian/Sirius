@@ -8,11 +8,11 @@ import OPEN from '../data_request/request.js'
 import { Progress, Button } from 'antd'
 const ButtonGroup = Button.Group
 
-//import { Form, FormItem } from 'bfd-ui/lib/Form'
-import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
-//import FormInput from 'bfd-ui/lib/FormInput'
-//import FormTextarea from 'bfd-ui/lib/FormTextarea'
-//import { FormSelect, Option } from 'bfd-ui/lib/FormSelect'
+import { Form, FormItem } from 'bfd-ui07/lib/Form'
+//import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
+import FormInput from 'bfd-ui07/lib/FormInput'
+import FormTextarea from 'bfd-ui07/lib/FormTextarea'
+import { FormSelect, Option } from 'bfd-ui07/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 //import React from 'react'
 //import './index.less'
@@ -412,33 +412,33 @@ const Create_model = React.createClass({
         	</div>
         <div className="border_right"></div>
           <Row style={{margin: "5px 0px 0px 0px"}}>
-            <Col col="md-4" ><h5>名称</h5></Col>
-            <Col col="md-8" ><h5>{this.state.host_name}</h5></Col>
+            <Col col="md-4" >名称</Col>
+            <Col col="md-8" >{this.state.host_name}</Col>
           </Row>
           <Row style={{margin: "5px 0px 0px 0px"}}>
-            <Col col="md-4" ><h5>数量</h5></Col>
-            <Col col="md-8" ><h5>{this.state.host_count}</h5></Col>
+            <Col col="md-4" >数量</Col>
+            <Col col="md-8" >{this.state.host_count}</Col>
           </Row>
           <Row style={{margin: "5px 0px 0px 0px"}}>
-            <Col col="md-4" ><h5>类型</h5></Col>
-            <Col col="md-8" ><h5>{this.state.host_flavor_name}</h5></Col>
+            <Col col="md-4" >类型</Col>
+            <Col col="md-8" >{this.state.host_flavor_name}</Col>
           </Row>
         	<Row style={{margin: "5px 0px 0px 0px"}}>
-      			<Col col="md-4" ><h5>cpu</h5></Col>
-    			<Col col="md-8" ><h5>{this.state.host_cpu}</h5></Col>
+      			<Col col="md-4" >cpu</Col>
+    			<Col col="md-8" >{this.state.host_cpu}</Col>
    			  </Row>
    			<Row  style={{margin: "5px 0px 0px 0px"}}>
-      			<Col col="md-4" ><h5>内存</h5></Col>
-    			<Col col="md-8" ><h5>{this.state.host_men}</h5></Col>
+      			<Col col="md-4" >内存</Col>
+    			<Col col="md-8" >{this.state.host_men}</Col>
    			</Row>
         <Row  style={{margin: "5px 0px 0px 0px"}}>
-            <Col col="md-4" ><h5>镜像</h5></Col>
-          <Col col="md-8" ><h5>{this.state.host_image}</h5></Col>
+            <Col col="md-4" >镜像</Col>
+          <Col col="md-8" >{this.state.host_image}</Col>
         </Row>
    			<Row style={{margin: "5px 0px 0px 0px"}}>
-      			<Col col="md-4" ><h5>磁盘</h5></Col>
+      			<Col col="md-4" >磁盘</Col>
     			<Col col="md-8" >
-    				<h5>{disk}</h5>
+    				{disk}
     			</Col>
    			</Row>
         </div>

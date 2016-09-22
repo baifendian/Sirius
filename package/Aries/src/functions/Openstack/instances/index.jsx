@@ -76,8 +76,9 @@ export default React.createClass({
         order:false,
         render: (text,item)=>{
           console.log('text_text',text)
-         if (text=="active" || text == "error" || text=="stopped"){return (<span>{text}</span>)}else{
-          return (<div><Progress_model/></div>)}
+        /* if (text=="active" || text == "error" || text=="stopped"){return (<span>{text}</span>)}else{
+          return (<div><Progress_model/></div>)}*/
+        return (<span>{text}</span>)  
         }
       }, {
         title: '创建时间',
@@ -117,6 +118,7 @@ export default React.createClass({
       this.setState({host_desc:selectedRows[0]})
       this.count_height()
     }else{
+        this.setState({host_desc:''})
         this.refs['model_model'].setState({
         button_status: true})
         this.count_initialization()
@@ -148,7 +150,9 @@ export default React.createClass({
     let totallength=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes.length
     let tdheight=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].scrollHeight
     let height_table=(totallength+1)*tdheight
-    let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/table_trlengt
+    let totalwidth_t=ReactDOM.findDOMNode( this.refs.instances_bu).clientWidth
+    //let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/table_trlengt
+    let totalwidth=(ReactDOM.findDOMNode( this.refs.instances_bu).clientWidth-34-17)/table_trlengt
     let totalHeight = document.body.clientHeight
     totalHeight -= document.getElementById('header').clientHeight
     totalHeight -= document.getElementById('footer').clientHeight
@@ -164,15 +168,17 @@ export default React.createClass({
     console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top=totalHeight2+"px")
     console.log(this.refs.SplitPanel)
     if (totalHeight>height_table){
+      ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
       ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     }else{
+      ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
       ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
+    for (let i=0 ; i<ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++){
       if (i==(table_trlengt-1)){
-        totalwidth=totalwidth+18.5
+        totalwidth=totalwidth+17
         ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
       }else{
-        //ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
       }
     }
   }
@@ -182,7 +188,10 @@ export default React.createClass({
     let totallength=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].childNodes.length
     let tdheight=ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].scrollHeight
     let height_table=(totallength+1)*tdheight
-    let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/table_trlengt
+   // let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/7
+    let totalwidth_t=ReactDOM.findDOMNode( this.refs.instances_bu).clientWidth
+    let totalwidth=(ReactDOM.findDOMNode( this.refs.instances_bu).clientWidth-34-17)/table_trlengt
+    console.log(ReactDOM.findDOMNode( this.refs.instances_bu).clientWidth)
     let totalHeight = document.body.clientHeight
     totalHeight -= document.getElementById('header').clientHeight
     totalHeight -= document.getElementById('footer').clientHeight
@@ -196,11 +205,21 @@ export default React.createClass({
     console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top=totalHeight1+"px")
     if (totalHeight>height_table){
       ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+      ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
+      for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length){
+      if (i==(table_trlengt)){
+        totalwidth=totalwidth+17
+        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }else{
+        ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }
+    }
     }else{
+      ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
       ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
+    for (let i=0 ; i<ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++){
       if (i==(table_trlengt-1)){
-        totalwidth=totalwidth+18.5
+        totalwidth=totalwidth+17
         ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
       }else{
         ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
@@ -279,7 +298,15 @@ export default React.createClass({
     this.refs.model_disk.open()
   },
   componentDidMount(){
+     window.onresize=()=>{
+      if (this.state.host_desc){
+        this.count_height()
+      }else{
+        this.count_initialization()
+      }
+     }
     this.count_initialization()
+
   },
   requestArgs:{
     pageName : "instances",
@@ -334,6 +361,7 @@ export default React.createClass({
           </Modal>
       	</div>
         <div style={{clear:"both"}}></div>
+        <div ref="Table_t">
         <SplitPanel direct="hor" style={{border: '1px solid rgb(224, 224, 224)'}}  onSplit={this.handleSplit} ref="SplitPanel">
         <SubSplitPanel  ref="SubSplitPanel">
       	<div className="DataTableFatherDiv_instances">
@@ -353,6 +381,7 @@ export default React.createClass({
             <Tabs_List host_desc={this.state.host_desc}/>
           </SubSplitPanel>
           </SplitPanel> 
+          </div>
         </Spin>
       </div>
     )

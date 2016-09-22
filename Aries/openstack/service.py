@@ -7,7 +7,8 @@ from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps
 from django.http import HttpResponse
 import json
-
+import logging
+openstack_log = logging.getLogger("openstack_log")
 
 def json_data(json_status):
     if len(json_status) == 0:
@@ -200,18 +201,23 @@ def volumes_backup(request):
 def openstack_project(request):
     ret = {}
     login()
-    return_data = get_project()
-    ret['totalList'] = []
-    for i in return_data['projects']:
-        sys = {}
-        sys['name'] = i['name']
-        sys['id'] = i['id']
-        sys['desc'] = i['description']
-        sys['domain_id'] = i['domain_id']
-        sys['domain_name'] = 'default'
-        ret['totalList'].append(sys)
-    ret = json_data(ret)
-    return ret
+    try:
+        return_data = get_project()
+        ret['totalList'] = []
+        for i in return_data['projects']:
+            sys = {}
+            sys['name'] = i['name']
+            sys['id'] = i['id']
+            sys['desc'] = i['description']
+            sys['domain_id'] = i['domain_id']
+            sys['domain_name'] = 'default'
+            ret['totalList'].append(sys)
+        ret = json_data(ret)
+        return ret
+    except:
+        openstack_log.error("project异常")
+        ret =json_data(ret)
+        return ret
 
 
 def instances_search(request):

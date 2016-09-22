@@ -11,7 +11,7 @@ import ReactDOM from 'react-dom'
 import Openstackconf from '../Conf/Openstackconf'
 
 
-
+/*
 export default React.createClass({
    getInitialState: function () {
     return {
@@ -105,3 +105,121 @@ export default React.createClass({
     )
   }
 })
+
+*/
+
+
+import { Component } from 'react'
+import FixedTable from 'bfd/FixedTable'
+
+class FixedTableDemo extends Component {
+  constructor(props) {
+    super()
+    this.state = {
+      column: [{
+        title: '名称',
+        order: false,
+        key: 'name'
+      }, {
+        title: '描述',
+        key: 'desc',
+        order: false
+      }, {
+        title: '项目ID',
+        key: 'id',
+        order: false
+      }, {
+        title: '域名',
+        key: 'domain_name',
+        order: false,
+      //  width: "26.25%"
+      }
+      ],
+      data: []
+    }
+  }
+
+
+  render() {
+    let spaceName = Openstackconf.getCurSpace(this)
+    console.log(this.state.data)
+    return (
+      <div>
+        <NavigationInPage ref="project_nav" headText={Openstackconf.getNavigationDatap({pageName:'project', type:"headText"})} naviTexts={Openstackconf.getNavigationDatap({pageName:'project',type:"navigationTexts",spaceName:spaceName})} />
+        <div ref="project_bu">
+          <Button onClick={::this.Get_project} style={{margin:'0px 10px 0px 0px'}}>刷新</Button>
+        </div>
+        <div></div>
+        <div className="DataTableFatherDiv_project">
+          <FixedTable 
+            height={40}
+            data={this.state.data}
+            column={this.state.column}
+            onRowClick={::this.handleRowClick}
+            onOrder={::this.handleOrder}
+            onCheckboxSelect={::this.handleCheckboxSelect}
+            ref="Table"
+          />
+        </div>
+      </div>
+    )
+  }
+
+
+  componentWillMount(){
+    this.Get_project()
+  }
+
+  Get_project(){
+    OPEN.Get_project(this,this.xhrCallback)
+  }
+
+  componentDidMount(){
+
+    window.onresize=()=>{
+      let totalHeight = document.body.clientHeight
+      totalHeight -= document.getElementById('header').clientHeight
+      totalHeight -= document.getElementById('footer').clientHeight
+      let project_nav = ReactDOM.findDOMNode(this.refs.project_nav).clientHeight
+      let project_bu = ReactDOM.findDOMNode(this.refs.project_bu).clientHeight
+      totalHeight = totalHeight - project_nav - project_bu - 120
+      ReactDOM.findDOMNode( this.refs.Table).childNodes[0].style.height=totalHeight+'px' 
+    }
+    let totalHeight = document.body.clientHeight
+    totalHeight -= document.getElementById('header').clientHeight
+    totalHeight -= document.getElementById('footer').clientHeight
+    let project_nav = ReactDOM.findDOMNode(this.refs.project_nav).clientHeight
+    let project_bu = ReactDOM.findDOMNode(this.refs.project_bu).clientHeight
+    totalHeight = totalHeight - project_nav - project_bu - 120
+    ReactDOM.findDOMNode( this.refs.Table).childNodes[0].style.height=totalHeight+'px'   
+  }
+
+  xhrCallback(_this,executedData){
+   // console.log(executedData['totalList'][0])
+    let data=executedData
+    console.log(data)
+    _this.setState ({ 
+      data
+    })
+  }
+
+  handleClick(item, event) {
+    event = event ? event : window.event;
+    event.stopPropagation();
+    console.log(item)
+  }
+
+  handleCheckboxSelect(selectedRows) {
+    console.log('rows:', selectedRows)
+  }
+
+  handleRowClick(row) {
+    console.log('rowclick', row)
+  }
+
+  handleOrder(name, sort) {
+    console.log(name, sort)
+  }
+}
+
+export default FixedTableDemo
