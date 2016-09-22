@@ -626,9 +626,9 @@ def convert_dict(keywords):
 @return_http_json
 def dashboard_taskinfo(request):
     retu_data = {}
-    retu_data['today_running_task'] = Schedule_Status.objects.filter(category = time.strftime('%Y-%m-%d',time.localtime(time.time())), status = 3).count()
-    retu_data['today_succeed_task'] = Schedule_Log.objects.filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 1).count()
-    retu_data['today_failed_task'] = Schedule_Log.objects.filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 2).count()
+    retu_data['today_running_task'] = Schedule_Status.objects.using('kd_agent_bdms').filter(category = time.strftime('%Y-%m-%d',time.localtime(time.time())), status = 3).count()
+    retu_data['today_succeed_task'] = Schedule_Log.objects.using('kd_agent_bdms').filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 1).count()
+    retu_data['today_failed_task'] = Schedule_Log.objects.using('kd_agent_bdms').filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 2).count()
     retu_data['today_total_task'] = retu_data['today_succeed_task'] + retu_data['today_failed_task']
     return generate_success( data = retu_data )
 
