@@ -2,6 +2,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from django.conf.urls import patterns,url,include
 import rests
 urlpatterns = format_suffix_patterns(patterns('hdfs.rests',
+    url('^overview/$', rests.Overview.as_view(), name='overview' ),
     url('^state/$', rests.HostState.as_view(), name='HostState-list' ),
     url('^relation/(?P<host_name>.+)/$', rests.Relation.as_view(), name='relation-info'),
     url('^hostinfo/(?P<host_name>.+)/$', rests.HostInfo.as_view(), name='Host-info'),

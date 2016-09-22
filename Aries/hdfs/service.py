@@ -551,16 +551,61 @@ def OperateComponentPUT(request, host_name, component_name, operate):
     return result
 
 def host_state_and_relation_req():
-    r = requests.get('%shosts?fields=host_components/HostRoles/state,host_components/HostRoles/service_name' %settings.AMBARI_URL, auth=HTTPBasicAuth(settings.AMBARI_USER,settings.AMBARI_PASSWORD))
-    dic = eval(r.text)
-    return dic
+    extendUrl = "hosts?fields=host_components/HostRoles/state,host_components/HostRoles/service_name"
+    return requestEval(extendUrl)
 
 def host_desc_req():
     import time
-    r = requests.get('%s/hosts?fields=Hosts/host_name,Hosts/public_host_name,Hosts/cpu_count,Hosts/ph_cpu_count,Hosts/host_status,Hosts/last_heartbeat_time,Hosts/ip,host_components/HostRoles/state,Hosts/total_mem,Hosts/os_arch,Hosts/os_type&sortBy=Hosts/host_name.asc&_=%s' \
-        %( settings.AMBARI_URL, int(time.time()) ), auth=HTTPBasicAuth(settings.AMBARI_USER,settings.AMBARI_PASSWORD) )
+    extendUrl = "hosts?fields=Hosts/host_name,Hosts/public_host_name,Hosts/cpu_count,Hosts/ph_cpu_count,Hosts/host_status,Hosts/last_heartbeat_time,Hosts/ip,host_components/HostRoles/state,Hosts/total_mem,Hosts/os_arch,Hosts/os_type&sortBy=Hosts/host_name.asc&_=%s" %(int(time.time()))
+    return requestEval(extendUrl)
+
+def requestEval(url):
+    fullUrl = "%s%s" %(settings.AMBARI_URL,url)
+    ac_logger.info(fullUrl)
+    r = requests.get(fullUrl, auth=HTTPBasicAuth(settings.AMBARI_USER,settings.AMBARI_PASSWORD))
     dic = eval(r.text)
     return dic
+
+def getOverview(request):
+    spaceName = request.GET.get("spaceName")
+    result = {}
+    result["code"] = StatusCode["SUCCESS"]
+    data = {}
+    #使用百分比
+    space = getObjByAttr(Space,"name",spaceName)
+    if space:
+        capacity = space[0].capacity
+        capacity = eval(capacity)
+        used = capacity["used"]
+        total = capacity["total"]
+        try:
+            hdfs_disk_used = float(used)/float(total)
+        except Exception,e:
+            ac_logger.error(e)
+            hdfs_disk_used = 0
+    else:
+        hdfs_disk_used = 0
+    #分享个数
+    try:
+        hdfs_shares = DataShare.objects.filter(space_name = spaceName).count()
+    except Exception,e:
+        ac_logger.error("hdfs_shares is get failed. so set default 0.")
+        hdfs_shares = 0
+    #datanode状态个数
+    try:
+        extendUrl = "services/HDFS/components/DATANODE"
+        dic = requestEval(extendUrl)
+        total_count = dic["ServiceComponentInfo"]["total_count"] 
+        started_count = dic["ServiceComponentInfo"]["started_count"]
+        hdfs_datanodes = "{0}/{1}".format(started_count,total_count)
+    except Exception,e:
+        ac_logger.error(e) 
+        hdfs_datanodes = "0/0"
+    data["hdfs_disk_used"] = hdfs_disk_used
+    data["hdfs_shares"] = hdfs_shares
+    data["hdfs_datanodes"] = hdfs_datanodes
+    result["data"] = data
+    return result
 
 OP_DICT={
     "GET":{
