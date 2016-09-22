@@ -35,28 +35,22 @@ import './index.less'
 var NavigationInPage = React.createClass({
   
   render: function (){
-    let headText = this.props.headText
-    let firstPropNaviText = this.props.naviTexts[0]
-    let theRestPropNaviTexts = []
-    for ( let i = 1 ; i < this.props.naviTexts.length ; i ++ ){
-      theRestPropNaviTexts.push( this.props.naviTexts[i] )
-    }    
+    let lastPropNaviText = this.props.naviTexts[ this.props.naviTexts.length-1 ]
+    let theRestPropNaviTexts = this.props.naviTexts.slice( 0,this.props.naviTexts.length-1 )
     return(
       <div className="NavigationInPageRootDiv">
-        <div className="HeadTextDiv">
-          {headText}
-        </div>
-        <div className="NaviTextDiv">
-          <a href={firstPropNaviText['url']}>{firstPropNaviText['text']}</a>
-        </div>
         {theRestPropNaviTexts.map( (urlInfo) => {
           return (
             <div className="NaviTextDiv" key={Toolkit.generateGUID()}>
-              &nbsp;>&nbsp;
               <a href={urlInfo['url']}>{urlInfo['text']}</a>
+              &nbsp;>&nbsp;
             </div>
           )
         })}
+        <strong>{lastPropNaviText['text']}</strong>
+        <div id="NavigationInPageHeadText" className="NavigationInPageHeadTextDiv"  >
+          {this.props.headText}
+        </div>
       </div>
     )
   }

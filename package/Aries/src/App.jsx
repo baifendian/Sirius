@@ -84,6 +84,27 @@ const App = React.createClass({
     })
   },
 
+  updateHeadTitle( headTitleText ){
+    let title = document.getElementsByTagName('head')[0].getElementsByTagName('title')[0]
+    let navigationInPageHeadTextDiv = document.getElementById('NavigationInPageHeadText')
+    if ( navigationInPageHeadTextDiv !== null ){
+      title.innerHTML = navigationInPageHeadTextDiv.innerHTML
+    } else {
+      title.innerHTML = this.userData['oriTitleInnerHTML']
+    }
+  },
+
+  componentDidMount(){
+    this.userData = {
+      'oriTitleInnerHTML':document.getElementsByTagName('head')[0].getElementsByTagName('title')[0].innerHTML
+    }
+    this.updateHeadTitle()
+  },
+
+  componentDidUpdate(){ 
+    this.updateHeadTitle()
+  },
+
   render() {
 
     let Children = this.props.children
