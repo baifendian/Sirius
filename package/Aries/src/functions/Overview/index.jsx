@@ -96,28 +96,30 @@ export default React.createClass({
     });
   },
   getCodisData(data){
+    let codis_count = `${data.nice_codis_count}/${data.all_codis_count}`;
+    let codis_memory_used = data.memory_used_count.toFixed(2)/data.memory_total_count;
     this.setState({
-      codis_count: "",
-      codis_memory_used: ""
+      codis_count: ,codis_count,
+      codis_memory_used: codis_memory_used,
     });
   },
   getOpenstackData(data){
     this.setState({
-      openstack_vm_count:"",
-      openstack_image_count:"",
-      openstack_disk_count:""
+      openstack_vm_count:data.vm,
+      openstack_image_count:data.image,
+      openstack_disk_count:data.volume
     });
   },
   getHdfsData(data){
     this.setState({
-      hdfs_disk_used: data.hdfs_disk_used,
+      hdfs_disk_used: data.hdfs_disk_used.toFixed(2),
       hdfs_shares: data.hdfs_shares,
       hdfs_datanodes: data.hdfs_datanodes
     });
   },
   getUserAuthData(data){
     this.setState({
-      userAuth_member_count: ""
+      userAuth_member_count: data.count
     });
   },
   render() {
