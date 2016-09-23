@@ -24,7 +24,7 @@ def sumSpace(operator='du'):
         try:
             exitCode,data = run_hadoop(user_name=exec_user,operator=operator,args=args)
         except Exception,e:
-            ac_logger.error(traceback.format_exc())
+            hdfs_logger.error(traceback.format_exc())
         else:
             if exitCode != 0:
                 hdfs_logger.info("path:{0}.".format(path))
