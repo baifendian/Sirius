@@ -20,8 +20,8 @@ spec:
               name: siriuslog
             - mountPath: /opt/Siurs/download
               name: siriusdownload
-      nodeSelector:
-        kubernetes.io/hostname: 172.24.2.208 
+      imagePullSecrets:
+        - name: docker-registry-sys 
       volumes:
         - emptyDir: {}
           name: siriuslog
