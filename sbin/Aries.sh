@@ -1,7 +1,6 @@
 #!/bin/bash
 HOME=`dirname $(cd "$(dirname "$0")"; pwd)`
 HDFS_DOWNLOAD_DIR="$HOME/download/"
-rm -rf $HDFS_DOWNLOAD_DIR
 mkdir -p $HDFS_DOWNLOAD_DIR
 
 LOG_BASE_DIR="$HOME/log"
