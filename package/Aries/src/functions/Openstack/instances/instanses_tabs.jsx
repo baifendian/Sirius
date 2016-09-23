@@ -150,12 +150,12 @@ const Host_details=React.createClass({
 	},
 	data(){
 		let host_desd=this.props.host_desc[0]
-		console.log(host)
+		//console.log(host)
 		return host_desd
 	},
 	render(){
-		console.log(this.props.host_desc,'.........aaaa')
-		console.log(this.props.host_desc['name'])
+		//console.log(this.props.host_desc,'.........aaaa')
+		//console.log(this.props.host_desc['name'])
 		let host_des=this.props.host_desc
 
 		return(

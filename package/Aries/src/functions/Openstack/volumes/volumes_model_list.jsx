@@ -139,7 +139,7 @@ const Backup_disk = React.createClass({
   render() {
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
-    console.log('aaa',this.props.volumes_all,this.state.volumes_id)
+   // console.log('aaa',this.props.volumes_all,this.state.volumes_id)
     return (
       <div >
             <Form 
@@ -190,7 +190,7 @@ const Uninstall_disk=React.createClass({
     let volumes_size={}
    // console.log(this.props.volumes_all)
     for (let i in this.props.volumes_all){
-      console.log(this.props.volumes_all[i])
+    //  console.log(this.props.volumes_all[i])
       volumes_id['size']=this.props.volumes_all[i]['size']
       volumes_id['name']=this.props.volumes_all[i]['name']
       volumes_id['id']=this.props.volumes_all[i]['id']
@@ -230,8 +230,8 @@ const Uninstall_disk=React.createClass({
       totalList: [this.state.formData.data],
       totalPageNum: 2
     } 
-     console.log('aa',data)
-    console.log('aa',data.data)
+    // console.log('aa',data)
+   // console.log('aa',data.data)
 
     return (
       <div >
@@ -291,9 +291,9 @@ const Loading_disk=React.createClass({
   volumes_id(){
     let volumes_id={}
     let volumes_size={}
-    console.log(this.props.volumes_all)
+ //   console.log(this.props.volumes_all)
     for (let i in this.props.volumes_all){
-      console.log(this.props.volumes_all[i])
+   //   console.log(this.props.volumes_all[i])
       volumes_id['size']=this.props.volumes_all[i]['size']
       volumes_id['name']=this.props.volumes_all[i]['name']
       volumes_id['id']=this.props.volumes_all[i]['id']

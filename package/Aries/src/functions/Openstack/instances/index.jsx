@@ -75,7 +75,7 @@ export default React.createClass({
         key: 'status',
         order:false,
         render: (text,item)=>{
-          console.log('text_text',text)
+         // console.log('text_text',text)
         /* if (text=="active" || text == "error" || text=="stopped"){return (<span>{text}</span>)}else{
           return (<div><Progress_model/></div>)}*/
         return (<span>{text}</span>)  
@@ -190,7 +190,7 @@ export default React.createClass({
    // let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/7
     let totalwidth_t=ReactDOM.findDOMNode( this.refs.instances_bu).clientWidth
     let totalwidth=(ReactDOM.findDOMNode( this.refs.instances_bu).clientWidth-34-17)/table_trlengt
-    console.log(ReactDOM.findDOMNode( this.refs.instances_bu).clientWidth)
+   // console.log(ReactDOM.findDOMNode( this.refs.instances_bu).clientWidth)
     let totalHeight = document.body.clientHeight
     totalHeight -= document.getElementById('header').clientHeight
     totalHeight -= document.getElementById('footer').clientHeight
@@ -202,8 +202,9 @@ export default React.createClass({
     ReactDOM.findDOMNode(this.refs.SplitPanel).style.height=totalHeight1+"px"
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height=totalHeight1+"px"
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top=totalHeight1+"px"
+    ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     if (totalHeight>height_table){
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+      //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
       ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
       for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length){
       if (i==(table_trlengt)){
@@ -215,7 +216,7 @@ export default React.createClass({
     }
     }else{
       ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+     // ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     for (let i=0 ; i<ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++){
       if (i==(table_trlengt-1)){
         totalwidth=totalwidth+17
@@ -312,7 +313,7 @@ export default React.createClass({
   },
   render() {
     let spaceName = Openstackconf.getCurSpace(this)
-    console.log('111',this.state.height_h)
+  //  console.log('111',this.state.height_h)
     let height_ht=this.state.height_h
     return (
       <div className="function-data-moduleA">

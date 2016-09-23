@@ -81,7 +81,7 @@ export default React.createClass({
   handleClick(item, event) {
     event = event ? event : window.event;
     event.stopPropagation();
-  //  console.log(item)
+   // console.log(item)
   }, 
   onPageChange(page) {
      //TODO
@@ -91,7 +91,7 @@ export default React.createClass({
   //  console.log('rows:', selectedRows)
     //console.log(selectedRows.html())
     for (var i=0; i<selectedRows.length;i++){
-      console.log(selectedRows[i]['id'])
+    //  console.log(selectedRows[i]['id'])
     }
     if (selectedRows.length == 1){
       this.setState({button_status:false})
@@ -148,8 +148,9 @@ export default React.createClass({
     totalHeight = totalHeight - volumes_nav - volumes_bu - 120
     //ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.width=totalwidth+'px'
+    ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     if (totalHeight>height_table){
-      ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+     // ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
       for (let i=0 ; i<ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++){
       if (i==(table_trlengt-1)){
         totalwidth=totalwidth+17
@@ -159,7 +160,7 @@ export default React.createClass({
       }
     }
     }else{
-    ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    //ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     for (let i=0 ; i<ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++){
       if (i==(table_trlengt-1)){
         totalwidth=totalwidth+17

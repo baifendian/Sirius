@@ -208,7 +208,7 @@ const Vm_Backup=React.createClass({
     let volumes_size={}
    // console.log(this.props.vm_list)
     for (let i in this.props.vm_list){
-      console.log(this.props.vm_list[i])
+     // console.log(this.props.vm_list[i])
       volumes_id['name']=this.props.vm_list[i]['name']
       volumes_id['id']=this.props.vm_list[i]['id']
     }
@@ -417,7 +417,7 @@ const Disk_model=React.createClass({
       }
   	},
      componentWillMount: function(){
-      console.log(this.props.vm_list)
+   //   console.log(this.props.vm_list)
      },
 
 	handleOpen(event) {
@@ -450,7 +450,7 @@ const Disk_model=React.createClass({
               type: 'GET',
               url: 'openstack/flavors/',
               success(data) {
-                console.log(data)
+               // console.log(data)
                 let flavor_list=[]
                 let flavor_object={}
                 for (var i in data['name']){

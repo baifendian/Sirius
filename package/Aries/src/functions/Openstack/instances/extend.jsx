@@ -366,10 +366,10 @@ const Create_model = React.createClass({
   },
 
   handleCancel() {
-  //  console.log(this.state.formData)
+   // console.log(this.state.formData)
     this.refs.modal.close()
     
-    //console.log('1tet')
+   // console.log('1tet')
   },
  
   handleSuccess(res) {
@@ -378,7 +378,7 @@ const Create_model = React.createClass({
     message.success('创建成功！')
   },
   disk_value(name){
-  	//console.log(name)
+ // 	console.log(name)
   },
 
   render() {

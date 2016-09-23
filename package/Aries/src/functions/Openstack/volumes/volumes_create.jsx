@@ -43,7 +43,7 @@ const Create_volumes=React.createClass({
   },
   handleOpen() {
     this.refs.modal_m.open()
-    console.log(OPEN.UrlList()['instances'])
+   // console.log(OPEN.UrlList()['instances'])
   },
 
   render() {

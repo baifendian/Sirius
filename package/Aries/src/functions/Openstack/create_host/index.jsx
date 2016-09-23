@@ -22,7 +22,7 @@ export default React.createClass({
     this.rules = {
       name(v) {
         if (!v){ return '名称不能为空'}else{
-          console.log(v)
+          //console.log(v)
           self.setState({
               host_name:v
           })
@@ -66,7 +66,7 @@ export default React.createClass({
   	  	if (!v) return '不能为空'
   	  },
   	type(v){
-  		console.log(v)
+  //		console.log(v)
   		//console.log(self.state.test_1)
   		xhr({
  			 type: 'POST',
@@ -83,8 +83,8 @@ export default React.createClass({
   					host_men:men+"MB",
   					host_host:host+"台"
   				});
-  				console.log(self.state.host_men)
-  				console.log(self.state.host_cpu)
+  			//	console.log(self.state.host_men)
+  			//	console.log(self.state.host_cpu)
  			} 
  	
 		})
@@ -121,12 +121,12 @@ export default React.createClass({
        type: 'GET',
        url: 'images/',
        success(data) {
-          console.log(data)
+        //  console.log(data)
          self.setState(
               {host_images:data}
            )
        //  self.refs.spinObj.setState({ loading: false }
-         console.log(data.length)
+       //  console.log(data.length)
         // for (var i=0;i<data['totalList'].length;i++){
          //   console.log(data['totalList'][i])
            // console.log(i)
@@ -137,7 +137,7 @@ export default React.createClass({
        type: 'GET',
        url: 'flavors/',
        success(data) {
-          console.log(data)
+         // console.log(data)
           self.setState({
             host_flavors:data,
             loading:false
@@ -158,12 +158,12 @@ export default React.createClass({
     const formData = this.state.formData
     formData.date = date
     this.setState({ formData })
-    console.log('test')
+ //   console.log('test')
   },
 
 
   handleSave() {
-    console.log(this.state.formData)
+  //  console.log(this.state.formData)
     this.refs.form.save()
   },
   create_disk(name,number){
@@ -213,12 +213,12 @@ export default React.createClass({
   	
   },
   handleSuccess(res) {
-    console.log(res)
-    console.log('test')
+  //  console.log(res)
+   // console.log('test')
     message.success('保存成功！')
   },
   disk_value(name){
-  	console.log(name)
+ // 	console.log(name)
   },
 
   render() {
@@ -243,7 +243,7 @@ export default React.createClass({
 		let disk='disk'+i
     //let disk_brand={'brand':i}
    // _this.setState({formData:disk_brand})
-    console.log(this.state.formData['brand'])
+ //   console.log(this.state.formData['brand'])
 		//console.log(disk)
 	 	if (i==0){
 	 		return (

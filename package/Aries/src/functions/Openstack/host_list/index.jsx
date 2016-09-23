@@ -25,12 +25,12 @@ export default React.createClass({
        type: 'GET',
        url: 'test/',
        success(data) {
-          console.log(data['totalList'])
+         // console.log(data['totalList'])
           self.setState(
               {aa:data['totalList']}
            )
-         console.log(self.state.aa)
-         console.log(data.length)
+         //console.log(self.state.aa)
+        // console.log(data.length)
         // for (var i=0;i<data['totalList'].length;i++){
          //   console.log(data['totalList'][i])
            // console.log(i)
