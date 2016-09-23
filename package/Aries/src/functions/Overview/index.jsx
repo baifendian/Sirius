@@ -3,7 +3,6 @@ import { Checkbox } from 'bfd/Checkbox'
 import './index.less'
 import { Row, Col } from 'bfd/Layout'
 import auth from 'public/auth'
-import ReactInterval from 'react-interval'
 import OverviewConf from './OverviewConf'
 import Fetch from 'bfd/Fetch'
 
@@ -144,13 +143,13 @@ export default React.createClass({
     return (
         <div className="overview">
           {conent}
-          <Fetch defaultHeight={0} url={`${bdms_url}&random=${this.state.random}`} onSuccess={this.getBdmsData} />
+          <Fetch defaultHeight={0} url={`${bdms_url}?random=${this.state.random}`} onSuccess={this.getBdmsData} />
           <Fetch defaultHeight={0} url={`${hdfs_url}&random=${this.state.random}`} onSuccess={this.getHdfsData} />
-          <Fetch defaultHeight={0} url={`${codis_url}&random=${this.state.random}`} onSuccess={this.getCodisData} />
+          <Fetch defaultHeight={0} url={`${codis_url}?random=${this.state.random}`} onSuccess={this.getCodisData} />
           <Fetch defaultHeight={0} url={`${user_url}&random=${this.state.random}`} onSuccess={this.getUserAuthData} />
           {/*
-          <Fetch defaultHeight={0} url={`${k8sp_url}&random=${this.state.random}`} onSuccess={this.getK8spData} />
-          <Fetch defaultHeight={0} url={`${codis_url}&random=${this.state.random}`} onSuccess={this.getOpenstackData} />
+          <Fetch defaultHeight={0} url={`${k8sp_url}?random=${this.state.random}`} onSuccess={this.getK8spData} />
+          <Fetch defaultHeight={0} url={`${openstack_url}?random=${this.state.random}`} onSuccess={this.getOpenstackData} />
           */}
         </div>
       )
