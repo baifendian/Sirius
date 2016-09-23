@@ -11,5 +11,6 @@ urlpatterns=patterns('codis.views',
     url(r'^codis/$', rests.CodisInfo.as_view(), name="codis"),
     url(r'^codislog/$', rests.CodisLog.as_view(), name="codis-log"),
     url(r'^deleteproxy/$', rests.DeleteProxy.as_view(), name="deleteproxy"),
+    url(r'^codisoverview/$', rests.CodisOverview.as_view(), name="codisoverview"),	
 )
 #urlpatterns = format_suffix_patterns(urlpatterns)

@@ -35,8 +35,8 @@ export default React.createClass({
               <Tab>服务监控</Tab>
               <Tab>服务管理</Tab>
             </TabList>
-            <TabPanel><TabManager getUrlData={this.getUrlData} /></TabPanel>
             <TabPanel><TabMonitor getUrlData={this.getUrlData} /></TabPanel>
+            <TabPanel><TabManager getUrlData={this.getUrlData} /></TabPanel>
           </Tabs>
           </div>
         </div>

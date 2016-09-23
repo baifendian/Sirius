@@ -8,10 +8,10 @@ var CalcManageDataRequester = {
   },
   getUrlForm() {
     return {
-      'k8soverview': 'k8s/api/v1/namespaces/{nameSpace}/getk8soverview',
       'podlist': 'k8s/api/v1/namespaces/{nameSpace}/pods',
-      'serviceList': 'k8s/api/v1/namespaces/{nameSpace}/services',
+      'servicelist': 'k8s/api/v1/namespaces/{nameSpace}/services',
       'rclist': 'k8s/api/v1/namespaces/{nameSpace}/replicationcontrollers',
+      'ingresslist':'k8s/apis/extensions/v1beta1/namespaces/{nameSpace}/ingresses',
       'mytasklist': 'k8s/api/v1/namespaces/mytasklist',
       'mytaskgraph': 'k8s/api/v1/namespaces/mytaskgraph',
 
@@ -93,34 +93,34 @@ var CalcManageDataRequester = {
     this.xhrGetData(url, _this, callback)
   },
 
-  getK8sOverview(_this, callback, nameSpace){
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['k8soverview'],{
-      'nameSpace': nameSpace      
-    })
-    this.xhrGetData(url, _this, callback)    
-  },
-
-  getPodList(_this, callback, nameSpace ) {
+  getPodList( nameSpace,callback ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podlist'], {
       'nameSpace': nameSpace
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
 
-  getServiceList(_this, callback, nameSpace ) {
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['serviceList'], {
+  getServiceList( nameSpace,callback ) {
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['servicelist'], {
       'nameSpace': nameSpace
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url,callback)
   },
 
-  getRCList(_this, callback, nameSpace ) {
+  getRCList( nameSpace,callback ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['rclist'], {
       'nameSpace': nameSpace
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
 
+  getIngressList( nameSpace ,callback ) {
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['ingresslist'], {
+      'nameSpace': nameSpace
+    })
+    this.xhrGetDataEnhanced(url, callback)
+  },
+  
   xhrGetData(url, _this, callback) {
     xhr({
       url: url,
