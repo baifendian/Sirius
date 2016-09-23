@@ -81,14 +81,14 @@ export default React.createClass({
   handleClick(item, event) {
     event = event ? event : window.event;
     event.stopPropagation();
-    console.log(item)
+  //  console.log(item)
   }, 
   onPageChange(page) {
      //TODO
-     console.log('aaaaa')
+    // console.log('aaaaa')
   },
   handleCheckboxSelect(selectedRows) {
-    console.log('rows:', selectedRows)
+  //  console.log('rows:', selectedRows)
     //console.log(selectedRows.html())
     for (var i=0; i<selectedRows.length;i++){
       console.log(selectedRows[i]['id'])
@@ -101,10 +101,10 @@ export default React.createClass({
     this.setState({select_all:selectedRows})
   },
   handleRowClick(row) {
-    console.log('rowclick', row)
+    //console.log('rowclick', row)
   },
   handleOrder(name, sort) {
-    console.log(name, sort)
+    //console.log(name, sort)
   },
   refresh(){
     OPEN.update_url(this,"volumes")
@@ -112,13 +112,13 @@ export default React.createClass({
   handleOpen() {
     //console.log(ReactDOM.findDOMNode( this.refs.data_table ))
     let aa=ReactDOM.findDOMNode( this.refs.data_table )
-    console.log(aa.childNodes[1].childNodes[1])
+    //console.log(aa.childNodes[1].childNodes[1])
     //aa.childNodes[1].childNodes[1].style.height="100px"
     //aa.childNodes[1].childNodes[1].style.overflow="auto"
     this.refs.modal.open()
     //console.log(this.refs.modal.getDOMNode())
     // console.log(this.refs.modal.reset())
-    console.log(this)
+   // console.log(this)
   },
    handleclean() {
     //this.refs.modal.open()
@@ -127,7 +127,7 @@ export default React.createClass({
     this.refs.modal.close()
   },
   delete(){
-    console.log('select_all',this.state.select_all)
+    //console.log('select_all',this.state.select_all)
     OPEN.volumes_data(this,this.state.select_all)
   },
 

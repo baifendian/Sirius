@@ -37,7 +37,7 @@ const Redact = React.createClass({
   volumes_id(){
     let volumes_id={}
     let volumes_size={}
-    console.log(this.props.volumes_all)
+    //console.log(this.props.volumes_all)
     for (let i in this.props.volumes_all){
       volumes_id['desc']=this.props.volumes_all[i]['displayDescription']
       volumes_id['name']=this.props.volumes_all[i]['name']
@@ -52,20 +52,20 @@ const Redact = React.createClass({
   },
 
   handleSave() {
-    console.log(this.state.formData)
-    console.log(this.refs.form)
+    //console.log(this.state.formData)
+   // console.log(this.refs.form)
     this.refs.form.save()
   },
 
   handleSuccess(res) {
-    console.log(res)
+   // console.log(res)
     this.props._this.refs.modal.close()
     message.success('保存成功！')
   },
   render() {
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
-    console.log('aaa',this.props.volumes_all,this.state.volumes_id)
+   // console.log('aaa',this.props.volumes_all,this.state.volumes_id)
     return (
       <div >
             <Form 
@@ -111,9 +111,9 @@ const Backup_disk = React.createClass({
   volumes_id(){
     let volumes_id={}
     let volumes_size={}
-    console.log(this.props.volumes_all)
+    //console.log(this.props.volumes_all)
     for (let i in this.props.volumes_all){
-      console.log(this.props.volumes_all[i])
+     // console.log(this.props.volumes_all[i])
       volumes_id['size']=this.props.volumes_all[i]['size']
       volumes_id['name']=this.props.volumes_all[i]['name']
       volumes_id['id']=this.props.volumes_all[i]['id']
@@ -127,12 +127,12 @@ const Backup_disk = React.createClass({
   },
 
   handleSave() {
-    console.log(this.state.formData)
+    //console.log(this.state.formData)
     this.refs.form.save()
   },
 
   handleSuccess(res) {
-    console.log(res)
+   // console.log(res)
     this.props._this.refs.modal.close()
     message.success('保存成功！')
   },
@@ -188,7 +188,7 @@ const Uninstall_disk=React.createClass({
   volumes_id(){
     let volumes_id={}
     let volumes_size={}
-    console.log(this.props.volumes_all)
+   // console.log(this.props.volumes_all)
     for (let i in this.props.volumes_all){
       console.log(this.props.volumes_all[i])
       volumes_id['size']=this.props.volumes_all[i]['size']
@@ -207,19 +207,19 @@ const Uninstall_disk=React.createClass({
   },
 
   handleSave() {
-    console.log(this.state.formData)
+   // console.log(this.state.formData)
     this.refs.form.save()
   },
 
   handleSuccess(res) {
-    console.log(res)
+    //console.log(res)
     //this.refs.modal_m.close()
     this.props._this.refs.modal.close()
     message.success('保存成功！')
   },
   handleOpen() {
     this.refs.modal_m.open()
-    console.log(OPEN.UrlList()['instances'])
+   // console.log(OPEN.UrlList()['instances'])
   },
 
   render() {
@@ -269,10 +269,10 @@ const Loading_disk=React.createClass({
         if (!v) return '日期不能为空'
       },
     border(v){
-      console.log('.....v',v)
+     // console.log('.....v',v)
     },
     host1(v){
-      console.log('host1',v)
+     // console.log('host1',v)
     },
     }
     return {
@@ -302,9 +302,9 @@ const Loading_disk=React.createClass({
   },
 
   handleSave() {
-    console.log(this.state.formData)
-    console.log(this.refs.select.state['value'])
-    console.log(this.refs.select.title)
+  //  console.log(this.state.formData)
+    //console.log(this.refs.select.state['value'])
+   // console.log(this.refs.select.title)
     const formData = this.state.formData
     formData.host_id = this.refs.select.state['value']
     formData.host_name=this.refs.select.title
@@ -313,14 +313,14 @@ const Loading_disk=React.createClass({
   },
 
   handleSuccess(res) {
-    console.log(res)
+    //console.log(res)
    // this.refs.modal_m.close()
    this.props._this.refs.modal.close()
     message.success('保存成功！')
   },
   handleOpen() {
    // this.props._this.refs.modal.close()
-    console.log(OPEN.UrlList()['instances'])
+   // console.log(OPEN.UrlList()['instances'])
   },
   componentWillMount: function(){
       OPEN.Get_instances(this,this.xhrCallback)
@@ -380,9 +380,9 @@ const Extend = React.createClass({
   volumes_id(){
     let volumes_id={}
     let volumes_size={}
-    console.log(this.props.volumes_all)
+   // console.log(this.props.volumes_all)
     for (let i in this.props.volumes_all){
-      console.log(this.props.volumes_all[i])
+     // console.log(this.props.volumes_all[i])
       volumes_id['size']=this.props.volumes_all[i]['size']
       volumes_id['name']=this.props.volumes_all[i]['name']
       volumes_id['id']=this.props.volumes_all[i]['id']
@@ -396,12 +396,12 @@ const Extend = React.createClass({
   },
 
   handleSave() {
-    console.log(this.state.formData)
+    //console.log(this.state.formData)
     this.refs.form.save()
   },
 
   handleSuccess(res) {
-    console.log(res)
+    //console.log(res)
     //this.refs.modal_m.close()
     this.props._this.refs.modal.close()
     message.success('保存成功！')
@@ -409,7 +409,7 @@ const Extend = React.createClass({
   render() {
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
-    console.log('aaa',this.props.volumes_all,this.state.volumes_id)
+    //console.log('aaa',this.props.volumes_all,this.state.volumes_id)
     return (
       <div >
             <Form 
@@ -460,7 +460,7 @@ const Model_list=React.createClass({
     }
   },
   handleButtonClick(e) {
-    console.log('click left button', e)
+    //console.log('click left button', e)
   },
   handleMenuClick(e) {
     //console.log('click', e['key']);
@@ -470,15 +470,15 @@ const Model_list=React.createClass({
       let volumes_id={}
       let volumes_size={}
       let status=''
-      console.log(this.props.select_all)
+      //console.log(this.props.select_all)
       for (let i in this.props.select_all){
-        console.log(this.props.select_all[i])
+       // console.log(this.props.select_all[i])
         volumes_id[this.props.select_all[i]['name']]=this.props.select_all[i]['id']
         volumes_size['size']=this.props.select_all[i]['size']
         status=this.props.select_all[i]['servername']
       }
       if (!status){
-      console.log(volumes_size,volumes_id)
+     // console.log(volumes_size,volumes_id)
       this.setState({volumes_id,volumes_size})
       this.setState({title:this.values()[e['key']],module})
       this.refs.modal.open()}else{
@@ -489,13 +489,13 @@ const Model_list=React.createClass({
    // console.log(module)
     let volumes_id={}
     let volumes_size={}
-    console.log(this.props.select_all)
+    //console.log(this.props.select_all)
     for (let i in this.props.select_all){
-      console.log(this.props.select_all[i])
+     // console.log(this.props.select_all[i])
       volumes_id[this.props.select_all[i]['name']]=this.props.select_all[i]['id']
       volumes_size['size']=this.props.select_all[i]['size']
     }
-    console.log(volumes_size,volumes_id)
+    //console.log(volumes_size,volumes_id)
     this.setState({volumes_id,volumes_size})
     this.setState({title:this.values()[e['key']],module})
     this.refs.modal.open()

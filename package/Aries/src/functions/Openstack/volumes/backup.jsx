@@ -55,7 +55,7 @@ export default React.createClass({
     }
   },
   handleOpen(name) {
-    console.log(this.state.images_list)
+    //console.log(this.state.images_list)
   },
   componentDidMount(){
     let table_trlengt=ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length

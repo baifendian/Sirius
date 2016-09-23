@@ -8,11 +8,11 @@ import OPEN from '../data_request/request.js'
 import { Progress, Button } from 'antd'
 const ButtonGroup = Button.Group
 
-import { Form, FormItem } from 'bfd-ui07/lib/Form'
+import { Form, FormItem } from 'bfd-ui/lib/Form'
 //import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
-import FormInput from 'bfd-ui07/lib/FormInput'
-import FormTextarea from 'bfd-ui07/lib/FormTextarea'
-import { FormSelect, Option } from 'bfd-ui07/lib/FormSelect'
+import FormInput from 'bfd-ui/lib/FormInput'
+import FormTextarea from 'bfd-ui/lib/FormTextarea'
+import { FormSelect, Option } from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 //import React from 'react'
 //import './index.less'
@@ -39,7 +39,7 @@ const Extend = React.createClass({
     this.props._this.setState({url:_url})
   },
   handleChange(value) {
-    console.log("change:", value)
+   // console.log("change:", value)
     this.setState({'_value':value})
   },
   render() {    
@@ -107,7 +107,7 @@ const Create_model_disk  = React.createClass({
   			}
 
 
-  			console.log('arr',arr)
+  			//console.log('arr',arr)
   			disk_counters=disk_counters+1
   			this.setState({
       
@@ -166,7 +166,7 @@ const Create_model_disk  = React.createClass({
 	render(){
 		let nav = this.state.disk_list.map((item, i) => {
 		let disk='disk'+i
-    console.log(disk,item,'............aaa')
+   // console.log(disk,item,'............aaa')
 	 	if (i==0){
 	 		return (
 	 				<h1 key={i}></h1>
@@ -204,7 +204,7 @@ const Create_model = React.createClass({
     this.rules = {
       name(v) {
         if (!v){ return '名称不能为空'}else{
-          console.log(v)
+          //console.log(v)
           self.setState({
               host_name:v
           })
@@ -220,8 +220,8 @@ const Create_model = React.createClass({
               disk_arr.splice(i,1,v)
           }
         }
-        console.log(v,'sssssssssssssss')
-        console.log(self.state.host_disks)
+       // console.log(v,'sssssssssssssss')
+       // console.log(self.state.host_disks)
   	  	self.setState({
   			host_disk:disk_arr
   	  	})
@@ -262,7 +262,7 @@ const Create_model = React.createClass({
   	  }
   	  },
       images(v){
-        console.log(v)
+      //  console.log(v)
           self.setState({
             host_image:self.state.host_images[v]
           })
@@ -276,7 +276,7 @@ const Create_model = React.createClass({
           }
   	  },
   	type(v){
-  		console.log(v)
+  		//console.log(v)
   		xhr({
  			 type: 'POST',
  			 url: 'openstack/flavors/',
@@ -294,8 +294,8 @@ const Create_model = React.createClass({
   					host_host:host+"台",
             host_flavor_name:data['name']
   				});
-  				console.log(self.state.host_men)
-  				console.log(self.state.host_cpu)
+  				//console.log(self.state.host_men)
+  			//	console.log(self.state.host_cpu)
  			} 
  	
 		})
@@ -331,7 +331,7 @@ const Create_model = React.createClass({
        type: 'GET',
        url: 'openstack/images/',
        success(data) {
-          console.log(data)
+         // console.log(data)
          self.setState(
               {host_images:data['name']}
            )
@@ -353,32 +353,32 @@ const Create_model = React.createClass({
     const formData = this.state.formData
     formData.date = date
     this.setState({ formData })
-    console.log('test')
+   // console.log('test')
   },
 
 
   handleSave() {
-    console.log(this.state.formData)
+   // console.log(this.state.formData)
     this.refs.form.save()
     this.refs.modal.close()
     this.props._this.setState({loading:true})
-    console.log('1tet')
+   // console.log('1tet')
   },
 
   handleCancel() {
-    console.log(this.state.formData)
+  //  console.log(this.state.formData)
     this.refs.modal.close()
     
-    console.log('1tet')
+    //console.log('1tet')
   },
  
   handleSuccess(res) {
-    console.log(res)
+   // console.log(res)
     this.props._this.setState({loading:false,url: "bfddashboard/instances/?"+Math.random()})
     message.success('创建成功！')
   },
   disk_value(name){
-  	console.log(name)
+  	//console.log(name)
   },
 
   render() {

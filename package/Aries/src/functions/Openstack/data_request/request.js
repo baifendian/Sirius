@@ -22,15 +22,15 @@ var Datarequest = {
   },
   Get_instances(_this,fun){
     let url=this.UrlList()['volumes_post']+"?name=instances"
-    console.log(url)
+  //  console.log(url)
     this.xhrGetData(_this,url,fun)
     return 1
   },
   Get_project(_this,fun){
     let url=this.UrlList()['project']
     let data=this.xhrGetData(_this,url,fun)
-    console.log(data)
-    return data
+   // console.log(data)
+   // return data
   },
   Get_volumes_backup(_this,fun){
     let url=this.UrlList()['volumes_post']+"?name=backup"
@@ -115,7 +115,7 @@ var Datarequest = {
       success: (retu_data) => {
         fun(_this,retu_data);
        // console.log(retu_data)
-        return retu_data
+       // return retu_data
       }
     })
   }

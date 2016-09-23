@@ -206,19 +206,19 @@ class FixedTableDemo extends Component {
   handleClick(item, event) {
     event = event ? event : window.event;
     event.stopPropagation();
-    console.log(item)
+   // console.log(item)
   }
 
   handleCheckboxSelect(selectedRows) {
-    console.log('rows:', selectedRows)
+   // console.log('rows:', selectedRows)
   }
 
   handleRowClick(row) {
-    console.log('rowclick', row)
+   // console.log('rowclick', row)
   }
 
   handleOrder(name, sort) {
-    console.log(name, sort)
+   // console.log(name, sort)
   }
 }
 

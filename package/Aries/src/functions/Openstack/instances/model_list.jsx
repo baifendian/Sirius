@@ -55,7 +55,7 @@ const Disk_list = React.createClass({
           host: this.state.host_id
         },
         success(data) {
-          console.log(data)
+         // console.log(data)
           self.props._this.refs.model_disk.close()
           self.setState({loading:false})
           for (var i in data['totalList']){
@@ -63,7 +63,7 @@ const Disk_list = React.createClass({
           }
          },
         error() {
-          console.log('error')
+          //console.log('error')
           self.props._this.refs.model_disk.close()
            self.setState({loading:false})
           notification['error']({ message: '异常',description: '请检查虚拟机跟磁盘',});
@@ -130,7 +130,7 @@ const Vm_Type=React.createClass({
   },
 
   handleSave() {
-    console.log('this.state.formData',this.state.formData)
+   // console.log('this.state.formData',this.state.formData)
     this.props._this.refs.model_disk.close()
     this.props.self.setState({loading:true})
     this.refs.form.save()
@@ -140,7 +140,7 @@ const Vm_Type=React.createClass({
     this.props._this.refs.model_disk.close()},
 
   handleSuccess(res) {
-    console.log('res.........',res)
+    //console.log('res.........',res)
     this.props.self.setState({loading:false})
     for (var i in res){
       if (res[i] == true){
@@ -206,13 +206,13 @@ const Vm_Backup=React.createClass({
   volumes_id(){
     let volumes_id={}
     let volumes_size={}
-    console.log(this.props.vm_list)
+   // console.log(this.props.vm_list)
     for (let i in this.props.vm_list){
       console.log(this.props.vm_list[i])
       volumes_id['name']=this.props.vm_list[i]['name']
       volumes_id['id']=this.props.vm_list[i]['id']
     }
-    console.log('volumes_id',volumes_id)
+  //  console.log('volumes_id',volumes_id)
     return volumes_id
   },
   handleDateSelect(date) {
@@ -222,7 +222,7 @@ const Vm_Backup=React.createClass({
   },
 
   handleSave() {
-    console.log(this.state.formData)
+  //  console.log(this.state.formData)
     this.refs.form.save()
   },
 
@@ -231,7 +231,7 @@ const Vm_Backup=React.createClass({
     this.props._this.refs.model_disk.close()},
 
   handleSuccess(res) {
-    console.log(res)
+  //  console.log(res)
     this.props._this.refs.modal.close()
     message.success('保存成功！')
   },
@@ -286,14 +286,14 @@ const Vm_image=React.createClass({
   },
 
   handleSave() {
-    console.log('this.state.formData',this.state.formData)
+   // console.log('this.state.formData',this.state.formData)
     this.props._this.refs.model_disk.close()
     this.props.self.setState({loading:true})
     this.refs.form.save()
   },
 
   handleSuccess(res) {
-    console.log('res.........',res)
+   // console.log('res.........',res)
     this.props.self.setState({loading:false})
     for (var i in res){
       if (res[i] == true){
@@ -354,7 +354,7 @@ const Forced_vm=React.createClass({
     let host_id=[]
     let host_name=''
     for (var i in this.props.vm_list){
-      console.log(i)
+     // console.log(i)
       host_id.push(this.props.vm_list[i]['id'])
       host_name=host_name+this.props.vm_list[i]['name']+'、'
     }
@@ -367,12 +367,12 @@ const Forced_vm=React.createClass({
   },
 
   handleSave() {
-    console.log(this.state.formData)
+    //console.log(this.state.formData)
     this.refs.form.save()
   },
 
   handleSuccess(res) {
-    console.log(res)
+    //console.log(res)
     message.success('保存成功！')
   },
 
@@ -439,7 +439,7 @@ const Disk_model=React.createClass({
                 _this.setState({ disk_list,loading:false,disk_object })
                 }     
               })
-          console.log('this.state.disk_list',this.state.disk_list)
+        //  console.log('this.state.disk_list',this.state.disk_list)
           this.setState({
             title:'加载云硬盘',model:[2]
           })

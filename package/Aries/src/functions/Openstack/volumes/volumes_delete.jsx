@@ -1,8 +1,8 @@
-import { Form, FormItem } from 'bfd-ui07/lib/Form'
-import FormInput from 'bfd-ui07/lib/FormInput'
-import FormTextarea from 'bfd-ui07/lib/FormTextarea'
-import { FormSelect, Option } from 'bfd-ui07/lib/FormSelect'
-import message from 'bfd-ui07/lib/message'
+import { Form, FormItem } from 'bfd-ui/lib/Form'
+import FormInput from 'bfd-ui/lib/FormInput'
+import FormTextarea from 'bfd-ui/lib/FormTextarea'
+import { FormSelect, Option } from 'bfd-ui/lib/FormSelect'
+import message from 'bfd-ui/lib/message'
 import React from 'react'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import Button from 'bfd-ui/lib/Button'
@@ -25,35 +25,35 @@ const Delete_volumes=React.createClass({
     this.setState({ formData })
   },
   handleSave() {
-    console.log(this.state.formData)
+    //console.log(this.state.formData)
     this.refs.form.save()
   },
 
   handleSuccess(res) {
-    console.log(res)
+    //console.log(res)
     this.refs.modal_m.close()
     message.success('保存成功！')
   },
   handleOpen() {
     this.refs.modal_m.open()
-    console.log(OPEN.UrlList()['instances'])
-    console.log(this.props.select_all)
+    //console.log(OPEN.UrlList()['instances'])
+    //console.log(this.props.select_all)
     let volumes_object={}
     let volumes_name=''
     for (var i in this.props.select_all){
-      console.log(i)
+     // console.log(i)
       volumes_object[this.props.select_all[i]['id']]=this.props.select_all[i]['name']
       volumes_name=volumes_name+this.props.select_all[i]['name']+'、'
     }
-    console.log('tes1.......',volumes_name,volumes_object)
+    //console.log('tes1.......',volumes_name,volumes_object)
     this.setState({volumes_name,formData:{volumes_object:volumes_object,method: 'delete'}})
-    console.log(this.state.formData)
+   // console.log(this.state.formData)
   },
 
   render() {
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
-    console.log(url)
+   // console.log(url)
     return (
       <div style={{float:"left",margin: "0px 10px 0px 0px"}}>
       <Button type="danger" className="btn btn-primary" onClick={this.handleOpen}>删除</Button>

@@ -91,11 +91,11 @@ export default React.createClass({
   handleClick(item, event) {
     event = event ? event : window.event;
     event.stopPropagation();
-    console.log(item.key)
+   // console.log(item.key)
     this.refs.modal.open()
   }, 
   onPageChange(page) {
-     console.log('aaaaa')
+     //console.log('aaaaa')
   },
   requestvnc(id,return_data,e){
     this.setState({loading:true})
@@ -110,8 +110,8 @@ export default React.createClass({
     }
   },
   handleCheckboxSelect(selectedRows) {
-    console.log('rows:', selectedRows)
-    console.log(selectedRows.length)
+   // console.log('rows:', selectedRows)
+    //console.log(selectedRows.length)
     if (selectedRows.length == 1 ){
       this.refs['model_model'].setState({
       button_status: false})
@@ -159,14 +159,13 @@ export default React.createClass({
     let instances_nav = ReactDOM.findDOMNode(this.refs.instances_nav).clientHeight
     let instances_bu = ReactDOM.findDOMNode(this.refs.instances_bu).clientHeight
     let totalHeight1=totalHeight-120
-    console.log('1........',totalHeight1)
     totalHeight = totalHeight-instances_nav-instances_bu-140-93
     let totalHeight2=totalHeight+82
     this.setState({height_h:totalHeight})
-    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).style.height=totalHeight1+"px")
-    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height=totalHeight2+"px")
-    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top=totalHeight2+"px")
-    console.log(this.refs.SplitPanel)
+    ReactDOM.findDOMNode(this.refs.SplitPanel).style.height=totalHeight1+"px"
+    ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height=totalHeight2+"px"
+    ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top=totalHeight2+"px"
+
     if (totalHeight>height_table){
       ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
       ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
@@ -200,9 +199,9 @@ export default React.createClass({
     let totalHeight1=totalHeight-120
     totalHeight = totalHeight-instances_nav-instances_bu-140-10
     let totalHeight2=totalHeight+82
-    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).style.height=totalHeight1+"px")
-    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height=totalHeight1+"px")
-    console.log(ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top=totalHeight1+"px")
+    ReactDOM.findDOMNode(this.refs.SplitPanel).style.height=totalHeight1+"px"
+    ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height=totalHeight1+"px"
+    ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top=totalHeight1+"px"
     if (totalHeight>height_table){
       ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
       ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
@@ -228,10 +227,10 @@ export default React.createClass({
   }
   },
   handleRowClick(row) {
-    console.log('rowclick', row)
+   // console.log('rowclick', row)
   },
   handleOrder(name, sort) {
-    console.log(name, sort)
+   // console.log(name, sort)
   },
   handleOpen(name) {
     let text='您已选择'
