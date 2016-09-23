@@ -69,10 +69,11 @@ export default React.createClass({
     let backup_nav = ReactDOM.findDOMNode(this.refs.backup_nav).clientHeight
     let backup_bu = ReactDOM.findDOMNode(this.refs.backup_bu).clientHeight
     totalHeight = totalHeight - backup_nav - backup_bu - 120
+    ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
      if (totalHeight>height_table){
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+     // ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     }else{
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+      //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
       if (i==(table_trlengt-1)){
         totalwidth=totalwidth+17

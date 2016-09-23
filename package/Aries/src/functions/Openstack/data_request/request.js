@@ -24,11 +24,11 @@ var Datarequest = {
     let url=this.UrlList()['volumes_post']+"?name=instances"
   //  console.log(url)
     this.xhrGetData(_this,url,fun)
-    return 1
+    //return 1
   },
   Get_project(_this,fun){
     let url=this.UrlList()['project']
-    let data=this.xhrGetData(_this,url,fun)
+    this.xhrGetData(_this,url,fun)
    // console.log(data)
    // return data
   },

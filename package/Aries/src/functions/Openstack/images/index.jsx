@@ -59,10 +59,8 @@ export default React.createClass({
     let images_nav = ReactDOM.findDOMNode(this.refs.images_nav).clientHeight
     let images_bu = ReactDOM.findDOMNode(this.refs.images_bu).clientHeight
     totalHeight = totalHeight - images_nav - images_bu - 110
-    if (totalHeight>height_table){
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    }else{
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    if (totalHeight<=height_table){
     for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
       if (i==(table_trlengt-1)){
         totalwidth=totalwidth+17

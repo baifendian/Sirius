@@ -165,13 +165,11 @@ export default React.createClass({
     ReactDOM.findDOMNode(this.refs.SplitPanel).style.height=totalHeight1+"px"
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height=totalHeight2+"px"
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top=totalHeight2+"px"
+    ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
+    ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
 
-    if (totalHeight>height_table){
-      ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    }else{
-      ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    if (totalHeight <= height_table){
+     
     for (let i=0 ; i<ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++){
       if (i==(table_trlengt-1)){
         totalwidth=totalwidth+17
@@ -203,9 +201,10 @@ export default React.createClass({
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height=totalHeight1+"px"
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top=totalHeight1+"px"
     ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
     if (totalHeight>height_table){
       //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-      ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
+      //ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
       for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length){
       if (i==(table_trlengt)){
         totalwidth=totalwidth+17
@@ -215,7 +214,7 @@ export default React.createClass({
       }
     }
     }else{
-      ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
+     // ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
      // ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     for (let i=0 ; i<ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++){
       if (i==(table_trlengt-1)){

@@ -71,10 +71,8 @@ export default React.createClass({
     let flavors_nav = ReactDOM.findDOMNode(this.refs.flavors_nav).clientHeight
     let flavors_bu = ReactDOM.findDOMNode(this.refs.flavors_bu).clientHeight
     totalHeight = totalHeight - flavors_nav - flavors_bu - 110
-    if (totalHeight>height_table){
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    }else{
-      ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+    if (totalHeight<height_table){
     for (let i in ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
       if (i==(table_trlengt-1)){
         totalwidth=totalwidth+17
