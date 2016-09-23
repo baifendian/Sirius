@@ -90,7 +90,7 @@ export default React.createClass({
   getK8spData(data){
     let k8sp_pod_count = `${data.pod.count}/${data.pod.total}`;
     let k8sp_rc_count = `${data.rc.count}/${data.rc.total}`;
-    let k8sp_service_status_count = `${data.service.count}/${data.service.total}`;
+    let k8sp_service_status_count = `${data.service.count}`;
     let k8sp_nodes_count = data.node.count;
     this.setState({
       k8sp_pod_count: k8sp_pod_count,
