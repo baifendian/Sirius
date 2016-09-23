@@ -1,5 +1,5 @@
 #/usr/bin/bash
-HADOOP_HOME=/opt/hadoop/hadoop-2.6.0
+HADOOP_HOME=/opt/hadoop
 NAMENODE_PATH="hdfs://172.24.100.44:8020"
 BASE_PATH=$(pwd)
 operator=$1
