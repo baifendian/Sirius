@@ -14,6 +14,82 @@ import DataTable from 'bfd/DataTable'
 import { Menu, Dropdown } from 'antd';
 
 
+const Redact = React.createClass({
+  getInitialState() {
+    this.rules = {
+      name(v) {
+        if (!v) return '请填写用户群'
+      },
+      date(v) {
+        if (!v) return '日期不能为空'
+      }
+    }
+    return {
+      formData: {
+        id: this.volumes_id()['id'],
+        method: 'Redact',
+        name: this.volumes_id()['name'],
+        desc: this.volumes_id()['desc']
+      },
+      volumes_id: this.volumes_id()
+    }
+  },
+  volumes_id(){
+    let volumes_id={}
+    let volumes_size={}
+    console.log(this.props.volumes_all)
+    for (let i in this.props.volumes_all){
+      volumes_id['desc']=this.props.volumes_all[i]['displayDescription']
+      volumes_id['name']=this.props.volumes_all[i]['name']
+      volumes_id['id']=this.props.volumes_all[i]['id']
+    }
+    return volumes_id
+  },
+  handleDateSelect(date) {
+    const formData = this.state.formData
+    formData.date = date
+    this.setState({ formData })
+  },
+
+  handleSave() {
+    console.log(this.state.formData)
+    console.log(this.refs.form)
+    this.refs.form.save()
+  },
+
+  handleSuccess(res) {
+    console.log(res)
+    this.props._this.refs.modal.close()
+    message.success('保存成功！')
+  },
+  render() {
+    const { formData } = this.state
+    let url=OPEN.UrlList()['volumes_post']
+    console.log('aaa',this.props.volumes_all,this.state.volumes_id)
+    return (
+      <div >
+            <Form 
+              ref="form" 
+              action={url}
+              data={formData} 
+              rules={this.rules} 
+              onSuccess={this.handleSuccess}
+            >
+              <FormItem label="备份名称" required name="name" >
+                <FormInput style={{width: '200px'}} ></FormInput>
+              </FormItem>  
+              <FormItem label="描述" name="desc" help="500个字符以内">
+                <FormTextarea />
+              </FormItem>
+              <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>修改</button>
+            </Form>
+      </div>
+    )
+  }
+})
+
+
+
 const Backup_disk = React.createClass({
   getInitialState() {
     this.rules = {
@@ -367,7 +443,7 @@ const Model_list=React.createClass({
   },
   values(){
     return {
-      'redact':"编辑云盘",
+      'Redact':"编辑云盘",
       'Extend':"扩展云硬盘",
       'Loading_disk':"加载云磁盘",
       'Uninstall_disk':"卸载云磁盘",
@@ -379,11 +455,12 @@ const Model_list=React.createClass({
       'Extend': <Extend volumes_all={this.props.select_all} _this={this}/>,
       'Loading_disk':<Loading_disk volumes_all={this.props.select_all} _this={this}/>,
       'Uninstall_disk':<Uninstall_disk volumes_all={this.props.select_all} _this={this}/>,
-      'Backup_disk':<Backup_disk volumes_all={this.props.select_all} _this={this}/>
+      'Backup_disk':<Backup_disk volumes_all={this.props.select_all} _this={this}/>,
+      'Redact':<Redact volumes_all={this.props.select_all} _this={this}/>,
     }
   },
   handleButtonClick(e) {
-    console.log('click left button', e);
+    console.log('click left button', e)
   },
   handleMenuClick(e) {
     //console.log('click', e['key']);
@@ -429,7 +506,7 @@ const Model_list=React.createClass({
     const DropdownButton = Dropdown.Button;
     const menu = (
           <Menu onClick={this.handleMenuClick}>
-            <Menu.Item key="1" disabled={this.props.button_status}>编辑云硬盘</Menu.Item>
+            <Menu.Item key="Redact" disabled={this.props.button_status}>编辑云硬盘</Menu.Item>
             <Menu.Item key="Extend" disabled={this.props.button_status} >扩展云硬盘</Menu.Item>
             <Menu.Item key="Loading_disk" disabled={this.props.button_status}>加载硬盘</Menu.Item>
             <Menu.Item key="Uninstall_disk" disabled={this.props.button_status} >卸载硬盘</Menu.Item>

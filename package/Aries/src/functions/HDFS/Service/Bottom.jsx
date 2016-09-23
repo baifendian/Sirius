@@ -9,20 +9,20 @@ import message from 'bfd-ui/lib/message'
 const Bottom = React.createClass({
   componentState:{
     STARTED:function(){
-        return <Select defaultValue="START" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
+        return <Select value="START" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
           <Option value="START">START</Option>
           <Option value="STOP">STOP</Option>
           <Option value="RESTART">RESTART</Option>
         </Select>
     },
     STOPED:function(){
-        return <Select defaultValue="STOP" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
+        return <Select value="STOP" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
                   <Option value="STOP">STOP</Option>
                   <Option value="START">START</Option>
               </Select>
     },
     INSTALLED:function(){
-        return <Select defaultValue="INSTALLED" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
+        return <Select value="INSTALLED" onChange={(state)=>{this.handleChange(state,this.componentData.component)}}>
                   <Option value="INSTALLED">INSTALLED</Option>
                   <Option value="START">START</Option>
               </Select>

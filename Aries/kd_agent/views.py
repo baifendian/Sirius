@@ -18,6 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 
 from kd_agent.models import Schedule_Log
+from kd_agent.models import Schedule_Status
 from kd_agent.models import Task
 from kd_agent.influxdbquerystrmanager import InfluxDBQueryStrManager as ISM
 
@@ -118,28 +119,67 @@ def get_influxdb_data(sql_str,db = settings.INFLUXDB_DATABASE,epoch='s',timeout 
 def restore_k8s_path(p):
     return p.replace('/k8s','')
 
+def get_overview_k8s_pod_info(namespace):
+    retu_data = { 'count':0, 'total':0 }
+    url = '/api/v1/namespaces/%s/pods' % namespace
+    pod_detail_info = get_k8s_data( url )
+    if pod_detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_overview_k8s_pod_info query k8s pod data error : %s' % pod_detail_info['msg'] )
+    else:
+        count = 0
+        total = 0
+        for item in pod_detail_info['data']['items']:
+            containerStatuses = item['status']['containerStatuses']
+            total += len(containerStatuses)
+            for cItem in containerStatuses:
+                if cItem['state'].get( 'running' ) != None:
+                    count += 1
+        retu_data['count'] = count
+        retu_data['total'] = total
+    return retu_data
+
+def get_overview_k8s_service_info(namespace):
+    retu_data = { 'count':0  }
+    url = '/api/v1/namespaces/%s/services' % namespace
+    service_detail_info = get_k8s_data( url )
+    if service_detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_overview_k8s_service_info query k8s service data error : %s' % service_detail_info['msg'] )
+    else:
+        retu_data['count'] = len(service_detail_info['data']['items'])
+    return retu_data
+
+def get_overview_k8s_rc_info(namespace):
+    retu_data = { 'count':0, 'total':0 }
+    url = '/api/v1/namespaces/%s/replicationcontrollers' % namespace
+    rc_detail_info = get_k8s_data( url )
+    if rc_detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_overview_k8s_rc_info query k8s rc data error : %s' % rc_detail_info['msg'] )
+    else:
+        total = 0
+        count = 0
+        for item in rc_detail_info['data']['items']:
+            total += item['spec']['replicas']
+            count += item['status']['replicas']
+        retu_data['count'] = count
+        retu_data['total'] = total
+    return retu_data
+
+# node要从influxdb中获取数量，但是当前无法获取，因此该函数的实现暂时先搁置。
+def get_overview_k8s_node_info(namespace):
+    retu_data = { 'count':0 }
+    return retu_data
+
 @csrf_exempt
 @return_http_json
-def get_overview_info(request,namespace):
-    kd_logger.info( 'call get_overview_info request.path : %s , namespace : %s' % (request.path,namespace) )
-    retu_dict = {
-        'pod_used':0,
-        'pod_total':100,
-        'task_used':0,
-        'task_total':100,
-        'memory_used':0,
-        'memory_total':100
+def get_k8soverview_info(request,namespace):
+    retu_data = {
+        'pod': get_overview_k8s_pod_info(namespace) ,
+        'rc': get_overview_k8s_rc_info(namespace),
+        'service': get_overview_k8s_service_info(namespace),
+        'node': get_overview_k8s_node_info(namespace)
     }
-
-    # 获取pod个数
-    url = '/api/v1/namespaces/%s/pods' % namespace
-    pod_list = get_k8s_data( url )
-    if pod_list['code'] == RETU_INFO_ERROR:
-        kd_logger.error( 'call %s query k8s pod info error : %s' % ( url,pod_list['msg']) )
-        return generate_failure( pod_list['msg'] )
-    retu_dict['pod_used'] = len( pod_list['data']['items'] )
-
-    return generate_success( data=retu_dict )
+    kd_logger.info( 'call get_overview_k8s_rc_info query k8s overview info : %s' % retu_data )
+    return generate_success( data=retu_data )
 
 @csrf_exempt
 @return_http_json
@@ -260,6 +300,62 @@ def get_rc_list(request,namespace):
     
     kd_logger.debug( 'call get_rc_list query k8s data : %s' % retu_data )
     kd_logger.info( 'call get_rc_list query k8s data successful' )
+    return generate_success( data = retu_data )
+
+def get_ingress_detail_host_info( rules ):
+    if type( rules ) != list:
+        return []
+    ingress_detail_host_info = []
+    for r in rules:
+        host = r.get('host')
+        if host == None:
+            continue
+        
+        try:    paths = r['http']['paths']
+        except: paths = []
+        for p in paths:
+            obj = {
+                'protocal':'http',
+                'host':host,
+                'port':p['backend']['servicePort'],
+                'path':p['path']
+            }
+            obj['Url'] = '%s://%s:%s%s' % ( obj['protocal'],obj['host'],obj['port'],obj['path'] )
+            obj['ServiceName'] = p['backend']['serviceName']
+            
+            ingress_detail_host_info.append( obj ) 
+    return ingress_detail_host_info
+
+@csrf_exempt
+@return_http_json
+def get_ingress_list(request,namespace):
+    kd_logger.info( 'call get_ingress_list request.path : %s , namespace : %s' % (request.path,namespace) )
+    ingress_detail_info = get_k8s_data( restore_k8s_path(request.path) )
+    if ingress_detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_ingress_list query k8s data error : %s' % ingress_detail_info['msg'] )
+        return generate_failure( ingress_detail_info['msg'] )
+
+    retu_data = []
+    for item in ingress_detail_info['data']['items']:
+        record = {}
+        retu_data.append(record)
+        record['Name'] = item['metadata']['name']
+
+        try:    
+            record['Ingress'] = []
+            for ing in item['status']['loadBalancer']['ingress']:
+                record['Ingress'].append( ing['ip'] )
+        except: 
+            record['Ingress'] = '<None>'
+
+        try:    record['Rules'] = get_ingress_detail_host_info( item['spec']['rules'] )
+        except: record['Rules'] = []
+         
+        record['CreationTime'] = trans_time_str(item['metadata']['creationTimestamp'])
+        record['DetailInfo'] = trans_obj_to_easy_dis(item)
+    
+    kd_logger.debug( 'call get_ingress_list query k8s data : %s' % retu_data )
+    kd_logger.info( 'call get_ingress_list query k8s data successful' )
     return generate_success( data = retu_data )
 
 def trans_obj_to_easy_dis(obj_info):
@@ -586,6 +682,16 @@ def convert_dict(keywords):
     keywords['startdate'] = datetime.strptime(keywords['startdate'], '%Y-%m-%dT%H:%M:%S')
     keywords['enddate'] = datetime.strptime(keywords['enddate'], '%Y-%m-%dT%H:%M:%S')
     return keywords
+
+@csrf_exempt
+@return_http_json
+def dashboard_taskinfo(request):
+    retu_data = {}
+    retu_data['today_running_task'] = Schedule_Status.objects.using('kd_agent_bdms').filter(category = time.strftime('%Y-%m-%d',time.localtime(time.time())), status = 3).count()
+    retu_data['today_succeed_task'] = Schedule_Log.objects.using('kd_agent_bdms').filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 1).count()
+    retu_data['today_failed_task'] = Schedule_Log.objects.using('kd_agent_bdms').filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 2).count()
+    retu_data['today_total_task'] = retu_data['today_succeed_task'] + retu_data['today_failed_task']
+    return generate_success( data = retu_data )
 
 def filter_valid_data( influxdb_data_dict ):
     try:

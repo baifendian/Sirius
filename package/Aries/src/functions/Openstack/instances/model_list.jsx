@@ -82,9 +82,6 @@ const Disk_list = React.createClass({
     return (
       <Spin size="large" spinning={this.state.loading}> 
         <div>
-            <div>
-             { /*<h3>选择加载到{this.state.host_name}虚拟机上的硬盘</h3>*/}
-            </div>
         <div style={{"margin-top": "10px"}}>
           <Row>
             <Col col="md-1" >虚拟机:</Col>
@@ -98,8 +95,8 @@ const Disk_list = React.createClass({
           </MultipleSelect>
           </div>
           <div className="create_host">
-            <Button onClick={this.handlerequest}>加载</Button>
-            <Button onClick={this.handleclose}>取消</Button>
+                  <Button onClick={this.handlerequest}>确认</Button>
+                  <Button onClick={this.handleclose}>取消</Button>
           </div>
         </div>
         </Spin> 
@@ -180,7 +177,7 @@ const Vm_Type=React.createClass({
           </FormSelect>
         </FormItem>
         <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>确定</button>
-         <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
+        <button type="button" style={{marginLeft: '150px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
       </Form>
     )
   }
@@ -229,6 +226,7 @@ const Vm_Backup=React.createClass({
     this.refs.form.save()
   },
 
+
   handleclose(){
     this.props._this.refs.model_disk.close()},
 
@@ -240,7 +238,6 @@ const Vm_Backup=React.createClass({
   render() {
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
-    //console.log('aaa',this.props.volumes_all,this.state.volumes_id)
     return (
       <div >
             <Form 
@@ -255,6 +252,7 @@ const Vm_Backup=React.createClass({
               </FormItem>  
               <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>创建</button>
               <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
+
             </Form>
       </div>
     )
@@ -331,7 +329,7 @@ const Vm_image=React.createClass({
           </FormSelect>
         </FormItem> 
         <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>确定</button>
-        <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>确定</button>
+        <button type="button" style={{marginLeft: '150px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
       </Form>
     )
   }
@@ -388,12 +386,11 @@ const Forced_vm=React.createClass({
         rules={this.rules} 
         onSuccess={this.handleSuccess}
       >
-       <div><h5>确定{this.props.title}{this.state.host_name}虚拟机？</h5></div>
-        <div><Icon type="fa-exclamation-circle" /><h5><Icon type="weixin" />{this.props.title}将直接断开虚拟机电源重新启动，虚拟机可能丢失数据，请确认数据已保存。</h5></div>
-        {/*<button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>保存</button>*/}
+       <div>确定{this.props.title}{this.state.host_name}虚拟机？</div>
+        <div><Icon type="fa-exclamation-circle" /><Icon type="weixin" />{this.props.title}将直接断开虚拟机电源重新启动，虚拟机可能丢失数据，请确认数据已保存。</div>
        <div className="create_host">
-          <Button >取消</Button>
           <Button onClick={this.handleSave}>确定</Button>
+          <Button onClick={this.handleclose}>取消</Button>
         </div>
       </Form>
 
@@ -444,7 +441,7 @@ const Disk_model=React.createClass({
               })
           console.log('this.state.disk_list',this.state.disk_list)
           this.setState({
-            title:'加载磁盘',model:[2]
+            title:'加载云硬盘',model:[2]
           })
       }
       if (event['key'] == 3){
@@ -509,7 +506,7 @@ const Disk_model=React.createClass({
     const menu = (
           <Menu onClick={this.handleOpen}>
             <Menu.Item disabled={this.state.button_status} key="1">创建备份</Menu.Item>
-            <Menu.Item disabled={this.state.button_status} key="2">加载硬盘</Menu.Item>
+            <Menu.Item disabled={this.state.button_status} key="2">加载云硬盘</Menu.Item>
             <Menu.Item disabled={this.state.button_status} key="3">更改配置</Menu.Item>
             <Menu.Item disabled={this.state.button_status} key="4">重置系统</Menu.Item>
             {/*<Menu.Item disabled={this.state.button_statuss} key="5">强制重启</Menu.Item>*/}
@@ -547,8 +544,7 @@ const Disk_model=React.createClass({
                 })}
                  </div>
               </ModalBody>
-              </Spin> 
-              
+              </Spin>
           </Modal>
         </div>
     )

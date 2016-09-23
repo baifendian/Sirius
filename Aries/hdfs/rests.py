@@ -16,6 +16,12 @@ from django.http import StreamingHttpResponse
 from tools import *
 from service import *
 from django.views.decorators.csrf import ensure_csrf_cookie
+
+class Overview(APIView):
+    def get(self,request,format=None):
+        result = getOverview(request)
+        return packageResponse(result)        
+
 class pathOp(APIView):
 #   @print_request
     def get(self,request,path,format=None):
@@ -144,6 +150,7 @@ class OperateComponent(APIView):
         else:
             ac_logger.error('operate error')
         return packageResponse(result)
+
 @ensure_csrf_cookie
 def upload(request,path):
     '''

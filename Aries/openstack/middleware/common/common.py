@@ -8,18 +8,26 @@ import httplib
 import os
 import errno
 import time
+import ConfigParser
+from Aries.settings import BASE_DIR,IP_CINDER,PORT_CINDER,IP_KEYSTONE,PORT_KEYSTONE,IP_NOVA,PORT_NOVA,DATABASES
 
-pro_path = os.path.split(os.path.realpath(__file__))[0]
+pro_path = os.path.join(BASE_DIR,"openstack/middleware/common")
+# pro_path = os.path.split(os.path.realpath(__file__))[0]    //模块测试时用这个
 LOG_PATH = os.path.join(pro_path, "log")  # 日志路径
-DB_PATH = os.path.join(pro_path, "db.sqlite3")
 LOG_FLAG = True  # 日志开关
 POLL_TIME_INCR = 0.5
-IP_keystone = "192.168.190.11"
-PORT_keystone = "5000"
-IP_nova = "192.168.190.11"
-PORT_nova = "8774"
-IP_cinder = "192.168.190.11"
-PORT_cinder = "8774"
+#opensatck配置
+IP_keystone = IP_KEYSTONE
+PORT_keystone = PORT_KEYSTONE
+IP_nova = IP_NOVA
+PORT_nova = PORT_NOVA
+IP_cinder = IP_CINDER
+PORT_cinder = PORT_CINDER
+#数据库配置
+DB_host = DATABASES["default"]["HOST"]
+DB_name = DATABASES["default"]["NAME"]
+DB_user = DATABASES["default"]["USER"]
+DB_password = DATABASES["default"]["PASSWORD"]
 TIMEOUT = 60
 
 

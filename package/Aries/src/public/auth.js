@@ -20,9 +20,9 @@ const auth = {
 
 if (process.env.NODE_ENV !== 'production') {
   window.user = {
-    name: '管理员',
+    name: 'pan.lu',
     type: 1,
-    cur_space:"test2"
+    cur_space:"hadoop"
   }
 }
 

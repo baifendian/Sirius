@@ -1,12 +1,12 @@
 # coding:utf-8
 import urllib
 import time
-from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, get_time, dlog,TIMEOUT
+from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, \
+    get_time, dlog, TIMEOUT, DB_host, DB_name, DB_password, DB_user
 from openstack.middleware.db.db import Db
 from openstack.middleware.image.image import Image
 from openstack.middleware.login.login import get_token, get_proid
 from openstack.middleware.volume.volume import Volume, Volume_attach
-
 
 
 # 虚拟机管理类
@@ -132,8 +132,8 @@ class Vm_manage:
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         vm_id = ret["server"]["id"]
         vm_snap = Vm_snap()
-        vm_snap.set_table(vm_id)
-        vm_snap.create_table(image)
+        vm_snap.set_vm(vm_id)
+        vm_snap.create_root_snap(image)
         self.result[name]["id"] = vm_id
         if disk:
             volume = Volume()
@@ -155,7 +155,7 @@ class Vm_manage:
                     t1 = run_in_thread(self.wait_complete, vm_id, timeout=TIMEOUT)
                     if t1 == 0:
                         vm_compele_flag = 1
-                t2 = run_in_thread(volume.wait_complete, volume_id,["available"],
+                t2 = run_in_thread(volume.wait_complete, volume_id, ["available"],
                                    timeout=TIMEOUT)  # assert vm_compele_flag == 1, "vm status is not activate"
                 if not vm_compele_flag:
                     self.result[name]["status_vm"] = 2
@@ -346,7 +346,7 @@ class Vm_control:
         return ret
 
     @plog("vm_control.reboot")
-    def reboot(self, vm_id):
+    def reboot(self, vm_id, type="HARD"):
         '''
         重启虚拟机
         :param vm_id:
@@ -357,7 +357,7 @@ class Vm_control:
         path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"reboot": {"type": "HARD"}}
+        params = {"reboot": {"type": type}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
         return ret
@@ -376,12 +376,12 @@ class Vm_control:
         params = {"resize": {"flavorRef": flavor_id, "OS-DCF:diskConfig": "AUTO"}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
-        t1 = run_in_thread(self.wait_complete,vm_id, ["VERIFY_RESIZE"],timeout=TIMEOUT)
+        t1 = run_in_thread(self.wait_complete, vm_id, ["VERIFY_RESIZE"], timeout=TIMEOUT)
         assert t1 == 0
         params = {"confirmResize": ""}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
-        t2 = run_in_thread(self.wait_complete,vm_id, ["ACTIVE","SHUTOFF"],timeout=TIMEOUT)
+        t2 = run_in_thread(self.wait_complete, vm_id, ["ACTIVE", "SHUTOFF"], timeout=TIMEOUT)
         assert t2 == 0
         return ret
 
@@ -486,7 +486,7 @@ class Vm_control:
         path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"os-getVNCConsole":{"type":"novnc"}}
+        params = {"os-getVNCConsole": {"type": "novnc"}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
         return ret
@@ -494,47 +494,72 @@ class Vm_control:
 
 class Vm_snap:
     def __init__(self, vm_id=""):
-        self.db = Db()
+        self.db = Db(DB_host, DB_user, DB_password, DB_name)
         self.token = get_token()
-        self.table = vm_id
+        self.vm_id = vm_id
+        self.table = "vm_snap"
 
+    @plog("Vm_snap.find_parent")
     def find_parent(self):
         '''
         找到当前主机所在的快照节点
         :return:
         '''
-        cmd = "select image_name from '%s' where status = 1" % self.table
+        cmd = "select image_name from %s where status = 1 and vm_id = '%s'" % (self.table, self.vm_id)
         tmp_ret = self.db.exec_cmd(cmd)
         assert tmp_ret != 1, "cmd:%s exec faild" % cmd
         ret = tmp_ret[0][0]
         return ret
 
-    @plog("Vm_snap.create_table")
-    def create_table(self, image_id):
+    @plog("Vm_snap.create_root_snap")
+    def create_root_snap(self, image_id):
         '''
-        创建表,创建虚拟机时调用
+        创建root快照节点,创建虚拟机时调用
         :param vm_id:
         :return:
         '''
         ret = 0
-        cmd1 = "CREATE TABLE '%s'('image_name'  TEXT NOT NULL,'parent_name'  TEXT NOT NULL DEFAULT 0,'image_id'  TEXT NOT NULL,'time'  TEXT NOT NULL,'status'  INTEGER NOT NULL DEFAULT 1,PRIMARY KEY ('image_name'))" % self.table
-        tmp_ret = self.db.exec_cmd(cmd1)
-        assert tmp_ret != 1, "cmd:%s exec err" % cmd1
         time_now = get_time()
-        cmd2 = "insert into '%s' values('root','','%s','%s',1)" % (self.table, image_id, time_now)
+        cmd2 = "insert into %s(image_name,vm_id,parent_name,image_id,status,time) values('root','%s','','%s',1,'%s')" % (
+        self.table, self.vm_id, image_id, time_now)
         tmp_ret = self.db.exec_cmd(cmd2)
+        if tmp_ret == 2:
+            tmp_ret = self.create_tables()
+            assert tmp_ret != 1
+            tmp_ret = self.db.exec_cmd(cmd2)
         assert tmp_ret != 1, "cmd:%s exec err" % cmd2
         return ret
 
-    @plog("Vm_snap.delete_table")
-    def delete_table(self, vm_id):
+    @plog("Vm_snap.create_tables")
+    def create_tables(self):
         '''
-        删除表，删除虚拟机时调用
+        创建表
+        :return:
+        '''
+        ret = 0
+        cmd = "CREATE TABLE `%s` (" \
+              "`id` int(11) NOT NULL AUTO_INCREMENT," \
+              "`image_name` varchar(255) NOT NULL," \
+              "`vm_id` varchar(255) NOT NULL," \
+              "`parent_name` varchar(255) DEFAULT NULL," \
+              "`image_id` varchar(255) NOT NULL," \
+              "`status` varchar(255) NOT NULL," \
+              "`time` datetime NOT NULL ," \
+              "PRIMARY KEY (`id`)" \
+              ") ENGINE=InnoDB DEFAULT CHARSET=utf8;" % self.table
+        ret = self.db.exec_cmd(cmd)
+        assert ret != 1
+        return ret
+
+    @plog("Vm_snap.delete_table")
+    def delete_vm(self, vm_id):
+        '''
+        删除虚拟机所有快照信息，删除虚拟机时调用
         :param vm_id:
         :return:
         '''
         ret = 0
-        cmd = "drop table '%s'" % vm_id
+        cmd = "delete from  %s where  vm_id = '%s'" % (self.table, vm_id)
         tmp_ret = self.db.exec_cmd(cmd)
         assert tmp_ret != 1, "cmd:%s exec err" % cmd
         return ret
@@ -544,16 +569,21 @@ class Vm_snap:
         '''
         修改快照名
         :param image_name:
-        :return:
+        :return:0表示正常，1表示有异常，2表示名称冲突
         '''
         ret = 0
-        cmd1 = "update '%s' set image_name='%s' where image_name='%s'" % (
-            self.table, image_name_new, image_name_old)  # 将其子快照的parent_name设置为新的快照名
-        tmp_ret = self.db.exec_cmd(cmd1)
-        assert tmp_ret != 1, "cmd:%s exec err" % cmd1
-        cmd2 = "update '%s' set parent_name='%s' where parent_name='%s'" % (self.table, image_name_new, image_name_old)
-        tmp_ret = self.db.exec_cmd(cmd2)
-        assert tmp_ret != 1, "cmd:%s exec err" % cmd2
+        image_list = self.list_snap()
+        if image_name_new in image_list:
+            ret = 2
+        else:
+            cmd1 = "update %s set image_name='%s' where image_name='%s' and vm_id='%s'" % (
+                self.table, image_name_new, image_name_old, self.vm_id)  # 将其子快照的parent_name设置为新的快照名
+            tmp_ret = self.db.exec_cmd(cmd1)
+            assert tmp_ret != 1, "cmd:%s exec err" % cmd1
+            cmd2 = "update %s set parent_name='%s' where parent_name='%s' and vm_id = '%s'" % (
+            self.table, image_name_new, image_name_old, self.vm_id)
+            tmp_ret = self.db.exec_cmd(cmd2)
+            assert tmp_ret != 1, "cmd:%s exec err" % cmd2
         return ret
 
     @plog("Vm_snap.delete_node")
@@ -564,25 +594,26 @@ class Vm_snap:
         :return:
         '''
         ret = 0
-        cmd1 = "select parent_name from '%s' where image_name='%s'" % (self.table, image_name)
+        cmd1 = "select parent_name from %s where image_name='%s' and vm_id = '%s'" % (
+        self.table, image_name, self.vm_id)
         parent_name = self.db.exec_cmd(cmd1)[0][0]
         assert parent_name != 1, "cmd:%s exec err" % cmd1
-        cmd2 = "delete from '%s' where image_name='%s'" % (
-            self.table, image_name)  # 将其子快照的parent_name改为删除快照的parent_name
+        cmd2 = "delete from %s where image_name='%s'and vm_id='%s'" % (
+            self.table, image_name, self.vm_id)  # 将其子快照的parent_name改为删除快照的parent_name
         tmp_ret = self.db.exec_cmd(cmd2)
         assert tmp_ret != 1, "cmd:%s exec err" % cmd2
-        cmd3 = "update '%s' set parent_name='%s' where parent_name='%s'" % (self.table, parent_name, image_name)
+        cmd3 = "update %s set parent_name='%s' where parent_name='%s' and vm_id='%s'" % (
+        self.table, parent_name, image_name, self.vm_id)
         tmp_ret = self.db.exec_cmd(cmd3)
         assert tmp_ret != 1, "cmd:%s exec err" % cmd3
         return ret
 
-    @plog("Vm_snap.set_table")
-    def set_table(self, vm_id):
+    def set_vm(self, vm_id):
         '''
         设置表
         :return:
         '''
-        self.table = vm_id
+        self.vm_id = vm_id
 
     @plog("Vm_snap.getinfo_node")
     def getinfo_node(self, image_name):
@@ -591,7 +622,7 @@ class Vm_snap:
         :param image_name:
         :return:
         '''
-        cmd = "select * from '%s' where image_name='%s'" % (self.table, image_name)
+        cmd = "select * from %s where image_name='%s' and vm_id='%s'" % (self.table, image_name, self.vm_id)
         tmp_ret = self.db.exec_cmd(cmd)
         assert tmp_ret != 1
         ret = tmp_ret[0]
@@ -613,25 +644,29 @@ class Vm_snap:
         '''
         创建快照
         :param image_name:
-        :return:
+        :return:1表示有异常，2表示名称冲突
         '''
-        vm = Vm_control()
-        ret = vm.create_image(self.table, image_name)
-        assert ret != 1
-        # 更新快照树数据
-        time_now = get_time()
-        image_id = self.get_id(image_name)
-        assert image_id != 1
-        parent_name = self.find_parent()
-        assert parent_name != 1
-        # node = self.insert(image_name,time_now,image_id,self.stat)   #创建完成后需要将新创建的快照的状态设置为1，把以前的主快照状态置0
-        cmd1 = "insert into '%s' values('%s','%s','%s','%s',1)" % (
-            self.table.encode("utf8"), image_name, parent_name, image_id, time_now)
-        tmp_ret = self.db.exec_cmd(cmd1)
-        assert tmp_ret != 1, "cmd:%s exec err" % cmd1
-        cmd2 = "update '%s' set status=0 where image_name='%s'" % (self.table, parent_name)
-        tmp_ret = self.db.exec_cmd(cmd2)
-        assert tmp_ret != 1, "cmd:%s exec err" % cmd2
+        image_list = self.list_snap()
+        if image_name.strip() in image_list:
+            ret = 2
+        else:
+            vm = Vm_control()
+            ret = vm.create_image(self.vm_id, image_name)
+            assert ret != 1
+            # 更新快照树数据
+            time_now = get_time()
+            image_id = self.get_id(image_name)
+            assert image_id != 1
+            parent_name = self.find_parent()
+            assert parent_name != 1
+            # node = self.insert(image_name,time_now,image_id,self.stat)   #创建完成后需要将新创建的快照的状态设置为1，把以前的主快照状态置0
+            cmd1 = "insert into %s(image_name,vm_id,parent_name,image_id,status,time) values('%s','%s','%s','%s',1,'%s')" % (
+                self.table.encode("utf8"), image_name, self.vm_id, parent_name, image_id, time_now)
+            tmp_ret = self.db.exec_cmd(cmd1)
+            assert tmp_ret != 1, "cmd:%s exec err" % cmd1
+            cmd2 = "update %s set status=0 where image_name='%s' and vm_id='%s'" % (self.table, parent_name, self.vm_id)
+            tmp_ret = self.db.exec_cmd(cmd2)
+            assert tmp_ret != 1, "cmd:%s exec err" % cmd2
         return ret
 
     @plog("Vm_snap.rebuild")
@@ -643,15 +678,28 @@ class Vm_snap:
         '''
         ret = 0
         vm = Vm_control()
-        cmd1 = "select image_id from '%s' where image_name='%s'" % (self.table, image_name)
+        cmd1 = "select image_id from %s where image_name='%s' and vm_id='%s'" % (self.table, image_name, self.vm_id)
         image_id = self.db.exec_cmd(cmd1)[0][0]
         assert image_id != 1, "cmd:%s exec faild" % cmd1
-        ret = vm.rebuild(self.table, image_id, "default")
+        ret = vm.rebuild(self.vm_id, image_id, "default")
         assert ret != 1
-        cmd2 = "update '%s' set status=0 where status=1" % self.table
-        cmd3 = "update '%s' set status=1 where image_name='%s'" % (self.table, image_name)
+        cmd2 = "update %s set status=0 where status=1 and vm_id='%s'" % (self.table, self.vm_id)
+        cmd3 = "update %s set status=1 where image_name='%s' and vm_id='%s'" % (self.table, image_name, self.vm_id)
         tmp_ret = self.db.exec_cmd(cmd2)
         assert tmp_ret != 1, "cmd:%s exec faild" % cmd2
         tmp_ret = self.db.exec_cmd(cmd3)
         assert tmp_ret != 1, "cmd:%s exec faild" % cmd3
         return ret
+
+    @plog("Vm_snap,list_snap")
+    def list_snap(self):
+        '''
+        列出当前虚拟机下的snap
+        :return:
+        '''
+        ret = 0
+        cmd = "select image_name from %s where vm_id='%s'" % (self.table, self.vm_id)
+        image_tunple = self.db.exec_cmd(cmd)
+        assert image_tunple != 1, 'cmd:%s exec faild' % cmd
+        image_list = [i[0] for i in image_tunple]
+        return image_list

@@ -99,6 +99,11 @@ export default render((
               cb(null, require('./functions/CalcManage/ClusterInfo/rcinfo').default)
             })
           }}/>
+          <Route path="IngressInfo" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/ClusterInfo/ingressinfo').default)
+            })
+          }}/>
         </Route>
         <Route path="OffLineCalcTask">
           <Route path="MyTask" getComponent={(location, cb) => {

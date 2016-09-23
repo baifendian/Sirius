@@ -84,6 +84,27 @@ const App = React.createClass({
     })
   },
 
+  updateHeadTitle( headTitleText ){
+    let title = document.getElementsByTagName('head')[0].getElementsByTagName('title')[0]
+    let navigationInPageHeadTextDiv = document.getElementById('NavigationInPageHeadText')
+    if ( navigationInPageHeadTextDiv !== null ){
+      title.innerHTML = navigationInPageHeadTextDiv.innerHTML
+    } else {
+      title.innerHTML = this.userData['oriTitleInnerHTML']
+    }
+  },
+
+  componentDidMount(){
+    this.userData = {
+      'oriTitleInnerHTML':document.getElementsByTagName('head')[0].getElementsByTagName('title')[0].innerHTML
+    }
+    this.updateHeadTitle()
+  },
+
+  componentDidUpdate(){ 
+    this.updateHeadTitle()
+  },
+
   render() {
 
     let Children = this.props.children
@@ -140,6 +161,7 @@ const App = React.createClass({
                       <NavItem href={`CloudContainer/CalcManage/PodInfo?${params}`} title="Pod信息" />
                       <NavItem href={`CloudContainer/CalcManage/ServiceInfo?${params}`} title="Service信息" />
                       <NavItem href={`CloudContainer/CalcManage/ReplicationControllerInfo?${params}`} title="RC信息" />
+                      <NavItem href={`CloudContainer/CalcManage/IngressInfo?${params}`} title="Ingress信息" />
                     </NavItem>
                     {/* 暂时下面没有任何节点，因此注释掉
                     <NavItem key={22} icon="equalizer" title="Docker Image" />

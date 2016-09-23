@@ -16,13 +16,11 @@ export default React.createClass({
     // 否则，重新请求数据
     let curNameSpace = CMDR.getCurNameSpace(this)
     if ( this.curNameSpace !== curNameSpace ){
-      CMDR.getServiceList( this,this.xhrCallback,curNameSpace )
+      CMDR.getServiceList( curNameSpace,(executedData)=>{
+        this.setState ({ 'dataTableDataArr':executedData })
+      } )
       this.curNameSpace = curNameSpace
     }
-  },
-
-  xhrCallback:(_this,executedData) => {
-    _this.setState ( { dataTableDataArr:executedData })
   },
 
   // 当namespace切换的时候，将会强制调用这个render函数
