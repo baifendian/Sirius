@@ -119,6 +119,67 @@ def get_influxdb_data(sql_str,db = settings.INFLUXDB_DATABASE,epoch='s',timeout 
 def restore_k8s_path(p):
     return p.replace('/k8s','')
 
+def get_overview_k8s_pod_info(namespace):
+    retu_data = { 'count':0, 'total':0 }
+    url = '/api/v1/namespaces/%s/pods' % namespace
+    pod_detail_info = get_k8s_data( url )
+    if pod_detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_overview_k8s_pod_info query k8s pod data error : %s' % pod_detail_info['msg'] )
+    else:
+        count = 0
+        total = 0
+        for item in pod_detail_info['data']['items']:
+            containerStatuses = item['status']['containerStatuses']
+            total += len(containerStatuses)
+            for cItem in containerStatuses:
+                if cItem['state'].get( 'running' ) != None:
+                    count += 1
+        retu_data['count'] = count
+        retu_data['total'] = total
+    return retu_data
+
+def get_overview_k8s_service_info(namespace):
+    retu_data = { 'count':0  }
+    url = '/api/v1/namespaces/%s/services' % namespace
+    service_detail_info = get_k8s_data( url )
+    if service_detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_overview_k8s_service_info query k8s service data error : %s' % service_detail_info['msg'] )
+    else:
+        retu_data['count'] = len(service_detail_info['data']['items'])
+    return retu_data
+
+def get_overview_k8s_rc_info(namespace):
+    retu_data = { 'count':0, 'total':0 }
+    url = '/api/v1/namespaces/%s/replicationcontrollers' % namespace
+    rc_detail_info = get_k8s_data( url )
+    if rc_detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_overview_k8s_rc_info query k8s rc data error : %s' % rc_detail_info['msg'] )
+    else:
+        total = 0
+        count = 0
+        for item in rc_detail_info['data']['items']:
+            total += item['spec']['replicas']
+            count += item['status']['replicas']
+        retu_data['count'] = count
+        retu_data['total'] = total
+    return retu_data
+
+# node要从influxdb中获取数量，但是当前无法获取，因此该函数的实现暂时先搁置。
+def get_overview_k8s_node_info(namespace):
+    retu_data = { 'count':0 }
+    return retu_data
+
+@csrf_exempt
+@return_http_json
+def get_k8soverview_info(request,namespace):
+    retu_data = {
+        'pod': get_overview_k8s_pod_info(namespace) ,
+        'rc': get_overview_k8s_rc_info(namespace),
+        'service': get_overview_k8s_service_info(namespace),
+        'node': get_overview_k8s_node_info(namespace)
+    }
+    kd_logger.info( 'call get_overview_k8s_rc_info query k8s overview info : %s' % retu_data )
+    return generate_success( data=retu_data )
 
 @csrf_exempt
 @return_http_json
