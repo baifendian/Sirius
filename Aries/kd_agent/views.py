@@ -122,6 +122,58 @@ def restore_k8s_path(p):
 
 @csrf_exempt
 @return_http_json
+def get_k8soverview_info(request,namespace):
+    retu_data = {
+        'pod':{ 'count':0,'total':0 },
+        'rc':{ 'count':0,'total':0 },
+        'service':{ 'count':0,'total':0 },
+        'node':{ 'count':0 }
+    }
+    # pod
+    url = '/api/v1/namespaces/%s/pods' % namespace
+    pod_detail_info = get_k8s_data( url )
+    if pod_detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_k8soverview_info query k8s pod data error : %s' % pod_detail_info['msg'] )
+    else:
+        count = 0
+        total = 0
+        for item in pod_detail_info['data']['items']:
+            containerStatuses = item['status']['containerStatuses']
+            total += len(containerStatuses)
+            for cItem in containerStatuses:
+                if cItem['state'].get( 'running' ) != None:
+                    count += 1
+        retu_data['pod']['count'] = count
+        retu_data['pod']['total'] = total
+
+    # services
+    url = '/api/v1/namespaces/%s/services' % namespace
+    service_detail_info = get_k8s_data( url )
+    if service_detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_k8soverview_info query k8s service data error : %s' % service_detail_info['msg'] )
+    else:
+        pass
+
+    # replicationcontrollers
+    url = '/api/v1/namespaces/%s/replicationcontrollers' % namespace
+    rc_detail_info = get_k8s_data( url )
+    if rc_detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_k8soverview_info query k8s rc data error : %s' % rc_detail_info['msg'] )
+    else:
+        total = 0
+        count = 0
+        for item in rc_detail_info['data']['items']:
+            total += item['spec']['replicas']
+            count += item['status']['replicas']
+        retu_data['rc']['count'] = count
+        retu_data['rc']['total'] = total
+
+    # node
+
+    return generate_success( data=retu_data )
+
+@csrf_exempt
+@return_http_json
 def get_pod_list(request,namespace):
     kd_logger.info( 'call get_pod_list request.path : %s , namespace : %s' % (request.path,namespace) )
     pod_detail_info = get_k8s_data( restore_k8s_path(request.path) )
