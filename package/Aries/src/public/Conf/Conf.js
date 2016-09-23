@@ -21,7 +21,7 @@ const conf = {
       Overview:{ //总览页面
         HDFS_OVERVIEW: "v1/hdfs/overview/?spaceName=${spaceName}",
         BDMS_OVERVIEW: "k8s/api/v1/dashboard/taskinfo",
-        K8SP_OVERVIEW: "",
+        K8SP_OVERVIEW: "k8s/api/v1/namespaces/(?P<${spaceName}>\w{1,64})/k8soverview",
         CODIS_OVERVIEW: "v1/codis/codisoverview/",
         USER_AUTH_OVERVIEW:"v1/user_auth/overview/?spaceName=${spaceName}",
         OPENSTACK_OVERVIEW:"openstack/home/overview/",

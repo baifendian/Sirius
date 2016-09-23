@@ -86,16 +86,21 @@ export default React.createClass({
     });
   },
   getK8spData(data){
+    let k8sp_pod_count = `${data.pod.count}/${data.pod.total}`;
+    let k8sp_rc_count = `${data.rc.count}/${data.rc.total}`;
+    let k8sp_service_status_count = `${data.service.count}/${data.service.total}`;
+    let k8sp_nodes_count = data.node.count;
     this.setState({
-      k8sp_pod_count: "",
-      k8sp_rc_count: "",
-      k8sp_service_status_count: "",
-      k8sp_nodes_count: ""
+      k8sp_pod_count: k8sp_pod_count,
+      k8sp_rc_count: k8sp_rc_count,
+      k8sp_service_status_count: k8sp_service_status_count,
+      k8sp_nodes_count: k8sp_nodes_count
     });
   },
   getCodisData(data){
     let codis_count = `${data.nice_codis_count}/${data.all_codis_count}`;
     let codis_memory_used = data.memory_used_count.toFixed(2)/data.memory_total_count;
+    codis_memory_used = `${codis_memory_used.toFixed(2)*100} %`;
     this.setState({
       codis_count: codis_count,
       codis_memory_used: codis_memory_used,
@@ -110,7 +115,7 @@ export default React.createClass({
   },
   getHdfsData(data){
     this.setState({
-      hdfs_disk_used: data.hdfs_disk_used.toFixed(2),
+      hdfs_disk_used: `${data.hdfs_disk_used.toFixed(2)*100} %`,
       hdfs_shares: data.hdfs_shares,
       hdfs_datanodes: data.hdfs_datanodes
     });
@@ -147,8 +152,8 @@ export default React.createClass({
           <Fetch defaultHeight={0} url={`${hdfs_url}&random=${this.state.random}`} onSuccess={this.getHdfsData} />
           <Fetch defaultHeight={0} url={`${codis_url}?random=${this.state.random}`} onSuccess={this.getCodisData} />
           <Fetch defaultHeight={0} url={`${user_url}&random=${this.state.random}`} onSuccess={this.getUserAuthData} />
-          {/*
           <Fetch defaultHeight={0} url={`${k8sp_url}?random=${this.state.random}`} onSuccess={this.getK8spData} />
+          {/*
           <Fetch defaultHeight={0} url={`${openstack_url}?random=${this.state.random}`} onSuccess={this.getOpenstackData} />
           */}
         </div>
