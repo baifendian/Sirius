@@ -16,6 +16,17 @@ const conf = {
         SPACE_SWITCH: "v1/user_auth/user/${spaceName}/", //head部分的space切换
       },
     },
+    //概览部分模版url模版
+    Overview:{ //总览模块
+      Overview:{ //总览页面
+        HDFS_OVERVIEW: "v1/hdfs/overview/?spaceName=${spaceName}&random=${random}",
+        BDMS_OVERVIEW: "k8s/api/v1/dashboard/taskinfo?random=${random}",
+        K8SP_OVERVIEW: "k8s/api/v1/namespaces/(?P<${spaceName}>\w{1,64})/k8soverview?random=${random}",
+        CODIS_OVERVIEW: "v1/codis/codisoverview/?random=${random}",
+        USER_AUTH_OVERVIEW:"v1/user_auth/overview/?spaceName=${spaceName}&random=${random}",
+        OPENSTACK_OVERVIEW:"openstack/home/overview/?random=${random}",
+      }
+    },
     //用户管理模块url模版
     UserAuth: {
       SpaceList: {
@@ -87,15 +98,16 @@ const conf = {
     operator = '',
     shareId = '',
     spaceId = '',
+    random = 0,
   }) {
     let urlTemp = this.urlTempData[moduleName][pageName][type];
     let urlStr = `return \`${urlTemp}\``;
     let func = new Function("spaceName", "relativePath", "targetPath",
       "hostName", "componentName", "operator",
-      "shareId", "spaceId", urlStr);
+      "shareId", "spaceId","random", urlStr);
     let url = func(spaceName, relativePath, targetPath,
       hostName, componentName, operator, shareId,
-      spaceId
+      spaceId, random
     );
     console.log(`getUrlData: ${url}`);
     return url;
