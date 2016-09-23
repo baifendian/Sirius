@@ -19,12 +19,12 @@ const conf = {
     //概览部分模版url模版
     Overview:{ //总览模块
       Overview:{ //总览页面
-        HDFS_OVERVIEW: "v1/hdfs/overview/?spaceName=${spaceName}",
-        BDMS_OVERVIEW: "k8s/api/v1/dashboard/taskinfo",
-        K8SP_OVERVIEW: "k8s/api/v1/namespaces/(?P<${spaceName}>\w{1,64})/k8soverview",
-        CODIS_OVERVIEW: "v1/codis/codisoverview/",
-        USER_AUTH_OVERVIEW:"v1/user_auth/overview/?spaceName=${spaceName}",
-        OPENSTACK_OVERVIEW:"openstack/home/overview/",
+        HDFS_OVERVIEW: "v1/hdfs/overview/?spaceName=${spaceName}&random=${random}",
+        BDMS_OVERVIEW: "k8s/api/v1/dashboard/taskinfo?random=${random}",
+        K8SP_OVERVIEW: "k8s/api/v1/namespaces/(?P<${spaceName}>\w{1,64})/k8soverview?random=${random}",
+        CODIS_OVERVIEW: "v1/codis/codisoverview/?random=${random}",
+        USER_AUTH_OVERVIEW:"v1/user_auth/overview/?spaceName=${spaceName}&random=${random}",
+        OPENSTACK_OVERVIEW:"openstack/home/overview/?random=${random}",
       }
     },
     //用户管理模块url模版
@@ -98,6 +98,7 @@ const conf = {
     operator = '',
     shareId = '',
     spaceId = '',
+    random = 0,
   }) {
     let urlTemp = this.urlTempData[moduleName][pageName][type];
     let urlStr = `return \`${urlTemp}\``;
@@ -106,7 +107,7 @@ const conf = {
       "shareId", "spaceId", urlStr);
     let url = func(spaceName, relativePath, targetPath,
       hostName, componentName, operator, shareId,
-      spaceId
+      spaceId, random
     );
     console.log(`getUrlData: ${url}`);
     return url;

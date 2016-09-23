@@ -48,16 +48,11 @@ const OverviewConf={
     return conf.getCurSpace(_this);
   },
   //获取URL配置.使用所有的模版的公共变量作为函数参数,里面可以直接渲染所有模版变量.
-  getUrlData({moduleName="Overview",pageName='Overview',type='',spaceName=''}){
+  getUrlData({moduleName="Overview",pageName='Overview',type='',spaceName='',random=0}){
     return conf.getUrlData({ moduleName : moduleName, pageName : pageName, type : type,
-                             spaceName : spaceName
+                             spaceName : spaceName,random:random
                             });
-  },
-  //直接获取面包屑数据的接口
-  getNavigationData({moduleName="HDFS",pageName="",type="",spaceName=""}){
-    return conf.getNavigationData({ moduleName : moduleName, pageName : pageName,
-                                    type : type, spaceName : spaceName});
-  },
+  }
 }
 
 export default OverviewConf;

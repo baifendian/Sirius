@@ -71,10 +71,12 @@ export default React.createClass({
     pageName : "Overview",
     type : "",
     spaceName : "",
+    random : 0,
   },
   getUrlData({type="",spaceName=""}){
     this.requestArgs.type = type;
     this.requestArgs.spaceName = spaceName;
+    this.requestArgs.random = this.state.random;
     return OverviewConf.getUrlData(this.requestArgs);
   },
   getBdmsData(data){
@@ -128,7 +130,7 @@ export default React.createClass({
   render() {
     let spaceName = OverviewConf.getCurSpace(this);
     let bdms_url = this.getUrlData({ type: "BDMS_OVERVIEW",
-                                     spaceName: spaceName
+                                     spaceName: spaceName,
                   });
     let k8sp_url = this.getUrlData({ type: "K8SP_OVERVIEW",
                                      spaceName: spaceName
@@ -148,11 +150,11 @@ export default React.createClass({
     return (
         <div className="overview">
           {conent}
-          <Fetch defaultHeight={0} url={`${bdms_url}?random=${this.state.random}`} onSuccess={this.getBdmsData} />
-          <Fetch defaultHeight={0} url={`${hdfs_url}&random=${this.state.random}`} onSuccess={this.getHdfsData} />
-          <Fetch defaultHeight={0} url={`${codis_url}?random=${this.state.random}`} onSuccess={this.getCodisData} />
-          <Fetch defaultHeight={0} url={`${user_url}&random=${this.state.random}`} onSuccess={this.getUserAuthData} />
-          <Fetch defaultHeight={0} url={`${k8sp_url}?random=${this.state.random}`} onSuccess={this.getK8spData} />
+          <Fetch defaultHeight={0} url={`${bdms_url}`} onSuccess={this.getBdmsData} />
+          <Fetch defaultHeight={0} url={`${hdfs_url}`} onSuccess={this.getHdfsData} />
+          <Fetch defaultHeight={0} url={`${codis_url}`} onSuccess={this.getCodisData} />
+          <Fetch defaultHeight={0} url={`${user_url}`} onSuccess={this.getUserAuthData} />
+          <Fetch defaultHeight={0} url={`${k8sp_url}`} onSuccess={this.getK8spData} />
           {/*
           <Fetch defaultHeight={0} url={`${openstack_url}?random=${this.state.random}`} onSuccess={this.getOpenstackData} />
           */}
