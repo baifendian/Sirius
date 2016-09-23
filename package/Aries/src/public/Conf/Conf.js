@@ -104,7 +104,7 @@ const conf = {
     let urlStr = `return \`${urlTemp}\``;
     let func = new Function("spaceName", "relativePath", "targetPath",
       "hostName", "componentName", "operator",
-      "shareId", "spaceId", urlStr);
+      "shareId", "spaceId","random", urlStr);
     let url = func(spaceName, relativePath, targetPath,
       hostName, componentName, operator, shareId,
       spaceId, random
