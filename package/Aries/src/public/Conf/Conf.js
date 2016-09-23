@@ -21,7 +21,7 @@ const conf = {
       Overview:{ //总览页面
         HDFS_OVERVIEW: "v1/hdfs/overview/?spaceName=${spaceName}&random=${random}",
         BDMS_OVERVIEW: "k8s/api/v1/dashboard/taskinfo?random=${random}",
-        K8SP_OVERVIEW: "k8s/api/v1/namespaces/(?P<${spaceName}>\w{1,64})/k8soverview?random=${random}",
+        K8SP_OVERVIEW: "k8s/api/v1/namespaces/${spaceName}/k8soverview?random=${random}",
         CODIS_OVERVIEW: "v1/codis/codisoverview/?random=${random}",
         USER_AUTH_OVERVIEW:"v1/user_auth/overview/?spaceName=${spaceName}&random=${random}",
         OPENSTACK_OVERVIEW:"openstack/home/overview/?random=${random}",
