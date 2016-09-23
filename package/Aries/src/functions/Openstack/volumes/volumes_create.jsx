@@ -1,7 +1,7 @@
-import { Form, FormItem } from 'bfd-ui/lib/Form'
-import FormInput from 'bfd-ui/lib/FormInput'
-import FormTextarea from 'bfd-ui/lib/FormTextarea'
-import { FormSelect, Option } from 'bfd-ui/lib/FormSelect'
+import { Form, FormItem } from 'bfd-ui07/lib/Form'
+import FormInput from 'bfd-ui07/lib/FormInput'
+import FormTextarea from 'bfd-ui07/lib/FormTextarea'
+import { FormSelect, Option } from 'bfd-ui07/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 import React from 'react'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
@@ -48,7 +48,7 @@ const Create_volumes=React.createClass({
 
   render() {
     const { formData } = this.state
-    let url=OPEN.UrlList()['volumes_create']
+    let url=OPEN.UrlList()['volumes_post']
     console.log(url)
     return (
       <div style={{float:"left",margin: "0px 10px 0px 10px"}}>

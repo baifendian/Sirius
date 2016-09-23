@@ -130,13 +130,15 @@ export default React.createClass({
     console.log('select_all',this.state.select_all)
     OPEN.volumes_data(this,this.state.select_all)
   },
-  componentDidMount(){
+
+  height_count(){
     let table_trlengt=ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
     let totallength=ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].childNodes.length
     let tdheight=ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].scrollHeight
     let height_table=(totallength)*tdheight
-    let totalwidth=(ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].clientWidth-17)/table_trlengt
-     console.log(',,,11',table_trlengt,totallength)
+    //let totalwidth=(ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].clientWidth-17)/table_trlengt
+    let totalwidth_t=ReactDOM.findDOMNode( this.refs.volumes_bu).clientWidth
+    let totalwidth=(ReactDOM.findDOMNode( this.refs.volumes_bu).clientWidth-42-17)/table_trlengt
     let totalHeight = document.body.clientHeight
     //let totalwidth=1053.36-21.18
     totalHeight -= document.getElementById('header').clientHeight
@@ -148,9 +150,17 @@ export default React.createClass({
     //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.width=totalwidth+'px'
     if (totalHeight>height_table){
       ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
+      for (let i=0 ; i<ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++){
+      if (i==(table_trlengt-1)){
+        totalwidth=totalwidth+17
+        ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }else{
+        ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
+      }
+    }
     }else{
     ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    for (let i in ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes){
+    for (let i=0 ; i<ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++){
       if (i==(table_trlengt-1)){
         totalwidth=totalwidth+17
         ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
@@ -159,6 +169,13 @@ export default React.createClass({
       }
     }
   }
+  },
+
+  componentDidMount(){
+    window.onresize=()=>{
+      this.height_count()
+     }
+     this.height_count()
   },
   requestArgs:{
     pageName : "volumes",

@@ -387,6 +387,27 @@ const Model_list=React.createClass({
   },
   handleMenuClick(e) {
     //console.log('click', e['key']);
+    if (e["key"] == 'Loading_disk'){
+      let module=this.modulevalue()[e["key"]]
+   // console.log(module)
+      let volumes_id={}
+      let volumes_size={}
+      let status=''
+      console.log(this.props.select_all)
+      for (let i in this.props.select_all){
+        console.log(this.props.select_all[i])
+        volumes_id[this.props.select_all[i]['name']]=this.props.select_all[i]['id']
+        volumes_size['size']=this.props.select_all[i]['size']
+        status=this.props.select_all[i]['servername']
+      }
+      if (!status){
+      console.log(volumes_size,volumes_id)
+      this.setState({volumes_id,volumes_size})
+      this.setState({title:this.values()[e['key']],module})
+      this.refs.modal.open()}else{
+         message.danger('已连接')}
+      
+    }else{
     let module=this.modulevalue()[e["key"]]
    // console.log(module)
     let volumes_id={}
@@ -401,6 +422,7 @@ const Model_list=React.createClass({
     this.setState({volumes_id,volumes_size})
     this.setState({title:this.values()[e['key']],module})
     this.refs.modal.open()
+  }
 
   },
   render() {

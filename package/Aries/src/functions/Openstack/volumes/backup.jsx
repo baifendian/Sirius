@@ -71,11 +71,7 @@ export default React.createClass({
     totalHeight = totalHeight - backup_nav - backup_bu - 120
      if (totalHeight>height_table){
       ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-      console.log('l..........test11111')
-      console.log('tes1233',totalHeight,height_table)
     }else{
-      console.log('l..........test1111111111333')
-      console.log('tes1233',totalHeight,height_table)
       ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     for (let i in ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes){
       if (i==(table_trlengt-1)){

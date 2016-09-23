@@ -106,7 +106,7 @@ def instances(request):
             except:
                 sys['image'] = '-'
             sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
-            sys['created'] = host['created']
+            sys['created'] = ' '.join( host['created'].split('Z')[0].split('T'))
             sys['status'] = host['OS-EXT-STS:vm_state']
             for key, value in host['addresses'].items():
                 for ip in value:
@@ -344,8 +344,8 @@ def volumes(request):
             sys['id'] = disk['id']
             sys['size'] = disk['size']
             sys['voumetype'] = 'ceph'
-            sys['created'] = disk['createdAt'].split('.')[0]
-            sys['backupd'] = disk['createdAt'].split('.')[0]
+            sys['created'] = ' '.join( disk['createdAt'].split('.')[0].split('Z')[0].split('T'))
+            sys['backupd'] = ' '.join( disk['createdAt'].split('.')[0].split('Z')[0].split('T'))
             sys['displayDescription'] = disk['displayDescription']
             if len(disk['attachments'][0].keys()) == 4:
                 for disk_host in disk['attachments']:
