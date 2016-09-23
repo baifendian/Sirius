@@ -30,18 +30,39 @@ div.LiebiaoRootDiv .SearchConditionTableFatherDiv{
     display: inline-block;
     text-align: initial;    // 保证下面的不受 text-align 设为center的影响
   }
-
-  .SearchItemControl {
-    width: 150px;
-  }
-
+  
   // 由于DataRange位于table控件内部，且它也是使用的table来布局的
   // 因此这里必须添加 > 以防止对DataRange内的样式造成污染
-  table.SearchConditionTable > tbody > tr > td:nth-child(odd){ 
-    padding-left: 5px;  
-  }
-  table.SearchConditionTable > tbody > tr > td:nth-child(even){ 
-    padding-right: 25px;
+  table.SearchConditionTable > tbody > tr {
+    > td:nth-child(odd){ 
+      padding-left: 5px;  
+    }
+    > td:nth-child(even){ 
+      padding-right: 20px;
+    }
+    > td:nth-child(1) , 
+    > td:nth-child(3) ,
+    > td:nth-child(5) ,
+    > td:nth-child(7) {
+      min-width: 65px;
+      max-width: 65px;
+    }
+    
+    > td:nth-child(2) > * ,
+    > td:nth-child(4) > * ,
+    > td:nth-child(6) > * {
+      min-width: 120px;
+      max-width: 140px;
+    }
+    > td:nth-child(8) > * > div:nth-child(1) input ,
+    > td:nth-child(8) > * > div:nth-child(3) input {
+      min-width: 100px;
+      max-width: 100px;
+    }
+    > td:nth-child(8) > * {
+      min-width: 230px;
+      max-width: 230px;
+    }
   }
 }
 

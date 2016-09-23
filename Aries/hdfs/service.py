@@ -15,6 +15,10 @@ from django.conf import settings
 from hdfs.function import HDFS
 from django.http import HttpResponse
 from tools import *
+
+import requests
+from requests.auth import HTTPBasicAuth
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 hdfs_logger = logging.getLogger("access_log")
@@ -52,12 +56,14 @@ def deleteshare(request,path):
         exitCode,data = share_cmd(space_name,source_path,"700")
         if exitCode != 0:
             result["data"] = "删除分享失败."
+            result["code"] = StatusCode["FAILED"]
             hdfs_logger.error("share failed:{0}".format(data))
             return result
         dataShare.delete()
         result["data"] = "删除分享成功."
     except Exception,e:
         hdfs_logger.error(e)
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "删除分享失败."
     return result
 
@@ -215,7 +221,7 @@ def de_delete(request, path):
     exitCode,data = run_hadoop(user_name=exec_user,operator="rmr",args=[path])
     ac_logger.info("data:%s" %data)
     if exitCode != 0:
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "删除失败!"
     else:
         o_type = FileOperatorType.objects.get(name='delete')
@@ -263,18 +269,23 @@ def upSet(request, path):
         capacity_value = body_data["capacity"]
         hdfs_logger.info("upSet capacity_value:{0}".format(capacity_value))
         space_name = request.GET.get("spaceName","")
-        #total = int(body_data['capacity'])
         if capacity_value > 0:
             space = Space.objects.get(name=space_name)
             capacity = eval(space.capacity)
-            capacity["total"] = capacity_value
-            space.capacity = capacity
-            space.save()
-        result["code"] = StatusCode["SUCCESS"]
-        result["data"] = "配额扩容成功"
+            used = capacity["used"]
+            hdfs_logger.info("used: {0}, total: {1}, plan: {2}".format(used,capacity_value,capacity["plan"]))
+            if int(used) > int(capacity_value):
+                result["code"] = StatusCode["SUCCESS"]
+                result["data"] = "配额扩容失败. 扩容后的容量小于当前已经使用的容量"
+            else:
+                capacity["total"] = capacity_value
+                space.capacity = capacity
+                space.save()
+                result["code"] = StatusCode["SUCCESS"]
+                result["data"] = "配额扩容成功"
     except:
         hdfs_logger.error(traceback.format_exc())
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "配额扩容失败."
     return result
 
@@ -301,7 +312,7 @@ def sumSpace(request, path):
         result["code"] = StatusCode["SUCCESS"]
         result["data"] = data
     else:
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "容量获取失败"
     return result
    
@@ -338,15 +349,15 @@ def mv_or_cp(request, path):
                 result["code"] = StatusCode["SUCCESS"]
                 result["data"] = "移动成功!"
             else:
-                result["code"] = StatusCode["SUCCESS"]
+                result["code"] = StatusCode["FAILED"]
                 result["data"] = "移动失败!"
         except:
             hdfs_logger.debug(traceback.format_exc())
-            result["code"] = StatusCode["SUCCESS"]
+            result["code"] = StatusCode["FAILED"]
             result["data"] = "移动失败!"
     else:
         hdfs_logger.info("用户%s的请求：目的路径不明确!"%(getUser(request)))
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "移动失败!"
     return result
 
@@ -408,7 +419,7 @@ def showShare(request,path):
         return result
 
 def HostStateGET(request):
-    dic = req()
+    dic = host_state_and_relation_req()
     result = {}
     if not dic.has_key('status'):
         all_host = []
@@ -433,7 +444,7 @@ def HostStateGET(request):
     return result
 
 def RelationGET(request, host_name):
-    dic = req()
+    dic = host_state_and_relation_req()
     relation = []
     result = {}
     allhost = []
@@ -455,6 +466,37 @@ def RelationGET(request, host_name):
     ac_logger.info('result........:%s'%result)
     return result
 
+def HostInfoGET(request, host_name):
+    import time
+    dic = host_desc_req()
+    relation = []
+    result = {}
+    data = {}
+    if dic.has_key('items'):
+        for i in dic['items']:
+            if i['Hosts']['host_name'] == host_name:
+                data['host_name'] = host_name
+                data['ip'] = i['Hosts']['ip']
+                data['cpu_count'] = i['Hosts']['cpu_count']
+                data['total_mem'] = format(i['Hosts']['total_mem'] / float(1024) / float(1024), '.2f') + 'GB'
+                data['os'] = i['Hosts']['os_type'] + ' '+ '(' + i['Hosts']['os_arch'] + ')'
+                last_heartbeat = ( int(str(time.time())[:10]) - int(str(i['Hosts']['last_heartbeat_time'])[:10]) )
+                if last_heartbeat < 60:
+                    data['last_heartbeat_time'] = str(last_heartbeat) + ' ' + 'seconds ago'
+                elif last_heartbeat > 60 :
+                    data['last_heartbeat_time'] = str(last_heartbeat / 60 ) + ' ' + 'minutes ago'
+                elif last_heartbeat > 3600 :
+                    data['last_heartbeat_time'] = str(last_heartbeat / 3600 ) + ' ' + 'hours ago'
+                data['load_avg'] = ''
+        result['code'] = StatusCode['SUCCESS']
+        result['data'] = data
+        return result
+    else:
+        result['code'] = StatusCode['FAILED']
+        result['data'] = '主机信息获取失败'
+    return result
+
+
 def OperateServicePOST(request, command, params):
     import requests
     from requests.auth import HTTPBasicAuth
@@ -467,7 +509,7 @@ def OperateServicePOST(request, command, params):
         result["code"] = StatusCode["SUCCESS"]
         result["data"] = "操作成功"
     else:
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "操作失败"
     ac_logger.info('result........:%s'%result)
     return result
@@ -484,7 +526,7 @@ def OperateComponentPOST(request, host_name, component_name, operate):
         result["code"] = StatusCode["SUCCESS"]
         result["data"] = "操作成功"
     else:
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "操作失败"
     ac_logger.info('result........:%s'%result)
     return result
@@ -504,16 +546,66 @@ def OperateComponentPUT(request, host_name, component_name, operate):
         result["code"] = StatusCode["SUCCESS"]
         result["data"] = "操作成功"
     else:
-        result["code"] = StatusCode["SUCCESS"]
+        result["code"] = StatusCode["FAILED"]
         result["data"] = "操作失败"
     return result
 
-def req():
-    import requests
-    from requests.auth import HTTPBasicAuth
-    r = requests.get('%shosts?fields=host_components/HostRoles/state,host_components/HostRoles/service_name' %settings.AMBARI_URL, auth=HTTPBasicAuth(settings.AMBARI_USER,settings.AMBARI_PASSWORD))
+def host_state_and_relation_req():
+    extendUrl = "hosts?fields=host_components/HostRoles/state,host_components/HostRoles/service_name"
+    return requestEval(extendUrl)
+
+def host_desc_req():
+    import time
+    extendUrl = "hosts?fields=Hosts/host_name,Hosts/public_host_name,Hosts/cpu_count,Hosts/ph_cpu_count,Hosts/host_status,Hosts/last_heartbeat_time,Hosts/ip,host_components/HostRoles/state,Hosts/total_mem,Hosts/os_arch,Hosts/os_type&sortBy=Hosts/host_name.asc&_=%s" %(int(time.time()))
+    return requestEval(extendUrl)
+
+def requestEval(url):
+    fullUrl = "%s%s" %(settings.AMBARI_URL,url)
+    ac_logger.info(fullUrl)
+    r = requests.get(fullUrl, auth=HTTPBasicAuth(settings.AMBARI_USER,settings.AMBARI_PASSWORD))
     dic = eval(r.text)
     return dic
+
+def getOverview(request):
+    spaceName = request.GET.get("spaceName")
+    result = {}
+    result["code"] = StatusCode["SUCCESS"]
+    data = {}
+    #使用百分比
+    space = getObjByAttr(Space,"name",spaceName)
+    if space:
+        capacity = space[0].capacity
+        capacity = eval(capacity)
+        used = capacity["used"]
+        total = capacity["total"]
+        try:
+            hdfs_disk_used = float(used)/float(total)
+        except Exception,e:
+            ac_logger.error(e)
+            hdfs_disk_used = 0
+    else:
+        hdfs_disk_used = 0
+    #分享个数
+    try:
+        hdfs_shares = DataShare.objects.filter(space_name = spaceName).count()
+    except Exception,e:
+        ac_logger.error("hdfs_shares is get failed. so set default 0.")
+        hdfs_shares = 0
+    #datanode状态个数
+    try:
+        extendUrl = "services/HDFS/components/DATANODE"
+        dic = requestEval(extendUrl)
+        total_count = dic["ServiceComponentInfo"]["total_count"] 
+        started_count = dic["ServiceComponentInfo"]["started_count"]
+        hdfs_datanodes = "{0}/{1}".format(started_count,total_count)
+    except Exception,e:
+        ac_logger.error(e) 
+        hdfs_datanodes = "0/0"
+    data["hdfs_disk_used"] = hdfs_disk_used
+    data["hdfs_shares"] = hdfs_shares
+    data["hdfs_datanodes"] = hdfs_datanodes
+    result["data"] = data
+    return result
 
 OP_DICT={
     "GET":{

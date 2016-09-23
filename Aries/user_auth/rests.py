@@ -6,6 +6,11 @@ ac_logger = logging.getLogger("access_log")
 from service import *
 from hdfs.tools import *
 
+class overview(APIView):
+    def get(self,request):
+        result = getOverview(request)
+        return packageResponse(result)
+
 class spaceList(APIView):
     '''
        展示该用户所属的spaces. superAdmin, root可以看见所有的spaces

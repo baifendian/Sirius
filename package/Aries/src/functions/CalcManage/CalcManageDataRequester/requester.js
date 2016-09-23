@@ -8,17 +8,51 @@ var CalcManageDataRequester = {
   },
   getUrlForm() {
     return {
-      'k8soverview': 'k8s/api/v1/namespaces/{nameSpace}/getk8soverview',
       'podlist': 'k8s/api/v1/namespaces/{nameSpace}/pods',
-      'serviceList': 'k8s/api/v1/namespaces/{nameSpace}/services',
+      'servicelist': 'k8s/api/v1/namespaces/{nameSpace}/services',
       'rclist': 'k8s/api/v1/namespaces/{nameSpace}/replicationcontrollers',
+      'ingresslist':'k8s/apis/extensions/v1beta1/namespaces/{nameSpace}/ingresses',
       'mytasklist': 'k8s/api/v1/namespaces/mytasklist',
       'mytaskgraph': 'k8s/api/v1/namespaces/mytaskgraph',
 
       'mytaskoldrecords':'k8s/api/v1/namespaces/mytasklist/getoldrecords',
       'mytaskhasnewrecords':'k8s/api/v1/namespaces/mytasklist/checkhasnewrecords',
       'mytasknewrecords':'k8s/api/v1/namespaces/mytasklist/getnewrecords',
+
+      'clustercpuinfo':'k8s/api/v1/clusterinfo/cpu/{minutes}',
+      'clustermemoryinfo':'k8s/api/v1/clusterinfo/memory/{minutes}',
+      'clusternetworkinfo':'k8s/api/v1/clusterinfo/network/{minutes}',
+      'clusterfilesysteminfo':'k8s/api/v1/clusterinfo/filesystem/{minutes}',
+
     }
+  },
+
+  getClusterCPUInfo( minutes,callback ){
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustercpuinfo'], {
+      'minutes':minutes
+    })
+    this.xhrGetDataEnhanced(url, callback)
+  },
+  
+  getClusterMemoryInfo( minutes,callback ){
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustermemoryinfo'], {
+      'minutes':minutes
+    })
+    this.xhrGetDataEnhanced(url, callback)
+  },
+
+  getClusterNetworkInfo( minutes,callback ){
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusternetworkinfo'], {
+      'minutes':minutes
+    })
+    this.xhrGetDataEnhanced(url, callback)
+  },
+
+  getClusterFilesystemInfo( minutes,callback ){
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusterfilesysteminfo'], {
+      'minutes':minutes
+    })
+    this.xhrGetDataEnhanced(url, callback)
   },
 
   getMyTaskOldRecords( oldestrecordid,requestnumber,keywords,callback ) {
@@ -30,6 +64,7 @@ var CalcManageDataRequester = {
     }
     this.xhrPostData(url, data, callback)
   },
+
   checkMyTaskHasNewRecords( newestrecordid,keywords,callback ) {
     let url = this.getUrlForm()['mytaskhasnewrecords']
     let data = {
@@ -38,6 +73,7 @@ var CalcManageDataRequester = {
     }
     this.xhrPostData(url, data, callback)
   },
+
   getMyTaskNewRecords( newestrecordid,keywords,callback ) {
     let url = this.getUrlForm()['mytasknewrecords']
     let data = {
@@ -57,40 +93,54 @@ var CalcManageDataRequester = {
     this.xhrGetData(url, _this, callback)
   },
 
-  getK8sOverview(_this, callback, nameSpace){
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['k8soverview'],{
-      'nameSpace': nameSpace      
-    })
-    this.xhrGetData(url, _this, callback)    
-  },
-
-  getPodList(_this, callback, nameSpace ) {
+  getPodList( nameSpace,callback ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podlist'], {
       'nameSpace': nameSpace
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
 
-  getServiceList(_this, callback, nameSpace ) {
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['serviceList'], {
+  getServiceList( nameSpace,callback ) {
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['servicelist'], {
       'nameSpace': nameSpace
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url,callback)
   },
 
-  getRCList(_this, callback, nameSpace ) {
+  getRCList( nameSpace,callback ) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['rclist'], {
       'nameSpace': nameSpace
     })
-    this.xhrGetData(url, _this, callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
 
+  getIngressList( nameSpace ,callback ) {
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['ingresslist'], {
+      'nameSpace': nameSpace
+    })
+    this.xhrGetDataEnhanced(url, callback)
+  },
+  
   xhrGetData(url, _this, callback) {
     xhr({
       url: url,
       type: 'GET',
       success: (retu_data) => {
         callback(_this, retu_data)
+      }
+    })
+  },
+
+  /**
+   * xhrGetData用起来太麻烦，但是并没有限制
+   * xhrGetDataEnhanced用起来简单，不需要传入url，但是在实现的时候需要用注意一些点
+   */
+  xhrGetDataEnhanced(url, callback) {
+    xhr({
+      url: url,
+      type: 'GET',
+      success: (retu_data) => {
+        callback( retu_data)
       }
     })
   },
@@ -105,8 +155,6 @@ var CalcManageDataRequester = {
       }
     })
   },
-
-
 
 
   generate_temp_point(i) {

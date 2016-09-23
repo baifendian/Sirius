@@ -2,9 +2,46 @@
   a:hover{
     cursor:pointer;
   }
-
   .head{
-    margin-top: 10px;
+    .upload-modal{
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: -1px;
+      left: 0;
+      opacity: .5;
+      z-index: 1040;
+      background-color: #000;
+      .progress-bar{
+        z-index: 1041;
+        position: absolute;
+        top: 40%;
+        left: 40%;
+        .progress{
+          height: 20px;
+          background: #ebebeb;
+          border-radius: 10px;
+          width: 400px;
+          > span {
+            margin: 0px;
+            height: 20px;
+            min-width: 0px;
+            float: left;
+            text-align: right;
+            border: 1px solid;
+            border-color: #bfbfbf #b3b3b3 #9e9e9e;
+            color: #000;
+          }
+          .green{
+            background: #42a5f6;
+            border-color: #78b337 #6ba031;
+            border-radius: 10px;
+          }
+
+        }
+
+      }
+    }
     .table-div{
       display: inline;
       margin-right: 20px;
@@ -28,7 +65,7 @@
 
   .navigate{
     .div-margin{
-      //margin-top:10px;
+      margin-top:10px;
     }
     .list-tips{
       position: absolute;
@@ -38,21 +75,34 @@
   }
 
   .mytable{
-    height: 300px;
-    overflow: scroll;
     .default-link{
       color: #666666;
       text-decoration:none;
     }
     .a-link{
       color: #42a5f5;
+
     }
     .table-div{
       display: inline;
+      span{
+        i{
+          font-size: 1.2em; // 文件 or 文件夹 图标
+        }
+      }
     }
     .table-div-icon{
       display: inline;
       width: 250px;
+       a{
+        color: #999;
+        i{
+          font-size: 1.3em; // 操作图标
+        }
+      }
+       a:hover{
+        color: #06c;
+      }
     }
     .tree-div{
       border-bottom: 1px solid #eff3f8;

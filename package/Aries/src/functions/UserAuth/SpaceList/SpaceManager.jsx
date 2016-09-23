@@ -2,7 +2,7 @@ import React from 'react'
 import Task from 'public/Task'
 import './index.less'
 import Button from 'bfd-ui/lib/Button'
-import DataTable from 'bfd-ui/lib/DataTable'
+import FixedTable from 'bfd/FixedTable'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import Transfer from 'bfd-ui/lib/Transfer'
 import Fetch from 'bfd-ui/lib/Fetch'
@@ -69,11 +69,15 @@ const SpaceManager = React.createClass({
     let targetData=user_list.map((item)=>{return {"id":item.user_id,"label":item.user_name,"description":""}});
     this.setState({sourceData:sourceData,targetData:targetData});
   },
+  getMemberData(data){
+    this.setState({memberData:data});
+  },
   getInitialState: function() {
     return {
       sourceData:[],
       targetData:[],
       newMember:[],
+      memberData:{"totalList":[],"currentPage": 0,"totalPageNum": 0},
       column: [{
         title:'人员',
         key:'user_name'
@@ -83,10 +87,12 @@ const SpaceManager = React.createClass({
       },{
         title: '操作',
         render:(item, component)=> {
+          let RoleListUrl = this.props.getUrlData({ type : "ROLE_LIST"});
+          console.log(`RoleListUrl: ${RoleListUrl}`);
           if(this.props.is_admin==1){
-            return  <Select url="v1/user_auth/roles/" disabled={false} onChange={value=>{this.updateRole(item.user_id,value)}} defaultValue={item.role_id}  render={item => <Option value={item.role_id}>{item.role_name}</Option>} />
+            return  <Select url={RoleListUrl} disabled={false} onChange={value=>{this.updateRole(item.user_id,value)}} defaultValue={item.role_id}  render={item => <Option value={item.role_id}>{item.role_name}</Option>} />
           }else{
-            return  <Select url="v1/user_auth/roles/" disabled={true} onChange={value=>{this.updateRole(item.user_id,value)}} defaultValue={item.role_id}  render={item => <Option value={item.role_id}>{item.role_name}</Option>} />
+            return  <Select url={RoleListUrl} disabled={true} onChange={value=>{this.updateRole(item.user_id,value)}} defaultValue={item.role_id}  render={item => <Option value={item.role_id}>{item.role_name}</Option>} />
           }
         },
         key: 'operation'
@@ -101,7 +107,7 @@ const SpaceManager = React.createClass({
         <div className="spaceManager">
           {this.is_admin_button[this.props.is_admin].call(this)}
           <div>
-            <DataTable url={this.props.url} showPage="false" column={this.state.column}></DataTable>
+            <FixedTable height={300} data={this.state.memberData} column={this.state.column}></FixedTable>
           </div>
           <div>
             <Modal ref="modal">
@@ -121,6 +127,9 @@ const SpaceManager = React.createClass({
               </ModalBody>
             </Modal>
           </div>
+          {/* fetch 加载 人员信息 */}
+          <Fetch style={{minHeight:0}} url={this.props.url} onSuccess={this.getMemberData}>
+          </Fetch>
         </div>
       );
     }

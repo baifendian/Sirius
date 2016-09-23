@@ -16,6 +16,12 @@ from django.http import StreamingHttpResponse
 from tools import *
 from service import *
 from django.views.decorators.csrf import ensure_csrf_cookie
+
+class Overview(APIView):
+    def get(self,request,format=None):
+        result = getOverview(request)
+        return packageResponse(result)        
+
 class pathOp(APIView):
 #   @print_request
     def get(self,request,path,format=None):
@@ -118,6 +124,13 @@ class Relation(APIView):
         result = RelationGET(request, host_name)
         return packageResponse(result)
 
+class HostInfo(APIView):
+    '''
+    主机描述
+    '''
+    def get(self, request, host_name, format=None):
+        result = HostInfoGET(request, host_name)
+        return packageResponse(result)
 
 class OperateService(APIView):
     '''
@@ -137,6 +150,7 @@ class OperateComponent(APIView):
         else:
             ac_logger.error('operate error')
         return packageResponse(result)
+
 @ensure_csrf_cookie
 def upload(request,path):
     '''

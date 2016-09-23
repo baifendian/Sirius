@@ -2,7 +2,7 @@ import React from 'react'
 import Task from 'public/Task'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import './index.less'
-import DataTable from 'bfd-ui/lib/DataTable'
+import FixedTable from 'bfd/FixedTable'
 import Upload from 'bfd-ui/lib/Upload'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import xhr from 'bfd-ui/lib/xhr'
@@ -285,7 +285,7 @@ const MyTable = React.createClass({
   },
   render(){
     return <div className="mytable">
-              <DataTable data={this.props.data} column={this.state.column}></DataTable>
+              <FixedTable height={300} data={this.props.data} column={this.state.column}></FixedTable>
               <Modal ref="modal">
                 <ModalHeader>
                   <h4 className="modal-title">{this.modalTitle[this.state.modalTitle].call(this)}</h4>
