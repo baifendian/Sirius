@@ -8,7 +8,7 @@ import traceback
 import urllib
 
 from django.conf import settings
-from django.http import *
+# from django.http import *
 
 
 kd_logger = logging.getLogger("kd_agent_log")
@@ -70,7 +70,7 @@ class K8sRequestManager:
 
     @staticmethod
     def get_ingress_detail_info( namespace,params={} ):
-        url = 'apis/extensions/v1beta1/namespaces/%s/ingresses' % namespace
+        url = '/apis/extensions/v1beta1/namespaces/%s/ingresses' % namespace
         return K8sRequestManager.get_k8s_data( url,params )
 
     # 根据原生的API获取k8s的数据
