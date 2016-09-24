@@ -17,6 +17,7 @@ from kd_agent.models import Task
 from kd_agent.toolsmanager import RETU_INFO_SUCCESS,RETU_INFO_ERROR
 from kd_agent.toolsmanager import generate_success,generate_failure
 from kd_agent.toolsmanager import return_http_json
+from kd_agent.toolsmanager import trans_return_json
 from kd_agent.toolsmanager import K8sRequestManager as KRM
 from kd_agent.toolsmanager import InfluxDBQueryStrManager as ISM
 
@@ -79,6 +80,7 @@ def get_overview_k8s_node_info(namespace):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_k8soverview_info(request,namespace):
     retu_data = {
         'pod': get_overview_k8s_pod_info(namespace) ,
@@ -91,6 +93,7 @@ def get_k8soverview_info(request,namespace):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_pod_list(request,namespace):
     kd_logger.info( 'call get_pod_list request.path : %s , namespace : %s' % (request.path,namespace) )
     pod_detail_info = KRM.get_pod_detail_info(namespace)
@@ -135,6 +138,7 @@ def get_pod_list(request,namespace):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_service_list(request,namespace):
     kd_logger.info( 'call get_service_list request.path : %s , namespace : %s' % (request.path,namespace) )
     service_detail_info = KRM.get_service_detail_info( namespace )
@@ -172,6 +176,7 @@ def get_service_list(request,namespace):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_rc_list(request,namespace):
     kd_logger.info( 'call get_rc_list request.path : %s , namespace : %s' % (request.path,namespace) )
     rc_detail_info = KRM.get_rc_detail_info( namespace )
@@ -236,6 +241,7 @@ def get_ingress_detail_host_info( rules ):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_ingress_list(request,namespace):
     kd_logger.info( 'call get_ingress_list request.path : %s , namespace : %s' % (request.path,namespace) )
     ingress_detail_info = KRM.get_ingress_detail_info( namespace )
@@ -271,6 +277,7 @@ def trans_obj_to_easy_dis(obj_info):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_mytask_graph(request):
     import requests
     kd_logger.info( 'call get_mytask_graph' )
@@ -356,6 +363,7 @@ def download(request):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def mytask_get_old_records(request):
     kd_logger.debug( 'call mytask_get_old_records : %s ' % request )
     oldestrecordid = int(request.POST.get('oldestrecordid'))
@@ -441,6 +449,7 @@ def query_records(result,beginning_exec,deadline_exec,id,new = False):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def mytask_check_has_new_records(request):  
     newestrecordid = int(request.POST.get('newestrecordid'))
     keywords = json.loads(request.POST.get('keywords'))
@@ -475,6 +484,7 @@ def mytask_check_has_new_records(request):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def mytask_get_new_records(request):
     newestrecordid = int(request.POST.get('newestrecordid'))
     keywords = json.loads(request.POST.get('keywords'))
@@ -562,6 +572,7 @@ def convert_dict(keywords):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def dashboard_taskinfo(request):
     retu_data = {}
     retu_data['today_running_task'] = Schedule_Status.objects.using('kd_agent_bdms').filter(category = time.strftime('%Y-%m-%d',time.localtime(time.time())), status = 3).count()
@@ -632,6 +643,7 @@ def execute_clusterinfo_request( data_dict ):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_cluster_cpu_info(request,minutes):
     data_dict = {}
     for m in [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ]:
@@ -644,6 +656,7 @@ def get_cluster_cpu_info(request,minutes):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_cluster_memory_info(request,minutes):
     data_dict = {}
     for m in [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_WORKINGSET,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]:
@@ -656,6 +669,7 @@ def get_cluster_memory_info(request,minutes):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_cluster_network_info(request,minutes):
     data_dict = {}
     for m in [ ISM.M_NETWORK_TRANSMIT,ISM.M_NETWORK_RECEIVE ]:
@@ -668,6 +682,7 @@ def get_cluster_network_info(request,minutes):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_cluster_filesystem_info(request,minutes):
     data_dict = {}
     for m in [ ISM.M_FILESYSTEM_USAGE,ISM.M_FILESYSTEM_LIMIT ]:

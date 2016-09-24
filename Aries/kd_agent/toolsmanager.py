@@ -31,6 +31,16 @@ def generate_success(**ext_info):
 def generate_failure( msg,**ext_info ):
     return generate_retu_info( RETU_INFO_ERROR,msg,**ext_info )
 
+# 前端改版：当后台返回数据 code == 201 ，data为错误字符串；code == 200 ，data为正常的数据
+# 这和之前的 generate_retu_info 返回的结构不一致，因此这里做个小小的转换
+def trans_return_json(func):
+    def trans_json( *arg1,**arg2 ):
+        retu_obj = func( *arg1,**arg2 )
+        if retu_obj['code'] == RETU_INFO_SUCCESS:
+            return { 'code':RETU_INFO_SUCCESS,'data':retu_obj['data'] }
+        else:
+            return { 'code':RETU_INFO_SUCCESS,'data':retu_obj['msg'] }
+    return trans_json
 
 # 一个装饰器，将原函数返回的json封装成response对象
 def return_http_json(func):
@@ -38,10 +48,10 @@ def return_http_json(func):
         try:
             retu_obj = func( *arg1,**arg2 )
             kd_logger.info( 'execute func %s success' % (func) )
-        except Exception as reason:
-            retu_obj = generate_failure( str(reason) )
-            kd_logger.error( 'execute func %s failure : %s' % (func,str(reason)) )
-            traceback.print_exc()
+        except:
+            s = traceback.format_exc()
+            kd_logger.error( 'execute func %s failure : %s' % (func,s) )
+            retu_obj = generate_failure( s )
 
         obj = HttpResponse( json.dumps(retu_obj) )
         obj['Access-Control-Allow-Origin'] = '*'
@@ -94,8 +104,8 @@ class K8sRequestManager:
                 s = 'get k8s data status is not 200 : %s' % resp.status
                 kd_logger.error( s )
                 return generate_failure( s )
-        except Exception, e:
-            s = "get k8s data occured exception : %s" % str(e)
+        except:
+            s = "get k8s data occured exception : %s" % traceback.format_exc()
             kd_logger.error(s)
             return generate_failure( s )
 
@@ -193,8 +203,8 @@ class InfluxDBQueryStrManager:
                 s = 'get inluxdb data status is not 200 : %s' % resp.status
                 kd_logger.error( s )
                 return generate_failure( s )
-        except Exception, e:
-            s = "get inluxdb data occured exception : %s" % str(e)
+        except:
+            s = "get inluxdb data occured exception : %s" % traceback.format_exc()
             kd_logger.error( s )
             return generate_failure( s )
     
@@ -216,7 +226,7 @@ class InfluxDBQueryStrManager:
             else:
                 kd_logger.error( 'get influxdb data by sql_str return error : %s' % retu_data['msg'] )
             return retu_data
-        except Exception as reason:
+        except:
             traceback_str = traceback.format_exc()
             kd_logger.error( traceback_str )
             return generate_failure( traceback_str )
