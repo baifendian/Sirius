@@ -194,7 +194,7 @@ class InfluxDBQueryStrManager:
             return generate_failure( s )
     
     @staticmethod
-    def get_cluster_info_data( measurement,minutes,type_str = InfluxDBQueryStrManager.T_NODE ):
+    def get_cluster_info_data( measurement,minutes,type_str = T_NODE ):
         kd_logger.info( 'call get_cluster_info_data with args : %s %s %s ' % (measurement,minutes,type_str) )
         try:
             time_range = generate_time_range(minutes)
