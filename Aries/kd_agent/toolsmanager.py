@@ -39,7 +39,7 @@ def trans_return_json(func):
         if retu_obj['code'] == RETU_INFO_SUCCESS:
             return { 'code':RETU_INFO_SUCCESS,'data':retu_obj['data'] }
         else:
-            return { 'code':RETU_INFO_SUCCESS,'data':retu_obj['msg'] }
+            return { 'code':RETU_INFO_ERROR,'data':retu_obj['msg'] }
     return trans_json
 
 # 一个装饰器，将原函数返回的json封装成response对象
