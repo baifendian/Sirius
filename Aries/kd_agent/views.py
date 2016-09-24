@@ -635,7 +635,11 @@ def execute_clusterinfo_request( data_dict ):
 def get_cluster_cpu_info(request,minutes):
     data_dict = {}
     for m in [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ]:
-        data_dict[m] = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
     return execute_clusterinfo_request( data_dict )
 
 @csrf_exempt
@@ -643,7 +647,11 @@ def get_cluster_cpu_info(request,minutes):
 def get_cluster_memory_info(request,minutes):
     data_dict = {}
     for m in [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_WORKINGSET,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]:
-        data_dict[m] = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
     return execute_clusterinfo_request( data_dict )
 
 @csrf_exempt
@@ -651,7 +659,11 @@ def get_cluster_memory_info(request,minutes):
 def get_cluster_network_info(request,minutes):
     data_dict = {}
     for m in [ ISM.M_NETWORK_TRANSMIT,ISM.M_NETWORK_RECEIVE ]:
-        data_dict[m] = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_POD )
+        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_POD )
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
     return execute_clusterinfo_request( data_dict )
 
 @csrf_exempt
@@ -659,6 +671,10 @@ def get_cluster_network_info(request,minutes):
 def get_cluster_filesystem_info(request,minutes):
     data_dict = {}
     for m in [ ISM.M_FILESYSTEM_USAGE,ISM.M_FILESYSTEM_LIMIT ]:
-        data_dict[m] = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
     return execute_clusterinfo_request( data_dict )
 
