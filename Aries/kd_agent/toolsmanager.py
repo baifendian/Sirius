@@ -8,7 +8,7 @@ import traceback
 import urllib
 
 from django.conf import settings
-# from django.http import *
+from django.http import HttpResponse
 
 
 kd_logger = logging.getLogger("kd_agent_log")
