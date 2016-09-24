@@ -34,7 +34,7 @@ def generate_failure( msg,**ext_info ):
 
 # 一个装饰器，将原函数返回的json封装成response对象
 def return_http_json(func):
-    def wrapper( *arg1,**arg2 ):
+    def http_json_wrapper( *arg1,**arg2 ):
         try:
             retu_obj = func( *arg1,**arg2 )
             kd_logger.info( 'execute func %s success' % (func) )
@@ -49,7 +49,7 @@ def return_http_json(func):
         obj['Access-Control-Allow-Headers'] = 'X-CSRFToken'
         obj['Content-Type'] = 'application/json'
         return obj
-    return wrapper
+    return http_json_wrapper
 
 # 包装获取 k8s 信息的方法、url
 class K8sRequestManager:
@@ -180,10 +180,15 @@ class InfluxDBQueryStrManager:
                 return generate_failure( s )
 
             if resp.status == 200:
-                s = resp.read()
-                # kd_logger.debug( s )
-                kd_logger.info( 'get inluxdb data success' )
-                return generate_success( data = json.loads(s) )
+                data = json.loads( resp.read() )
+                kd_logger.debug( 'query influxdb data : %s' % data )
+                
+                if data['result'][0].get('error') == None:
+                    kd_logger.info( 'get influxdb data success' )
+                    return generate_success( data=data )
+                else:
+                    kd_logger.error( 'get influxdb data failure : %s' % data['result'][0]['error'] )
+                    return generate_failure( data['result'][0]['error'] )
             else:
                 s = 'get inluxdb data status is not 200 : %s' % resp.status
                 kd_logger.error( s )
