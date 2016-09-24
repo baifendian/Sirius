@@ -183,12 +183,12 @@ class InfluxDBQueryStrManager:
                 data = json.loads( resp.read() )
                 kd_logger.debug( 'query influxdb data : %s' % data )
                 
-                if data['result'][0].get('error') == None:
+                if data['results'][0].get('error') == None:
                     kd_logger.info( 'get influxdb data success' )
                     return generate_success( data=data )
                 else:
-                    kd_logger.error( 'get influxdb data failure : %s' % data['result'][0]['error'] )
-                    return generate_failure( data['result'][0]['error'] )
+                    kd_logger.error( 'get influxdb data failure : %s' % data['results'][0]['error'] )
+                    return generate_failure( data['results'][0]['error'] )
             else:
                 s = 'get inluxdb data status is not 200 : %s' % resp.status
                 kd_logger.error( s )
