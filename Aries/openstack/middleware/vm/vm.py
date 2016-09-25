@@ -495,10 +495,8 @@ class Vm_control:
 
 class Vm_snap:
     def __init__(self, vm_id=""):
-        # self.db = Db(DB_host, DB_user, DB_password, DB_name)
         self.token = get_token()
         self.vm_id = vm_id
-        # self.table = "vm_snap"
 
     @plog("Vm_snap.find_parent")
     def find_parent(self):
@@ -506,10 +504,6 @@ class Vm_snap:
         找到当前主机所在的快照节点
         :return:
         '''
-        # cmd = "select image_name from %s where status = 1 and vm_id = '%s'" % (self.table, self.vm_id)
-        # tmp_ret = self.db.exec_cmd(cmd)
-        # assert tmp_ret != 1, "cmd:%s exec faild" % cmd
-        # ret = tmp_ret[0][0]
         tmp_ret = vm_snap.objects.get(vm_id=self.vm_id,status=1)
         ret = tmp_ret.image_name
         return ret
@@ -523,37 +517,8 @@ class Vm_snap:
         '''
         ret = 0
         time_now = get_time()
-        # cmd2 = "insert into %s(image_name,vm_id,parent_name,image_id,status,time) values('root','%s','','%s',1,'%s')" % (
-        # self.table, self.vm_id, image_id, time_now)
-        # tmp_ret = self.db.exec_cmd(cmd2)
-        # if tmp_ret == 2:
-        #     tmp_ret = self.create_tables()
-        #     assert tmp_ret != 1
-        #     tmp_ret = self.db.exec_cmd(cmd2)
-        # assert tmp_ret != 1, "cmd:%s exec err" % cmd2
         root_snap = vm_snap(image_name="root",vm_id=self.vm_id,parent_name="",image_id=image_id,status=1,time=time_now)
         root_snap.save()
-        return ret
-
-    @plog("Vm_snap.create_tables")
-    def create_tables(self):
-        '''
-        创建表
-        :return:
-        '''
-        ret = 0
-        cmd = "CREATE TABLE `%s` (" \
-              "`id` int(11) NOT NULL AUTO_INCREMENT," \
-              "`image_name` varchar(255) NOT NULL," \
-              "`vm_id` varchar(255) NOT NULL," \
-              "`parent_name` varchar(255) DEFAULT NULL," \
-              "`image_id` varchar(255) NOT NULL," \
-              "`status` varchar(255) NOT NULL," \
-              "`time` datetime NOT NULL ," \
-              "PRIMARY KEY (`id`)" \
-              ") ENGINE=InnoDB DEFAULT CHARSET=utf8;" % self.table
-        ret = self.db.exec_cmd(cmd)
-        assert ret != 1
         return ret
 
     @plog("Vm_snap.delete_table")
@@ -564,9 +529,6 @@ class Vm_snap:
         :return:
         '''
         ret = 0
-        # cmd = "delete from  %s where  vm_id = '%s'" % (self.table, vm_id)
-        # tmp_ret = self.db.exec_cmd(cmd)
-        # assert tmp_ret != 1, "cmd:%s exec err" % cmd
         vm_snap.objects.filter(vm_id=vm_id).delete()
         return ret
 
@@ -582,14 +544,6 @@ class Vm_snap:
         if image_name_new in image_list:
             ret = 2
         else:
-            # cmd1 = "update %s set image_name='%s' where image_name='%s' and vm_id='%s'" % (
-            #     self.table, image_name_new, image_name_old, self.vm_id)  # 将其子快照的parent_name设置为新的快照名
-            # tmp_ret = self.db.exec_cmd(cmd1)
-            # assert tmp_ret != 1, "cmd:%s exec err" % cmd1
-            # cmd2 = "update %s set parent_name='%s' where parent_name='%s' and vm_id = '%s'" % (
-            # self.table, image_name_new, image_name_old, self.vm_id)
-            # tmp_ret = self.db.exec_cmd(cmd2)
-            # assert tmp_ret != 1, "cmd:%s exec err" % cmd2
             vm_snap.objects.get(vm_id=self.vm_id,image_name=image_name_old).update(image_name=image_name_new)
             vm_snap.objects.filter(vm_id=self.vm_id,parent_name=image_name_old).update(parent_name=image_name_new)
         return ret
@@ -602,18 +556,6 @@ class Vm_snap:
         :return:
         '''
         ret = 0
-        # cmd1 = "select parent_name from %s where image_name='%s' and vm_id = '%s'" % (
-        # self.table, image_name, self.vm_id)
-        # parent_name = self.db.exec_cmd(cmd1)[0][0]
-        # assert parent_name != 1, "cmd:%s exec err" % cmd1
-        # cmd2 = "delete from %s where image_name='%s'and vm_id='%s'" % (
-        #     self.table, image_name, self.vm_id)  # 将其子快照的parent_name改为删除快照的parent_name
-        # tmp_ret = self.db.exec_cmd(cmd2)
-        # assert tmp_ret != 1, "cmd:%s exec err" % cmd2
-        # cmd3 = "update %s set parent_name='%s' where parent_name='%s' and vm_id='%s'" % (
-        # self.table, parent_name, image_name, self.vm_id)
-        # tmp_ret = self.db.exec_cmd(cmd3)
-        # assert tmp_ret != 1, "cmd:%s exec err" % cmd3
         parent_name = vm_snap.objects.get(image_name=image_name,vm_id=self.vm_id).parent_name
         vm_snap.objects.get(image_name=image_name,vm_id=self.vm_id).delete()
         vm_snap.objects.filter(vm_id=self.vm_id,parent_name=image_name).update(parent_name=parent_name)
@@ -633,10 +575,6 @@ class Vm_snap:
         :param image_name:
         :return:
         '''
-        # cmd = "select * from %s where image_name='%s' and vm_id='%s'" % (self.table, image_name, self.vm_id)
-        # tmp_ret = self.db.exec_cmd(cmd)
-        # assert tmp_ret != 1
-        # ret = tmp_ret[0]
         ret = vm_snap.objects.get(image_name=image_name,vm_id=self.vm_id)
         return ret
 
@@ -672,14 +610,6 @@ class Vm_snap:
             assert image_id != 1
             parent_name = self.find_parent()
             assert parent_name != 1
-            # node = self.insert(image_name,time_now,image_id,self.stat)   #创建完成后需要将新创建的快照的状态设置为1，把以前的主快照状态置0
-            # cmd1 = "insert into %s(image_name,vm_id,parent_name,image_id,status,time) values('%s','%s','%s','%s',1,'%s')" % (
-            #     self.table.encode("utf8"), image_name, self.vm_id, parent_name, image_id, time_now)
-            # tmp_ret = self.db.exec_cmd(cmd1)
-            # assert tmp_ret != 1, "cmd:%s exec err" % cmd1
-            # cmd2 = "update %s set status=0 where image_name='%s' and vm_id='%s'" % (self.table, parent_name, self.vm_id)
-            # tmp_ret = self.db.exec_cmd(cmd2)
-            # assert tmp_ret != 1, "cmd:%s exec err" % cmd2
             date = vm_snap(image_name=image_name,vm_id=self.vm_id,parent_name=parent_name,image_id=image_id,status=1,time=time_now)
             date.save()
             vm_snap.objects.get(image_name=parent_name,vm_id=self.vm_id).update(status=0)
@@ -694,20 +624,11 @@ class Vm_snap:
         '''
         ret = 0
         vm = Vm_control()
-        # cmd1 = "select image_id from %s where image_name='%s' and vm_id='%s'" % (self.table, image_name, self.vm_id)
-        # image_id = self.db.exec_cmd(cmd1)[0][0]
-        # assert image_id != 1, "cmd:%s exec faild" % cmd1
         image_id = vm_snap.objects.get(image_name=image_name,vm_id=self.vm_id).image_id
         ret = vm.rebuild(self.vm_id, image_id, "default")
         assert ret != 1
         vm_snap.objects.get(status=1,vm_id=self.vm_id).update(status=0)
         vm_snap.objects.get(image_name=image_name,vm_id=self.vm_id).update(status=1)
-        # cmd2 = "update %s set status=0 where status=1 and vm_id='%s'" % (self.table, self.vm_id)
-        # cmd3 = "update %s set status=1 where image_name='%s' and vm_id='%s'" % (self.table, image_name, self.vm_id)
-        # tmp_ret = self.db.exec_cmd(cmd2)
-        # assert tmp_ret != 1, "cmd:%s exec faild" % cmd2
-        # tmp_ret = self.db.exec_cmd(cmd3)
-        # assert tmp_ret != 1, "cmd:%s exec faild" % cmd3
         return ret
 
     @plog("Vm_snap,list_snap")
@@ -716,11 +637,6 @@ class Vm_snap:
         列出当前虚拟机下的snap
         :return:
         '''
-        ret = 0
-        # cmd = "select image_name from %s where vm_id='%s'" % (self.table, self.vm_id)
-        # image_tunple = self.db.exec_cmd(cmd)
-        # assert image_tunple != 1, 'cmd:%s exec faild' % cmd
-        # image_list = [i[0] for i in image_tunple]
         tmp_list = vm_snap.objects.filter(vm_id=self.vm_id)
         image_list = [i.image_name for i in tmp_list]
         return image_list

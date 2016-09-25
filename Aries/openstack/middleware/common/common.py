@@ -10,8 +10,8 @@ import errno
 import time
 import ConfigParser
 from Aries.settings import BASE_DIR,IP_CINDER,PORT_CINDER,IP_KEYSTONE,PORT_KEYSTONE,IP_NOVA,PORT_NOVA,DATABASES
-from openstack.views import openstack_log
-
+# from openstack.views import openstack_log
+openstack_log = logging.getLogger("openstack_log")
 pro_path = os.path.join(BASE_DIR,"openstack/middleware/common")
 # pro_path = os.path.split(os.path.realpath(__file__))[0]    //模块测试时用这个
 LOG_PATH = os.path.join(pro_path, "log")  # 日志路径
@@ -78,7 +78,6 @@ def dlog(log, lever="INFO"):
     :return:
     '''
     try:
-        global openstack_log
         lever = lever.upper()
         if lever == "INFO":
             openstack_log.info(log)
