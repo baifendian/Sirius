@@ -129,8 +129,8 @@ var Datarequest = {
           method: host_status,
           data: data_select
         },
-        success: (retu_data) = > {
-        fun(_this, retu_data, host_status, url, self)
+        success: (retu_data) => {
+          fun(_this, retu_data, host_status, url, self)
       }
   })
   },
@@ -138,7 +138,7 @@ var Datarequest = {
     xhr({
         url: url,
         type: 'GET',
-        success: (retu_data) = > {
+        success: (retu_data) => {
         fun(_this, retu_data);
     // console.log(retu_data)
     // return retu_data

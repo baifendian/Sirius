@@ -401,10 +401,7 @@ const Create_model = React.createClass({
           </ModalHeader>
           <ModalBody className="create_host">
             <div >
-
               <Spin spinning={this.state.loading}>
-
-
                 <div className="right_host">
                   <div style={{padding: "10px"}}>
                     <h4>信息展示</h4>
@@ -441,7 +438,6 @@ const Create_model = React.createClass({
                     </Col>
                   </Row>
                 </div>
-
                 <div>
                   <Form
                     ref="form"
@@ -486,12 +482,8 @@ const Create_model = React.createClass({
                     </button>
                   </Form>
                 </div>
-
               </Spin>
-
             </div>
-
-
           </ModalBody>
         </Modal>
       </div>
