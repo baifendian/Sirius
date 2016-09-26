@@ -260,7 +260,7 @@ def get_ingress_list(request,namespace):
             for ing in item['status']['loadBalancer']['ingress']:
                 record['Ingress'].append( ing['ip'] )
         except: 
-            record['Ingress'] = '<None>'
+            record['Ingress'] = ['<None>']
 
         try:    record['Rules'] = get_ingress_detail_host_info( item['spec']['rules'] )
         except: record['Rules'] = []
