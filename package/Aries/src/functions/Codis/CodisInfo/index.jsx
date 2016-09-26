@@ -229,7 +229,7 @@ onTableRowClick( record ){
       let proxylist = executedData
       let proxyinfo = [];
       for (var i=0; i < proxylist.length; i++) {
-         proxyinfo.push(<ObjectProxy proxy={proxylist[i]}/>);
+         proxyinfo.push(<ObjectProxy proxy={proxylist[i]} issuper={this.state.is_super}/>);
       }
       this.setState ( {
         "proxyinfo": proxyinfo
