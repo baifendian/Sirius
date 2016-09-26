@@ -56,7 +56,7 @@ const ObjectProxy =  React.createClass({
                                 <th><b>Proxy Addr </b></th>
                                 <th><b>Proxy DebugVars Addr </b></th>
                                 <th><b>Proxy Status </b></th>
-                                <th>   </th>
+                                <th><b>操作 </b></th>
                             </tr>
                             <tr ng-repeat="proxy in proxies" className="ng-scope">
                                 <td>
@@ -70,9 +70,14 @@ const ObjectProxy =  React.createClass({
                                     <span className="label label-success ng-binding ng-scope" ng-switch-when="online"> online </span>
                                 </td>
                                 <td>
-                                    <button className="btn btn-default" ng-click="setStatus(proxy, 'online')">Mark Online</button>
-                                    <button className="btn btn-danger" onClick={this.offlineopen}>Mark Offline</button>
-                                </td>
+                                 {this.props.issuper==1?
+                                      <div>
+                                        <button className="btn btn-default" ng-click="setStatus(proxy, 'online')">Mark Online</button>
+                                        <button className="btn btn-danger" onClick={this.offlineopen}> Mark Offline</button>   
+                                       </div>
+                                    : null}
+                                </td>    
+                                
                             </tr>
                         </thead>
                     </table>
