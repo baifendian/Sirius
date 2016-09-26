@@ -226,6 +226,7 @@ class ServerInfo(APIView):
                     server['key_info'] = str(redis_info['db0'])
                     server['used_mem'] = redis_info['used_memory_human']
                     server['maxmemory'] = int(rediscli.config_get('maxmemory')['maxmemory'])/(1024*1024*1024)
+            result_list.sort(key=lambda k: (k.get('id', 0)))
             result = {
                 "code":200,
                 "msg":"OK",
@@ -335,7 +336,7 @@ class GetAllCodisInfo(APIView):
         codis_id = request.POST.get("codis_id")
         query_url = settings.OPENTSDB_URL + "/api/query/"
         codis_info = Codis.objects.get(codis_id=int(codis_id))
-        ops_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "sum","metric":"codis.pv.count",\
+        ops_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "sum","metric":"codis.pv.count","rate":"true",\
                      "tags":{"db":codis_info.product_id}}]} 
         latency_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.proxy.command.spent",\
                              "tags":{"db":codis_info.product_id,"cmd":"*"}}]}

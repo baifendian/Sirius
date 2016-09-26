@@ -1,0 +1,398 @@
+192.168.48.10 bjlg-48p10-hadoop10.bfdabc.com   bjlg-48p10-hadoop10     bjlg-hadoop10
+192.168.48.11 bjlg-48p11-hbasemaster.bfdabc.com    bjlg-48p11-hbasemaster  bjlg-hbasemaster
+192.168.48.12 bjlg-48p12-hadoop02.bfdabc.com   bjlg-48p12-hadoop02     bjlg-hadoop02
+192.168.48.13 bjlg-48p13-hadoop03.bfdabc.com   bjlg-48p13-hadoop03     bjlg-hadoop03
+192.168.48.14 bjlg-48p14-hadoop04.bfdabc.com   bjlg-48p14-hadoop04     bjlg-hadoop04
+192.168.48.15 bjlg-48p15-hadoop05.bfdabc.com   bjlg-48p15-hadoop05     bjlg-hadoop05
+192.168.48.16 bjlg-48p16-hadoop06.bfdabc.com   bjlg-48p16-hadoop06     bjlg-hadoop06
+192.168.48.17 bjlg-48p17-hadoop07.bfdabc.com   bjlg-48p17-hadoop07     bjlg-hadoop07
+192.168.48.18 bjlg-48p18-hadoop08.bfdabc.com   bjlg-48p18-hadoop08     bjlg-hadoop08
+192.168.48.19 bjlg-48p19-hadoop09.bfdabc.com   bjlg-48p19-hadoop09     bjlg-hadoop09
+192.168.48.20 bjlg-48p20-jobtracker.bfdabc.com     bjlg-48p20-jobtracker   bjlg-jobtracker
+192.168.48.21 bjlg-48p21-hadoop11.bfdabc.com   bjlg-48p21-hadoop11     bjlg-hadoop11
+192.168.48.22 bjlg-48p22-hadoop12.bfdabc.com   bjlg-48p22-hadoop12     bjlg-hadoop12
+192.168.48.23 bjlg-48p23-hadoop13.bfdabc.com   bjlg-48p23-hadoop13     bjlg-hadoop13
+192.168.48.24 bjlg-48p24-hadoop14.bfdabc.com   bjlg-48p24-hadoop14     bjlg-hadoop14
+192.168.48.25 bjlg-48p25-hadoop15.bfdabc.com   bjlg-48p25-hadoop15     bjlg-hadoop15
+192.168.48.26 bjlg-48p26-hadoop16.bfdabc.com   bjlg-48p26-hadoop16     bjlg-hadoop16
+192.168.48.27 bjlg-48p27-hadoop17.bfdabc.com   bjlg-48p27-hadoop17     bjlg-hadoop17
+192.168.48.28 bjlg-48p28-hadoop18.bfdabc.com   bjlg-48p28-hadoop18     bjlg-hadoop18
+192.168.48.29 bjlg-48p29-namenode.bfdabc.com   bjlg-48p29-namenode     bjlg-namenode
+192.168.48.31 bjlg-48p31-hadoop21.bfdabc.com   bjlg-48p31-hadoop21     bjlg-hadoop21
+192.168.49.10 bae-3.bfdabc.com     bae-3   bae-3
+192.168.49.11 m2p11.bfdabc.com     m2p11   m2p11
+192.168.49.13 m2p14.bfdabc.com     m2p14   m2p14
+192.168.49.14 m2p15.bfdabc.com     m2p15   m2p15
+192.168.49.15 bjlg-49p15-master01.bfdabc.com   bjlg-49p15-master01     bjlg-master01
+192.168.49.16 bjlg-49p16-om04.bfdabc.com    bjlg-49p16-om04  bjlg-om04
+192.168.49.17 bjlg-49p17-om01.bfdabc.com   bjlg-49p17-om01     bjlg-om01
+192.168.49.18 bae-2.bfdabc.com     bae-2   bae-2
+192.168.49.19 bae-1.bfdabc.com     bae-1   bae-1
+192.168.49.21 bjlg-49p21-hadoop-client03.bfdabc.com    bjlg-49p21-hadoop-client03  bjlg-hadoop-client03
+192.168.49.22 bjlg-49p22-hadoop-client04.bfdabc.com    bjlg-49p22-hadoop-client04  bjlg-hadoop-client04
+192.168.49.23 bjlg-49p23-redis-1.bfdabc.com    bjlg-49p23-redis-1  bjlg-redis-1
+192.168.49.24 bjlg-49p24-redis-2.bfdabc.com    bjlg-49p24-redis-2  bjlg-redis-2
+192.168.49.25 bjlg-49p25-redis-3.bfdabc.com    bjlg-49p25-redis-3  bjlg-redis-3
+192.168.49.26 bjlg-49p26-redis-4.bfdabc.com    bjlg-49p26-redis-4  bjlg-redis-4
+192.168.49.27 bjlg-49p27-redis-5.bfdabc.com    bjlg-49p27-redis-5  bjlg-redis-5
+192.168.49.28 bjlg-49p28-crawl-db-1.bfdabc.com     bjlg-49p28-crawl-db-1   bjlg-crawl-db-1
+192.168.49.29 bjlg-49p29-hadoop-db2.bfdabc.com     bjlg-49p29-hadoop-db2   bjlg-hadoop-db2
+192.168.49.32 bjlg-49p32-redis-6.bfdabc.com    bjlg-49p32-redis-6  bjlg-redis-6
+192.168.49.33 bjlg-49p33-redis-7.bfdabc.com    bjlg-49p33-redis-7  bjlg-redis-7
+192.168.49.34 bjlg-49p34-redis-8.bfdabc.com    bjlg-49p34-redis-8  bjlg-redis-8
+192.168.49.35 bjlg-49p35-solr-1.bfdabc.com     bjlg-49p35-solr-1   bjlg-solr-1
+192.168.49.36 bjlg-49p36-solr-2.bfdabc.com     bjlg-49p36-solr-2   bjlg-solr-2
+192.168.49.37 bjlg-49p37-solr-3.bfdabc.com     bjlg-49p37-solr-3   bjlg-solr-3
+192.168.49.38 bjlg-49p38-solr-4.bfdabc.com     bjlg-49p38-solr-4   bjlg-solr-4
+192.168.49.39 bjlg-49p39-alg-1.bfdabc.com  bjlg-49p39-alg-1    bjlg-alg-1
+192.168.49.40 bjlg-49p40-nginx-3.bfdabc.com bjlg-49p40-nginx-3 bjlg-nginx-3
+192.168.49.41 bjlg-49p41-kafka-1.bfdabc.com    bjlg-49p41-kafka-1  bjlg-kafka-1
+192.168.49.42 bjlg-49p42-kafka-2.bfdabc.com    bjlg-49p42-kafka-2  bjlg-kafka-2
+192.168.49.43 bjlg-49p43-kafka-3.bfdabc.com    bjlg-49p43-kafka-3  bjlg-kafka-3
+192.168.49.44 bjlg-49p44-kafka-4.bfdabc.com    bjlg-49p44-kafka-4  bjlg-kafka-4
+192.168.49.45 bjlg-49p45-alg-db11.bfdabc.com   bjlg-49p45-alg-db11     bjlg-alg-db11
+192.168.49.46 bjlg-49p46-alg-db12.bfdabc.com   bjlg-49p46-alg-db12     bjlg-alg-db12
+192.168.49.47 bjlg-49p47-alg-db14.bfdabc.com   bjlg-49p47-alg-db14     bjlg-alg-db14
+192.168.49.48 bjlg-49p48-crawl-1.bfdabc.com    bjlg-49p48-crawl-1  bjlg-crawl-1
+192.168.49.49 bjlg-49p49-crawl-2.bfdabc.com    bjlg-49p49-crawl-2  bjlg-crawl-2
+192.168.49.50 bjlg-49p50-nginx-4.bfdabc.com bjlg-49p50-nginx-4 bjlg-nginx-4
+192.168.49.51 bjlg-49p51-alg-2.bfdabc.com  bjlg-49p51-alg-2    bjlg-alg-2
+192.168.49.52 bjlg-49p52-alg-3.bfdabc.com  bjlg-49p52-alg-3    bjlg-alg-3
+192.168.49.53 bjlg-49p53-hadoop-db1.bfdabc.com     bjlg-49p53-hadoop-db1   bjlg-hadoop-db1
+192.168.49.54 bjlg-49p54-kvm01.bfdabc.com  bjlg-49p54-kvm01    bjlg-kvm01
+192.168.49.55 bjlg-49p55-kvm02.bfdabc.com  bjlg-49p55-kvm02    bjlg-kvm02
+192.168.49.56 bjlg-49p56-kvm03.bfdabc.com  bjlg-49p56-kvm03    bjlg-kvm03
+192.168.49.57 bjlg-49p57-kvm04.bfdabc.com  bjlg-49p57-kvm04    bjlg-kvm04
+192.168.49.58 bjlg-49p58-kvm05.bfdabc.com  bjlg-49p58-kvm05    bjlg-kvm05
+192.168.49.59 bjlg-49p59-kvm06.bfdabc.com  bjlg-49p59-kvm06    bjlg-kvm06
+192.168.49.61 bjlg-49p61-nginx-5.bfdabc.com bjlg-49p61-nginx-5 bjlg-nginx-5
+192.168.49.62 bjlg-49p62-nginx-6.bfdabc.com bjlg-49p62-nginx-6 bjlg-nginx-6
+192.168.49.63 bjlg-49p63-master02.bfdabc.com   bjlg-49p63-master02     bjlg-master02
+192.168.50.11  bjlg-50p11-zk1.bfdabc.com    bjlg-50p11-zk1  bjlg-zk1
+192.168.50.12  bjlg-50p12-zk2.bfdabc.com    bjlg-50p12-zk2  bjlg-zk2
+192.168.50.13   bjlg-50p13-zk3.bfdabc.com    bjlg-50p13-zk3  bjlg-zk3
+192.168.50.14   bjlg-50p14-zk4.bfdabc.com    bjlg-50p14-zk4  bjlg-zk4
+192.168.50.15   bjlg-50p15-zk5.bfdabc.com    bjlg-50p15-zk5  bjlg-zk5
+192.168.50.16   bjlg-50p16-input1.bfdabc.com     bjlg-50p16-input1   bjlg-input1
+192.168.50.17   bjlg-50p17-input2.bfdabc.com     bjlg-50p17-input2   bjlg-input2
+192.168.50.18   bjlg-50p18-input3.bfdabc.com     bjlg-50p18-input3   bjlg-input3
+192.168.50.19   bjlg-50p19-input4.bfdabc.com     bjlg-50p19-input4   bjlg-input4
+192.168.50.20   bjlg-50p20-rec1.bfdabc.com   bjlg-50p20-rec1     bjlg-rec1
+192.168.50.206  bjlg-50p206-mlik-1.bfdabc.com bjlg-50p206-mlik-1 bjlg-mlik-1
+192.168.50.207  bjlg-50p207-mlik-2.bfdabc.com bjlg-50p207-mlik-2 bjlg-mlik-2
+192.168.50.26 bjlg-50p26-opends1.bfdabc.com bjlg-50p26-opends1 bjlg-opends1
+192.168.50.27   bjlg-50p27-opends2.bfdabc.com bjlg-50p27-opends2 bjlg-opends2
+192.168.50.29   bjlg-50p29-imgstore2.bfdabc.com bjlg-50p29-imgstore2 bjlg-imgstore2
+192.168.49.71 bjlg-49p71-hadoop-client06.bfdabc.com bjlg-49p71-hadoop-client06 bjlg-hadoop-client06
+192.168.49.72  saltmaster.bfdabc.com
+192.168.49.73 bjlg-49p73-om02.bfdabc.com bjlg-49p73-om02 bjlg-om02
+192.168.49.74 bjlg-49p74-monitor01.bfdabc.com bjlg-49p74-monitor01 bjlg-monitor01 lgcacti.baifendian.com
+192.168.49.75 bjlg-49p75-alg-db15.bfdabc.com bjlg-49p75-alg-db15 bjlg-alg-db15
+192.168.49.76 bjlg-49p76-alg-db16.bfdabc.com bjlg-49p76-alg-db16 bjlg-alg-db16
+192.168.49.77 bjlg-49p77-alg-db17.bfdabc.com bjlg-49p77-alg-db17 bjlg-alg-db17
+192.168.49.78 bjlg-49p78-solr-5.bfdabc.com bjlg-49p78-solr-5 bjlg-solr-5
+192.168.49.79 bjlg-49p79-solr-6.bfdabc.com bjlg-49p79-solr-6 bjlg-solr-6
+192.168.49.80 bjlg-49p80-solr-7.bfdabc.com bjlg-49p80-solr-7 bjlg-solr-7
+192.168.49.81 bjlg-49p81-solr-8.bfdabc.com bjlg-49p81-solr-8 bjlg-solr-8
+192.168.49.82 bjlg-49p82-alg-4.bfdabc.com bjlg-49p82-alg-4 bjlg-alg-4
+192.168.49.83 bjlg-49p83-alg-5.bfdabc.com bjlg-49p83-alg-5 bjlg-alg-5
+192.168.49.84 bjlg-49p84-alg-6.bfdabc.com bjlg-49p84-alg-6 bjlg-alg-6
+192.168.49.85 bjlg-49p85-redis-9.bfdabc.com bjlg-49p85-redis-9 bjlg-redis-9
+192.168.49.86 bjlg-49p86-redis-10.bfdabc.com bjlg-49p86-redis-10 bjlg-redis-10
+192.168.49.87 bjlg-49p87-redis-11.bfdabc.com bjlg-49p87-redis-11 bjlg-redis-11
+192.168.49.88 bjlg-49p88-redis-12.bfdabc.com bjlg-49p88-redis-12 bjlg-redis-12
+192.168.49.89 bjlg-49p89-data01.bfdabc.com bjlg-49p89-data01 bjlg-data01
+192.168.49.90 bjlg-49p90-data02.bfdabc.com bjlg-49p90-data02 bjlg-data02
+192.168.49.91 bjlg-49p91-data03.bfdabc.com bjlg-49p91-data03 bjlg-data03
+192.168.48.32 bjlg-48p32-hadoop22.bfdabc.com bjlg-48p32-hadoop22 bjlg-hadoop22
+192.168.48.33 bjlg-48p33-hadoop23.bfdabc.com bjlg-48p33-hadoop23 bjlg-hadoop23
+192.168.48.34 bjlg-48p34-hadoop24.bfdabc.com bjlg-48p34-hadoop24 bjlg-hadoop24
+192.168.48.35 bjlg-48p35-hadoop25.bfdabc.com bjlg-48p35-hadoop25 bjlg-hadoop25
+192.168.48.36 bjlg-48p36-hadoop26.bfdabc.com bjlg-48p36-hadoop26 bjlg-hadoop26
+192.168.48.37 bjlg-48p37-hadoop27.bfdabc.com bjlg-48p37-hadoop27 bjlg-hadoop27
+192.168.48.38 bjlg-48p38-hadoop28.bfdabc.com bjlg-48p38-hadoop28 bjlg-hadoop28
+192.168.48.39 bjlg-48p39-hadoop29.bfdabc.com bjlg-48p39-hadoop29 bjlg-hadoop29
+192.168.48.40 bjlg-48p40-hadoop30.bfdabc.com bjlg-48p40-hadoop30 bjlg-hadoop30
+192.168.48.41 bjlg-48p41-hadoop31.bfdabc.com bjlg-48p41-hadoop31 bjlg-hadoop31
+192.168.48.42 bjlg-48p42-hadoop32.bfdabc.com bjlg-48p42-hadoop32 bjlg-hadoop32
+192.168.48.43 bjlg-48p43-hadoop33.bfdabc.com bjlg-48p43-hadoop33 bjlg-hadoop33
+192.168.48.44 bjlg-48p44-hadoop34.bfdabc.com bjlg-48p44-hadoop34 bjlg-hadoop34
+192.168.48.45 bjlg-48p45-hadoop35.bfdabc.com bjlg-48p45-hadoop35 bjlg-hadoop35
+192.168.48.46 bjlg-48p46-hadoop36.bfdabc.com bjlg-48p46-hadoop36 bjlg-hadoop36
+192.168.48.47 bjlg-48p47-hadoop37.bfdabc.com bjlg-48p47-hadoop37 bjlg-hadoop37
+192.168.48.48 bjlg-48p48-hadoop38.bfdabc.com bjlg-48p48-hadoop38 bjlg-hadoop38
+192.168.48.49 bjlg-48p49-hadoop39.bfdabc.com bjlg-48p49-hadoop39 bjlg-hadoop39
+192.168.48.50 bjlg-48p50-hadoop40.bfdabc.com bjlg-48p50-hadoop40 bjlg-hadoop40
+192.168.49.101 bjlg-49p101-crawl-db-2.bfdabc.com bjlg-49p101-crawl-db-2 bjlg-crawl-db-2
+192.168.49.102 bjlg-49p102-redis-13.bfdabc.com bjlg-49p102-redis-13 bjlg-redis-13
+192.168.49.103 bjlg-49p103-redis-14.bfdabc.com bjlg-49p103-redis-14 bjlg-redis-14
+192.168.49.104 bjlg-49p104-redis-15.bfdabc.com bjlg-49p104-redis-15 bjlg-redis-15
+192.168.49.105 bjlg-49p105-redis-16.bfdabc.com bjlg-49p105-redis-16 bjlg-redis-16
+192.168.49.106 bjlg-49p106-redis-17.bfdabc.com bjlg-49p106-redis-17 bjlg-redis-17
+192.168.49.107 bjlg-49p107-redis-18.bfdabc.com bjlg-49p107-redis-18 bjlg-redis-18
+192.168.49.108 bjlg-49p108-redis-19.bfdabc.com bjlg-49p108-redis-19 bjlg-redis-19
+192.168.49.109 bjlg-49p109-redis-20.bfdabc.com bjlg-49p109-redis-20 bjlg-redis-20
+192.168.49.116 bjlg-49p116-yingji01.bfdabc.com bjlg-49p116-yingji01 bjlg-yingji01
+192.168.49.117 bjlg-49p117-yingji02.bfdabc.com bjlg-49p117-yingji02 bjlg-yingji02
+192.168.49.111 bjlg-49p111-alg-7.bfdabc.com bjlg-49p111-alg-7 bjlg-alg-7
+192.168.49.112 bjlg-49p112-alg-8.bfdabc.com bjlg-49p112-alg-8 bjlg-alg-8
+192.168.49.113 bjlg-49p113-alg-9.bfdabc.com bjlg-49p113-alg-9 bjlg-alg-9
+192.168.49.114 bjlg-49p114-alg-10.bfdabc.com bjlg-49p114-alg-10 bjlg-alg-10
+192.168.49.115 bjlg-49p115-alg-11.bfdabc.com bjlg-49p115-alg-11 bjlg-alg-11
+192.168.49.66 bjlg-49p66-crawl-3.bfdabc.com bjlg-49p66-crawl-3 bjlg-crawl-3
+192.168.49.67 bjlg-49p67-storm-01.bfdabc.com bjlg-49p67-storm-01 bjlg-storm-01
+192.168.49.68 bjlg-49p68-storm-02.bfdabc.com bjlg-49p68-storm-02 bjlg-storm-02
+192.168.49.69 bjlg-49p69-storm-03.bfdabc.com bjlg-49p69-storm-03 bjlg-storm-03
+192.168.49.119 bae-4.bfdabc.com bae-4 bae-4
+192.168.49.64 bjlg-49p64-nginx-1.bfdabc.com bjlg-49p64-nginx-1 bjlg-nginx-1
+192.168.49.65 bjlg-49p65-nginx-2.bfdabc.com bjlg-49p65-nginx-2 bjlg-nginx-2
+192.168.49.60 bjlg-49p60-hadoop-client05.bfdabc.com bjlg-49p60-hadoop-client05 bjlg-hadoop-client05
+192.168.49.121 bjlg-49p121-dmp-01.bfdabc.com bjlg-49p121-dmp-01 bjlg-dmp-01
+192.168.49.122 bjlg-49p122-dmp-02.bfdabc.com bjlg-49p122-dmp-02 bjlg-dmp-02
+192.168.49.123 bjlg-49p123-dmp-03.bfdabc.com bjlg-49p123-dmp-03 bjlg-dmp-03
+192.168.49.124 bjlg-49p124-dmp-04.bfdabc.com bjlg-49p124-dmp-04 bjlg-dmp-04
+192.168.49.110 bjlg-49p110-storm-04.bfdabc.com bjlg-49p110-storm-04 bjlg-storm-04
+192.168.40.11   bjlg-40p11-cm-nginx01.bfdabc.com    bjlg-40p11-cm-nginx01   bjlg-cm-nginx01
+192.168.40.12   bjlg-40p12-cm-nginx02.bfdabc.com    bjlg-40p12-cm-nginx02   bjlg-cm-nginx02
+192.168.40.13   bjlg-40p13-cm-nginx03.bfdabc.com    bjlg-40p13-cm-nginx03   bjlg-cm-nginx03
+192.168.40.14   bjlg-40p14-cm-elastic01.bfdabc.com  bjlg-40p14-cm-elastic01 bjlg-cm-elastic01
+192.168.40.15   bjlg-40p15-cm-kafka01.bfdabc.com    bjlg-40p15-cm-kafka01   bjlg-cm-kafka01
+192.168.40.16   bjlg-40p16-cm-redis01.bfdabc.com    bjlg-40p16-cm-redis01   bjlg-cm-redis01
+192.168.40.17   bjlg-40p17-cm-redis02.bfdabc.com    bjlg-40p17-cm-redis02   bjlg-cm-redis02
+192.168.40.18   bjlg-40p18-cm-elastic02.bfdabc.com  bjlg-40p18-cm-elastic02 bjlg-cm-elastic02
+192.168.40.19   bjlg-40p19-cm-elastic03.bfdabc.com  bjlg-40p19-cm-elastic03 bjlg-cm-elastic03
+192.168.40.21   bjlg-40p21-cm-nginx04.bfdabc.com    bjlg-40p21-cm-nginx04   bjlg-cm-nginx04
+192.168.40.22   bjlg-40p22-cm-nginx05.bfdabc.com    bjlg-40p22-cm-nginx05   bjlg-cm-nginx05
+192.168.40.23   bjlg-40p23-cm-nginx06.bfdabc.com    bjlg-40p23-cm-nginx06   bjlg-cm-nginx06
+192.168.40.24   bjlg-40p24-cm-elastic04.bfdabc.com  bjlg-40p24-cm-elastic04 bjlg-cm-elastic04
+192.168.40.25   bjlg-40p25-cm-kafka02.bfdabc.com    bjlg-40p25-cm-kafka02   bjlg-cm-kafka02
+192.168.40.26   bjlg-40p26-cm-redis03.bfdabc.com    bjlg-40p26-cm-redis03   bjlg-cm-redis03
+192.168.40.27   bjlg-40p27-cm-redis04.bfdabc.com    bjlg-40p27-cm-redis04   bjlg-cm-redis04
+192.168.40.28   bjlg-40p28-cm-userp01.bfdabc.com    bjlg-40p28-cm-userp01   bjlg-cm-userp01
+192.168.40.29   bjlg-40p29-cm-userp02.bfdabc.com    bjlg-40p29-cm-userp02   bjlg-cm-userp02
+192.168.40.20   bjlg-40p20-cm-userp03.bfdabc.com    bjlg-40p20-cm-userp03   bjlg-cm-userp03
+192.168.40.10   bjlg-40p10-cm-userp04.bfdabc.com    bjlg-40p10-cm-userp04   bjlg-cm-userp04
+192.168.49.99   bjlg-49p99-mongodb01.bfdabc.com     bjlg-49p99-mongodb01    bjlg-mongodb01
+192.168.49.100  bjlg-49p100-hadoop-client07.bfdabc.com    bjlg-49p100-hadoop-client07  bjlg-hadoop-client07
+192.168.49.167   monitor-lg01.bfdabc.com monitor-lg01
+192.168.49.125  bae-5.bfdabc.com bae-5 bae-5
+192.168.49.126  bae-6.bfdabc.com bae-6 bae-6
+192.168.49.127  bjlg-49p127-alg-db18.bfdabc.com bjlg-49p127-alg-db18 bjlg-alg-db18
+192.168.49.128  bjlg-49p128-alg-db19.bfdabc.com bjlg-49p128-alg-db19 bjlg-alg-db19
+192.168.44.14   bjlg-44p14-hadoop01.bfdabc.com bjlg-44p14-hadoop01
+192.168.44.15   bjlg-44p15-hadoop02.bfdabc.com bjlg-44p15-hadoop02
+192.168.44.16   bjlg-44p16-hadoop03.bfdabc.com bjlg-44p16-hadoop03
+192.168.44.17   bjlg-44p17-hadoop04.bfdabc.com bjlg-44p17-hadoop04
+192.168.44.18   bjlg-44p18-hadoop05.bfdabc.com bjlg-44p18-hadoop05
+192.168.44.19   bjlg-44p19-hadoop06.bfdabc.com bjlg-44p19-hadoop06
+192.168.44.20   bjlg-44p20-hadoop07.bfdabc.com bjlg-44p20-hadoop07
+192.168.44.21   bjlg-44p21-hadoop08.bfdabc.com bjlg-44p21-hadoop08
+192.168.44.22   bjlg-44p22-hadoop09.bfdabc.com bjlg-44p22-hadoop09
+192.168.44.23   bjlg-44p23-hadoop10.bfdabc.com bjlg-44p23-hadoop10
+192.168.44.24   bjlg-44p24-hadoop11.bfdabc.com bjlg-44p24-hadoop11
+192.168.44.25   bjlg-44p25-hadoop12.bfdabc.com bjlg-44p25-hadoop12
+192.168.44.26   bjlg-44p26-hadoop13.bfdabc.com bjlg-44p26-hadoop13
+192.168.44.27   bjlg-44p27-hadoop14.bfdabc.com bjlg-44p27-hadoop14
+192.168.44.28   bjlg-44p28-hadoop15.bfdabc.com bjlg-44p28-hadoop15
+192.168.44.29   bjlg-44p29-hadoop16.bfdabc.com bjlg-44p29-hadoop16
+192.168.44.30   bjlg-44p30-hadoop17.bfdabc.com bjlg-44p30-hadoop17
+192.168.44.31   bjlg-44p31-hadoop18.bfdabc.com bjlg-44p31-hadoop18
+192.168.44.32   bjlg-44p32-hadoop19.bfdabc.com bjlg-44p32-hadoop19
+192.168.44.33   bjlg-44p33-hadoop20.bfdabc.com bjlg-44p33-hadoop20
+192.168.44.34   bjlg-44p34-hadoop21.bfdabc.com bjlg-44p34-hadoop21
+192.168.44.35   bjlg-44p35-hadoop22.bfdabc.com bjlg-44p35-hadoop22
+192.168.44.36   bjlg-44p36-hadoop23.bfdabc.com bjlg-44p36-hadoop23
+192.168.44.37   bjlg-44p37-hadoop24.bfdabc.com bjlg-44p37-hadoop24
+192.168.44.38   bjlg-44p38-hadoop25.bfdabc.com bjlg-44p38-hadoop25
+192.168.44.39   bjlg-44p39-hadoop26.bfdabc.com bjlg-44p39-hadoop26
+192.168.40.34   bjlg-40p34-cm-userp09.bfdabc.com bjlg-40p34-cm-userp09 bjlg-cm-userp09
+192.168.40.35   bjlg-40p35-alg-12.bfdabc.com bjlg-40p35-alg-12 bjlg-alg-12
+192.168.40.36   bjlg-40p36-alg-13.bfdabc.com bjlg-40p36-alg-13 bjlg-alg-13
+192.168.40.37   bjlg-40p37-cm-redis05.bfdabc.com bjlg-40p37-cm-redis05 bjlg-cm-redis05
+192.168.40.38   bjlg-40p38-cm-redis06.bfdabc.com bjlg-40p38-cm-redis06 bjlg-cm-redis06
+192.168.40.39   bjlg-40p39-cm-redis07.bfdabc.com bjlg-40p39-cm-redis07 bjlg-cm-redis07
+192.168.40.40   bjlg-40p40-cm-redis08.bfdabc.com bjlg-40p40-cm-redis08 bjlg-cm-redis08
+192.168.40.41   bjlg-40p41-cm-redis09.bfdabc.com bjlg-40p41-cm-redis09 bjlg-cm-redis09
+192.168.40.42   bjlg-40p42-cm-redis10.bfdabc.com bjlg-40p42-cm-redis10 bjlg-cm-redis10
+192.168.40.43   bjlg-40p43-rec7.bfdabc.com bjlg-40p43-rec7 bjlg-rec7
+192.168.40.44   bjlg-40p44-rec8.bfdabc.com bjlg-40p44-rec8 bjlg-rec8
+192.168.40.45   bjlg-40p45-edm1.bfdabc.com bjlg-40p45-edm1 bjlg-edm1
+192.168.40.46   bjlg-40p46-input5.bfdabc.com bjlg-40p46-input5 bjlg-input5
+192.168.40.47   bjlg-40p47-input6.bfdabc.com bjlg-40p47-input6 bjlg-input6
+192.168.40.48   bjlg-40p48-mongodb01.bfdabc.com bjlg-40p48-mongodb01
+192.168.40.49   bjlg-40p49-mongodb02.bfdabc.com bjlg-40p49-mongodb02
+192.168.40.50   bjlg-40p50-mongodb03.bfdabc.com bjlg-40p50-mongodb03
+192.168.40.51   bjlg-40p51-mongodb04.bfdabc.com bjlg-40p51-mongodb04
+192.168.40.52   bjlg-40p52-mongodb05.bfdabc.com bjlg-40p52-mongodb05
+192.168.40.53   bjlg-40p53-mongodb06.bfdabc.com bjlg-40p53-mongodb06
+192.168.44.10   bjlg-44p10-namenode01.bfdabc.com bjlg-44p10-namenode01
+192.168.44.11   bjlg-44p11-namenode02.bfdabc.com bjlg-44p11-namenode02
+192.168.44.12   bjlg-44p12-rm01.bfdabc.com bjlg-44p12-rm01 bjlg-rm01
+192.168.44.13   bjlg-44p13-rm02.bfdabc.com bjlg-44p13-rm02 bjlg-rm02
+192.168.40.54   bjlg-40p54-kafka01.bfdabc.com bjlg-40p54-kafka01
+192.168.40.55   bjlg-40p55-kafka02.bfdabc.com bjlg-40p55-kafka02
+192.168.40.56   bjlg-40p56-kafka03.bfdabc.com bjlg-40p56-kafka03
+192.168.40.57   bjlg-40p57-kafka04.bfdabc.com bjlg-40p57-kafka04
+192.168.40.58   bjlg-40p58-kafka05.bfdabc.com bjlg-40p58-kafka05
+192.168.40.59   bjlg-40p59-kafka06.bfdabc.com bjlg-40p59-kafka06
+192.168.40.60   bjlg-40p60-kafka07.bfdabc.com bjlg-40p60-kafka07
+192.168.40.61   bjlg-40p61-kafka08.bfdabc.com  bjlg-40p61-kafka08
+192.168.40.62   bjlg-40p62-cm-elastic05.bfdabc.com bjlg-40p62-cm-elastic05 bjlg-cm-elastic05
+192.168.40.63   bjlg-40p63-cm-elastic06.bfdabc.com bjlg-40p63-cm-elastic06 bjlg-cm-elastic06
+192.168.40.64   bjlg-40p64-cm-elastic07.bfdabc.com bjlg-40p64-cm-elastic07 bjlg-cm-elastic07
+192.168.40.65   bjlg-40p65-cm-elastic08.bfdabc.com bjlg-40p65-cm-elastic08 bjlg-cm-elastic08
+192.168.40.66   bjlg-40p66-cm-elastic09.bfdabc.com bjlg-40p66-cm-elastic09 bjlg-cm-elastic09
+192.168.40.67   bjlg-40p67-docker01.bfdabc.com bjlg-40p67-docker01 bjlg-docker01
+192.168.40.68   bjlg-40p68-docker02.bfdabc.com bjlg-40p68-docker02 bjlg-docker02
+192.168.40.69   bjlg-40p69-docker03.bfdabc.com bjlg-40p69-docker03 bjlg-docker03
+192.168.40.70   bjlg-40p70-docker04.bfdabc.com bjlg-40p70-docker04 bjlg-docker04
+192.168.40.71   bjlg-40p71-solr-9.bfdabc.com bjlg-40p71-solr-9 bjlg-solr-9
+192.168.40.72   bjlg-40p72-solr-10.bfdabc.com bjlg-40p72-solr-10 bjlg-solr-10
+192.168.40.73   bjlg-40p73-solr-11.bfdabc.com bjlg-40p73-solr-11 bjlg-solr-11
+192.168.40.30   bjlg-40p30-cm-userp05.bfdabc.com bjlg-40p30-cm-userp05 bjlg-cm-userp05
+192.168.40.31   bjlg-40p31-cm-userp06.bfdabc.com bjlg-40p31-cm-userp06 bjlg-cm-userp06
+192.168.40.32   bjlg-40p32-cm-userp07.bfdabc.com bjlg-40p32-cm-userp07 bjlg-cm-userp07
+192.168.40.33   bjlg-40p33-cm-userp08.bfdabc.com bjlg-40p33-cm-userp08 bjlg-cm-userp08
+192.168.40.74   bjlg-40p74-om05.bfdabc.com bjlg-40p74-om05  bjlg-om05
+192.168.40.75   bjlg-40p75-om06.bfdabc.com bjlg-40p75-om06  bjlg-om06
+192.168.49.129   bjlg-49p129-crawl-4.bfdabc.com bjlg-49p129-crawl-4 bjlg-crawl-4
+192.168.49.130  bjlg-49p130-crawl-5.bfdabc.com bjlg-49p130-crawl-5 bjlg-crawl-5
+192.168.40.79   bjlg-40p79-om03.bfdabc.com bjlg-40p79-om03 bjlg-om03
+192.168.40.77   bjlg-40p77-om07.bfdabc.com bjlg-40p77-om07 bjlg-om07
+192.168.40.78   bjlg-40p78-kvm11.bfdabc.com bjlg-40p78-kvm11 bjlg-kvm11
+192.168.40.84 bjlg-40p84-alg-15.bfdabc.com bjlg-40p84-alg-15 bjlg-alg-15
+192.168.40.83 bjlg-40p83-alg-14.bfdabc.com bjlg-40p83-alg-14 bjlg-alg-14
+192.168.40.85 bjlg-40p85-elastic10.bfdabc.com bjlg-40p85-elastic10 bjlg-elastic10
+192.168.40.86 bjlg-40p86-elastic11.bfdabc.com bjlg-40p86-elastic11 bjlg-elastic11
+192.168.40.87 bjlg-40p87-elastic12.bfdabc.com bjlg-40p87-elastic12 bjlg-elastic12
+192.168.40.88 bjlg-40p88-elastic13.bfdabc.com bjlg-40p88-elastic13 bjlg-elastic13
+192.168.40.89 bjlg-40p89-elastic14.bfdabc.com bjlg-40p89-elastic14 bjlg-elastic14
+192.168.40.80 bjlg-40p80-hadoop-r01.bfdabc.com bjlg-40p80-hadoop-r01 bjlg-hadoop-r01
+192.168.48.51 bjlg-48p51-hadoop41.bfdabc.com    bjlg-48p51-hadoop41 bjlg-hadoop41
+192.168.48.52 bjlg-48p52-hadoop42.bfdabc.com    bjlg-48p52-hadoop42 bjlg-hadoop42
+192.168.48.53 bjlg-48p53-hadoop43.bfdabc.com     bjlg-48p53-hadoop43 bjlg-hadoop43
+192.168.48.54 bjlg-48p54-hadoop44.bfdabc.com    bjlg-48p54-hadoop44 bjlg-hadoop44
+192.168.49.136 bjlg-49p136-kafka-5.bfdabc.com    bjlg-49p136-kafka-5 bjlg-kafka-5
+192.168.49.137 bjlg-49p137-kafka-6.bfdabc.com    bjlg-49p137-kafka-6  bjlg-kafka-6
+192.168.49.138 bjlg-49p138-kafka-7.bfdabc.com    bjlg-49p138-kafka-7  bjlg-kafka-7
+192.168.49.139  bjlg-49p139-kafka-8.bfdabc.com  bjlg-49p139-kafka-8     bjlg-kafka-8
+192.168.49.148  bjlg-49p148-promima-alg01.bfdabc.com    bjlg-49p148-promima-alg01       bjlg-promima-alg01
+192.168.49.149  bjlg-49p149-promima-alg02.bfdabc.com    bjlg-49p149-promima-alg02       bjlg-promima-alg02
+192.168.49.150  bjlg-49p150-promima-alg03.bfdabc.com    bjlg-49p150-promima-alg03       bjlg-promima-alg03
+192.168.49.151  bae-7.bfdabc.com        bae-7   bae-7
+192.168.49.152  bae-8.bfdabc.com        bae-8   bae-8
+192.168.49.153  bjlg-49p153-promima-alg04.bfdabc.com    bjlg-49p153-promima-alg04       bjlg-promima-alg04
+192.168.49.154  bjlg-49p154-promima-alg05.bfdabc.com    bjlg-49p154-promima-alg05       bjlg-promima-alg05
+192.168.49.155  bjlg-49p155-promima-alg06.bfdabc.com    bjlg-49p155-promima-alg06       bjlg-promima-alg06
+192.168.49.156  bjlg-49p156-promima-alg07.bfdabc.com    bjlg-49p156-promima-alg07       bjlg-promima-alg07
+192.168.49.157  bjlg-49p157-promima-alg08.bfdabc.com    bjlg-49p157-promima-alg08       bjlg-promima-alg08
+192.168.48.55   bjlg-48p55-hadoop45.bfdabc.com  bjlg-48p55-hadoop45     bjlg-hadoop45
+192.168.48.56   bjlg-48p56-hadoop46.bfdabc.com  bjlg-48p56-hadoop46     bjlg-hadoop46
+192.168.48.57   bjlg-48p57-hadoop47.bfdabc.com  bjlg-48p57-hadoop47     bjlg-hadoop47
+192.168.48.58   bjlg-48p58-hadoop48.bfdabc.com  bjlg-48p58-hadoop48     bjlg-hadoop48
+192.168.48.59   bjlg-48p59-hadoop49.bfdabc.com  bjlg-48p59-hadoop49     bjlg-hadoop49
+192.168.48.60   bjlg-48p60-hadoop50.bfdabc.com  bjlg-48p60-hadoop50     bjlg-hadoop50
+192.168.48.61   bjlg-48p61-hadoop51.bfdabc.com  bjlg-48p61-hadoop51     bjlg-hadoop51
+192.168.48.62   bjlg-48p62-hadoop52.bfdabc.com  bjlg-48p62-hadoop52     bjlg-hadoop52
+192.168.48.63   bjlg-48p63-hadoop53.bfdabc.com  bjlg-48p63-hadoop53     bjlg-hadoop53
+192.168.48.64   bjlg-48p64-hadoop54.bfdabc.com  bjlg-48p64-hadoop54     bjlg-hadoop54
+192.168.48.65   bjlg-48p65-hadoop55.bfdabc.com  bjlg-48p65-hadoop55     bjlg-hadoop55
+192.168.48.66   bjlg-48p66-hadoop56.bfdabc.com  bjlg-48p66-hadoop56     bjlg-hadoop56
+192.168.48.67   bjlg-48p67-hadoop57.bfdabc.com  bjlg-48p67-hadoop57     bjlg-hadoop57
+192.168.48.68   bjlg-48p68-hadoop58.bfdabc.com  bjlg-48p68-hadoop58     bjlg-hadoop58
+192.168.48.69   bjlg-48p69-hadoop59.bfdabc.com  bjlg-48p69-hadoop59     bjlg-hadoop59
+192.168.48.70   bjlg-48p70-hadoop60.bfdabc.com  bjlg-48p70-hadoop60     bjlg-hadoop60
+192.168.49.158   bjlg-49p158-alg-db20.bfdabc.com  bjlg-49p158-alg-db20     bjlg-alg-db20
+192.168.40.97   bjlg-40p97-om08.bfdabc.com      bjlg-40p97-om08         bjlg-om08
+192.168.40.90   bjlg-40p90-alg-16.bfdabc.com    bjlg-40p90-alg-16       bjlg-alg-16
+192.168.40.91   bjlg-40p91-alg-17.bfdabc.com    bjlg-40p91-alg-17       bjlg-alg-17
+192.168.40.92   bjlg-40p92-alg-18.bfdabc.com    bjlg-40p92-alg-18       bjlg-alg-18
+192.168.40.93   bjlg-40p93-alg-19.bfdabc.com    bjlg-40p93-alg-19       bjlg-alg-19
+192.168.40.94   bjlg-40p94-alg-20.bfdabc.com    bjlg-40p94-alg-20       bjlg-alg-20
+192.168.40.95   bjlg-40p95-alg-21.bfdabc.com    bjlg-40p95-alg-21       bjlg-alg-21
+192.168.49.140  bjlg-49p140-input7.bfdabc.com   bjlg-49p140-input7      bjlg-input7
+192.168.49.141  bjlg-49p141-input8.bfdabc.com   bjlg-49p141-input8      bjlg-input8
+192.168.49.142  bjlg-49p142-input9.bfdabc.com   bjlg-49p142-input9      bjlg-input9
+192.168.49.143  bjlg-49p143-input10.bfdabc.com  bjlg-49p143-input10     bjlg-input10
+192.168.49.144  bjlg-49p144-rec9.bfdabc.com     bjlg-49p144-rec9        bjlg-rec9
+192.168.49.145  bjlg-49p145-rec10.bfdabc.com    bjlg-49p145-rec10       bjlg-rec10
+192.168.49.146  bjlg-49p146-rec11.bfdabc.com    bjlg-49p146-rec11       bjlg-rec11
+192.168.49.147  bjlg-49p147-rec12.bfdabc.com    bjlg-49p147-rec12       bjlg-rec12
+192.168.40.99    bjlg-40p99-insight01.bfdabc.com bjlg-40p99-insight01 bjlg-insight01
+192.168.40.123	bjlg-40p123-redis-21.bfdabc.com	bjlg-40p123-redis-21	bjlg-redis-21
+192.168.40.124	bjlg-40p124-redis-22.bfdabc.com	bjlg-40p124-redis-22	bjlg-redis-22
+192.168.40.125	bjlg-40p125-redis-23.bfdabc.com	bjlg-40p125-redis-23	bjlg-redis-23
+192.168.40.126	bjlg-40p126-redis-24.bfdabc.com	bjlg-40p126-redis-24	bjlg-redis-24
+192.168.40.127	bjlg-40p127-redis-25.bfdabc.com	bjlg-40p127-redis-25	bjlg-redis-25
+192.168.40.128	bjlg-40p128-redis-26.bfdabc.com	bjlg-40p128-redis-26	bjlg-redis-26
+192.168.40.129	bjlg-40p129-redis-27.bfdabc.com	bjlg-40p129-redis-27	bjlg-redis-27
+192.168.40.130	bjlg-40p130-redis-28.bfdabc.com	bjlg-40p130-redis-28	bjlg-redis-28
+192.168.40.131	bjlg-40p131-redis-29.bfdabc.com	bjlg-40p131-redis-29	bjlg-redis-29
+192.168.40.132	bjlg-40p132-redis-30.bfdabc.com	bjlg-40p132-redis-30	bjlg-redis-30
+192.168.40.148	bjlg-40p148-om25.bfdabc.com	bjlg-40p148-om25	bjlg-om25
+192.168.40.149	bjlg-40p149-om26.bfdabc.com	bjlg-40p149-om26	bjlg-om26
+192.168.40.150	bjlg-40p150-om27.bfdabc.com	bjlg-40p150-om27	bjlg-om27
+192.168.40.151	bjlg-40p151-om28.bfdabc.com	bjlg-40p151-om28	bjlg-om28
+192.168.40.152	bjlg-40p152-om29.bfdabc.com	bjlg-40p152-om29	bjlg-om29
+192.168.40.113	bjlg-40p113-hadoop37.bfdabc.com	bjlg-40p113-hadoop37	bjlg-hadoop37
+192.168.40.114	bjlg-40p114-hadoop38.bfdabc.com	bjlg-40p114-hadoop38	bjlg-hadoop38
+192.168.40.115	bjlg-40p115-hadoop39.bfdabc.com	bjlg-40p115-hadoop39	bjlg-hadoop39
+192.168.40.116	bjlg-40p116-hadoop40.bfdabc.com	bjlg-40p116-hadoop40	bjlg-hadoop40
+192.168.40.117	bjlg-40p117-hadoop41.bfdabc.com	bjlg-40p117-hadoop41	bjlg-hadoop41
+192.168.40.141	bjlg-40p141-om18.bfdabc.com	bjlg-40p141-om18	bjlg-om18
+192.168.40.142	bjlg-40p142-om19.bfdabc.com	bjlg-40p142-om19	bjlg-om19
+192.168.40.143	bjlg-40p143-om20.bfdabc.com	bjlg-40p143-om20	bjlg-om20
+192.168.40.144	bjlg-40p144-om21.bfdabc.com	bjlg-40p144-om21	bjlg-om21
+192.168.40.145	bjlg-40p145-om22.bfdabc.com	bjlg-40p145-om22	bjlg-om22
+192.168.40.146	bjlg-40p146-om23.bfdabc.com	bjlg-40p146-om23	bjlg-om23
+192.168.40.147	bjlg-40p147-om24.bfdabc.com	bjlg-40p147-om24	bjlg-om24
+192.168.40.138	bjlg-40p138-om15.bfdabc.com	bjlg-40p138-om15	bjlg-om15
+192.168.40.139	bjlg-40p139-om16.bfdabc.com	bjlg-40p139-om16	bjlg-om16
+192.168.40.140	bjlg-40p140-om17.bfdabc.com	bjlg-40p140-om17	bjlg-om17
+######zw_kerberos###########
+192.168.24.45   bjzw-24p45-alg-1.bfdabc.com bjzw-24p45-alg-1
+192.168.24.56   bjzw-24p56-alg-test0.bfdabc.com  bjzw-24p56-alg-test0
+192.168.24.32   bjzw-24p32.bfdabc.com bjzw-24p32
+192.168.24.51 bjzw-24p51-app-2.bfdabc.com bjzw-24p51-app-2
+192.168.24.44 sys.bfdabc.com sys
+######kerberos end#############
+192.168.40.195 rm11700.adredis.lg.baifendian.com
+192.168.40.195 rm11701.adredis.lg.baifendian.com
+192.168.40.195 rm11702.adredis.lg.baifendian.com
+192.168.40.195 rm11703.adredis.lg.baifendian.com
+192.168.40.195 rm11704.adredis.lg.baifendian.com
+192.168.40.195 rm11705.adredis.lg.baifendian.com
+192.168.40.195 rm11706.adredis.lg.baifendian.com
+192.168.40.195 rm11707.adredis.lg.baifendian.com
+192.168.40.195 rm11708.adredis.lg.baifendian.com
+192.168.40.195 rm11709.adredis.lg.baifendian.com
+192.168.40.195 rm11710.adredis.lg.baifendian.com
+192.168.40.195 rm11711.adredis.lg.baifendian.com
+192.168.40.195 rm11712.adredis.lg.baifendian.com
+192.168.40.195 rm11713.adredis.lg.baifendian.com
+192.168.40.195 rm11714.adredis.lg.baifendian.com
+192.168.40.195 rm11715.adredis.lg.baifendian.com
+192.168.40.195 rm11716.adredis.lg.baifendian.com
+192.168.40.195 rm11717.adredis.lg.baifendian.com
+192.168.40.195 rm11718.adredis.lg.baifendian.com
+192.168.40.195 rm11719.adredis.lg.baifendian.com
+192.168.40.196 rm11720.adredis.lg.baifendian.com
+192.168.40.196 rm11721.adredis.lg.baifendian.com
+192.168.40.196 rm11722.adredis.lg.baifendian.com
+192.168.40.196 rm11723.adredis.lg.baifendian.com
+192.168.40.196 rm11724.adredis.lg.baifendian.com
+192.168.40.196 rm11725.adredis.lg.baifendian.com
+192.168.40.196 rm11726.adredis.lg.baifendian.com
+192.168.40.196 rm11727.adredis.lg.baifendian.com
+192.168.40.196 rm11728.adredis.lg.baifendian.com
+192.168.40.196 rm11729.adredis.lg.baifendian.com
+192.168.40.196 rm11730.adredis.lg.baifendian.com
+192.168.40.196 rm11731.adredis.lg.baifendian.com
+192.168.40.196 rm11732.adredis.lg.baifendian.com
+192.168.40.196 rm11733.adredis.lg.baifendian.com
+192.168.40.196 rm11734.adredis.lg.baifendian.com
+192.168.40.196 rm11735.adredis.lg.baifendian.com
+192.168.40.196 rm11736.adredis.lg.baifendian.com
+192.168.40.196 rm11737.adredis.lg.baifendian.com
+192.168.40.196 rm11738.adredis.lg.baifendian.com
+192.168.40.196 rm11739.adredis.lg.baifendian.com

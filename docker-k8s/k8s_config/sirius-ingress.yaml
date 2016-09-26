@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: sirius
+  namespace: default
+spec:
+  tls:
+  - hosts:
+    - sirius.bfdcloud.com
+  rules:
+  - host: sirius.bfdcloud.com 
+    http:
+      paths:
+      - backend:
+          serviceName: sirius
+          servicePort: 10086
+        path: /

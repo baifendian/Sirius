@@ -178,7 +178,7 @@ const App = React.createClass({
                       <NavItem href={`CloudContainer/UserDoc/CC2?${params}`} title="云中心计算集群" />
                     </NavItem>
                    </NavItem>
-              {/*
+              {/* openstack 部分暂时不处理 */}
                 <NavItem key={30} href="CloudHost" icon="server" title="云主机">
                   <NavItem key={31} href="CloudHost/Calculation" icon="th-large" title="计算">
                     <NavItem href={`CloudHost/Calculation/Instances?${params}`} title="虚拟机" />
@@ -193,7 +193,7 @@ const App = React.createClass({
                     <NavItem href={`CloudHost/Manage/Project?${params}`} title="项目管理" />
                   </NavItem>
                 </NavItem>
-                */}
+
                 <NavItem key={40} href="UserAuth" icon="th-large" title="用户管理">
                   <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
                 </NavItem>

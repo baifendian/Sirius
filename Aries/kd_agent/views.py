@@ -2,127 +2,38 @@
 import json
 import time
 import logging
-import httplib
 import traceback
-import urllib
 
 from django.http import StreamingHttpResponse
 from datetime import datetime
 from django.conf import settings
-from django.utils import timezone
-from django.shortcuts import render
-from django.http import *
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 
 from kd_agent.models import Schedule_Log
 from kd_agent.models import Schedule_Status
 from kd_agent.models import Task
-from kd_agent.influxdbquerystrmanager import InfluxDBQueryStrManager as ISM
 
-RETU_INFO_SUCCESS = 200
-RETU_INFO_ERROR = 201
+from kd_agent.toolsmanager import RETU_INFO_SUCCESS,RETU_INFO_ERROR
+from kd_agent.toolsmanager import generate_success,generate_failure
+from kd_agent.toolsmanager import return_http_json
+from kd_agent.toolsmanager import trans_return_json
+from kd_agent.toolsmanager import K8sRequestManager as KRM
+from kd_agent.toolsmanager import InfluxDBQueryStrManager as ISM
+
+
 
 kd_logger = logging.getLogger("kd_agent_log")
 kd_logger.setLevel( logging.DEBUG )
 
 
-# 一个装饰器，将原函数返回的json封装成response对象
-def return_http_json(func):
-    def wrapper( *arg1,**arg2 ):
-        try:
-            retu_obj = func( *arg1,**arg2 )
-            kd_logger.info( 'execute func %s success' % (func) )
-        except Exception as reason:
-            retu_obj = generate_failure( str(reason) )
-            kd_logger.error( 'execute func %s failure : %s' % (func,str(reason)) )
-            traceback.print_exc()
-
-        obj = HttpResponse( json.dumps(retu_obj) )
-        obj['Access-Control-Allow-Origin'] = '*'
-        obj['Access-Control-Allow-Methods'] = 'GET,POST'
-        obj['Access-Control-Allow-Headers'] = 'X-CSRFToken'
-        obj['Content-Type'] = 'application/json'
-        return obj
-    return wrapper
-
-def generate_retu_info( code,msg,**ext_info ):
-    retu_data = { 'code':code,'msg':msg }
-    for k in ext_info:
-        retu_data[k] = ext_info[k]
-    return retu_data
-
-def generate_success(**ext_info):
-    return generate_retu_info( RETU_INFO_SUCCESS,'',**ext_info )
-
-def generate_failure( msg,**ext_info ):
-    return generate_retu_info( RETU_INFO_ERROR,msg,**ext_info )
-
 # 去掉时间字符串 2016-07-15T14:38:02Z 中的T、Z
 def trans_time_str(time_str):
     return time_str[0:10] + ' ' + time_str[11:19]
 
-# 根据原生的API获取k8s的数据
-def get_k8s_data(url,params = {},timeout = 10 ):
-    resp = None
-    try:
-        con = httplib.HTTPConnection(settings.K8S_IP, settings.K8S_PORT, timeout=timeout)
-        con.request('GET', url, json.dumps(params, ensure_ascii=False))
-        resp = con.getresponse()
-        if not resp:
-            s = 'get k8s data resp is not valid : %s' % resp
-            kd_logger.error( s )
-            return generate_failure( s )
-
-        if resp.status == 200:
-            s = resp.read()
-            kd_logger.debug( 'get k8s data response : %s' % s )
-            return generate_success( data = json.loads(s) )
-        else:
-            s = 'get k8s data status is not 200 : %s' % resp.status
-            kd_logger.error( s )
-            return generate_failure( s )
-    except Exception, e:
-        s = "get k8s data occured exception : %s" % str(e)
-        kd_logger.error(s)
-        return generate_failure( s )
-
-def get_influxdb_data(sql_str,db = settings.INFLUXDB_DATABASE,epoch='s',timeout = 600 ):
-    params = { 'q':sql_str, 'db':db, 'epoch':epoch }
-    url_str = '/query?%s' % urllib.urlencode( params ) 
-    resp = None
-    try:
-        con = httplib.HTTPConnection(settings.INFLUXDB_IP, settings.INFLUXDB_PORT, timeout=timeout)
-        con.request('GET',url_str)
-        resp = con.getresponse()
-        if not resp:
-            s = 'get inluxdb data resp is not valid : %s' % resp
-            kd_logger.error( s )
-            return generate_failure( s )
-
-        if resp.status == 200:
-            s = resp.read()
-            # kd_logger.debug( s )
-            kd_logger.info( 'get inluxdb data success' )
-            return generate_success( data = json.loads(s) )
-        else:
-            s = 'get inluxdb data status is not 200 : %s' % resp.status
-            kd_logger.error( s )
-            return generate_failure( s )
-    except Exception, e:
-        s = "get inluxdb data occured exception : %s" % str(e)
-        kd_logger.error( s )
-        return generate_failure( s )
-
-def restore_k8s_path(p):
-    return p.replace('/k8s','')
-
 def get_overview_k8s_pod_info(namespace):
     retu_data = { 'count':0, 'total':0 }
-    url = '/api/v1/namespaces/%s/pods' % namespace
-    pod_detail_info = get_k8s_data( url )
+    pod_detail_info = KRM.get_pod_detail_info(namespace)
     if pod_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_overview_k8s_pod_info query k8s pod data error : %s' % pod_detail_info['msg'] )
     else:
@@ -140,8 +51,7 @@ def get_overview_k8s_pod_info(namespace):
 
 def get_overview_k8s_service_info(namespace):
     retu_data = { 'count':0  }
-    url = '/api/v1/namespaces/%s/services' % namespace
-    service_detail_info = get_k8s_data( url )
+    service_detail_info = KRM.get_service_detail_info( namespace )
     if service_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_overview_k8s_service_info query k8s service data error : %s' % service_detail_info['msg'] )
     else:
@@ -150,8 +60,7 @@ def get_overview_k8s_service_info(namespace):
 
 def get_overview_k8s_rc_info(namespace):
     retu_data = { 'count':0, 'total':0 }
-    url = '/api/v1/namespaces/%s/replicationcontrollers' % namespace
-    rc_detail_info = get_k8s_data( url )
+    rc_detail_info = KRM.get_rc_detail_info( namespace )
     if rc_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_overview_k8s_rc_info query k8s rc data error : %s' % rc_detail_info['msg'] )
     else:
@@ -171,6 +80,7 @@ def get_overview_k8s_node_info(namespace):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_k8soverview_info(request,namespace):
     retu_data = {
         'pod': get_overview_k8s_pod_info(namespace) ,
@@ -183,9 +93,10 @@ def get_k8soverview_info(request,namespace):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_pod_list(request,namespace):
     kd_logger.info( 'call get_pod_list request.path : %s , namespace : %s' % (request.path,namespace) )
-    pod_detail_info = get_k8s_data( restore_k8s_path(request.path) )
+    pod_detail_info = KRM.get_pod_detail_info(namespace)
     if pod_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_pod_list query k8s data error : %s' % pod_detail_info['msg'] )
         return generate_failure( pod_detail_info['msg'] )
@@ -227,9 +138,10 @@ def get_pod_list(request,namespace):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_service_list(request,namespace):
     kd_logger.info( 'call get_service_list request.path : %s , namespace : %s' % (request.path,namespace) )
-    service_detail_info = get_k8s_data( restore_k8s_path(request.path) )
+    service_detail_info = KRM.get_service_detail_info( namespace )
     if service_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_service_list query k8s data error : %s' % service_detail_info['msg'] )
         return generate_failure( service_detail_info['msg'] )
@@ -264,9 +176,10 @@ def get_service_list(request,namespace):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_rc_list(request,namespace):
     kd_logger.info( 'call get_rc_list request.path : %s , namespace : %s' % (request.path,namespace) )
-    rc_detail_info = get_k8s_data( restore_k8s_path(request.path) )
+    rc_detail_info = KRM.get_rc_detail_info( namespace )
     if rc_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_rc_list query k8s data error : %s' % rc_detail_info['msg'] )
         return generate_failure( rc_detail_info['msg'] )
@@ -328,9 +241,10 @@ def get_ingress_detail_host_info( rules ):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_ingress_list(request,namespace):
     kd_logger.info( 'call get_ingress_list request.path : %s , namespace : %s' % (request.path,namespace) )
-    ingress_detail_info = get_k8s_data( restore_k8s_path(request.path) )
+    ingress_detail_info = KRM.get_ingress_detail_info( namespace )
     if ingress_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_ingress_list query k8s data error : %s' % ingress_detail_info['msg'] )
         return generate_failure( ingress_detail_info['msg'] )
@@ -346,7 +260,7 @@ def get_ingress_list(request,namespace):
             for ing in item['status']['loadBalancer']['ingress']:
                 record['Ingress'].append( ing['ip'] )
         except: 
-            record['Ingress'] = '<None>'
+            record['Ingress'] = ['<None>']
 
         try:    record['Rules'] = get_ingress_detail_host_info( item['spec']['rules'] )
         except: record['Rules'] = []
@@ -361,39 +275,9 @@ def get_ingress_list(request,namespace):
 def trans_obj_to_easy_dis(obj_info):
     return json.dumps(obj_info, indent=1).split('\n')
 
-'''
-由于Pod、Service、RC的详情信息的展示方式暂时不确定，因此暂时使用最简单的json展示格式来展示
-def __trans_obj_to_easy_dis(obj_info,head_str = 'obj'):
-    
-    将一个对象的所有属性转换成一种方便显示的方式，只支持dict、list这两种复合类型
-    exam = { 'a':123,'b':[1,2,3] }
-    将会被转换成：
-    [
-        'a = 123',
-        'b[0] = 1',
-        'b[1] = 2',
-        'b[3] = 3'
-    ]
-    
-    def trans_func( obj,head_str = 'obj' ):
-        if isinstance( obj,dict ):
-            temp = []
-            for k in obj:
-                temp += trans_func( obj[k],"%s['%s']" % ( head_str,str(k) ) )
-            return temp
-        elif isinstance( obj,list ):
-            temp = []
-            for i in range( len(obj) ):
-                temp += trans_func( obj[i],head_str+str( '[%s]' % i ) )
-            return temp
-        else:
-            return [ '%s = %s' % ( head_str,str(obj) ) ]
-    retu_list = trans_func( obj_info,head_str )
-    return retu_list
-'''
-
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_mytask_graph(request):
     import requests
     kd_logger.info( 'call get_mytask_graph' )
@@ -479,6 +363,7 @@ def download(request):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def mytask_get_old_records(request):
     kd_logger.debug( 'call mytask_get_old_records : %s ' % request )
     oldestrecordid = int(request.POST.get('oldestrecordid'))
@@ -564,6 +449,7 @@ def query_records(result,beginning_exec,deadline_exec,id,new = False):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def mytask_check_has_new_records(request):  
     newestrecordid = int(request.POST.get('newestrecordid'))
     keywords = json.loads(request.POST.get('keywords'))
@@ -598,6 +484,7 @@ def mytask_check_has_new_records(request):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def mytask_get_new_records(request):
     newestrecordid = int(request.POST.get('newestrecordid'))
     keywords = json.loads(request.POST.get('keywords'))
@@ -685,6 +572,7 @@ def convert_dict(keywords):
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def dashboard_taskinfo(request):
     retu_data = {}
     retu_data['today_running_task'] = Schedule_Status.objects.using('kd_agent_bdms').filter(category = time.strftime('%Y-%m-%d',time.localtime(time.time())), status = 3).count()
@@ -705,7 +593,7 @@ def filter_valid_data( influxdb_data_dict ):
                 retu_data.append( item )
         return generate_success( data=retu_data )
     except Exception as reason:
-        return generate_failure( str(reason) )
+        return generate_failure( traceback.format_exc() )
 
 def trans_struct_to_easy_dis( filter_data_dict ):
     def map_timestamp_to_localtime( time_stamp ):
@@ -743,85 +631,65 @@ def trans_struct_to_easy_dis( filter_data_dict ):
     retu_data['xaxis'] = map( map_timestamp_to_localtime,time_points )
     return retu_data
 
-def execute_clusterinfo_request( sql_str_dict ):
+def execute_clusterinfo_request( data_dict ):
     retu_obj = {}
-    for m,sql in sql_str_dict.items():
-        kd_logger.info( 'get influxdb data ( %s ) with sql : %s' % ( m,sql ) )
-
-        # 获取influxdb原生数据
-        retu_data = get_influxdb_data(sql_str=sql)
-        if retu_data['code'] != RETU_INFO_SUCCESS:
-            return generate_failure( retu_data['msg'] )
-
+    for m,data in data_dict.items():
         # 对获取到的influx数据进行筛选，只保留有用的数据
-        retu_data = filter_valid_data(retu_data['data'])
+        retu_data = filter_valid_data(data)
         if retu_data['code'] != RETU_INFO_SUCCESS:
             return generate_failure( retu_data['msg'] )
-
         retu_obj[m] = retu_data['data']
-
     return generate_success( data=trans_struct_to_easy_dis(retu_obj) )
 
-def generate_time_range( minutes ):
-    time_end = int(time.time())
-    time_start = time_end - int(minutes)*60
-    return { 
-        'time_start':'%ss' % time_start,
-        'time_end':'%ss' % time_end,
-    }
-
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_cluster_cpu_info(request,minutes):
-    measurements = [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ]
-    time_range = generate_time_range( minutes )
-    sql_str_dict = {}
-    for m in measurements:
-        sql_str_dict[m] = ISM.format_query_str( 
-                                measurement=m,
-                                time_start=time_range['time_start'],
-                                time_end=time_range['time_end'],
-                                type=ISM.T_NODE )
-    return execute_clusterinfo_request( sql_str_dict )
+    data_dict = {}
+    for m in [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ]:
+        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict )
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_cluster_memory_info(request,minutes):
-    measurements = [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_WORKINGSET,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]
-    time_range = generate_time_range( minutes )
-    sql_str_dict = {}
-    for m in measurements:
-        sql_str_dict[m] = ISM.format_query_str( 
-                                measurement=m,
-                                time_start=time_range['time_start'],
-                                time_end=time_range['time_end'],
-                                type=ISM.T_NODE )
-    return execute_clusterinfo_request( sql_str_dict )
+    data_dict = {}
+    for m in [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_WORKINGSET,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]:
+        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict )
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_cluster_network_info(request,minutes):
-    measurements = [ ISM.M_NETWORK_TRANSMIT,ISM.M_NETWORK_RECEIVE ]
-    time_range = generate_time_range( minutes )
-    sql_str_dict = {}
-    for m in measurements:
-        sql_str_dict[m] = ISM.format_query_str( 
-                                measurement=m,
-                                time_start=time_range['time_start'],
-                                time_end=time_range['time_end'],
-                                type=ISM.T_POD )
-    return execute_clusterinfo_request( sql_str_dict )
+    data_dict = {}
+    for m in [ ISM.M_NETWORK_TRANSMIT,ISM.M_NETWORK_RECEIVE ]:
+        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_POD )
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict )
 
 @csrf_exempt
 @return_http_json
+@trans_return_json
 def get_cluster_filesystem_info(request,minutes):
-    measurements = [ ISM.M_FILESYSTEM_USAGE,ISM.M_FILESYSTEM_LIMIT ]
-    time_range = generate_time_range( minutes )
-    sql_str_dict = {}
-    for m in measurements:
-        sql_str_dict[m] = ISM.format_query_str( 
-                                measurement=m,
-                                time_start=time_range['time_start'],
-                                time_end=time_range['time_end'],
-                                type=ISM.T_NODE )
-    return execute_clusterinfo_request( sql_str_dict )
+    data_dict = {}
+    for m in [ ISM.M_FILESYSTEM_USAGE,ISM.M_FILESYSTEM_LIMIT ]:
+        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict )
+
