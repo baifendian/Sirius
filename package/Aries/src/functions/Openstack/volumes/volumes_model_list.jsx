@@ -537,7 +537,6 @@ const Model_list = React.createClass({
       </div>
     )
   }
-
 })
 
 export default Model_list

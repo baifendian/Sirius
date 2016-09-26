@@ -323,7 +323,7 @@ def flavors(request):
     response['Content-Type'] = 'application/json'
     return response
 
-
+@csrf_exempt
 def volumes(request):
     ret = {}
     login = Login("openstack", "baifendian2016")
@@ -360,6 +360,7 @@ def volumes(request):
         ret['currentPage'] = 1
         ret['totalPageNum'] = len(ret['totalList'])
     if request.method == "POST":
+        openstack_log.ino(request.POST)
         host_method = request.POST.get('method')
         if host_method == 'attach':
             disk = request.POST.get('disk')
@@ -381,8 +382,8 @@ def volumes(request):
                         sys['volumename'] = volume_d['volume']['displayName']
                     sys['status'] = True
                 ret['totalList'].append(sys)
+            openstack_log.info(ret)
     json_status = json_data(ret)
-
     response = HttpResponse(json_status)
     response['Access-Control-Allow-Origin'] = '*'
     response['Content-Type'] = 'application/json'

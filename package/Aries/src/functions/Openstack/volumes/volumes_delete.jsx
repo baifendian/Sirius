@@ -26,13 +26,17 @@ const Delete_volumes = React.createClass({
   },
   handleSave() {
     //console.log(this.state.formData)
+    this.props._this.setState({loading:true})
+    this.refs.modal_m.close()
     this.refs.form.save()
   },
 
   handleSuccess(res) {
     //console.log(res)
     this.refs.modal_m.close()
+    this.props._this.setState({loading:false})
     message.success('保存成功！')
+    OPEN.update_url(this.props._this,"volumes")
   },
   handleOpen() {
     this.refs.modal_m.open()

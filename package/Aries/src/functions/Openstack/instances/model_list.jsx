@@ -7,7 +7,8 @@ import {Menu, Dropdown as Dropdown1, Icon} from 'antd'
 import Button from 'bfd-ui/lib/Button'
 import {MultipleSelect, Option} from 'bfd-ui/lib/MultipleSelect'
 import {Row, Col} from 'bfd-ui/lib/Layout'
-import xhr from 'bfd-ui/lib/xhr'
+//import xhr from 'bfd-ui/lib/xhr'
+import xhr from 'bfd/xhr'
 import {Spin} from 'antd'
 import {notification} from 'antd'
 import Input from 'bfd-ui/lib/Input'
@@ -42,6 +43,7 @@ const Disk_list = React.createClass({
     let host_name = this.props.vm_list[0]['name']
     let host_id = this.props.vm_list[0]['id']
     this.setState({host_name, host_id})
+    console.log(this.props.vm_list)
   },
   handlerequest(){
     const self = this
@@ -527,7 +529,6 @@ const Disk_model = React.createClass({
         <Menu.Item disabled={this.state.button_status} key="2">加载云硬盘</Menu.Item>
         <Menu.Item disabled={this.state.button_status} key="3">更改配置</Menu.Item>
         <Menu.Item disabled={this.state.button_status} key="4">重置系统</Menu.Item>
-        {/*<Menu.Item disabled={this.state.button_statuss} key="5">强制重启</Menu.Item>*/}
       </Menu>
     );
 
@@ -560,14 +561,129 @@ const Disk_model = React.createClass({
                     return (<Vm_image key={i} vm_list={this.props.vm_list} data_list={this.state.data_list}
                                       data_object={this.state.data_object} _this={this} self={this.props._this}/>)
                   }
-                  /*if (item == 5){
-                   return (<Forced_vm key={i} vm_list={this.props.vm_list} title={this.state.title}/>)
-                   }*/
                 })}
               </div>
             </ModalBody>
           </Spin>
         </Modal>
+      </div>
+    )
+  }
+})
+
+
+const Disk_model1 = React.createClass({
+  getInitialState() {
+    return {
+      percent: 0,
+      status: '',
+      title: '',
+      model: [1],
+      button_status: true,
+      button_statuss: true,
+      disk_list: [0],
+      disk_object: {},
+      flavor_list: [0],
+      flavor_object: {},
+      data_list: [0],
+      data_object: {},
+      loading: false
+    }
+  },
+  values(){
+    return {
+      'Vm_Backup': "创建备份",
+      'Disk_list': "加载云硬盘",
+      'Vm_Type': "更改配置",
+      'Backup_disk': "重置系统",
+    }
+  },
+  modulevalue(){
+    return {
+      'Vm_Backup': <Vm_Backup vm_list={this.props.vm_list} _this={this}/>,
+      'Disk_list': <Disk_list vm_list={this.props.vm_list} disk_list={this.state.disk_list} disk_object={this.state.disk_object} _this={this}/>,
+      'Vm_Type': <Vm_Type vm_list={this.props.vm_list} flavor_list={this.state.flavor_list} flavor_object={this.state.flavor_object} _this={this} self={this.props._this}/>,
+      'Backup_disk': <Vm_image vm_list={this.props.vm_list} data_list={this.state.data_list} data_object={this.state.data_object} _this={this} self={this.props._this}/>,
+    }
+  },
+  handleButtonClick(e) {
+    //console.log('click left button', e)
+  },
+  handlerequest(_this, return_data){
+    let data_list = []
+    let data_object = {}
+    for (var i in return_data['name']) {
+      data_list.push(return_data['name'][i])
+      data_object[return_data['name'][i]] = i
+    }
+    _this.setState({data_list, data_object, loading: false})
+  },
+  handleMenuClick(e) {
+    //console.log('click', e['key']);
+    this.setState({loading: true})
+    OPEN.Get_image(this, this.handlerequest)
+    const _this = this
+    xhr({
+      type: 'GET',
+      url: 'openstack/volumes/',
+      success(data) {
+        let disk_list = []
+        let disk_object = {}
+        for (var i in data['totalList']) {
+          if (!data['totalList'][i]['device']) {
+            disk_list.push(data['totalList'][i]['name'])
+            disk_object[data['totalList'][i]['name']] = data['totalList'][i]['id']
+          }
+        }
+        _this.setState({disk_list, disk_object})
+      }
+    })
+    xhr({
+      type: 'GET',
+      url: 'openstack/flavors/',
+      success(data) {
+        // console.log(data)
+        let flavor_list = []
+        let flavor_object = {}
+        for (var i in data['name']) {
+          flavor_list.push(data['name'][i])
+          flavor_object[data['name'][i]] = i
+        }
+        _this.setState({flavor_object, flavor_list})
+      }
+    })
+    let module = this.modulevalue()[e["key"]]
+    // console.log(module)
+    this.setState({title: this.values()[e['key']], module,loading: false})
+    this.refs.model_disk.open()
+  },
+  render() {
+    const DropdownButton = Dropdown1.Button;
+    const menu = (
+      <Menu onClick={this.handleMenuClick}>
+        <Menu.Item key="Vm_Backup" disabled={this.props.button_status}>创建备份</Menu.Item>
+        <Menu.Item key="Disk_list" disabled={this.props.button_status}>加载云硬盘</Menu.Item>
+        <Menu.Item key="Vm_Type" disabled={this.props.button_status}>更改配置</Menu.Item>
+        <Menu.Item key="Backup_disk" disabled={this.props.button_status}>重置系统</Menu.Item>
+      </Menu>
+    )
+    return (
+      <div>
+        <DropdownButton onClick={this.handleButtonClick} overlay={menu} type="primary" trigger={['click']}>
+          更多操作
+        </DropdownButton>
+        <div>
+          <Modal ref="model_disk">
+           <Spin size="large" spinning={this.state.loading}>
+            <ModalHeader>
+              <h4>{this.state.title}</h4>
+            </ModalHeader>
+            <ModalBody>
+              {this.state.module}
+            </ModalBody>
+            </Spin>
+          </Modal>
+        </div>
       </div>
     )
   }
