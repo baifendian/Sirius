@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import DataTable from 'bfd-ui/lib/DataTable'
-import SearchInput from 'bfd-ui/lib/SearchInput'
-import { SplitPanel, SubSplitPanel } from 'bfd-ui/lib/SplitPanel'
+import FixedTable from 'bfd/FixedTable'
+import SearchInput from 'bfd/SearchInput'
+import { SplitPanel, SubSplitPanel } from 'bfd/SplitPanel'
 
 import DynamicTable from 'public/DynamicTable'
 import NavigationInPage from 'public/NavigationInPage'
@@ -15,6 +15,8 @@ import './index.less'
 var ClusterCommonInfo = React.createClass({
   getInitialState: function () {    
     let state_dict = {
+      recordsTableHeight:200,         // FixedTable组件的高度
+      detailInfoTableHeight:100,         // FixedTable组件的高度
       searchInputKey:'',
       filteredData:undefined,
       detailText:''
@@ -138,7 +140,7 @@ var ClusterCommonInfo = React.createClass({
 
   findDataTableItemByRecordName( name ){
     let dataTableNode = ReactDOM.findDOMNode( this.refs.DataTable )
-    let tbody = dataTableNode.childNodes[1].childNodes[1]
+    let tbody = dataTableNode.childNodes[0].childNodes[0].childNodes[1]
     for ( let i = 0 ; i < tbody.childNodes.length ; i ++ ){
       let tr = tbody.childNodes[i]
       if ( tr.childNodes[0].innerHTML === name ){        
@@ -149,11 +151,10 @@ var ClusterCommonInfo = React.createClass({
   },
 
 	onSplitPanelHeightChange( oldTopHeight,oldBottomHeight,newTopHeight,newBottomHeight ){
-    let dataTable = ReactDOM.findDOMNode( this.refs.DataTable )
-    dataTable.childNodes[1].childNodes[1].style.height = (newTopHeight-65) + 'px'
-
-    let dynamicTable = ReactDOM.findDOMNode( this.refs.DynamicTable )
-    dynamicTable.style.height = (newBottomHeight-47) + 'px'
+    this.setState( { 
+      'recordsTableHeight':newTopHeight-65,
+      'detailInfoTableHeight':newBottomHeight-47 
+    } )
   },
 
   render: function (){
@@ -167,18 +168,12 @@ var ClusterCommonInfo = React.createClass({
     }
 
     let text = this.state.detailText ? this.state.detailText : this.storeConstData.defaultDetailText
-    
-    let d = this.state.filteredData!==undefined ? this.state.filteredData : this.storeVarData.dataTableDataArr
-    let data = {
-      totalList: d,
-      totalPageNum:d.length
-    }
+    let dataList = this.state.filteredData!==undefined ? this.state.filteredData : this.storeVarData.dataTableDataArr
 
     return (      
       <div ref="RootDiv" className={this.storeConstData.rootDivClassName} >
         <div className="SearchInputFatherDiv">
-          <SearchInput key={Toolkit.generateGUID()}
-                        ref="SearchInput"
+          <SearchInput ref="SearchInput"
                         placeholder="请输入查询关键字" 
                         onChange={function(){}} 
                         onSearch={this.onSearchByKey}
@@ -201,16 +196,18 @@ var ClusterCommonInfo = React.createClass({
                     direct="hor">
           <SubSplitPanel>
             <div className="DataTableFatherDiv">
-              <DataTable className="DataTable" ref="DataTable" data={data} 
-                         onRowClick={this.onTableRowClick}
-                         onOrder={this.onTableHeadOrder}
-                         showPage={this.storeConstData.dataTableConfigDict.showPage} 
-                         column={this.storeConstData.dataTableConfigDict.column } />
+              <FixedTable className="DataTable" ref="DataTable" 
+                          height={this.state.recordsTableHeight}
+                          data={dataList} 
+                          onRowClick={this.onTableRowClick}
+                          onOrder={this.onTableHeadOrder}
+                          column={this.storeConstData.dataTableConfigDict.column } />
             </div>
           </SubSplitPanel>
           <SubSplitPanel>
             <div className="Text">详情</div>
-            <DynamicTable ref='DynamicTable' dynamicTableTextArray={text}/>
+            <DynamicTable style={{height:this.state.detailInfoTableHeight}} ref='DynamicTable' 
+                          dynamicTableTextArray={text}/>
           </SubSplitPanel>
         </SplitPanel>
       </div>

@@ -1,5 +1,6 @@
 import React from 'react'
 
+import Toolkit from 'public/Toolkit/index.js'
 import ClusterCommonInfo from './index.jsx'
 import CMDR from '../CalcManageDataRequester/requester.js'
 import CalcManageConf from '../UrlConf'
@@ -19,25 +20,24 @@ export default React.createClass({
     let curNameSpace = CMDR.getCurNameSpace(this)
     if ( this.curNameSpace !== curNameSpace ){
       this.curNameSpace = curNameSpace
-      CMDR.getIngressList( curNameSpace,( executedData )=>{
 
-        /**       
-        // 此处代码仅用于测试
-        let executedData = [{
-          'Name':'Name1',
+      // 此处代码仅用于测试
+      let executedData = []
+      for ( let i = 0 ; i < 10 ; i ++ ){
+        executedData.push({
+          'Name':'Name' + i,
           'Ingress':['ip1','ip2','ip3'],
           'Rules':[{'Url':'url1','ServiceName':'ServiceName1'}],
-          'DetailInfo':['DetailInfo1']
-        },{
-          'Name':'Name2',
-          'Ingress':['ip21','ip22','ip23'],
-          'Rules':[{'Url':'url2','ServiceName':'ServiceName2'}],
-          'DetailInfo':['DetailInfo12']
-        }]
-        */
+          'DetailInfo':[['DetailInfo1']]
+        })
+      }
+      this.state.dataTableDataArr = executedData
 
+      /** 
+      CMDR.getIngressList( curNameSpace,( executedData )=>{
         this.setState ({ 'dataTableDataArr':executedData })
       } )
+      */
     }
   },
 
@@ -58,7 +58,7 @@ export default React.createClass({
             <table className="InnerTable">
               <tbody>
                 {ipList.map( (ip)=>{
-                  return <tr><td>{ip}</td></tr>} 
+                  return <tr key={Toolkit.generateGUID()}><td>{ip}</td></tr>} 
                 )}
               </tbody>
             </table>
@@ -74,7 +74,7 @@ export default React.createClass({
               <tbody>
                 {ruleDataList.map( (ruleInfo)=>{
                   return (
-                    <tr>
+                    <tr key={Toolkit.generateGUID()}>
                       <td>{ruleInfo['Url']}</td>
                       <td>{ruleInfo['ServiceName']}</td>
                     </tr>
@@ -88,8 +88,7 @@ export default React.createClass({
         title:'CreationTime', 
         key:'CreationTime',
         order:true
-      }],
-      showPage:'false'
+      }]
     }
     let navigationKey = 'IngressInfo'
     let spaceName = CalcManageConf.getCurSpace(this);

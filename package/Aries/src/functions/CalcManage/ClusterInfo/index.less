@@ -84,7 +84,6 @@ div.PodInfoChildRootDiv,div.ServiceInfoChildRootDiv,div.RCInfoChildRootDiv,div.I
   }
 
   div.Text{
-    font-family: '微软雅黑';
     color: #333333;
     font-size: 14px;
     margin-top: 10px;
@@ -110,36 +109,11 @@ div.PodInfoChildRootDiv,div.ServiceInfoChildRootDiv,div.RCInfoChildRootDiv,div.I
   }
 
   div.DataTableFatherDiv .DataTable {
-    > thead > th , > tbody > td{
-      font-size: 12px;
-      color:#666666;
+    > thead > tr {
+      border-bottom: 3px solid #DDEEFD;
     }
-    > thead{
-      > tr{
-        display: block;
-        width: 100%;
-        > th{
-          display: inline-block;
-          border-bottom: 3px solid #DDEEFD;
-        }
-      }
-    }
-
-    > tbody {
-      display: block;
-      width: 100%;
-      overflow-x: hidden;
-      overflow-y: auto;
-      > tr{
-        display: block;
-        width: 100%;
-        border-bottom: 1px solid #EFF3F8;
-        > td{
-          display: inline-block;
-          border-top: 0px;
-        }
-      }
-      
+    > tbody > tr {
+      border-bottom: 1px solid #EFF3F8;
     }
   }
 
