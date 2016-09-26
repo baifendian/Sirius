@@ -63,11 +63,11 @@ const conf = {
         HOST_INFO: "v1/hdfs/hostinfo/${hostName}/", //获取某台机器的主机信息
       },
       Share: {
-        SHARE_GET: "v1/hdfs///?spaceName=${spaceName}&op=SHARE", //获取分享信息
+        SHARE_GET: "v1/hdfs///?spaceName=${spaceName}&op=SHARE&filter=owner", //获取个人分享信息 
         SHARE_DELETE: "v1/hdfs///?op=SHARE&share_id=${shareId}", //删除分享
       },
       ShareCenter: {
-        SHARE: "v1/hdfs///?spaceName=${spaceName}&op=SHARE", //获取分享信息
+        SHARE: "v1/hdfs///?spaceName=${spaceName}&op=SHARE", //获取space中分享信息
       },
       ShowShare: {
         SHARE_LIST_STATUS: "v1/hdfs/share/${relativePath}/?shareId=${shareId}", //以列表形式获取某个分享下的文件或文件夹
