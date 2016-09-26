@@ -74,7 +74,7 @@ def postshare(request,path):
     space_name = request.GET.get("spaceName","")
     proxy_link = hashlib.md5("%s%s%s" %(space_name,path,int(time.time()))).hexdigest()
     proxy_link = "{0}/{1}/{2}".format(settings.SHARE_PROXY_BASE_URI,"HDFS/ShowShare",proxy_link)
-    hdfs_logger.info("proxy_link:{0}".format(proxy_link)) 
+    hdfs_logger.info("proxy_link:{0}".format(proxy_link))
     # 设置目录权限 chmod -R 755 space_path/path
     exitCode,data = share_cmd(space_name,path,"755")
     if exitCode != 0:
@@ -113,10 +113,14 @@ def postshare(request,path):
 def getshare(request,path):
     result = {}
     space_name = request.GET.get("spaceName")
+    share_onwer = request.GET.get("filter","");
     hdfs_logger.info("space_name:{0}".format(space_name))
     if space_name:
         try:
             sharelist = DataShare.objects.filter(space_name=space_name)
+            if share_onwer && share_onwer.lower() == "owner":
+                share_onwer = getUser(request).username
+                sharelist = sharelist.filter(share_user=share_onwer)
             result["code"] = StatusCode["SUCCESS"]
             totalList = [
                             {
@@ -147,7 +151,7 @@ def compress_backgroud(exec_user,operator,args):
     exitCode,data = run_hadoop(user_name=exec_user,operator="compress",args=args)
     if exitCode !=0:
         hdfs_logger.error("压缩失败.日志如下:")
-        hdfs_logger.error(data)    
+        hdfs_logger.error(data)
 
 #压缩文件
 def compress(request,path):
@@ -164,7 +168,7 @@ def compress(request,path):
     t.start()
     result["code"] = 200
     result["data"] = "目录:{0}正在压缩.请稍等".format(path)
-    return result 
+    return result
 
 def share(request, path):
     if request.method == "POST":
@@ -230,7 +234,7 @@ def de_delete(request, path):
         result["code"] = StatusCode["SUCCESS"]
         result["data"] = "删除成功!"
     return result
-   
+
 
 #删除文件（夹）
 def delete(request, path):
@@ -301,7 +305,7 @@ def sumSpace(request, path):
         spaces = Space.objects.all()
     data = []
     for space in spaces:
-        #capacity = json.loads(space.capacity) 
+        #capacity = json.loads(space.capacity)
         capacity =eval(space.capacity)
         used =int(capacity["used"])
         total = int(capacity["total"])
@@ -315,7 +319,7 @@ def sumSpace(request, path):
         result["code"] = StatusCode["FAILED"]
         result["data"] = "容量获取失败"
     return result
-   
+
 #移动文件夹
 def mv_or_cp(request, path):
     hdfs_logger.info("1.....")
@@ -371,7 +375,7 @@ def list_status_tree(request,path):
     hdfs = HDFS()
     baseData = hdfs.list_status(path, request)
     result = {}
-    try: 
+    try:
         if baseData:
             data=[{
                      "name":k["name"],
@@ -530,7 +534,7 @@ def OperateComponentPOST(request, host_name, component_name, operate):
         result["data"] = "操作失败"
     ac_logger.info('result........:%s'%result)
     return result
-         
+
 def OperateComponentPUT(request, host_name, component_name, operate):
     import requests
     from requests.auth import HTTPBasicAuth
@@ -595,11 +599,11 @@ def getOverview(request):
     try:
         extendUrl = "services/HDFS/components/DATANODE"
         dic = requestEval(extendUrl)
-        total_count = dic["ServiceComponentInfo"]["total_count"] 
+        total_count = dic["ServiceComponentInfo"]["total_count"]
         started_count = dic["ServiceComponentInfo"]["started_count"]
         hdfs_datanodes = "{0}/{1}".format(started_count,total_count)
     except Exception,e:
-        ac_logger.error(e) 
+        ac_logger.error(e)
         hdfs_datanodes = "0/0"
     data["hdfs_disk_used"] = hdfs_disk_used
     data["hdfs_shares"] = hdfs_shares
