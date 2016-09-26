@@ -7,7 +7,7 @@ from openstack.middleware.db.db import Db
 from openstack.middleware.image.image import Image
 from openstack.middleware.login.login import get_token, get_proid
 from openstack.middleware.volume.volume import Volume, Volume_attach
-from openstack.models import vm_snap
+from openstack.models import DbVmSnap
 
 
 # 虚拟机管理类
@@ -504,7 +504,7 @@ class Vm_snap:
         找到当前主机所在的快照节点
         :return:
         '''
-        tmp_ret = vm_snap.objects.get(vm_id=self.vm_id,status=1)
+        tmp_ret = DbVmSnap.objects.get(vm_id=self.vm_id,status=1)
         ret = tmp_ret.image_name
         return ret
 
@@ -517,7 +517,7 @@ class Vm_snap:
         '''
         ret = 0
         time_now = get_time()
-        root_snap = vm_snap(image_name="root",vm_id=self.vm_id,parent_name="",image_id=image_id,status=1,time=time_now)
+        root_snap = DbVmSnap(image_name="root",vm_id=self.vm_id,parent_name="",image_id=image_id,status=1,time=time_now)
         root_snap.save()
         return ret
 
@@ -529,7 +529,7 @@ class Vm_snap:
         :return:
         '''
         ret = 0
-        vm_snap.objects.filter(vm_id=vm_id).delete()
+        DbVmSnap.objects.filter(vm_id=vm_id).delete()
         return ret
 
     @plog("Vm_snap.change_node")
@@ -544,8 +544,8 @@ class Vm_snap:
         if image_name_new in image_list:
             ret = 2
         else:
-            vm_snap.objects.get(vm_id=self.vm_id,image_name=image_name_old).update(image_name=image_name_new)
-            vm_snap.objects.filter(vm_id=self.vm_id,parent_name=image_name_old).update(parent_name=image_name_new)
+            DbVmSnap.objects.get(vm_id=self.vm_id,image_name=image_name_old).update(image_name=image_name_new)
+            DbVmSnap.objects.filter(vm_id=self.vm_id,parent_name=image_name_old).update(parent_name=image_name_new)
         return ret
 
     @plog("Vm_snap.delete_node")
@@ -556,9 +556,9 @@ class Vm_snap:
         :return:
         '''
         ret = 0
-        parent_name = vm_snap.objects.get(image_name=image_name,vm_id=self.vm_id).parent_name
-        vm_snap.objects.get(image_name=image_name,vm_id=self.vm_id).delete()
-        vm_snap.objects.filter(vm_id=self.vm_id,parent_name=image_name).update(parent_name=parent_name)
+        parent_name = DbVmSnap.objects.get(image_name=image_name,vm_id=self.vm_id).parent_name
+        DbVmSnap.objects.get(image_name=image_name,vm_id=self.vm_id).delete()
+        DbVmSnap.objects.filter(vm_id=self.vm_id,parent_name=image_name).update(parent_name=parent_name)
         return ret
 
     def set_vm(self, vm_id):
@@ -575,7 +575,7 @@ class Vm_snap:
         :param image_name:
         :return:
         '''
-        ret = vm_snap.objects.get(image_name=image_name,vm_id=self.vm_id)
+        ret = DbVmSnap.objects.get(image_name=image_name,vm_id=self.vm_id)
         return ret
 
     @plog("Vm_snap.get_id")
@@ -610,9 +610,9 @@ class Vm_snap:
             assert image_id != 1
             parent_name = self.find_parent()
             assert parent_name != 1
-            date = vm_snap(image_name=image_name,vm_id=self.vm_id,parent_name=parent_name,image_id=image_id,status=1,time=time_now)
+            date = DbVmSnap(image_name=image_name,vm_id=self.vm_id,parent_name=parent_name,image_id=image_id,status=1,time=time_now)
             date.save()
-            vm_snap.objects.get(image_name=parent_name,vm_id=self.vm_id).update(status=0)
+            DbVmSnap.objects.get(image_name=parent_name,vm_id=self.vm_id).update(status=0)
         return ret
 
     @plog("Vm_snap.rebuild")
@@ -624,11 +624,11 @@ class Vm_snap:
         '''
         ret = 0
         vm = Vm_control()
-        image_id = vm_snap.objects.get(image_name=image_name,vm_id=self.vm_id).image_id
+        image_id = DbVmSnap.objects.get(image_name=image_name,vm_id=self.vm_id).image_id
         ret = vm.rebuild(self.vm_id, image_id, "default")
         assert ret != 1
-        vm_snap.objects.get(status=1,vm_id=self.vm_id).update(status=0)
-        vm_snap.objects.get(image_name=image_name,vm_id=self.vm_id).update(status=1)
+        DbVmSnap.objects.get(status=1,vm_id=self.vm_id).update(status=0)
+        DbVmSnap.objects.get(image_name=image_name,vm_id=self.vm_id).update(status=1)
         return ret
 
     @plog("Vm_snap,list_snap")
@@ -637,6 +637,6 @@ class Vm_snap:
         列出当前虚拟机下的snap
         :return:
         '''
-        tmp_list = vm_snap.objects.filter(vm_id=self.vm_id)
+        tmp_list = DbVmSnap.objects.filter(vm_id=self.vm_id)
         image_list = [i.image_name for i in tmp_list]
         return image_list

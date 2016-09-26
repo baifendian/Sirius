@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-class vm_snap(models.Model):
+class DbVmSnap(models.Model):
         image_name = models.CharField(max_length=30)
         vm_id = models.CharField(max_length=100)
         parent_name = models.CharField(max_length=30,null=True)
