@@ -118,7 +118,7 @@ def getshare(request,path):
     if space_name:
         try:
             sharelist = DataShare.objects.filter(space_name=space_name)
-            if share_onwer && share_onwer.lower() == "owner":
+            if share_onwer and share_onwer.lower() == "owner":
                 share_onwer = getUser(request).username
                 sharelist = sharelist.filter(share_user=share_onwer)
             result["code"] = StatusCode["SUCCESS"]
