@@ -36,9 +36,15 @@ codis信息
 
 ### <div id="k8sMonitor">k8s相关监控</div>
 
+<img src="readme/k8sMonitor.png"/>
+
 ### <div id="bdmsTask">离线计算任务</div>
 
+<img src="readme/bdmsTask.png" />
+
 ### <div id="k8sDesc">k8s使用说明</div>
+
+<img src="readme/k8sDesc.png" />
 
 ## <div id="userAuth">用户管理</div>
 支持对用户的增加, 删除功能:
