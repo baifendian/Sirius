@@ -3,6 +3,7 @@ import json
 import time
 import logging
 import traceback
+import requests
 
 from django.http import StreamingHttpResponse
 from datetime import datetime
@@ -379,7 +380,7 @@ def mytask_get_old_records(request):
         'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
         'startdate': '2015-08-10T00:00:00',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
         'enddate': '2016-08-30T23:59:59', 
-    }'''
+    }
 
     convert_dict(keywords)
     retu_data = []
@@ -414,6 +415,12 @@ def mytask_get_old_records(request):
                 'status':trans_result_to_status(record.result)
             })
     return generate_success( data = {'records': retu_data} )
+    '''
+    kd_logger.info('\n\n\nkeywords & type:%s\n%s\n\n'%( keywords, type(keywords) ))
+    url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/namespaces/mytasklist/getoldrecords/?oldestrecordid=%s&requestnumber=%s&keywords=%s" %( oldestrecordid, requestnumber, keywords )
+    r = requests.Session()
+    req = r.get(url)
+    return req.json()
 
 def format_datetime_obj(datetime_obj):
     if datetime_obj:
@@ -461,7 +468,7 @@ def mytask_check_has_new_records(request):
         'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
         'startdate': '2016-08-20T23:59:59',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
         'enddate': '2016-08-31T23:59:59', 
-    }'''
+    }
 
     convert_dict(keywords)
 
@@ -481,6 +488,13 @@ def mytask_check_has_new_records(request):
                                       new=True )
     filtered_records = filtered_records.filter( task_id__in=filtered_tasks )
     return generate_success( data = {'hasnew': 0 if filtered_records.count() == 0 else 1 } )
+    '''
+    kd_logger.info('\n\n\nnewestrecordid & type: %s\n %s\n\n'%(newestrecordid, type(newestrecordid)))
+    kd_logger.info('\n\n\nkeywords & type:%s\n%s\n\n'%( keywords, type(keywords) ))
+    url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/namespaces/mytasklist/checkhasnewrecords/?newestrecordid=%s&keywords=%s" %( newestrecordid, keywords )
+    r = requests.Session()
+    req = r.get(url)
+    return req.json()
 
 @csrf_exempt
 @return_http_json
@@ -496,7 +510,7 @@ def mytask_get_new_records(request):
         'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
         'startdate': '2016-08-20T23:59:59',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
         'enddate': '2016-08-31T23:59:59', 
-    }'''
+    }
     convert_dict(keywords)
     retu_data = []
 
@@ -527,6 +541,11 @@ def mytask_get_new_records(request):
                 'status':trans_result_to_status(record.result)
             })  
     return generate_success( data = {'records': retu_data} )
+    '''
+    url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/namespaces/mytasklist/getnewrecords/?newestrecordid=%s&keywords=%s" %( newestrecordid, keywords )
+    r = requests.Session()
+    req = r.get(url)
+    return req.json()
 
 #查询脚本类型
 #def get_scripttype(name):

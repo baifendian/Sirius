@@ -49,9 +49,9 @@ def return_http_json(func):
             retu_obj = func( *arg1,**arg2 )
             kd_logger.info( 'execute func %s success' % (func) )
         except:
-            s = traceback.format_exc()
-            kd_logger.error( 'execute func %s failure : %s' % (func,s) )
-            retu_obj = generate_failure( s )
+            s = 'execute func %s failure : %s' % ( func,traceback.format_exc() )
+            retu_obj = generate_failure( '%s' %s )
+            kd_logger.error( '%s' %s )
 
         obj = HttpResponse( json.dumps(retu_obj) )
         obj['Access-Control-Allow-Origin'] = '*'

@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+'''
 import datetime
 from django.db import models
 from django.contrib.auth.models import User
@@ -153,3 +154,6 @@ class Schedule_Log_Test(models.Model):
  
     class Meta:
         db_table = 'ide_schedule_log_test'
+
+
+'''
