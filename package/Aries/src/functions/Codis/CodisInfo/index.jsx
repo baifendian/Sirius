@@ -35,10 +35,12 @@ export default React.createClass({
                { title:'proxy_addr', key:'dashboard_proxy_addr', order:true ,
                render: (text, item) => {
           if(this.state.is_super==1){
-            return  <a href="javascript:void(0);" >
-          <Editable onChange={value=>{this.handleEdit(item.product_id,value)}} defaultValue={text} /></a>
+            return  (<a href="javascript:void(0);" >
+                <Editable onChange={value=>{this.handleEdit(item.product_id,value)}} defaultValue={text} />
+              </a>
+            )
           }else{
-            return <p>{text} </p>  
+            return <div>{text}</div>
           }
         }},
                { title:'Mem_used/Mem_total',	key:'memory_used_to_total',      order:true }],
@@ -229,7 +231,7 @@ onTableRowClick( record ){
       let proxylist = executedData
       let proxyinfo = [];
       for (var i=0; i < proxylist.length; i++) {
-         proxyinfo.push(<ObjectProxy proxy={proxylist[i]}/>);
+         proxyinfo.push(<ObjectProxy proxy={proxylist[i]} issuper={this.state.is_super}/>);
       }
       this.setState ( {
         "proxyinfo": proxyinfo

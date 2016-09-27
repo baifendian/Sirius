@@ -36,7 +36,7 @@ const ObjectPic =  React.createClass({
                     <td style={{width:'50px'}} className="MidTdDiv"><div /></td>
                     <td style={{width:'600px'}}>
                       <div className="borderclass">
-                      <LineChart style={{height: '300px'}} category="date" cols={{user: '用户', sales: '销量'}} data={this.props.piclist.latency} />
+                      <LineChart style={{height: '300px'}} category="date" cols={{get: 'get', mget: 'mget', lrange:'lrange', zrange:'zrange'}} data={this.props.piclist.latency} />
                       </div>
                     </td>
                   </tr>
@@ -71,6 +71,9 @@ const ObjectPic =  React.createClass({
                     <td className="percentage">{this.props.piclist.expiredkeysdata}&nbsp;/&nbsp;{this.props.piclist.allkeysdata}</td>
                     <td style={{width:'30px'}} className="MidTdDiv"><div /></td>
                     <td className="percentage">{this.props.piclist.usedmemorydata}G&nbsp;/&nbsp;{this.props.piclist.maxmemorydata}G</td>
+                  </tr>
+                  <tr>
+                    <td colSpan="3" style={{height:20}}></td>
                   </tr>
                 </tbody>
             </table>

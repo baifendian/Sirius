@@ -10,11 +10,11 @@ import errno
 import time
 import ConfigParser
 from Aries.settings import BASE_DIR,IP_CINDER,PORT_CINDER,IP_KEYSTONE,PORT_KEYSTONE,IP_NOVA,PORT_NOVA,DATABASES
-
+# from openstack.views import openstack_log
+openstack_log = logging.getLogger("openstack_log")
 pro_path = os.path.join(BASE_DIR,"openstack/middleware/common")
 # pro_path = os.path.split(os.path.realpath(__file__))[0]    //模块测试时用这个
 LOG_PATH = os.path.join(pro_path, "log")  # 日志路径
-LOG_FLAG = True  # 日志开关
 POLL_TIME_INCR = 0.5
 #opensatck配置
 IP_keystone = IP_KEYSTONE
@@ -67,7 +67,7 @@ def init_log(logfile=os.path.join(LOG_PATH, "dashboard.log")):
         pass
 
 
-logger = init_log()
+# logger = init_log()
 
 
 def dlog(log, lever="INFO"):
@@ -77,21 +77,18 @@ def dlog(log, lever="INFO"):
     :param lever:
     :return:
     '''
-    global LOG_FLAG
-    assert LOG_FLAG == True
     try:
-        global logger
         lever = lever.upper()
         if lever == "INFO":
-            logger.info(log)
+            openstack_log.info(log)
         elif lever == "DEBUG":
-            logger.debug(log)
+            openstack_log.debug(log)
         elif lever == "WARNING":
-            logger.warning(log)
+            openstack_log.warning(log)
         elif lever == "ERROR":
-            logger.error(log)
+            openstack_log.error(log)
         elif lever == "CRITICAL":
-            logger.critical(log)
+            openstack_log.critical(log)
     except:
         pass
 
@@ -227,7 +224,18 @@ def plog(method_name):
                 ret = 1
                 dlog("%s err:%s" % (method_name, err), lever="ERROR")
             return ret
-
         return catch_log
-
     return logs
+
+#测试时使用，计算执行时间，如果需要得到更具体的时间消耗，使用@profile
+def times(method_name):
+    def get_time(func):
+        def catch_time(*args,**kwargs):
+            time_start = time.time()
+            ret = func(*args,**kwargs)
+            time_end = time.time()
+            time_cost = time_end - time_start
+            dlog("%s cost time:%s"%(method_name,time_cost))
+            return ret
+        return catch_time
+    return get_time

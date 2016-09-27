@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: sirius
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: sirius
+        service: sirius
+    spec:
+      containers:
+        - name: sirius
+          image: docker.baifendian.com/lupan/sirius_lugu:1
+          ports:
+            - containerPort: 10086
+          volumeMounts:
+            - mountPath: /opt/Sirius/log
+              name: siriuslog
+            - mountPath: /opt/Siurs/download
+              name: siriusdownload
+      imagePullSecrets:
+        - name: docker-registry-sys 
+      volumes:
+        - emptyDir: {}
+          name: siriuslog
+        - emptyDir: {}
+          name: siriusdownload
+      imagePullSecrets:
+        - name: docker-registry-sys
+      nodeSelector:
+        kubernetes.io/hostname: 192.168.49.46

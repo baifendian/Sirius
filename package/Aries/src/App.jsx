@@ -101,7 +101,7 @@ const App = React.createClass({
     this.updateHeadTitle()
   },
 
-  componentDidUpdate(){ 
+  componentDidUpdate(){
     this.updateHeadTitle()
   },
 
@@ -178,7 +178,7 @@ const App = React.createClass({
                       <NavItem href={`CloudContainer/UserDoc/CC2?${params}`} title="云中心计算集群" />
                     </NavItem>
                    </NavItem>
-
+              {/* openstack 部分暂时不处理 */}
                 <NavItem key={30} href="CloudHost" icon="server" title="云主机">
                   <NavItem key={31} href="CloudHost/Calculation" icon="th-large" title="计算">
                     <NavItem href={`CloudHost/Calculation/Instances?${params}`} title="虚拟机" />

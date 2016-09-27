@@ -4,6 +4,7 @@ from django.conf import settings
 from hdfs.tools import *
 import sys
 import threading
+import traceback
 import time
 import json
 reload(sys)

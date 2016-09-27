@@ -108,22 +108,25 @@ class Volume:
         :param num:
         :param size:
         :param availability_zone:
-        :param des:
-        :param metadata:
-        :param volume_type:
-        :param snapshot_id:
+        :param des: 磁盘描述
+        :param metadata: 元数据，暂时没使用
+        :param volume_type: 磁盘类型，默认为ceph
+        :param snapshot_id: 快照id
         :return:
         '''
         ret = 0
         assert self.token != "", "not login"
-        workpool = WorkPool()
-        workpool.work_add()
-        for i in range(num):
-            disk_name = "%s_%s"%(name,i)
-            self.result.update({disk_name:0})
-            workpool.task_add(self.create,(size,availability_zone,disk_name,des,metadata,volume_type,snapshot_id,1))
-        workpool.work_start()
-        workpool.work_wait()
+        if num == 1:
+            ret = self.create(size,availability_zone,name,des,metadata,volume_type,snapshot_id,1)
+        else:
+            workpool = WorkPool()
+            workpool.work_add()
+            for i in range(num):
+                disk_name = "%s_%s"%(name,i)
+                self.result.update({disk_name:0})
+                workpool.task_add(self.create,(size,availability_zone,disk_name,des,metadata,volume_type,snapshot_id,1))
+            workpool.work_start()
+            workpool.work_wait()
         return ret
 
     @plog("Volume.list_detail")

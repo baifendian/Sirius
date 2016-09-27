@@ -109,11 +109,11 @@ const TabLiebiao = React.createClass({
     this.markControlChangedStyle( node,changed )
   },
   markShellTypeControlState( changed ){
-    let node = ReactDOM.findDOMNode( this.refs.ShellTypeSelect ).childNodes[0].childNodes[0]
+    let node = ReactDOM.findDOMNode( this.refs.ShellTypeSelect ).childNodes[0]
     this.markControlChangedStyle( node,changed )
   },
   markExecuteResultControlState( changed ){
-    let node = ReactDOM.findDOMNode( this.refs.ExecuteResultSelect ).childNodes[0].childNodes[0]
+    let node = ReactDOM.findDOMNode( this.refs.ExecuteResultSelect ).childNodes[0]
     this.markControlChangedStyle( node,changed )
   },
   markDataRangeControlState( changed ){
