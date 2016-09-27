@@ -248,7 +248,7 @@ div.CodisInfoChildRootDiv div.DataTableFatherDiv table {
     background-color: #BBDEFB !important;
 }
 
-div.HostInfoChildRootDiv,div.CodisInfoChildRootDiv {
+div.CodisInfoChildRootDiv {
 
   div.SearchInputFatherDiv{
 	  float:right;
@@ -308,9 +308,13 @@ div.HostInfoChildRootDiv,div.CodisInfoChildRootDiv {
       tr{
         display: block;
         width: 100%;
-        th{
+        th{          
           display: inline-block;
           border-bottom: 3px solid #DDEEFD;
+          width: 16%
+        }
+        th:nth-child(4){
+          width: 36%
         }
       }
     }
@@ -327,9 +331,12 @@ div.HostInfoChildRootDiv,div.CodisInfoChildRootDiv {
         td{
           display: inline-block;
           border-top: 0px;
+          width: 16%
+        }
+        td:nth-child(4){
+          width: 36%
         }
       }
-
     }
   }
 

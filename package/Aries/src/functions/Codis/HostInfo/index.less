@@ -105,9 +105,14 @@ div.HostInfoChildRootDiv div.DataTableFatherDiv table {
 
       th{
         display: inline-block;
-        width: 16.66%;
-
+        width: 10%;
         border-bottom: 3px solid #DDEEFD;
+      }
+      th:nth-child(2){
+        width: 15%;
+      }
+      th:nth-child(6){
+        width: 45%
       }
     }
   }
@@ -115,7 +120,6 @@ div.HostInfoChildRootDiv div.DataTableFatherDiv table {
   tbody {
     display: block;
     height: 300px;
-//    display: block;
     width: 100%;
   	overflow-x: hidden;
   	overflow-y: auto;
@@ -123,13 +127,17 @@ div.HostInfoChildRootDiv div.DataTableFatherDiv table {
       display: block;
       width: 100%;
       border-bottom: 1px solid #EFF3F8;
-
       td{
         display: inline-block;
-        width: 16.66%;
         border-top: 0px;
+        width: 10%;
       }
+      td:nth-child(2){
+        width: 15%;
+      }
+      td:nth-child(6){
+        width: 45%
+      }      
     }
-
   }
 }
