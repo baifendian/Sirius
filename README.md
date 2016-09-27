@@ -22,7 +22,7 @@ QQ讨论群：378093490
 目前支持HDFS文件系统的增加, 删除, 恢复, 分享, 上传, 下载, 统计等功能:
 <img src="readme/hdfsCloud.png"/>
 
-### <div id="codisCloud">COIDS云</div>
+### <div id="codisCloud">CODIS云</div>
 
 目前支持codis信息, 主机信息:
 
@@ -55,7 +55,7 @@ codis信息
 * <a href="#commonDeploy">普通环境部署</a>
 * <a href="#k8sDeploy">k8s集群的部署</a>
 
-## <div id="#commonDeploy">普通环境部署</div>
+### <div id="#commonDeploy">普通环境部署</div>
 
 (1) 代码拷贝
 
@@ -193,7 +193,7 @@ OPENSTACK:
 用户名, 密码为ldap的用户名和密码
 ```
 
-## <div id="k8sDeploy">k8s集群的部署</div>
+### <div id="k8sDeploy">k8s集群的部署</div>
 
 提示: 由于目前sirius的docker image放在 docker.baifendian.com 私服中.
 
