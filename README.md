@@ -8,8 +8,6 @@ QQ讨论群：378093490
  <img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="Sirius" title="Sirius">
 </a>
 
-# <div id="2">功能介绍</div>
-
 ## <div id="overview">概览</div>
 
 目前支持已经管理的服务统计功能:
@@ -52,6 +50,7 @@ codis信息
 * <a href="#k8sDeploy">k8s集群的部署</a>
 
 ## <div id="#commonDeploy">普通环境部署</div>
+
 (1) 代码拷贝
 
 ```bash
@@ -221,10 +220,10 @@ $ kubectl create -f sirius-rc.yaml
 $ kubectl create -f sirius-ingress.yaml
 ```
 
-(7) 登录
+(5) 登录
 
 ```bash
-127.0.0.1:10086
+sirius.bfdcloud.com
 ```
 
 <img src="readme/login.png"/>
