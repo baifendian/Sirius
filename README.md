@@ -1,4 +1,4 @@
-## <div id="1">Sirius是什么</div>
+# <div id="1">Sirius是什么</div>
 
 Sirius是由[百分点科技](www.baifendian.com)开发的一套云中心服务管理dashboard。
 
@@ -8,23 +8,23 @@ QQ讨论群：378093490
  <img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="Sirius" title="Sirius">
 </a>
 
-## <div id="2">功能介绍</div>
+# <div id="2">功能介绍</div>
 
-### <div id="overview">概览</div>
+## <div id="overview">概览</div>
 
 目前支持已经管理的服务统计功能:
 <img src="readme/overView.png" />
 
-### <div id="cloudService">云服务</div>
+## <div id="cloudService">云服务</div>
 
 目前包含HDFS云和CODIS云服务的管理
 
-#### <div id="hdfsCloud">HDFS云</div>
+### <div id="hdfsCloud">HDFS云</div>
 
 目前支持HDFS文件系统的增加, 删除, 恢复, 分享, 上传, 下载, 统计等功能:
 <img src="readme/hdfsCloud.png"/>
 
-#### <div id="codisCloud">COIDS云</div>
+### <div id="codisCloud">COIDS云</div>
 
 目前支持codis信息, 主机信息:
 
@@ -34,24 +34,24 @@ codis信息
 主机信息
 <img src="readme/codisHost.png"/>
 
-### <div id="cloudContainer">云容器</div>
+## <div id="cloudContainer">云容器</div>
 
-#### <div id="k8sMonitor">k8s相关监控</div>
+### <div id="k8sMonitor">k8s相关监控</div>
 
-#### <div id="bdmsTask">离线计算任务</div>
+### <div id="bdmsTask">离线计算任务</div>
 
-#### <div id="k8sDesc">k8s使用说明</div>
+### <div id="k8sDesc">k8s使用说明</div>
 
-##### <div id="userAuth">用户管理</div>
+## <div id="userAuth">用户管理</div>
 支持对用户的增加, 删除功能:
 <img src="readme/spaceList.png"/>
 
-## <div id="deploy">如何部署</div>
+# <div id="deploy">如何部署</div>
 
 * <a href="#commonDeploy">普通环境部署</a>
 * <a href="#k8sDeploy">k8s集群的部署</a>
 
-### <div id="#commonDeploy">普通环境部署</div>
+## <div id="#commonDeploy">普通环境部署</div>
 (1) 代码拷贝
 
 ```bash
@@ -188,7 +188,7 @@ OPENSTACK:
 用户名, 密码为ldap的用户名和密码
 ```
 
-### <div id="k8sDeploy">k8s集群的部署</div>
+## <div id="k8sDeploy">k8s集群的部署</div>
 
 提示: 由于目前sirius的docker image放在 docker.baifendian.com 私服中.
 
