@@ -97,20 +97,22 @@ var Datarequest = {
       }
     }
     if (host_status == "restart") {
-      if (successful.length > 0) message.success(successful + '重启成功')
+      if (successful.length > 0) notification['success']({message: '虚拟机重启', description: successful + '重启成功',})
       if (error.length > 0) {
-        message.success(error + '重启失败')
+        //message.success(error + '重启失败')
+        notification['success']({message: '虚拟机重启', description: successful + '重启失败',});
       }
       if (same.length > 0) {
         message.danger(same + '已经关闭')
+
       }
     }
     if (host_status == "delete") {
       if (successful.length > 0) {
-        message.success(successful + '删除成功')
+        notification['success']({message: '虚拟机删除', description: successful + '删除成功',});
       }
       if (error.length > 0) {
-        message.success(error + '删除失败')
+        notification['success']({message: '虚拟机删除', description: successful + '删除失败',});
       }
     }
   },
@@ -131,6 +133,9 @@ var Datarequest = {
         },
         success: (retu_data) => {
           fun(_this, retu_data, host_status, url, self)
+      },
+      error:() => {
+        message.danger('API异常！')
       }
   })
   },

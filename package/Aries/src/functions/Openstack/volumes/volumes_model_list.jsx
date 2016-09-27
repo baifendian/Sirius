@@ -1,7 +1,7 @@
-import {Form, FormItem} from 'bfd-ui/lib/Form'
-import FormInput from 'bfd-ui/lib/FormInput'
-import FormTextarea from 'bfd-ui/lib/FormTextarea'
-import {FormSelect, Option} from 'bfd-ui/lib/FormSelect'
+//import {Form, FormItem} from 'bfd-ui/lib/Form'
+//import FormInput from 'bfd-ui/lib/FormInput'
+//import FormTextarea from 'bfd-ui/lib/FormTextarea'
+//import {FormSelect, Option} from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 import React from 'react'
 import {Modal, ModalHeader, ModalBody} from 'bfd-ui/lib/Modal'
@@ -10,15 +10,17 @@ import Button from 'bfd-ui/lib/Button'
 import OPEN from '../data_request/request.js'
 import DataTable from 'bfd/DataTable'
 //import { Modal, ModalHeader, ModalBody } from 'bfd/Modal'
-
+import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
+import update from 'react-update'
 import {Menu, Dropdown} from 'antd';
 
 
 const Redact = React.createClass({
   getInitialState() {
+    this.update = update.bind(this)
     this.rules = {
       name(v) {
-        if (!v) return '请填写用户群'
+        if (!v) return '名称不能为空'
       },
       date(v) {
         if (!v) return '日期不能为空'
@@ -54,13 +56,21 @@ const Redact = React.createClass({
   handleSave() {
     //console.log(this.state.formData)
     // console.log(this.refs.form)
+    this.props._this.refs.modal.close()
+    //this.props._this.setState({loading:false})
+    this.props._self.setState({loading:true})
     this.refs.form.save()
   },
 
   handleSuccess(res) {
-    // console.log(res)
-    this.props._this.refs.modal.close()
-    message.success('保存成功！')
+     //console.log(res)
+    this.props._self.setState({loading:false})
+    OPEN.update_url(this.props._self,"volumes")
+   // this.props._this.refs.modal.close()
+   if (res['status']){
+    message.success('修改成功！')}else{
+      message.danger('修改失败')
+    }
   },
   render() {
     const {formData} = this.state
@@ -73,6 +83,7 @@ const Redact = React.createClass({
           action={url}
           data={formData}
           rules={this.rules}
+          onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
           <FormItem label="备份名称" required name="name">
@@ -92,6 +103,7 @@ const Redact = React.createClass({
 
 const Backup_disk = React.createClass({
   getInitialState() {
+    this.update = update.bind(this)
     this.rules = {
       name(v) {
         if (!v) return '请填写用户群'
@@ -128,13 +140,21 @@ const Backup_disk = React.createClass({
 
   handleSave() {
     //console.log(this.state.formData)
+    this.props._this.refs.modal.close()
+    this.props._self.setState({loading:true})
     this.refs.form.save()
   },
 
   handleSuccess(res) {
     // console.log(res)
-    this.props._this.refs.modal.close()
-    message.success('保存成功！')
+    this.props._self.setState({loading:false})
+    if (res['status']){
+    message.success('备份成功')}else{
+    message.danger('备份失败')
+    }
+    OPEN.update_url(this.props._self,"volumes")
+    this.props._self.setState({button_status:true})
+    this.props._self.setState({button_statuss:true})
   },
   render() {
     const {formData} = this.state
@@ -147,6 +167,7 @@ const Backup_disk = React.createClass({
           action={url}
           data={formData}
           rules={this.rules}
+          onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
           <div><h4>此云硬盘已加载到虚拟机。在某些情况下，从已加载的云硬盘上做备份会导致备份损坏的情况。</h4></div>
@@ -167,6 +188,7 @@ const Backup_disk = React.createClass({
 
 const Uninstall_disk = React.createClass({
   getInitialState() {
+    this.update = update.bind(this)
     return {
       formData: {
         data: this.volumes_id(),
@@ -208,15 +230,29 @@ const Uninstall_disk = React.createClass({
   },
 
   handleSave() {
-    // console.log(this.state.formData)
-    this.refs.form.save()
+    //console.log(this.state.formData)
+    this.props._this.refs.modal.close()
+    if (this.state.formData['host_id']){
+      this.props._self.setState({loading:true})
+      //this.refs.form.save()
+    }else{
+      message.danger('未挂载')
+    }
   },
 
   handleSuccess(res) {
     //console.log(res)
     //this.refs.modal_m.close()
-    this.props._this.refs.modal.close()
-    message.success('保存成功！')
+   // console.log(res)
+   // this.props._this.refs.modal.close()
+    this.props._self.setState({loading:false})
+    if (res['status']){
+    message.success('卸载成功')}else{
+    message.danger('卸载失败')
+    }
+    OPEN.update_url(this.props._self,"volumes")
+    this.props._self.setState({button_status:true})
+    this.props._self.setState({button_statuss:true})
   },
   handleOpen() {
     this.refs.modal_m.open()
@@ -241,6 +277,7 @@ const Uninstall_disk = React.createClass({
           action={url}
           data={formData}
           rules={this.rules}
+          onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
           <div><h4>当前链接虚拟机</h4></div>
@@ -263,6 +300,7 @@ const Uninstall_disk = React.createClass({
 
 const Loading_disk = React.createClass({
   getInitialState() {
+    this.update = update.bind(this)
     this.rules = {
       count(v) {
         if (!v) return '请填写用户群'
@@ -311,14 +349,23 @@ const Loading_disk = React.createClass({
     formData.host_id = this.refs.select.state['value']
     formData.host_name = this.refs.select.title
     this.setState({formData})
+    this.props._this.refs.modal.close()
+    this.props._self.setState({loading:true})
     this.refs.form.save()
   },
 
   handleSuccess(res) {
     //console.log(res)
     // this.refs.modal_m.close()
-    this.props._this.refs.modal.close()
-    message.success('保存成功！')
+    //console.log(res)
+    this.props._self.setState({loading:false})
+    if (res['status']){
+    message.success('加载成功')}else{
+    message.danger('加载失败')
+    }
+    OPEN.update_url(this.props._self,"volumes")
+    this.props._self.setState({button_status:true})
+    this.props._self.setState({button_statuss:true})
   },
   handleOpen() {
     // this.props._this.refs.modal.close()
@@ -346,6 +393,7 @@ const Loading_disk = React.createClass({
           action={url}
           data={formData}
           rules={this.rules}
+          onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
           <FormItem label="加载到" name="brand">
@@ -364,6 +412,7 @@ const Loading_disk = React.createClass({
 
 const Extend = React.createClass({
   getInitialState() {
+    this.update = update.bind(this)
     this.rules = {
       count(v) {
         if (!v) return '请填写用户群'
@@ -400,14 +449,25 @@ const Extend = React.createClass({
 
   handleSave() {
     //console.log(this.state.formData)
+    this.props._this.refs.modal.close()
+    this.props._self.setState({loading:true})
     this.refs.form.save()
   },
 
   handleSuccess(res) {
-    //console.log(res)
+   // console.log(res)
     //this.refs.modal_m.close()
-    this.props._this.refs.modal.close()
-    message.success('保存成功！')
+    this.props._self.setState({loading:false})
+    this.props._self.setState({button_statuss:true})
+    if (res['status']==true){
+    message.success('保存成功！')}else{
+      if (res['status']=='error'){
+        message.danger(res['totalList'])
+      }else{
+        message.danger('修改失败')
+      }
+    }
+    OPEN.update_url(this.props._self,"volumes")
   },
   render() {
     const {formData} = this.state
@@ -420,6 +480,7 @@ const Extend = React.createClass({
           action={url}
           data={formData}
           rules={this.rules}
+          onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
           <FormItem label="当前大小" name="name">
@@ -456,11 +517,11 @@ const Model_list = React.createClass({
   },
   modulevalue(){
     return {
-      'Extend': <Extend volumes_all={this.props.select_all} _this={this}/>,
-      'Loading_disk': <Loading_disk volumes_all={this.props.select_all} _this={this}/>,
-      'Uninstall_disk': <Uninstall_disk volumes_all={this.props.select_all} _this={this}/>,
-      'Backup_disk': <Backup_disk volumes_all={this.props.select_all} _this={this}/>,
-      'Redact': <Redact volumes_all={this.props.select_all} _this={this}/>,
+      'Extend': <Extend volumes_all={this.props.select_all} _this={this} _self={this.props._this}/>,
+      'Loading_disk': <Loading_disk volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
+      'Uninstall_disk': <Uninstall_disk volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
+      'Backup_disk': <Backup_disk volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
+      'Redact': <Redact volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
     }
   },
   handleButtonClick(e) {

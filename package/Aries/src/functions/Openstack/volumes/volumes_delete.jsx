@@ -1,15 +1,18 @@
-import {Form, FormItem} from 'bfd-ui/lib/Form'
-import FormInput from 'bfd-ui/lib/FormInput'
-import FormTextarea from 'bfd-ui/lib/FormTextarea'
-import {FormSelect, Option} from 'bfd-ui/lib/FormSelect'
+//import {Form, FormItem} from 'bfd-ui/lib/Form'
+//import FormInput from 'bfd-ui/lib/FormInput'
+//import FormTextarea from 'bfd-ui/lib/FormTextarea'
+//import {FormSelect, Option} from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 import React from 'react'
 import {Modal, ModalHeader, ModalBody} from 'bfd-ui/lib/Modal'
 import Button from 'bfd-ui/lib/Button'
 import OPEN from '../data_request/request.js'
+import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
+import update from 'react-update'
 
 const Delete_volumes = React.createClass({
   getInitialState() {
+    this.update = update.bind(this)
     return {
       volumes_object: 'test',
       formData: {
@@ -32,11 +35,17 @@ const Delete_volumes = React.createClass({
   },
 
   handleSuccess(res) {
-    //console.log(res)
+    console.log(res)
     this.refs.modal_m.close()
     this.props._this.setState({loading:false})
-    message.success('保存成功！')
+    //console.log(res[Object.keys(res))
+    let return_keys=Object.keys(res)[0]
+    if (res[return_keys]){
+    message.success('删除成功！')}else{
+      message.danger('删除失败！')
+    }
     OPEN.update_url(this.props._this,"volumes")
+    this.props._this.setState({button_statuss:true})
   },
   handleOpen() {
     this.refs.modal_m.open()
@@ -60,7 +69,7 @@ const Delete_volumes = React.createClass({
     // console.log(url)
     return (
       <div style={{float: "left", margin: "0px 10px 0px 0px"}}>
-        <Button type="danger" className="btn btn-primary" onClick={this.handleOpen}>删除</Button>
+        <Button type="danger" className="btn btn-primary" onClick={this.handleOpen} disabled={this.props.button_statuss}>删除</Button>
         <Modal ref="modal_m">
           <ModalHeader>
             <h4>确认 删除云磁盘</h4>
@@ -71,6 +80,7 @@ const Delete_volumes = React.createClass({
               action={url}
               data={formData}
               rules={this.rules}
+              onChange={formData => this.update('set', { formData })}
               onSuccess={this.handleSuccess}
             >
               <div style={{height: '100px'}}>

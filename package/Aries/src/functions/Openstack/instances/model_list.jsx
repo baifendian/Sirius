@@ -12,12 +12,12 @@ import xhr from 'bfd/xhr'
 import {Spin} from 'antd'
 import {notification} from 'antd'
 import Input from 'bfd-ui/lib/Input'
-
-
-import {Form, FormItem} from 'bfd-ui/lib/Form'
-import FormInput from 'bfd-ui/lib/FormInput'
-import FormTextarea from 'bfd-ui/lib/FormTextarea'
-import {FormSelect, Option as Options} from 'bfd-ui/lib/FormSelect'
+import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option as Options, FormTextarea } from 'bfd/Form'
+import update from 'react-update'
+//import {Form, FormItem} from 'bfd-ui/lib/Form'
+//import FormInput from 'bfd-ui/lib/FormInput'
+//import FormTextarea from 'bfd-ui/lib/FormTextarea'
+//import {FormSelect, Option as Options} from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 import OPEN from '../data_request/request.js'
 
@@ -101,7 +101,7 @@ const Disk_list = React.createClass({
               {disk_display}
             </MultipleSelect>
           </div>
-          <div className="create_host">
+          <div style={{"margin-top": "10px"}}>
             <Button onClick={this.handlerequest}>确认</Button>
             <Button onClick={this.handleclose}>取消</Button>
           </div>
@@ -113,6 +113,7 @@ const Disk_list = React.createClass({
 
 const Vm_Type = React.createClass({
   getInitialState() {
+    this.update = update.bind(this)
     return {
       formData: {
         brand: 100,
@@ -172,6 +173,7 @@ const Vm_Type = React.createClass({
         action="openstack/bfddashboard/instances/"
         data={formData}
         rules={this.rules}
+        onChange={formData => this.update('set', { formData })}
         onSuccess={this.handleSuccess}
       >
         <FormItem label="当前配置" required name="name">
@@ -196,9 +198,10 @@ const Vm_Type = React.createClass({
 
 const Vm_Backup = React.createClass({
   getInitialState() {
+    this.update = update.bind(this)
     this.rules = {
       name(v) {
-        if (!v) return '请填写用户群'
+        if (!v) return '名称不能为空'
       },
       date(v) {
         if (!v) return '日期不能为空'
@@ -256,6 +259,7 @@ const Vm_Backup = React.createClass({
           action={url}
           data={formData}
           rules={this.rules}
+          onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
           <FormItem label="备份名称" required name="name_bakup">
@@ -276,6 +280,7 @@ const Vm_Backup = React.createClass({
 
 const Vm_image = React.createClass({
   getInitialState() {
+    this.update = update.bind(this)
     return {
       formData: {
         brand: 100,
@@ -335,6 +340,7 @@ const Vm_image = React.createClass({
         action="openstack/bfddashboard/instances/"
         data={formData}
         rules={this.rules}
+        onChange={formData => this.update('set', { formData })}
         onSuccess={this.handleSuccess}
       >
         <FormItem label="选择镜像" name="type">
@@ -356,6 +362,7 @@ const Vm_image = React.createClass({
 const Forced_vm = React.createClass({
 
   getInitialState() {
+    this.update = update.bind(this)
     return {
       formData: {
         brand: 0,
@@ -401,6 +408,7 @@ const Forced_vm = React.createClass({
         action="openstack/bfddashboard/instances/"
         data={formData}
         rules={this.rules}
+        onChange={formData => this.update('set', { formData })}
         onSuccess={this.handleSuccess}
       >
         <div>确定{this.props.title}{this.state.host_name}虚拟机？</div>
@@ -415,8 +423,8 @@ const Forced_vm = React.createClass({
     )
   }
 })
-
-const Disk_model = React.createClass({
+/*
+const Disk_model1 = React.createClass({
   getInitialState() {
     return {
       percent: 0,
@@ -569,10 +577,10 @@ const Disk_model = React.createClass({
       </div>
     )
   }
-})
+})*/
 
 
-const Disk_model1 = React.createClass({
+const Disk_model = React.createClass({
   getInitialState() {
     return {
       percent: 0,
@@ -618,10 +626,7 @@ const Disk_model1 = React.createClass({
     }
     _this.setState({data_list, data_object, loading: false})
   },
-  handleMenuClick(e) {
-    //console.log('click', e['key']);
-    this.setState({loading: true})
-    OPEN.Get_image(this, this.handlerequest)
+  componentWillMount: function() {
     const _this = this
     xhr({
       type: 'GET',
@@ -652,24 +657,41 @@ const Disk_model1 = React.createClass({
         _this.setState({flavor_object, flavor_list})
       }
     })
+  },
+  handleMenuClick(e) {
+    //console.log('click', e['key']);
+   // console.log(e['key'].constructor)
+    if (parseInt(e['key'])*1){
+     // console.log('aaa')
+      this.props._this.callback_status(parseInt(e['key']))
+    }else{
+    this.setState({loading: true})
+    OPEN.Get_image(this, this.handlerequest)
+    const _this = this
+    this.setState({loading:false})
     let module = this.modulevalue()[e["key"]]
     // console.log(module)
-    this.setState({title: this.values()[e['key']], module,loading: false})
+    this.setState({title: this.values()[e['key']], module})
     this.refs.model_disk.open()
+  }
   },
   render() {
     const DropdownButton = Dropdown1.Button;
     const menu = (
-      <Menu onClick={this.handleMenuClick}>
-        <Menu.Item key="Vm_Backup" disabled={this.props.button_status}>创建备份</Menu.Item>
-        <Menu.Item key="Disk_list" disabled={this.props.button_status}>加载云硬盘</Menu.Item>
-        <Menu.Item key="Vm_Type" disabled={this.props.button_status}>更改配置</Menu.Item>
-        <Menu.Item key="Backup_disk" disabled={this.props.button_status}>重置系统</Menu.Item>
+      <Menu onClick={this.handleMenuClick} style={{"text-align":"center"}}>
+        <Menu.Item key="1" disabled={this.props.button_status} >启动</Menu.Item>
+        <Menu.Item key="2" disabled={this.props.button_status}>重启</Menu.Item>
+        <Menu.Item key="3" disabled={this.props.button_status}>关闭</Menu.Item>
+        <Menu.Item key="Vm_Backup" disabled={this.props.button_statuss}>创建备份</Menu.Item>
+        <Menu.Item key="Disk_list" disabled={this.props.button_statuss}>加载云硬盘</Menu.Item>
+        <Menu.Item key="Vm_Type" disabled={this.props.button_statuss}>更改配置</Menu.Item>
+        <Menu.Item key="Backup_disk" disabled={this.props.button_statuss}>重置系统</Menu.Item>
+        <Menu.Item key="4" disabled={this.props.button_status}>删除</Menu.Item>
       </Menu>
     )
     return (
       <div>
-        <DropdownButton onClick={this.handleButtonClick} overlay={menu} type="primary" trigger={['click']}>
+        <DropdownButton onClick={this.handleButtonClick} overlay={menu} type="primary" trigger={['click']} className="antd_class">
           更多操作
         </DropdownButton>
         <div>

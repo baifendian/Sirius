@@ -1,7 +1,7 @@
-import { Form, FormItem } from 'bfd-ui/lib/Form'
-import FormInput from 'bfd-ui/lib/FormInput'
-import FormTextarea from 'bfd-ui/lib/FormTextarea'
-import { FormSelect, Option } from 'bfd-ui/lib/FormSelect'
+//import { Form, FormItem } from 'bfd-ui/lib/Form'
+//import FormInput from 'bfd-ui/lib/FormInput'
+//import FormTextarea from 'bfd-ui/lib/FormTextarea'
+//import { FormSelect, Option } from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 import React from 'react'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
@@ -9,9 +9,12 @@ import Button from 'bfd-ui/lib/Button'
 import OPEN from '../data_request/request.js'
 import Spinner from 'bfd/Spinner'
 import {Spin} from 'antd'
+import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
+import update from 'react-update'
 
 const Create_volumes=React.createClass({
   getInitialState() {
+    this.update = update.bind(this)
     this.rules = {
       name(v) {
         if (!v) return '请填写用户群'
@@ -44,10 +47,14 @@ const Create_volumes=React.createClass({
 
   handleSuccess(res) {
   //  console.log(res)
-    
     this.props._this.setState({loading:false})
-    message.success('保存成功！')
-    OPEN.update_url(this,"volumes")
+    OPEN.update_url(this.props._this,"volumes")
+    let return_keys=Object.keys(res)[0]
+    if (res[return_keys]){
+    message.success('创建成功！')}else{
+      message.danger('创建失败！')
+    }
+    
   },
   handleOpen() {
     this.refs.modal_m.open()
@@ -71,6 +78,7 @@ const Create_volumes=React.createClass({
               action={url}
               data={formData} 
               rules={this.rules} 
+              onChange={formData => this.update('set', { formData })}
               onSuccess={this.handleSuccess}
             >
               <FormItem label="名称" required name="name">

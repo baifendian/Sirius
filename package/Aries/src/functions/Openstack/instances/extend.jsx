@@ -4,15 +4,15 @@ import './index.less'
 import './extend.less'
 import {Modal, ModalHeader, ModalBody} from 'bfd-ui/lib/Modal'
 import OPEN from '../data_request/request.js'
-
+import update from 'react-update'
 import {Progress, Button} from 'antd'
 const ButtonGroup = Button.Group
 
-import {Form, FormItem} from 'bfd-ui/lib/Form'
-//import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
-import FormInput from 'bfd-ui/lib/FormInput'
-import FormTextarea from 'bfd-ui/lib/FormTextarea'
-import {FormSelect, Option} from 'bfd-ui/lib/FormSelect'
+//import {Form, FormItem} from 'bfd-ui/lib/Form'
+import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
+//import FormInput from 'bfd-ui/lib/FormInput'
+//import FormTextarea from 'bfd-ui/lib/FormTextarea'
+//import {FormSelect, Option} from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 //import React from 'react'
 //import './index.less'
@@ -123,12 +123,13 @@ const Create_model_disk = React.createClass({
         let disk_numbers = this.state.disk_number + 1
         arr.splice(number_s['i'], 1)
         host_diskss.splice(number_s['i'] - 1, 1)
-        delete this.refs[number['item']].context.form.props.data[number['item']]
+        //delete this.refs[number['item']].context.form.props.data[number['item']]
+        let formdata=this.props.disks_m.state.formData
+        console.log(formdata,number['item'])
+        delete formdata[number['item']]
+        this.props.disks_m.setState({formData:formdata})
         disk_arr.pop();
         disk_mm.splice(number_s['i'] - 1, 1)
-        //console.log('disk_mm',disk_mm)
-        //console.log('number_s',number_s['i'])
-        //console.log(host_diskss)
         if (arr.length == 1) {
           disk_mm.pop();
           disk_mm.push('--')
@@ -157,7 +158,7 @@ const Create_model_disk = React.createClass({
   render(){
     let nav = this.state.disk_list.map((item, i) => {
       let disk = 'disk' + i
-      // console.log(disk,item,'............aaa')
+      console.log(disk,item,i,'............aaa')
       if (i == 0) {
         return (
           <h1 key={i}></h1>
@@ -166,7 +167,7 @@ const Create_model_disk = React.createClass({
         return (
           <div key={ i }>
             <FormItem label="数据盘" name={item} className="disk_create">
-              <FormInput placeholder="10GB~1TB"></FormInput><Icon type=" fa-times"
+              <FormInput placeholder="10GB~1TB" ></FormInput><Icon type=" fa-times"
                                                                   onClick={this.create_disk.bind(this, 2, {item}, {i})}/>
             </FormItem>
           </div>
@@ -195,6 +196,7 @@ const Create_model = React.createClass({
   },
   getInitialState() {
     const self = this;
+    this.update = update.bind(this)
     this.rules = {
       name(v) {
         if (!v) {
@@ -217,8 +219,8 @@ const Create_model = React.createClass({
               disk_arr.splice(i, 1, v)
             }
           }
-          // console.log(v,'sssssssssssssss')
-          // console.log(self.state.host_disks)
+           //console.log(v,'sssssssssssssss')
+           //console.log(self.state.host_disks)
           self.setState({
             host_disk: disk_arr
           })
@@ -254,6 +256,7 @@ const Create_model = React.createClass({
               disk_arr.splice(i, 1, v)
             }
           }
+          console.log(v,'fff')
           self.setState({
             host_disk: disk_arr
           })
@@ -444,6 +447,7 @@ const Create_model = React.createClass({
                     action="openstack/bfddashboard/instances/"
                     data={formData}
                     rules={this.rules}
+                    onChange={formData => this.update('set', { formData })}
                     onSuccess={this.handleSuccess}
                   >
                     <FormItem label="名称" required name="name" placeholder={this.state.host_name} help="">

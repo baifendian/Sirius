@@ -350,7 +350,10 @@ def volumes(request):
             if len(disk['attachments'][0].keys()) == 4:
                 for disk_host in disk['attachments']:
                     sys['device'] = disk_host['device']
-                    sys['servername'] = vm_manage.show_detail(disk_host['serverId'])['server']['name']
+                    try:
+                        sys['servername'] = vm_manage.show_detail(disk_host['serverId'])['server']['name']
+                    except:
+                        sys['servername'] = None
                     sys['server_id'] = disk_host['serverId']
             else:
                 sys['device'] = ''
@@ -360,7 +363,7 @@ def volumes(request):
         ret['currentPage'] = 1
         ret['totalPageNum'] = len(ret['totalList'])
     if request.method == "POST":
-        openstack_log.ino(request.POST)
+        openstack_log.info(request.POST)
         host_method = request.POST.get('method')
         if host_method == 'attach':
             disk = request.POST.get('disk')

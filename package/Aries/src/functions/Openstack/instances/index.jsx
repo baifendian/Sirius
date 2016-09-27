@@ -37,6 +37,7 @@ export default React.createClass({
       button_status: "disabled",
       url_vnc: "",
       height_h: "",
+      button_statuss: true,
       url: "openstack/bfddashboard/instances/",
       column: [{
         title: '名称',
@@ -117,23 +118,23 @@ export default React.createClass({
     // console.log('rows:', selectedRows)
     //console.log(selectedRows.length)
     if (selectedRows.length == 1) {
-      this.refs['model_model'].setState({
-        button_status: false
-      })
-      this.setState({host_desc: selectedRows[0]})
-      this.count_height()
-    } else {
-      this.setState({host_desc: ''})
-      this.refs['model_model'].setState({
-        button_status: true
-      })
-      this.count_initialization()
-    }
-    if (selectedRows.length > 0) {
-      this.refs['model_model'].setState({
+      this.setState({
         button_statuss: false
       })
+   //   this.setState({host_desc: selectedRows[0]})
+     // this.count_height()
+    } else {
+     // this.setState({host_desc: ''})
+      this.setState({
+        button_statuss: true
+      })
+   //   this.count_initialization()
     }
+   // if (selectedRows.length > 0) {
+    //  this.refs['model_model'].setState({
+      //  button_statuss: false
+   //   })
+ //   }
     let arr = []
     let arr_id = []
     for (var i = 0; i < selectedRows.length; i++) {
@@ -208,18 +209,7 @@ export default React.createClass({
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top = totalHeight1 + "px"
     ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].style.height = totalHeight + 'px'
     ReactDOM.findDOMNode(this.refs.Table_t).childNodes[0].style.width = totalwidth_t + 'px'
-    if (totalHeight > height_table) {
-      //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-      //ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
-      for (let i in ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length) {
-        if (i == (table_trlengt)) {
-          totalwidth = totalwidth + 17
-          ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width = totalwidth + 'px'
-        } else {
-          ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width = totalwidth + 'px'
-        }
-      }
-    } else {
+    if (totalHeight <= height_table) {
       // ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
       // ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
       for (let i = 0; i < ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length; i++) {
@@ -234,11 +224,26 @@ export default React.createClass({
   },
   handleRowClick(row) {
     // console.log('rowclick', row)
+     if (row == this.state.host_desc){
+      //console.log('test')
+      this.setState({host_desc: ''})
+      this.count_initialization()
+     }else{
+      //console.log('nottest')
+      this.setState({host_desc: row})
+      this.count_height()
+     }
+    // this.setState({host_desc: row})
   },
   handleOrder(name, sort) {
     // console.log(name, sort)
   },
+  callback_status(name){
+    console.log(name,'hahahahuidiao')
+    this.handleOpen(name)
+  },
   handleOpen(name) {
+    //console.log('test',name)
     let text = '您已选择'
     switch (name) {
       case 1:
@@ -252,7 +257,7 @@ export default React.createClass({
         text = text + "请确认您的选择。云主机将会被重启"
         this.setState({
           text_text: text,
-          host_status: "重启",
+          host_status: "重启虚拟机",
           host_post: 'restart'
         })
         break;
@@ -264,7 +269,7 @@ export default React.createClass({
         text = text + "请确认您的选择。云主机将会被关闭"
         this.setState({
           text_text: text,
-          host_status: "停止",
+          host_status: "关闭虚拟机",
           host_post: 'stop'
         })
         break;
@@ -276,7 +281,7 @@ export default React.createClass({
         text = text + "请确认您的选择。云主机将会被删除"
         this.setState({
           text_text: text,
-          host_status: "删除",
+          host_status: "删除虚拟机",
           host_post: 'delete'
         })
         break;
@@ -339,26 +344,26 @@ export default React.createClass({
             <Button onClick={this.handleOpen.bind(this, 5)}
                     style={{float: "left", margin: '0px 10px 0px 0px'}}>刷新</Button>
             <Create_model _this={this}/>
-            <Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 1)} style={{float: "left"}}>启动</Button>
+            {/*<Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 1)} style={{float: "left"}}>启动</Button>
             <Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 2)} style={{float: "left"}}>重启</Button>
             <Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 3)} style={{float: "left"}}>停止</Button>
             <Button disabled={this.state.button_status} type="danger" onClick={this.handleOpen.bind(this, 4)}
-                    style={{float: "left"}}>删除</Button>
-            <Disk_model vm_list={this.state.select_all} ref="model_model" _this={this}/>
+                    style={{float: "left"}}>删除</Button>*/}
+            <Disk_model vm_list={this.state.select_all} ref="model_model" handleOpen={this.handleOpen} _this={this} button_status={this.state.button_status} button_statuss={this.state.button_statuss}/>
             {/*<div style={{float: 'right'}}>
              <Extend _this={this}/>
              </div>*/}
             <Modal ref="modal">
               <ModalHeader>
-                <h4>{this.state.test}</h4>
+                <h4>{this.state.host_status}</h4>
               </ModalHeader>
               <ModalBody>
                 <div>
                   <h4>{this.state.text_text}</h4>
                 </div>
                 <div className="create_host">
+                  <Button onClick={this.handleclean.bind(this, this.state.host_post)}>确定</Button>
                   <Button onClick={this.handleclean.bind(this, 'clean')}>关闭</Button>
-                  <Button onClick={this.handleclean.bind(this, this.state.host_post)}>{this.state.host_status}</Button>
                 </div>
               </ModalBody>
             </Modal>

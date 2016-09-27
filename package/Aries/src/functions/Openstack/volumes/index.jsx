@@ -25,6 +25,7 @@ export default React.createClass({
       loading: false,
       select_all:'',
       button_status: true,
+      button_statuss: true,
       column: [
       {
         title: '名称',
@@ -90,7 +91,7 @@ export default React.createClass({
     // console.log('aaaaa')
   },
   handleCheckboxSelect(selectedRows) {
-    console.log('rows:', selectedRows)
+    //console.log('rows:', selectedRows)
     //console.log(selectedRows.html())
     for (var i=0; i<selectedRows.length;i++){
      // console.log(selectedRows[i]['id'])
@@ -99,6 +100,9 @@ export default React.createClass({
       this.setState({button_status:false})
     }else{
       this.setState({button_status:true})
+    }
+    if (selectedRows.length > 0){
+      this.setState({button_statuss:false})
     }
     this.setState({select_all:selectedRows})
   },
@@ -110,6 +114,7 @@ export default React.createClass({
   },
   refresh(){
     OPEN.update_url(this,"volumes")
+    this.setState({button_statuss:true})
   },
   handleOpen() {
     //console.log(ReactDOM.findDOMNode( this.refs.data_table ))
@@ -174,8 +179,8 @@ export default React.createClass({
         <div style={{margin: "0px 0px 5px 0px"}} ref="volumes_bu">
           <Button onClick={this.refresh} style={{float:'left'}}>刷新</Button>
           <Create_volumes _this={this}/>
-          <Delete_volumes select_all={this.state.select_all} _this={this}/>
-          <Model_list select_all={this.state.select_all} button_status={this.state.button_status}/>
+          <Delete_volumes select_all={this.state.select_all} _this={this} button_statuss={this.state.button_statuss}/>
+          <Model_list select_all={this.state.select_all} button_status={this.state.button_status} _this={this}/>
         </div>
         <div className="DataTableFatherDiv_t">
           <DataTable ref="data_table"
