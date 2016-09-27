@@ -369,6 +369,7 @@ const Create_model = React.createClass({
 
   handleCancel() {
     // console.log(this.state.formData)
+    //OPEN.update_url(this.props._self, "instances")
     this.refs.modal.close()
 
     // console.log('1tet')
@@ -376,7 +377,7 @@ const Create_model = React.createClass({
 
   handleSuccess(res) {
     // console.log(res)
-    this.props._this.setState({loading: false, url: "bfddashboard/instances/?" + Math.random()})
+    this.props._this.setState({loading: false, url: "openstack/bfddashboard/instances/?" + Math.random()})
     message.success('创建成功！')
   },
   disk_value(name){
@@ -402,7 +403,7 @@ const Create_model = React.createClass({
           <ModalHeader>
             <h2>云主机创建</h2>
           </ModalHeader>
-          <ModalBody className="create_host">
+          <ModalBody className="">
             <div >
               <Spin spinning={this.state.loading}>
                 <div className="right_host">
