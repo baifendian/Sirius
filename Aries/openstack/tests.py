@@ -4,7 +4,7 @@ from django.test import TestCase
 from openstack.middleware.login.login import Login
 from openstack.middleware.flavor.flavor import Flavor
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
-from openstack.middleware.volume.volume import Volume, Volume_backup
+from openstack.middleware.volume.volume import Volume, Volume_backup,Volume_snaps
 from openstack.middleware.image.image import Image
 from openstack.middleware.common.common import run_in_thread
 import json
@@ -77,6 +77,17 @@ class Openstack_test(TestCase):
         volume = Volume()
         msg = volume.extend(volume_id,size)
         prints(msg)
+
+    def test_snap_volume(self):
+        '''
+        创建磁盘快照
+        :return:
+        '''
+        volume_id = ""
+        name = ""
+        volume_snap = Volume_snaps()
+        ret = volume_snap.create(volume_id,name)
+        prints(ret)
 
     def test_create_flavor(self):
         '''
@@ -245,4 +256,11 @@ class Openstack_test(TestCase):
         volume_backup = Volume_backup()
         volume_backup_id = ""
         ret = volume_backup.delete(volume_backup_id)
+        prints(ret)
+
+    def test_console_log(self):
+        self.test_login()
+        vm_control = Vm_control()
+        vm_id = VM_ID
+        ret = vm_control.get_console_log(vm_id)
         prints(ret)

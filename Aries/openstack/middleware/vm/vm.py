@@ -141,7 +141,8 @@ class Vm_manage:
             volume_attach = Volume_attach()
             vm_compele_flag = 0  # 判断虚拟机是否创建完成的标志，如果置1则下面不再判断创建的状态
             for tmp_dict in disk:
-                name_disk = tmp_dict.get("name", "")
+                time_int = int(time.time())
+                name_disk = tmp_dict.get("name", "%s_%s"%(name,time_int))
                 self.result[name]["status_disk"].update({name_disk: 0})
                 size = tmp_dict["size"]
                 availability_zone = tmp_dict.get("availability_zone", "")
@@ -492,6 +493,22 @@ class Vm_control:
         assert ret != 1, "send_request error"
         return ret
 
+    @plog("vm_control.get_console_log")
+    def get_console_log(self,vm_id,length=30):
+        '''
+        获取虚拟机日志
+        :return:
+        '''
+        ret = 0
+        assert self.token != "","not login"
+        path = "/v2.1/%s/servers/%s/action"%(self.project_id,vm_id)
+        method = "POST"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = {"os-getConsoleOutput":{"length":length}}
+        ret = send_request(method, IP_nova, PORT_nova, path, params, head)
+        assert ret != 1, "send_request error"
+        return ret
+
 
 class Vm_snap:
     def __init__(self, vm_id=""):
@@ -640,3 +657,4 @@ class Vm_snap:
         tmp_list = DbVmSnap.objects.filter(vm_id=self.vm_id)
         image_list = [i.image_name for i in tmp_list]
         return image_list
+
