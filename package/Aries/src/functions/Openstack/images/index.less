@@ -32,24 +32,13 @@
 }
 
 .DataTableFatherDiv_images table {
-    th,td{
-      font-size: 12px;
-      font-family: '微软雅黑';
-      color:#666666;
-    }
-    thead{
-      tr{
-        display: block;
-        width: 100%;
-        th{
-          width: 16.3%;
-          display: inline-block;
-          border-bottom: 3px solid #DDEEFD;
-        }
-      }
-
-    }
-    tbody {
+  th, td {
+    font-family: '微软雅黑';
+    font-size: 12px;
+    color: #666666;
+  }
+  thead {
+    tr {
       display: block;
       width: 100%;
       th {
@@ -57,6 +46,26 @@
         display: inline-block;
         border-bottom: 3px solid #DDEEFD;
       }
-	}
+    }
+
+  }
+  tbody {
+    display: block;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 400px;
+    tr {
+      display: block;
+      width: 100%;
+      border-bottom: 1px solid #EFF3F8;
+      td {
+        width: 16.6%;
+        display: inline-block;
+        border-top: 0px;
+      }
+    }
+
+  }
 }
 
