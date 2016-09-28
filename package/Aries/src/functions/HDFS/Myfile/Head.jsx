@@ -32,7 +32,11 @@ const Head = React.createClass({
   },
   handleUploading(data){
     console.log(`process: ${data}`);
-    this.setState({isUploading:0,uploadNumber:data})
+    if(Number(data)==100){
+      this.setState({isUploading:1,uploadNumber:0});
+    }else{
+      this.setState({isUploading:0,uploadNumber:data});
+    }
   },
   changeAddess(path){
     console.log(path);

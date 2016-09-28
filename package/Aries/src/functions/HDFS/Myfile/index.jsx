@@ -108,7 +108,7 @@ export default React.createClass({
         <Head updateTableList={this.updateTableList} getUrlData={this.getUrlData} updateRandom={this.updateRandom} cur_path={this.state.cur_relative_path} updateSpace={this.updateSpace}  spaceData={this.state.spaceData}  cur_space={spaceName}  addTableData={this.addTableData}/>
         <Navigate cur_path={this.state.cur_relative_path} is_first={this.state.is_first} num={this.state.num} updateSkipUrl={this.updateSkipUrl} />
         <MyTable list="ALL" data={this.state.tableData} getUrlData={this.getUrlData} updateRandom={this.updateRandom} cur_path={this.state.cur_relative_path} cur_space={spaceName} updateCurRelativePath={this.updateCurRelativePath} updateTableData={this.updateTableData} />
-        <Fetch style={{minHeight:100}} url={`${listStatusUrl}&random=${this.state.random}`} onSuccess={this.getTableSuccess}>
+        <Fetch style={{minHeight:0}} url={`${listStatusUrl}&random=${this.state.random}`} onSuccess={this.getTableSuccess}>
         </Fetch>
       </div>
     )
