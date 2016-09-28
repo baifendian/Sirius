@@ -230,11 +230,12 @@ const Uninstall_disk = React.createClass({
   },
 
   handleSave() {
-    //console.log(this.state.formData)
+ //   console.log(this.state.formData['data']['host_id'])
+  //  console.log(this.state.formData)
     this.props._this.refs.modal.close()
-    if (this.state.formData['host_id']){
+    if (this.state.formData['data']['host_id']){
       this.props._self.setState({loading:true})
-      //this.refs.form.save()
+      this.refs.form.save()
     }else{
       message.danger('未挂载')
     }
