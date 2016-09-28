@@ -7,15 +7,8 @@ import OPEN from '../data_request/request.js'
 import update from 'react-update'
 import {Progress, Button} from 'antd'
 const ButtonGroup = Button.Group
-
-//import {Form, FormItem} from 'bfd-ui/lib/Form'
 import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
-//import FormInput from 'bfd-ui/lib/FormInput'
-//import FormTextarea from 'bfd-ui/lib/FormTextarea'
-//import {FormSelect, Option} from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
-//import React from 'react'
-//import './index.less'
 import Icon from 'bfd-ui/lib/Icon'
 import {Row, Col} from 'bfd-ui/lib/Layout'
 import xhr from 'bfd-ui/lib/xhr'
@@ -39,7 +32,6 @@ const Extend = React.createClass({
     this.props._this.setState({url: _url})
   },
   handleChange(value) {
-    // console.log("change:", value)
     this.setState({'_value': value})
   },
   render() {
@@ -148,7 +140,6 @@ const Create_model_disk = React.createClass({
         })
 
       }
-      //	console.log(this.state);
       this.props.disks_m.setState({
         host_disk: disk_mm
       })
@@ -158,7 +149,6 @@ const Create_model_disk = React.createClass({
   render(){
     let nav = this.state.disk_list.map((item, i) => {
       let disk = 'disk' + i
-      console.log(disk,item,i,'............aaa')
       if (i == 0) {
         return (
           <h1 key={i}></h1>
@@ -219,8 +209,6 @@ const Create_model = React.createClass({
               disk_arr.splice(i, 1, v)
             }
           }
-           //console.log(v,'sssssssssssssss')
-           //console.log(self.state.host_disks)
           self.setState({
             host_disk: disk_arr
           })
@@ -233,13 +221,10 @@ const Create_model = React.createClass({
           v = v + "GB"
           let disk_arr = self.state.host_disk
           for (var i = 0; i < self.state.host_disks.length; i++) {
-            // console.log(i)
-            //console.log(self.state.host_disks[i])
             if (self.state.host_disks[i] == "disk2") {
               disk_arr.splice(i, 1, v)
             }
           }
-          //disk_arr.splice(1,1,v)
           self.setState({
             host_disk: disk_arr
           })
@@ -296,8 +281,6 @@ const Create_model = React.createClass({
               host_host: host + "台",
               host_flavor_name: data['name']
             });
-            //console.log(self.state.host_men)
-            //	console.log(self.state.host_cpu)
           }
 
         })
@@ -355,24 +338,17 @@ const Create_model = React.createClass({
     const formData = this.state.formData
     formData.date = date
     this.setState({formData})
-    // console.log('test')
   },
 
 
   handleSave() {
-    // console.log(this.state.formData)
     this.refs.form.save()
     this.refs.modal.close()
     this.props._this.setState({loading: true})
-    // console.log('1tet')
   },
 
   handleCancel() {
-    // console.log(this.state.formData)
-    //OPEN.update_url(this.props._self, "instances")
     this.refs.modal.close()
-
-    // console.log('1tet')
   },
 
   handleSuccess(res) {
@@ -381,7 +357,6 @@ const Create_model = React.createClass({
     message.success('创建成功！')
   },
   disk_value(name){
-    // 	console.log(name)
   },
 
   render() {

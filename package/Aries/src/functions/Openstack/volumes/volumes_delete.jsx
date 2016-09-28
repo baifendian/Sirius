@@ -1,7 +1,3 @@
-//import {Form, FormItem} from 'bfd-ui/lib/Form'
-//import FormInput from 'bfd-ui/lib/FormInput'
-//import FormTextarea from 'bfd-ui/lib/FormTextarea'
-//import {FormSelect, Option} from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 import React from 'react'
 import {Modal, ModalHeader, ModalBody} from 'bfd-ui/lib/Modal'
@@ -28,7 +24,6 @@ const Delete_volumes = React.createClass({
     this.setState({formData})
   },
   handleSave() {
-    //console.log(this.state.formData)
     this.props._this.setState({loading:true})
     this.refs.modal_m.close()
     this.refs.form.save()
@@ -38,7 +33,6 @@ const Delete_volumes = React.createClass({
     console.log(res)
     this.refs.modal_m.close()
     this.props._this.setState({loading:false})
-    //console.log(res[Object.keys(res))
     let return_keys=Object.keys(res)[0]
     if (res[return_keys]){
     message.success('删除成功！')}else{
@@ -49,24 +43,18 @@ const Delete_volumes = React.createClass({
   },
   handleOpen() {
     this.refs.modal_m.open()
-    //console.log(OPEN.UrlList()['instances'])
-    //console.log(this.props.select_all)
     let volumes_object = {}
     let volumes_name = ''
     for (var i in this.props.select_all) {
-      // console.log(i)
       volumes_object[this.props.select_all[i]['id']] = this.props.select_all[i]['name']
       volumes_name = volumes_name + this.props.select_all[i]['name'] + '、'
     }
-    //console.log('tes1.......',volumes_name,volumes_object)
     this.setState({volumes_name, formData: {volumes_object: volumes_object, method: 'delete'}})
-    // console.log(this.state.formData)
   },
 
   render() {
     const {formData} = this.state
     let url = OPEN.UrlList()['volumes_post']
-    // console.log(url)
     return (
       <div style={{float: "left", margin: "0px 10px 0px 0px"}}>
         <Button type="danger" className="btn btn-primary" onClick={this.handleOpen} disabled={this.props.button_statuss}>删除</Button>

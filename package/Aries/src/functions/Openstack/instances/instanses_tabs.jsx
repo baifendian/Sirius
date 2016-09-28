@@ -1,6 +1,5 @@
 import React from 'react'
 import {Menu, Dropdown as Dropdown1, Icon} from 'antd'
-//import './index.less'
 import Button from 'bfd-ui/lib/Button'
 import {Modal, ModalHeader, ModalBody} from 'bfd-ui/lib/Modal'
 import {Spin} from 'antd'

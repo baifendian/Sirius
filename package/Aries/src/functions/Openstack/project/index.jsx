@@ -142,7 +142,6 @@ class FixedTableDemo extends Component {
 
   render() {
     let spaceName = Openstackconf.getCurSpace(this)
-    // console.log(this.state.data)
     return (
       <div>
         <NavigationInPage ref="project_nav"
@@ -201,9 +200,7 @@ class FixedTableDemo extends Component {
   }
 
   xhrCallback(_this, executedData) {
-    // console.log(executedData['totalList'][0])
     let data = executedData
-    //  console.log(data)
     _this.setState({
       data
     })

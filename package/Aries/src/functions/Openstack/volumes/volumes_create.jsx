@@ -1,7 +1,3 @@
-//import { Form, FormItem } from 'bfd-ui/lib/Form'
-//import FormInput from 'bfd-ui/lib/FormInput'
-//import FormTextarea from 'bfd-ui/lib/FormTextarea'
-//import { FormSelect, Option } from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 import React from 'react'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
@@ -38,7 +34,6 @@ const Create_volumes=React.createClass({
   },
 
   handleSave() {
-   // console.log(this.state.formData)
     this.props._this.setState({loading:true})
     this.refs.modal_m.close()
     this.refs.form.save()
@@ -46,7 +41,6 @@ const Create_volumes=React.createClass({
   },
 
   handleSuccess(res) {
-  //  console.log(res)
     this.props._this.setState({loading:false})
     OPEN.update_url(this.props._this,"volumes")
     let return_keys=Object.keys(res)[0]
@@ -58,13 +52,11 @@ const Create_volumes=React.createClass({
   },
   handleOpen() {
     this.refs.modal_m.open()
- //   console.log(OPEN.UrlList()['instances'])
   },
 
   render() {
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
-   // console.log(url)
     return (
       <div style={{float:"left",margin: "0px 10px 0px 10px"}}>
       <button className="btn btn-primary" onClick={this.handleOpen}>创建</button>

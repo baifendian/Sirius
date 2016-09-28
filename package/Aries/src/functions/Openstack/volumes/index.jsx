@@ -1,5 +1,4 @@
 import React from 'react'
-//import Task from 'public/Task'
 import './index.less'
 import Button from 'bfd-ui/lib/Button'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
@@ -84,15 +83,10 @@ export default React.createClass({
   handleClick(item, event) {
     event = event ? event : window.event;
     event.stopPropagation();
-    //console.log(item)
   }, 
   onPageChange(page) {
-     //TODO
-    // console.log('aaaaa')
   },
   handleCheckboxSelect(selectedRows) {
-    //console.log('rows:', selectedRows)
-    //console.log(selectedRows.html())
     for (var i=0; i<selectedRows.length;i++){
      // console.log(selectedRows[i]['id'])
     }
@@ -117,24 +111,13 @@ export default React.createClass({
     this.setState({button_statuss:true})
   },
   handleOpen() {
-    //console.log(ReactDOM.findDOMNode( this.refs.data_table ))
     let aa=ReactDOM.findDOMNode( this.refs.data_table )
-  //  console.log(aa.childNodes[1].childNodes[1])
-    //aa.childNodes[1].childNodes[1].style.height="100px"
-    //aa.childNodes[1].childNodes[1].style.overflow="auto"
     this.refs.modal.open()
-    //console.log(this.refs.modal.getDOMNode())
-    // console.log(this.refs.modal.reset())
- //   console.log(this)
   },
    handleclean() {
-    //this.refs.modal.open()
-    //console.log(this.refs.modal.getDOMNode())
-    // console.log(this.refs.modal.reset()
     this.refs.modal.close()
   },
   delete(){
-  //  console.log('select_all',this.state.select_all)
     OPEN.volumes_data(this,this.state.select_all)
   },
   componentDidMount(){
@@ -143,16 +126,12 @@ export default React.createClass({
     let tdheight=ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].scrollHeight
     let height_table=(totallength)*tdheight
     let totalwidth=(ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].clientWidth-17)/table_trlengt
-  //   console.log(',,,11',table_trlengt,totallength)
     let totalHeight = document.body.clientHeight
-    //let totalwidth=1053.36-21.18
     totalHeight -= document.getElementById('header').clientHeight
     totalHeight -= document.getElementById('footer').clientHeight
     let volumes_nav = ReactDOM.findDOMNode(this.refs.volumes_nav).clientHeight
     let volumes_bu = ReactDOM.findDOMNode(this.refs.volumes_bu).clientHeight
     totalHeight = totalHeight - volumes_nav - volumes_bu - 120
-    //ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.width=totalwidth+'px'
     if (totalHeight>height_table){
       ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     }else{

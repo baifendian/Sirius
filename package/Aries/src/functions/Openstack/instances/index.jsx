@@ -1,5 +1,4 @@
 import React from 'react'
-//import Task from 'public/Task'
 import {Menu, Dropdown as Dropdown1, Icon as Iconant} from 'antd'
 import './index.less'
 import Button from 'bfd-ui/lib/Button'
@@ -93,11 +92,9 @@ export default React.createClass({
   handleClick(item, event) {
     event = event ? event : window.event;
     event.stopPropagation();
-    // console.log(item.key)
     this.refs.modal.open()
   },
   onPageChange(page) {
-    //console.log('aaaaa')
   },
   requestvnc(id, return_data, e){
     this.setState({loading: true})
@@ -115,26 +112,15 @@ export default React.createClass({
     }
   },
   handleCheckboxSelect(selectedRows) {
-    // console.log('rows:', selectedRows)
-    //console.log(selectedRows.length)
     if (selectedRows.length == 1) {
       this.setState({
         button_statuss: false
       })
-   //   this.setState({host_desc: selectedRows[0]})
-     // this.count_height()
     } else {
-     // this.setState({host_desc: ''})
       this.setState({
         button_statuss: true
       })
-   //   this.count_initialization()
     }
-   // if (selectedRows.length > 0) {
-    //  this.refs['model_model'].setState({
-      //  button_statuss: false
-   //   })
- //   }
     let arr = []
     let arr_id = []
     for (var i = 0; i < selectedRows.length; i++) {
@@ -225,15 +211,12 @@ export default React.createClass({
   handleRowClick(row) {
     // console.log('rowclick', row)
      if (row == this.state.host_desc){
-      //console.log('test')
       this.setState({host_desc: ''})
       this.count_initialization()
      }else{
-      //console.log('nottest')
       this.setState({host_desc: row})
       this.count_height()
      }
-    // this.setState({host_desc: row})
   },
   handleOrder(name, sort) {
     // console.log(name, sort)
@@ -243,7 +226,6 @@ export default React.createClass({
     this.handleOpen(name)
   },
   handleOpen(name) {
-    //console.log('test',name)
     let text = '您已选择'
     switch (name) {
       case 1:

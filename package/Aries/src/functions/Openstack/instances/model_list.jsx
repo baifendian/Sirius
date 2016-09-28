@@ -7,17 +7,12 @@ import {Menu, Dropdown as Dropdown1, Icon} from 'antd'
 import Button from 'bfd-ui/lib/Button'
 import {MultipleSelect, Option} from 'bfd-ui/lib/MultipleSelect'
 import {Row, Col} from 'bfd-ui/lib/Layout'
-//import xhr from 'bfd-ui/lib/xhr'
 import xhr from 'bfd/xhr'
 import {Spin} from 'antd'
 import {notification} from 'antd'
 import Input from 'bfd-ui/lib/Input'
 import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option as Options, FormTextarea } from 'bfd/Form'
 import update from 'react-update'
-//import {Form, FormItem} from 'bfd-ui/lib/Form'
-//import FormInput from 'bfd-ui/lib/FormInput'
-//import FormTextarea from 'bfd-ui/lib/FormTextarea'
-//import {FormSelect, Option as Options} from 'bfd-ui/lib/FormSelect'
 import message from 'bfd-ui/lib/message'
 import OPEN from '../data_request/request.js'
 
@@ -35,7 +30,6 @@ const Disk_list = React.createClass({
     }
   },
   handleChange(values) {
-    //console.log(values)
     this.setState({select_disk: values})
 
   },
@@ -138,7 +132,6 @@ const Vm_Type = React.createClass({
   },
 
   handleSave() {
-    // console.log('this.state.formData',this.state.formData)
     this.props._this.refs.model_disk.close()
     this.props.self.setState({loading: true})
     this.refs.form.save()
@@ -149,7 +142,6 @@ const Vm_Type = React.createClass({
   },
 
   handleSuccess(res) {
-    //console.log('res.........',res)
     this.props.self.setState({loading: false})
     for (var i in res) {
       if (res[i] == true) {
@@ -219,13 +211,10 @@ const Vm_Backup = React.createClass({
   volumes_id(){
     let volumes_id = {}
     let volumes_size = {}
-    // console.log(this.props.vm_list)
     for (let i in this.props.vm_list) {
-      // console.log(this.props.vm_list[i])
       volumes_id['name'] = this.props.vm_list[i]['name']
       volumes_id['id'] = this.props.vm_list[i]['id']
     }
-    //  console.log('volumes_id',volumes_id)
     return volumes_id
   },
   handleDateSelect(date) {
@@ -235,7 +224,6 @@ const Vm_Backup = React.createClass({
   },
 
   handleSave() {
-    //  console.log(this.state.formData)
     this.refs.form.save()
   },
 
@@ -245,7 +233,6 @@ const Vm_Backup = React.createClass({
   },
 
   handleSuccess(res) {
-    //  console.log(res)
     this.props._this.refs.modal.close()
     message.success('保存成功！')
   },
@@ -305,14 +292,12 @@ const Vm_image = React.createClass({
   },
 
   handleSave() {
-    // console.log('this.state.formData',this.state.formData)
     this.props._this.refs.model_disk.close()
     this.props.self.setState({loading: true})
     this.refs.form.save()
   },
 
   handleSuccess(res) {
-    // console.log('res.........',res)
     this.props.self.setState({loading: false})
     for (var i in res) {
       if (res[i] == true) {
@@ -378,7 +363,6 @@ const Forced_vm = React.createClass({
     let host_id = []
     let host_name = ''
     for (var i in this.props.vm_list) {
-      // console.log(i)
       host_id.push(this.props.vm_list[i]['id'])
       host_name = host_name + this.props.vm_list[i]['name'] + '、'
     }
@@ -391,12 +375,10 @@ const Forced_vm = React.createClass({
   },
 
   handleSave() {
-    //console.log(this.state.formData)
     this.refs.form.save()
   },
 
   handleSuccess(res) {
-    //console.log(res)
     message.success('保存成功！')
   },
 
@@ -647,7 +629,6 @@ const Disk_model = React.createClass({
       type: 'GET',
       url: 'openstack/flavors/',
       success(data) {
-        // console.log(data)
         let flavor_list = []
         let flavor_object = {}
         for (var i in data['name']) {
@@ -659,10 +640,7 @@ const Disk_model = React.createClass({
     })
   },
   handleMenuClick(e) {
-    //console.log('click', e['key']);
-   // console.log(e['key'].constructor)
     if (parseInt(e['key'])*1){
-     // console.log('aaa')
       this.props._this.callback_status(parseInt(e['key']))
     }else{
     this.setState({loading: true})
@@ -670,7 +648,6 @@ const Disk_model = React.createClass({
     const _this = this
     this.setState({loading:false})
     let module = this.modulevalue()[e["key"]]
-    // console.log(module)
     this.setState({title: this.values()[e['key']], module})
     this.refs.model_disk.open()
   }
