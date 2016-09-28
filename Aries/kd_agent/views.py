@@ -11,10 +11,6 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 
-from kd_agent.models import Schedule_Log
-from kd_agent.models import Schedule_Status
-from kd_agent.models import Task
-
 from kd_agent.toolsmanager import RETU_INFO_SUCCESS,RETU_INFO_ERROR
 from kd_agent.toolsmanager import generate_success,generate_failure
 from kd_agent.toolsmanager import return_http_json
@@ -371,51 +367,6 @@ def mytask_get_old_records(request):
     requestnumber = int(request.POST.get('requestnumber'))
     keywords = json.loads(request.POST.get('keywords'))
     
-    '''
-    oldestrecordid = -1 
-    requestnumber = 303 
-    keywords = {
-        'taskname': 'hyn',
-        'shelltype': 'ALL', # HIVE SHELL SQOOP SPARK
-        'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
-        'startdate': '2015-08-10T00:00:00',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
-        'enddate': '2016-08-30T23:59:59', 
-    }
-
-    convert_dict(keywords)
-    retu_data = []
-    if oldestrecordid == -1:
-        oldestrecordid = 0xFFFFFFFFFFFFFFFFFF
-    
-    filtered_tasks = query_tasks(name=keywords['taskname'], scripttype=keywords['shelltype'] )
-    info_dict = {}
-    for task in filtered_tasks:
-        info_dict[ task.id ] = task.name
-
-    # 如果Task表中没有满足taskname、shelltype的双重约束，则直接返回空列表
-    if filtered_tasks.count() == 0:
-        return generate_success( data = {'records': []} )
-
-    filtered_records = query_records( result=keywords['executeresult'],
-                                      beginning_exec=keywords['startdate'],
-                                      deadline_exec=keywords['enddate'],
-                                      id=oldestrecordid,
-                                      new=False )
-    filtered_records = filtered_records.filter( task_id__in=filtered_tasks )
-    filtered_records = filtered_records[0:requestnumber]
-    for record in filtered_records:
-        retu_data.append({
-                'id':record.id,
-                'job_name':record.query_name,
-                'task_name':info_dict[record.task_id],
-                'ready_time':format_datetime_obj(record.ready_time),
-                'running_time':format_datetime_obj(record.running_time),
-                'leave_time':format_datetime_obj(record.leave_time),
-                'result':record.result,
-                'status':trans_result_to_status(record.result)
-            })
-    return generate_success( data = {'records': retu_data} )
-    '''
     kd_logger.info('\n\n\nkeywords & type:%s\n%s\n\n'%( keywords, type(keywords) ))
     url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/namespaces/mytasklist/getoldrecords/?oldestrecordid=%s&requestnumber=%s&keywords=%s" %( oldestrecordid, requestnumber, keywords )
     r = requests.Session()
@@ -460,35 +411,7 @@ def query_records(result,beginning_exec,deadline_exec,id,new = False):
 def mytask_check_has_new_records(request):  
     newestrecordid = int(request.POST.get('newestrecordid'))
     keywords = json.loads(request.POST.get('keywords'))
-    '''
-    newestrecordid = 494665 
-    keywords = {
-        'taskname': 'HDFSCheck',
-        'shelltype': 'ALL', # ALL HIVE SHELL SQOOP SPARK
-        'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
-        'startdate': '2016-08-20T23:59:59',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
-        'enddate': '2016-08-31T23:59:59', 
-    }
 
-    convert_dict(keywords)
-
-    filtered_tasks = query_tasks(name=keywords['taskname'], scripttype=keywords['shelltype'] )
-    info_dict = {}
-    for task in filtered_tasks:
-        info_dict[ task.id ] = task.name
-
-    # 如果Task表中没有满足taskname、shelltype的双重约束，则直接返回空列表
-    if filtered_tasks.count() == 0:
-        return generate_success( data = {'hasnew': 0 } ) 
-
-    filtered_records = query_records( result=keywords['executeresult'],
-                                      beginning_exec=keywords['startdate'],
-                                      deadline_exec=keywords['enddate'],
-                                      id=newestrecordid,
-                                      new=True )
-    filtered_records = filtered_records.filter( task_id__in=filtered_tasks )
-    return generate_success( data = {'hasnew': 0 if filtered_records.count() == 0 else 1 } )
-    '''
     kd_logger.info('\n\n\nnewestrecordid & type: %s\n %s\n\n'%(newestrecordid, type(newestrecordid)))
     kd_logger.info('\n\n\nkeywords & type:%s\n%s\n\n'%( keywords, type(keywords) ))
     url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/namespaces/mytasklist/checkhasnewrecords/?newestrecordid=%s&keywords=%s" %( newestrecordid, keywords )
@@ -502,57 +425,11 @@ def mytask_check_has_new_records(request):
 def mytask_get_new_records(request):
     newestrecordid = int(request.POST.get('newestrecordid'))
     keywords = json.loads(request.POST.get('keywords'))
-    '''
-    newestrecordid = 494702  
-    keywords = {
-        'taskname': 'HDFSCheck',
-        'shelltype': 'ALL', # ALL HIVE SHELL SQOOP SPARK
-        'executeresult': 'ALL', #  'ALL'、'INIT'、'SUCCESS'、'FAILURE'
-        'startdate': '2016-08-20T23:59:59',  # 格式为 YYYY-MM-DDTHH:mm:SS 如：2016-02-03T04:05:46
-        'enddate': '2016-08-31T23:59:59', 
-    }
-    convert_dict(keywords)
-    retu_data = []
 
-    filtered_tasks = query_tasks(name=keywords['taskname'], scripttype=keywords['shelltype'] )
-    info_dict = {}
-    for task in filtered_tasks:
-        info_dict[ task.id ] = task.name
-
-    # 如果Task表中没有满足taskname、shelltype的双重约束，则直接返回空列表
-    if filtered_tasks.count() == 0:
-        return generate_success( data = {'records': []} )
-
-    filtered_records = query_records( result=keywords['executeresult'],
-                                      beginning_exec=keywords['startdate'],
-                                      deadline_exec=keywords['enddate'],
-                                      id=newestrecordid,
-                                      new=True )
-    filtered_records = filtered_records.filter( task_id__in=filtered_tasks )
-    for record in filtered_records:
-        retu_data.append({
-                'id':record.id,
-                'job_name':record.query_name,
-                'task_name':info_dict[record.task_id],
-                'ready_time':format_datetime_obj(record.ready_time),
-                'running_time':format_datetime_obj(record.running_time),
-                'leave_time':format_datetime_obj(record.leave_time),
-                'result':record.result,
-                'status':trans_result_to_status(record.result)
-            })  
-    return generate_success( data = {'records': retu_data} )
-    '''
     url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/namespaces/mytasklist/getnewrecords/?newestrecordid=%s&keywords=%s" %( newestrecordid, keywords )
     r = requests.Session()
     req = r.get(url)
     return req.json()
-
-#查询脚本类型
-#def get_scripttype(name):
-#    try:
-#        return ScriptType.objects.get(name=name).id
-#    except :
-#        return None
 
 #根据条件查询任务
 def query_tasks(name=None, name_op = 'contains', scripttype=None):#,status=None,owner=None,export_flag=None):
