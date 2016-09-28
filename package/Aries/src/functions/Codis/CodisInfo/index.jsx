@@ -35,10 +35,12 @@ export default React.createClass({
                { title:'proxy_addr', key:'dashboard_proxy_addr', order:true ,
                render: (text, item) => {
           if(this.state.is_super==1){
-            return  <a href="javascript:void(0);" >
-          <Editable onChange={value=>{this.handleEdit(item.product_id,value)}} defaultValue={text} /></a>
+            return  (<a href="javascript:void(0);" >
+                <Editable onChange={value=>{this.handleEdit(item.product_id,value)}} defaultValue={text} />
+              </a>
+            )
           }else{
-            return <p>{text} </p>  
+            return <div>{text}</div>
           }
         }},
                { title:'Mem_used/Mem_total',	key:'memory_used_to_total',      order:true }],

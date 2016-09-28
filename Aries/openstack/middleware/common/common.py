@@ -224,7 +224,18 @@ def plog(method_name):
                 ret = 1
                 dlog("%s err:%s" % (method_name, err), lever="ERROR")
             return ret
-
         return catch_log
-
     return logs
+
+#测试时使用，计算执行时间，如果需要得到更具体的时间消耗，使用@profile
+def times(method_name):
+    def get_time(func):
+        def catch_time(*args,**kwargs):
+            time_start = time.time()
+            ret = func(*args,**kwargs)
+            time_end = time.time()
+            time_cost = time_end - time_start
+            dlog("%s cost time:%s"%(method_name,time_cost))
+            return ret
+        return catch_time
+    return get_time

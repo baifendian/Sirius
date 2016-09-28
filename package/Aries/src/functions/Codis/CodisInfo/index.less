@@ -153,7 +153,6 @@ div.CodisInfoChildRootDiv .SplitPanel{
 }
 
 div.CodisInfoChildRootDiv div.Text{
-  font-family: '微软雅黑';
   color: #333333;
   font-size: 14px;
   margin-top: 10px;
@@ -201,7 +200,6 @@ div.CodisInfoChildRootDiv div.ButtonFatherDiv .ButtonDiv {
 
 div.CodisInfoChildRootDiv div.DataTableFatherDiv table {
   th,td{
-    font-family: '微软雅黑';
     font-size: 12px;
     color:#666666;
   }
@@ -250,7 +248,7 @@ div.CodisInfoChildRootDiv div.DataTableFatherDiv table {
     background-color: #BBDEFB !important;
 }
 
-div.HostInfoChildRootDiv,div.CodisInfoChildRootDiv {
+div.CodisInfoChildRootDiv {
 
   div.SearchInputFatherDiv{
 	  float:right;
@@ -277,7 +275,6 @@ div.HostInfoChildRootDiv,div.CodisInfoChildRootDiv {
   }
 
   div.Text{
-    font-family: '微软雅黑';
     color: #333333;
     font-size: 14px;
     margin-top: 10px;
@@ -304,7 +301,6 @@ div.HostInfoChildRootDiv,div.CodisInfoChildRootDiv {
 
   div.DataTableFatherDiv table {
     th,td{
-      font-family: '微软雅黑';
       font-size: 12px;
       color:#666666;
     }
@@ -312,9 +308,13 @@ div.HostInfoChildRootDiv,div.CodisInfoChildRootDiv {
       tr{
         display: block;
         width: 100%;
-        th{
+        th{          
           display: inline-block;
           border-bottom: 3px solid #DDEEFD;
+          width: 16%
+        }
+        th:nth-child(4){
+          width: 36%
         }
       }
     }
@@ -331,9 +331,12 @@ div.HostInfoChildRootDiv,div.CodisInfoChildRootDiv {
         td{
           display: inline-block;
           border-top: 0px;
+          width: 16%
+        }
+        td:nth-child(4){
+          width: 36%
         }
       }
-
     }
   }
 

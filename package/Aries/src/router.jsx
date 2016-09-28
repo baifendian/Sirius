@@ -132,11 +132,6 @@ export default render((
               cb(null, require('./functions/Openstack/instances').default)
             })
           }}/>
-          <Route path="Create" getComponent={(location, cb) => {
-            require.ensure([], require => {
-              cb(null, require('./functions/Openstack/create_host').default)
-            })
-          }}/>
           <Route path="Images" getComponent={(location, cb) => {
             require.ensure([], require => {
               cb(null, require('./functions/Openstack/images').default)
@@ -145,11 +140,6 @@ export default render((
           <Route path="Flavors" getComponent={(location, cb) => {
             require.ensure([], require => {
               cb(null, require('./functions/Openstack/flavors').default)
-            })
-          }}/>
-          <Route path=":id" getComponent={(location, cb) => {
-            require.ensure([], require => {
-              cb(null, require('./functions/Openstack/host_list').default)
             })
           }}/>
         </Route>
