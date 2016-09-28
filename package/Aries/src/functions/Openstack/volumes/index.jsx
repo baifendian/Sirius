@@ -1,5 +1,4 @@
 import React from 'react'
-//import Task from 'public/Task'
 import './index.less'
 import Button from 'bfd-ui/lib/Button'
 import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
@@ -14,6 +13,7 @@ import OPEN from '../data_request/request.js'
 import ReactDOM from 'react-dom'
 import Model_list from './volumes_model_list'
 import Openstackconf from '../Conf/Openstackconf'
+import {Spin} from 'antd'
 
 
 export default React.createClass({
@@ -21,8 +21,10 @@ export default React.createClass({
    getInitialState: function () {
     return {      
       url: "openstack/volumes/",
+      loading: false,
       select_all:'',
       button_status: true,
+      button_statuss: true,
       column: [
       {
         title: '名称',
@@ -81,53 +83,41 @@ export default React.createClass({
   handleClick(item, event) {
     event = event ? event : window.event;
     event.stopPropagation();
-    console.log(item)
   }, 
   onPageChange(page) {
-     //TODO
-     console.log('aaaaa')
   },
   handleCheckboxSelect(selectedRows) {
-    console.log('rows:', selectedRows)
-    //console.log(selectedRows.html())
     for (var i=0; i<selectedRows.length;i++){
-      console.log(selectedRows[i]['id'])
+     // console.log(selectedRows[i]['id'])
     }
     if (selectedRows.length == 1){
       this.setState({button_status:false})
     }else{
       this.setState({button_status:true})
     }
+    if (selectedRows.length > 0){
+      this.setState({button_statuss:false})
+    }
     this.setState({select_all:selectedRows})
   },
   handleRowClick(row) {
-    console.log('rowclick', row)
+   // console.log('rowclick', row)
   },
   handleOrder(name, sort) {
-    console.log(name, sort)
+ //   console.log(name, sort)
   },
   refresh(){
     OPEN.update_url(this,"volumes")
+    this.setState({button_statuss:true})
   },
   handleOpen() {
-    //console.log(ReactDOM.findDOMNode( this.refs.data_table ))
     let aa=ReactDOM.findDOMNode( this.refs.data_table )
-    console.log(aa.childNodes[1].childNodes[1])
-    //aa.childNodes[1].childNodes[1].style.height="100px"
-    //aa.childNodes[1].childNodes[1].style.overflow="auto"
     this.refs.modal.open()
-    //console.log(this.refs.modal.getDOMNode())
-    // console.log(this.refs.modal.reset())
-    console.log(this)
   },
    handleclean() {
-    //this.refs.modal.open()
-    //console.log(this.refs.modal.getDOMNode())
-    // console.log(this.refs.modal.reset()
     this.refs.modal.close()
   },
   delete(){
-    console.log('select_all',this.state.select_all)
     OPEN.volumes_data(this,this.state.select_all)
   },
   componentDidMount(){
@@ -136,16 +126,12 @@ export default React.createClass({
     let tdheight=ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].scrollHeight
     let height_table=(totallength)*tdheight
     let totalwidth=(ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].clientWidth-17)/table_trlengt
-     console.log(',,,11',table_trlengt,totallength)
     let totalHeight = document.body.clientHeight
-    //let totalwidth=1053.36-21.18
     totalHeight -= document.getElementById('header').clientHeight
     totalHeight -= document.getElementById('footer').clientHeight
     let volumes_nav = ReactDOM.findDOMNode(this.refs.volumes_nav).clientHeight
     let volumes_bu = ReactDOM.findDOMNode(this.refs.volumes_bu).clientHeight
     totalHeight = totalHeight - volumes_nav - volumes_bu - 120
-    //ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    //ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.width=totalwidth+'px'
     if (totalHeight>height_table){
       ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     }else{
@@ -167,12 +153,13 @@ export default React.createClass({
     let spaceName = Openstackconf.getCurSpace(this)
     return (  
       <div className="function-data-moduleA">
+        <Spin size="large" spinning={this.state.loading}>
         <NavigationInPage ref="volumes_nav" headText={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName, type:"headText"})} naviTexts={Openstackconf.getNavigationDatav({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})}/>
         <div style={{margin: "0px 0px 5px 0px"}} ref="volumes_bu">
           <Button onClick={this.refresh} style={{float:'left'}}>刷新</Button>
-          <Create_volumes/>
-          <Delete_volumes select_all={this.state.select_all}/>
-          <Model_list select_all={this.state.select_all} button_status={this.state.button_status}/>
+          <Create_volumes _this={this}/>
+          <Delete_volumes select_all={this.state.select_all} _this={this} button_statuss={this.state.button_statuss}/>
+          <Model_list select_all={this.state.select_all} button_status={this.state.button_status} _this={this}/>
         </div>
         <div className="DataTableFatherDiv_t">
           <DataTable ref="data_table"
@@ -186,6 +173,7 @@ export default React.createClass({
             onCheckboxSelect={this.handleCheckboxSelect} ref="volumes_table" >
           </DataTable>
         </div>
+        </Spin>
       </div>
     )
   }

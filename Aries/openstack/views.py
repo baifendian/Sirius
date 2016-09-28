@@ -106,7 +106,7 @@ def instances(request):
             except:
                 sys['image'] = '-'
             sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
-            sys['created'] = host['created']
+            sys['created'] = ' '.join( host['created'].split('Z')[0].split('T'))
             sys['status'] = host['OS-EXT-STS:vm_state']
             for key, value in host['addresses'].items():
                 for ip in value:
@@ -323,7 +323,7 @@ def flavors(request):
     response['Content-Type'] = 'application/json'
     return response
 
-
+@csrf_exempt
 def volumes(request):
     ret = {}
     login = Login("openstack", "baifendian2016")
@@ -344,13 +344,16 @@ def volumes(request):
             sys['id'] = disk['id']
             sys['size'] = disk['size']
             sys['voumetype'] = 'ceph'
-            sys['created'] = disk['createdAt'].split('.')[0]
-            sys['backupd'] = disk['createdAt'].split('.')[0]
+            sys['created'] = ' '.join( disk['createdAt'].split('.')[0].split('Z')[0].split('T'))
+            sys['backupd'] = ' '.join( disk['createdAt'].split('.')[0].split('Z')[0].split('T'))
             sys['displayDescription'] = disk['displayDescription']
             if len(disk['attachments'][0].keys()) == 4:
                 for disk_host in disk['attachments']:
                     sys['device'] = disk_host['device']
-                    sys['servername'] = vm_manage.show_detail(disk_host['serverId'])['server']['name']
+                    try:
+                        sys['servername'] = vm_manage.show_detail(disk_host['serverId'])['server']['name']
+                    except:
+                        sys['servername'] = None
                     sys['server_id'] = disk_host['serverId']
             else:
                 sys['device'] = ''
@@ -360,6 +363,7 @@ def volumes(request):
         ret['currentPage'] = 1
         ret['totalPageNum'] = len(ret['totalList'])
     if request.method == "POST":
+        openstack_log.info(request.POST)
         host_method = request.POST.get('method')
         if host_method == 'attach':
             disk = request.POST.get('disk')
@@ -381,8 +385,8 @@ def volumes(request):
                         sys['volumename'] = volume_d['volume']['displayName']
                     sys['status'] = True
                 ret['totalList'].append(sys)
+            openstack_log.info(ret)
     json_status = json_data(ret)
-
     response = HttpResponse(json_status)
     response['Access-Control-Allow-Origin'] = '*'
     response['Content-Type'] = 'application/json'
