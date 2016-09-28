@@ -276,31 +276,14 @@ def trans_obj_to_easy_dis(obj_info):
 @return_http_json
 @trans_return_json
 def get_mytask_graph(request):
-    import requests
     kd_logger.info( 'call get_mytask_graph' )
-    url1 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/accounts/login/'  #模拟登陆BDMS
-    url2 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/ide/schedule/directedgraphdata/?username=all&status=all&taskname=&env=0'  #任务运行网络图 rest api
-    data={"username":settings.BDMS_USERNAME,"password": settings.BDMS_PASSWORD}
-    headers = { "Accept":"*/*",
-            "Accept-Encoding":"gzip, deflate, sdch",
-            "Accept-Language":"zh-CN,zh;q=0.8",
-            "Cache-Control":"no-cache",
-            "Connection":"keep-alive",
-            "Host":"",
-            "Pragma":"no-cache",
-            "Referer":"",
-            "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
-            "X-Requested-With":"XMLHttpRequest"
-            }
-    headers["Host"] = settings.BDMS_IP + ":" + settings.BDMS_PORT
-    headers["Referer"] = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/ide/schedule/directedgraph/"
+    url = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/k8s/api/v1/namespaces/mytaskgraph'  #任务运行网络图 rest api
     try:
         req = requests.Session()
-        r1 = req.post(url1, data=data, headers=headers)
-        r2 = req.get(url2)
-        if r1.status_code and r2.status_code == 200:
+        r = req.get(url)
+        if r.status_code == 200:
             kd_logger.debug( 'get my task graph data success ')
-            dic = eval(r2.text)
+            dic = json.loads(r.text)
             all_task = []
             data = {}
             nodes = []
