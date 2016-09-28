@@ -288,19 +288,25 @@ def get_mytask_graph(request):
             data = {}
             nodes = []
             edges = []
+            task_info = dic['task_info']
+            task_process = []
+
             #处理节点数据及颜色信息
-            for i in dic['task_info']:
-                for j in dic['task_process']:
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 1:  #执行完成(成功)
-                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#87d068"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 2:  #执行完成(失败)
-                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#F50"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 2:  #等待执行
-                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#2db7f5"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 3:  #执行中
-                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#0000FF"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 1:  #等待调度
-                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#A9A9A9"})
+            for i in task_info:
+                try:
+                    id = "%s" %i["id"]
+                    if dic['task_process'][id]['status'] == 1:
+                        nodes.append({"id": id, "label": i["exec_txt"], "color": "#A9A9A9"})
+                    if dic['task_process'][id]['status'] == 2:
+                        nodes.append({"id": id, "label": i["exec_txt"], "color": "#2db7f5"})
+                    if dic['task_process'][id]['status'] == 3:
+                        nodes.append({"id": id, "label": i["exec_txt"], "color": "#0000FF"}) 
+                    if dic['task_process'][id]['status'] == 4 and dic['task_process'][id]['result'] == 1:
+                        nodes.append({"id": id, "label": i["exec_txt"], "color": "#87d068"})
+                    if dic['task_process'][id]['status'] == 4 and dic['task_process'][id]['result'] == 2:
+                        nodes.append({"id": id, "label": i["exec_txt"], "color": "#F50"})
+                except Exception, e:
+                    nodes.append({"id": id, "label": i["exec_txt"], "color": "#A9A9A9"})
             # 处理依赖关系
             for depen in dic['task_info']:
                 if depen['input']:
