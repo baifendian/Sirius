@@ -373,38 +373,6 @@ def mytask_get_old_records(request):
     req = r.get(url)
     return req.json()
 
-def format_datetime_obj(datetime_obj):
-    if datetime_obj:
-        return datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
-    else:
-        return '<None>'
-
-def trans_result_to_status(result):
-    d = {
-        0:'INIT',
-        1:'SUCCESS',
-        2:'FAILURE'
-    }
-    return d[result]
-
-def query_records(result,beginning_exec,deadline_exec,id,new = False):
-    QS = None
-    if new == True:
-        tmpq = Q(id__gt=id)
-    else:
-        tmpq = Q(id__lt=id)
-    QS = QS & tmpq if QS else tmpq
-    if result != '':
-        tmpq = Q(result=result)
-        QS = QS & tmpq if QS else tmpq
-
-    tmpq = Q(ready_time__gte=beginning_exec,ready_time__lte=deadline_exec)
-    QS = QS & tmpq if QS else tmpq
-    if QS:
-        return Schedule_Log.objects.using('kd_agent_bdms').filter(QS).order_by('-id')
-    else:
-        return Schedule_Log.objects.using('kd_agent_bdms').all().order_by('-id')
-
 @csrf_exempt
 @return_http_json
 @trans_return_json
@@ -431,51 +399,14 @@ def mytask_get_new_records(request):
     req = r.get(url)
     return req.json()
 
-#根据条件查询任务
-def query_tasks(name=None, name_op = 'contains', scripttype=None):#,status=None,owner=None,export_flag=None):
-    QS = None
-    if name and name.strip() != '':
-        if name_op == '==':
-            QS = QS & Q(name=name) if QS else Q(name=name)
-        else :
-            QS = QS & Q(name__icontains=name) if QS else Q(name__icontains=name)
-    if scripttype:
-        QS = QS & Q(scripttype=scripttype) if QS else Q(scripttype=scripttype)
-    if QS:
-        return Task.objects.using('kd_agent_bdms').filter(QS)
-    else:
-        return Task.objects.using('kd_agent_bdms').all()
-
-def convert_dict(keywords):
-    scripttype = {
-        'ALL':0,
-        'HIVE':1,
-        'SQOOP':2,
-        'SHELL':3,
-        'SPARK':4
-    }
-    result = {
-        'ALL':'',
-        'INIT':0,
-        'SUCCESS':1,
-        'FAILURE':2
-    }
-    keywords['shelltype'] = scripttype[keywords['shelltype']]
-    keywords['executeresult'] = result[keywords['executeresult']]
-    keywords['startdate'] = datetime.strptime(keywords['startdate'], '%Y-%m-%dT%H:%M:%S')
-    keywords['enddate'] = datetime.strptime(keywords['enddate'], '%Y-%m-%dT%H:%M:%S')
-    return keywords
-
 @csrf_exempt
 @return_http_json
 @trans_return_json
 def dashboard_taskinfo(request):
-    retu_data = {}
-    retu_data['today_running_task'] = Schedule_Status.objects.using('kd_agent_bdms').filter(category = time.strftime('%Y-%m-%d',time.localtime(time.time())), status = 3).count()
-    retu_data['today_succeed_task'] = Schedule_Log.objects.using('kd_agent_bdms').filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 1).count()
-    retu_data['today_failed_task'] = Schedule_Log.objects.using('kd_agent_bdms').filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 2).count()
-    retu_data['today_total_task'] = retu_data['today_succeed_task'] + retu_data['today_failed_task']
-    return generate_success( data = retu_data )
+    url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/dashboard/taskinfo"
+    r = requests.Session()
+    req = r.get(url)
+    return req.json()
 
 def filter_valid_data( influxdb_data_dict ):
     try:
