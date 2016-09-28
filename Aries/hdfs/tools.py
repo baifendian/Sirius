@@ -2,7 +2,7 @@
 #desc: 主要放一下装饰器工具
 #email: pan.lu@baifendian.com
 import functools
-import logging 
+import logging
 import os
 import pwd
 import subprocess
@@ -36,6 +36,10 @@ def run_hadoop(user_name="hadoop",operator="ls",args=["/user/hadoop",]):
     if result != 0:
         return  result,"{0} run error".format(cmd)
     else:
+        if operator.upper() == "DU":
+            for line in process.stdout.read().split("\n"):
+                if line.strip().isdigit():
+                    return result,line.strip()
         return  result,process.stdout.read()
 
 def demote(user_uid, user_gid):
@@ -50,7 +54,7 @@ def print_request(request_data):
     '''
     @functools.wraps(request_data)
     def wrapper(*args, **kwds):
-      ac_logger.info("print_request: %s" %args[1].data)       
+      ac_logger.info("print_request: %s" %args[1].data)
       ac_logger.info("print_request username: %s" %(args[1].user.username))
       return request_data(*args, **kwds)
     return wrapper
