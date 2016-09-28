@@ -52,6 +52,10 @@ const Delete_volumes = React.createClass({
     this.setState({volumes_name, formData: {volumes_object: volumes_object, method: 'delete'}})
   },
 
+  handleclose() {
+    this.refs.modal_m.close()
+  },
+
   render() {
     const {formData} = this.state
     let url = OPEN.UrlList()['volumes_post']
@@ -77,6 +81,7 @@ const Delete_volumes = React.createClass({
               <div>
                 <Button type="danger" style={{marginLeft: '100px'}} className="btn btn-primary"
                         onClick={this.handleSave}>删除</Button>
+                <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
               </div>
             </Form>
           </ModalBody>

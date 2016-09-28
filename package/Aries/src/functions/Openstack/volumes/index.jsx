@@ -136,7 +136,7 @@ export default React.createClass({
       ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     }else{
     ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    for (let i in ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes){
+    for (let i=0;i < ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++){
       if (i==(table_trlengt-1)){
         totalwidth=totalwidth+17
         ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
