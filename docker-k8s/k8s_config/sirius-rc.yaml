@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - name: sirius
-          image: docker.baifendian.com/lupan/sirius_lugu:1
+          image: docker.baifendian.com/lupan/sirius_lugu:latest
           ports:
             - containerPort: 10086
           volumeMounts:
@@ -29,5 +29,5 @@ spec:
           name: siriusdownload
       imagePullSecrets:
         - name: docker-registry-sys
-      nodeSelector:
-        kubernetes.io/hostname: 192.168.49.46
+      #nodeSelector:
+      #  kubernetes.io/hostname: 192.168.49.46
