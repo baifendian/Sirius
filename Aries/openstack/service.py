@@ -308,7 +308,7 @@ def instances_search(request):
             sys['image'] = '-'
         sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
         sys['created'] = host['created']
-        sys['status'] = host['OS-EXT-STS:vm_state']
+        sys['status'] = host['status']
         for key, value in host['addresses'].items():
             for ip in value:
                 for keys, values in ip.items():
