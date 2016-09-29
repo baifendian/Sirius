@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from openstack.middleware.login.login import Login, get_token
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
-from common import json_data
+from common import *
 from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach
 
@@ -106,7 +106,7 @@ def instances(request):
             except:
                 sys['image'] = '-'
             sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
-            sys['created'] = ' '.join( host['created'].split('Z')[0].split('T'))
+            sys['created'] = ' '.join(host['created'].split('Z')[0].split('T'))
             sys['status'] = host['OS-EXT-STS:vm_state']
             for key, value in host['addresses'].items():
                 for ip in value:
@@ -195,9 +195,9 @@ def instances(request):
                 return_data = {}
                 return_data['console'] = {}
                 return_data['console']['url'] = False
-                ret=return_data
+                ret = return_data
             else:
-                ret=host_vnc
+                ret = host_vnc
         elif host_method == "update":
             type_vm = request.POST.get('type_vm')
             if type_vm == "flavor":
@@ -248,7 +248,7 @@ def images(request):
             ret = {}
             if len(i['metadata']) > 0:
                 try:
-                    if i['metadata']['image_type'] =="snapshot":
+                    if i['metadata']['image_type'] == "snapshot":
                         continue
                 except:
                     ret['public'] = "YES"
@@ -258,7 +258,8 @@ def images(request):
                     ret['format'] = 'QCOW2'
                     ret['image_status'] = i['status']
                     ret['id'] = i['id']
-                    ret['size'] = str((round(Decimal(int(i['OS-EXT-IMG-SIZE:size'])) / Decimal(1024) / Decimal(1024), 2))) + 'MB'
+                    ret['size'] = str(
+                        (round(Decimal(int(i['OS-EXT-IMG-SIZE:size'])) / Decimal(1024) / Decimal(1024), 2))) + 'MB'
             else:
                 ret['public'] = "YES"
                 ret['type_image'] = "镜像"
@@ -267,7 +268,8 @@ def images(request):
                 ret['format'] = 'QCOW2'
                 ret['image_status'] = i['status']
                 ret['id'] = i['id']
-                ret['size'] = str((round(Decimal(int(i['OS-EXT-IMG-SIZE:size'])) / Decimal(1024) / Decimal(1024), 2))) + 'MB'
+                ret['size'] = str(
+                    (round(Decimal(int(i['OS-EXT-IMG-SIZE:size'])) / Decimal(1024) / Decimal(1024), 2))) + 'MB'
             sys['totalList'].append(ret)
         sys['currentPage'] = 1
         sys['totalPageNum'] = len(sys['totalList'])
@@ -323,6 +325,7 @@ def flavors(request):
     response['Content-Type'] = 'application/json'
     return response
 
+
 @csrf_exempt
 def volumes(request):
     ret = {}
@@ -344,8 +347,8 @@ def volumes(request):
             sys['id'] = disk['id']
             sys['size'] = disk['size']
             sys['voumetype'] = 'ceph'
-            sys['created'] = ' '.join( disk['createdAt'].split('.')[0].split('Z')[0].split('T'))
-            sys['backupd'] = ' '.join( disk['createdAt'].split('.')[0].split('Z')[0].split('T'))
+            sys['created'] = ' '.join(disk['createdAt'].split('.')[0].split('Z')[0].split('T'))
+            sys['backupd'] = ' '.join(disk['createdAt'].split('.')[0].split('Z')[0].split('T'))
             sys['displayDescription'] = disk['displayDescription']
             if len(disk['attachments'][0].keys()) == 4:
                 for disk_host in disk['attachments']:
@@ -376,8 +379,10 @@ def volumes(request):
                 if return_data == 1:
                     sys['status'] = False
                 else:
+                    vm_details = vm_manage.show_detail(host)['server']
+                    ret['disk_list'] = volumes_deal(vm_details['name'], vm_details, i)
                     sys['device'] = return_data['volumeAttachment']['device']
-                    sys['servername'] = vm_manage.show_detail(host)['server']['name']
+                    sys['servername'] = vm_details['name']
                     volume_d = volume_s.show_detail(i)
                     if volume_d['volume']['displayName'] == None:
                         sys['volumename'] = volume_d['volume']['id']
@@ -391,5 +396,3 @@ def volumes(request):
     response['Access-Control-Allow-Origin'] = '*'
     response['Content-Type'] = 'application/json'
     return response
-
-

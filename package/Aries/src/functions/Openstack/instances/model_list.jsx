@@ -15,30 +15,88 @@ import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option as Options, F
 import update from 'react-update'
 import message from 'bfd-ui/lib/message'
 import OPEN from '../data_request/request.js'
+import DataTable from 'bfd-ui/lib/DataTable'
 
 const Disk_list = React.createClass({
   getInitialState() {
     return {
-      percent: 0,
-      status: '',
-      title: '',
-      button_status: true,
       host_name: '',
+      data:[],
       select_disk: '',
       host_id: '',
-      loading: false
-    }
+      disk_list: this.props.disk_list,
+      disk_object: this.props.disk_object,
+      loading: false,
+      column: [{ title: '磁盘名', order: false, key: 'disk_name'},
+              {  title: '盘符',   order: false , key: 'device',},
+              {  title: '大小',   order: false , key: 'size',},
+              {  title: '操作',   order: false , key: 'operation',
+              render: (text, item)=> {
+                  return <a href = "javascript:void(0);" onClick = {this.handleClick.bind(this, text)}>卸载云盘</a>
+              }
+            }],
+     }
   },
   handleChange(values) {
     this.setState({select_disk: values})
-
   },
   componentWillMount: function () {
     let host_name = this.props.vm_list[0]['name']
     let host_id = this.props.vm_list[0]['id']
+    //let data=this.props.vm_list[0]['disk_list']
     this.setState({host_name, host_id})
-    console.log(this.props.vm_list)
+    this.Disk_list()
   },
+
+  Disk_list(){
+    this.setState({loading:true})
+    OPEN.Get_vmdisk(this,this.props.vm_list[0]['id'],this.xhrCallback_test)
+  } ,
+
+  xhrCallback_test: (_this, executedData) => {
+    _this.setState({
+      data: executedData['disk_list'],
+      loading:false
+    })
+  },
+
+  handleClick(item){
+    this.setState({loading:true})
+    const url=OPEN.UrlList()['instances_post']
+    let post_data={'host_id':this.state.host_id,'disk_id':item['disk_id'],'host_name':this.state.host_name,'disk_name':item['disk_name']}
+    console.log(post_data)
+    OPEN.xhrPostData(this,url,post_data,'vm_uninstall',this.xhrCallback)
+    console.log(this.state.data)
+    const _this=this
+  },
+
+  xhrCallback: (_this, executedData) => {
+    if (executedData['status']){
+      message.success('卸载成功')
+    }else{
+      message.danger('卸载失败')
+    }
+    console.log('xiez',executedData)
+    _this.setState({
+      data: executedData['disk_list'],
+    })
+    xhr({
+      type: 'GET',
+      url: 'openstack/volumes/',
+      success(data) {
+        let disk_list = []
+        let disk_object = {}
+        for (var i in data['totalList']) {
+          if (!data['totalList'][i]['device']) {
+            disk_list.push(data['totalList'][i]['name'])
+            disk_object[data['totalList'][i]['name']] = data['totalList'][i]['id']
+          }
+        }
+        _this.setState({disk_list, disk_object,loading:false})
+      }
+    })
+  },
+
   handlerequest(){
     const self = this
     this.setState({loading: true})
@@ -51,47 +109,70 @@ const Disk_list = React.createClass({
         host: this.state.host_id
       },
       success(data) {
-        // console.log(data)
         self.props._this.refs.model_disk.close()
+        OPEN.update_url(self.props.self,"instances")
         self.setState({loading: false})
+        console.log(data)
+        //self.Disk_list()
         for (var i in data['totalList']) {
-          notification['info']({
-            message: '添加成功',
-            description: '磁盘' + data['totalList'][i]['volumename'] + '已连接到了虚拟机' + data['totalList'][i]['servername'] + ',磁盘盘符是' + data['totalList'][i]['device'],
-          });
+          if (data['totalList'][i]['status']){
+          /*  notification['info']({
+              message: '添加成功',
+              description: '磁盘' + data['totalList'][i]['volumename'] + '已连接到了虚拟机' + data['totalList'][i]['servername'] + ',磁盘盘符是' + data['totalList'][i]['device'],
+            });*/
+            message.success('挂载成功')
+          }else{
+            message.danger('挂载失败')
+          }
         }
       },
       error() {
-        //console.log('error')
         self.props._this.refs.model_disk.close()
         self.setState({loading: false})
         notification['error']({message: '异常', description: '请检查虚拟机跟磁盘',});
       }
     })
+
   },
 
   handleclose(){
     this.props._this.refs.model_disk.close()
   },
+
   render(){
     let _this = this
-    let disk_display = this.props.disk_list.map((item, i)=> {
+    let disk_display = this.state.disk_list.map((item, i)=> {
       return (
-        <Option value={_this.props.disk_object[item]} key={i}>{item}</Option>
+        <Option value={_this.state.disk_object[item]} key={i}>{item}</Option>
       )
     })
+    let data = {
+      totalList: this.state.data,
+      totalPageNum: 1
+    }
     return (
       <Spin size="large" spinning={this.state.loading}>
         <div>
+          <div>
+              <div></div>
+              <DataTable
+                data={data}
+                showPage="false"
+                column={this.state.column}
+                howRow={10}
+                onOrder={this.handleOrder}
+                onCheckboxSelect={this.handleCheckboxSelect}>
+              </DataTable>
+          </div>
+          <div style={{border: '1px solid #2196f3', margin: '0px 0px 28px 0px'}}></div>
           <div style={{"margin-top": "10px"}}>
             <Row>
-              <Col col="md-1">虚拟机:</Col>
-              <Col col="md-11">{this.state.host_name}</Col>
+              <span>挂载云盘硬盘</span>
             </Row>
           </div>
           <div style={{"margin-top": "10px"}}>
             <span>选择磁盘:</span>
-            <MultipleSelect onChange={this.handleChange} style={{'margin-left': '22px'}}>
+            <MultipleSelect onChange={this.handleChange} style={{'margin-left': '22px'}} ref="select_t">
               {disk_display}
             </MultipleSelect>
           </div>
@@ -577,13 +658,14 @@ const Disk_model = React.createClass({
       flavor_object: {},
       data_list: [0],
       data_object: {},
-      loading: false
+      loading: false,
+      data:[],
     }
   },
   values(){
     return {
       'Vm_Backup': "创建备份",
-      'Disk_list': "加载云硬盘",
+      'Disk_list': "管理云硬盘",
       'Vm_Type': "更改配置",
       'Backup_disk': "重置系统",
     }
@@ -591,7 +673,7 @@ const Disk_model = React.createClass({
   modulevalue(){
     return {
       'Vm_Backup': <Vm_Backup vm_list={this.props.vm_list} _this={this}/>,
-      'Disk_list': <Disk_list vm_list={this.props.vm_list} disk_list={this.state.disk_list} disk_object={this.state.disk_object} _this={this}/>,
+      'Disk_list': <Disk_list vm_list={this.props.vm_list} disk_list={this.state.disk_list} disk_object={this.state.disk_object} _this={this} self={this.props._this} data={this.state.data}/>,
       'Vm_Type': <Vm_Type vm_list={this.props.vm_list} flavor_list={this.state.flavor_list} flavor_object={this.state.flavor_object} _this={this} self={this.props._this}/>,
       'Backup_disk': <Vm_image vm_list={this.props.vm_list} data_list={this.state.data_list} data_object={this.state.data_object} _this={this} self={this.props._this}/>,
     }
@@ -645,7 +727,6 @@ const Disk_model = React.createClass({
     }else{
     this.setState({loading: true})
     OPEN.Get_image(this, this.handlerequest)
-    const _this = this
     this.setState({loading:false})
     let module = this.modulevalue()[e["key"]]
     this.setState({title: this.values()[e['key']], module})
@@ -660,7 +741,7 @@ const Disk_model = React.createClass({
         <Menu.Item key="2" disabled={this.props.button_status}>重启</Menu.Item>
         <Menu.Item key="3" disabled={this.props.button_status}>关闭</Menu.Item>
         <Menu.Item key="Vm_Backup" disabled={this.props.button_statuss}>创建备份</Menu.Item>
-        <Menu.Item key="Disk_list" disabled={this.props.button_statuss}>加载云硬盘</Menu.Item>
+        <Menu.Item key="Disk_list" disabled={this.props.button_statuss}>管理云硬盘</Menu.Item>
         <Menu.Item key="Vm_Type" disabled={this.props.button_statuss}>更改配置</Menu.Item>
         <Menu.Item key="Backup_disk" disabled={this.props.button_statuss}>重置系统</Menu.Item>
         <Menu.Item key="4" disabled={this.props.button_status}>删除</Menu.Item>
