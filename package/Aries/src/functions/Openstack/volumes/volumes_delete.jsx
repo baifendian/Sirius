@@ -47,7 +47,11 @@ const Delete_volumes = React.createClass({
     let volumes_name = ''
     for (var i in this.props.select_all) {
       volumes_object[this.props.select_all[i]['id']] = this.props.select_all[i]['name']
-      volumes_name = volumes_name + this.props.select_all[i]['name'] + '、'
+      
+      if (i==this.props.select_all.length-1){
+        volumes_name = volumes_name +'"'+ this.props.select_all[i]['name']+'"'}else{
+        volumes_name = volumes_name + '"'+this.props.select_all[i]['name']+'"' + '、'
+      }
     }
     this.setState({volumes_name, formData: {volumes_object: volumes_object, method: 'delete'}})
   },
@@ -76,7 +80,7 @@ const Delete_volumes = React.createClass({
               onSuccess={this.handleSuccess}
             >
               <div style={{height: '100px'}}>
-                <h4>您已选择{this.state.volumes_name}。 请确认您的选择。这个动作不能撤消。</h4>
+                <h4>确定要删除云硬盘{this.state.volumes_name}?</h4>
               </div>
               <div>
                 <Button type="danger" style={{marginLeft: '100px'}} className="btn btn-primary"

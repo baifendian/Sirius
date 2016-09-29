@@ -167,7 +167,7 @@ const Disk_list = React.createClass({
           <div style={{border: '1px solid #2196f3', margin: '0px 0px 28px 0px'}}></div>
           <div style={{"margin-top": "10px"}}>
             <Row>
-              <span>挂载云盘硬盘</span>
+              <span>挂载云硬盘</span>
             </Row>
           </div>
           <div style={{"margin-top": "10px"}}>
@@ -177,8 +177,8 @@ const Disk_list = React.createClass({
             </MultipleSelect>
           </div>
           <div style={{"margin-top": "10px"}}>
-            <Button onClick={this.handlerequest}>确认</Button>
-            <Button onClick={this.handleclose}>取消</Button>
+            <Button onClick={this.handlerequest} style={{margin: "0px 0px 0px 100px",width: "70px","font-size": "14px"}}>确认</Button>
+            <Button onClick={this.handleclose} style={{margin: "0px 0px 0px 100px",width: "70px","font-size": "14px"}}>取消</Button>
           </div>
         </div>
       </Spin>
