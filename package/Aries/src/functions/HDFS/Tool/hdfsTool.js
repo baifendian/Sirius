@@ -16,9 +16,9 @@ const hdfsTool = {
         _callback(data);
       },
       complete:data =>{
-        debugger;
         //完成后回调
-        _afterSend(data);
+        _afterSend();
+
       }
     })
   },

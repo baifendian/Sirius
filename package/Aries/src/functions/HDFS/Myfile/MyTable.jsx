@@ -223,10 +223,10 @@ const MyTable = React.createClass({
     1:()=>{ return null },
   },
   openWait(){
-    this.setState({isWaiting:1});
-  },
-  closeWait(data){
     this.setState({isWaiting:0});
+  },
+  closeWait(){
+    this.setState({isWaiting:1});
   },
   getInitialState:function(){
    return {
@@ -303,8 +303,8 @@ const MyTable = React.createClass({
                 <ModalBody>
                   {this.modalBody[this.state.modalTitle].call(this)}
                 </ModalBody>
-                {this.Waiting[this.state.isWaiting].call(this)}
               </Modal>
+              {this.Waiting[this.state.isWaiting].call(this)}
           </div>
   }
 })
