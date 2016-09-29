@@ -37,7 +37,7 @@ function getCookie(name) {
 //xhr.baseUrl = env.baseUrl + '/'
 xhr.baseUrl = env.baseUrl
 xhr.header = {
- // "X-CSRFToken": getCookie('csrftoken')
+  "X-CSRFToken": getCookie('csrftoken')
 }
 //xhr.baseUrl = 'http://172.24.3.64:10086/v1'
 xhr.success = (res, option) => {
