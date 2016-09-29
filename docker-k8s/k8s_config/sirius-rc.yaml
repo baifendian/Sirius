@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - name: sirius
-          image: docker.baifendian.com/lupan/sirius_lugu:latest
+          image: docker.baifendian.com/lupan/sirius_lugu:1.0
           ports:
             - containerPort: 10086
           volumeMounts:
@@ -21,7 +21,7 @@ spec:
             - mountPath: /opt/Siurs/download
               name: siriusdownload
       imagePullSecrets:
-        - name: docker-registry-sys 
+        - name: docker-registry-sys
       volumes:
         - emptyDir: {}
           name: siriuslog
