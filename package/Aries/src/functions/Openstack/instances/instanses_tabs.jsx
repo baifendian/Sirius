@@ -10,6 +10,7 @@ import {Tabs, TabList, Tab, TabPanel} from 'bfd/Tabs'
 import {Row, Col} from 'bfd/Layout'
 import echarts from 'echarts'
 import {Timeline} from 'antd'
+import TextOverflow from 'bfd/TextOverflow'
 
 
 const Host_Timeline = React.createClass({
@@ -141,21 +142,36 @@ const Echarts_s = React.createClass({
 
 
 const Host_details = React.createClass({
-  getInitialState: function () {
+  getInitialState() {
     return {
-      name: this.props.host_desc
+      column: [{ title: 'ID', order: false, key: 'disk_id'},
+              { title: '磁盘名', order: false, key: 'disk_name'},
+              {  title: '盘符',   order: false , key: 'device',},
+              {  title: '大小',   order: false , key: 'size',},
+              {  title: '类型',   order: false , key: 'device',}],
     }
   },
   data(){
     let host_desd = this.props.host_desc[0]
-    //console.log(host)
     return host_desd
   },
   render(){
     //console.log(this.props.host_desc,'.........aaaa')
-    //console.log(this.props.host_desc['name'])
+    const list=[1]
+    const nav = this.props.host_desc['disk_list'] && this.props.host_desc['disk_list'].map((item,i)=>{
+      return (
+        <Row key={i}>
+          <Col col="md-2" style={{}}>
+            <TextOverflow>
+              <p style={{width: '100px'}}>{item['disk_name']}</p>
+            </TextOverflow>
+          </Col>
+          <Col col="md-2" style={{}}>{item['device']}</Col>
+          <Col col="md-2" style={{}}>{item['size']}GB</Col>
+        </Row>
+      )
+    })
     let host_des = this.props.host_desc
-
     return (
       <div>
         <div>{host_des[0]}</div>
@@ -180,6 +196,12 @@ const Host_details = React.createClass({
           <Col col="md-2" style={{}}>已创建:</Col>
           <Col col="md-4" style={{}}>3小时</Col>
         </Row>
+        <Row>
+          <span>磁盘:</span>
+        </Row>
+        <div>
+          {this.props.host_desc['disk_list'] ? nav : <span></span>}
+        </div>
       </div>
     )
   }

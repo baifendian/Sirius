@@ -83,6 +83,7 @@ def instances(request):
     login.proid_login()
     login.token_login()
     vm_manage = Vm_manage()
+    volume_s = Volume()
     if request.method == "GET":
         imagess = Image()
         flavorss = Flavor()
@@ -106,8 +107,28 @@ def instances(request):
             except:
                 sys['image'] = '-'
             sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
-            sys['created'] = ' '.join(host['created'].split('Z')[0].split('T'))
-            sys['status'] = host['OS-EXT-STS:vm_state']
+            sys['created'] = ' '.join( host['created'].split('Z')[0].split('T'))
+            sys['status'] = host['status']
+            try:
+                volumes_list=host['os-extended-volumes:volumes_attached']
+                volumes_name_list=[]
+                for volmes_dict in volumes_list:
+                    volumes_name={}
+                    volumes_details=volume_s.show_detail(volmes_dict['id'])
+                    if volumes_details['volume']['displayName'] == None:
+                        volumes_name['disk_name']=volumes_details['volume']['id']
+                    else:
+                        volumes_name['disk_name']=volumes_details['volume']['displayName']
+                    volumes_name['disk_id']=volumes_details['volume']['id']
+                    volumes_name['size'] = volumes_details['volume']['size']
+                    volumes_name['voumetype'] = 'ceph'
+                    volumes_name['device']=volumes_details['volume']['attachments'][0]['device']
+                    volumes_name_list.append(volumes_name)
+                sys['disk_list']=volumes_name_list
+                openstack_log.info("虚拟机磁盘:{0}..{1}".format(host['name'],volumes_name_list))
+            except Exception,e:
+                sys['disk_list']=[]
+                openstack_log.error("虚拟机磁盘:{0}".format(e))
             for key, value in host['addresses'].items():
                 for ip in value:
                     for keys, values in ip.items():

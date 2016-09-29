@@ -276,48 +276,37 @@ def trans_obj_to_easy_dis(obj_info):
 @return_http_json
 @trans_return_json
 def get_mytask_graph(request):
-    import requests
     kd_logger.info( 'call get_mytask_graph' )
-    url1 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/accounts/login/'  #模拟登陆BDMS
-    url2 = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/ide/schedule/directedgraphdata/?username=all&status=all&taskname=&env=0'  #任务运行网络图 rest api
-    data={"username":settings.BDMS_USERNAME,"password": settings.BDMS_PASSWORD}
-    headers = { "Accept":"*/*",
-            "Accept-Encoding":"gzip, deflate, sdch",
-            "Accept-Language":"zh-CN,zh;q=0.8",
-            "Cache-Control":"no-cache",
-            "Connection":"keep-alive",
-            "Host":"",
-            "Pragma":"no-cache",
-            "Referer":"",
-            "User-Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
-            "X-Requested-With":"XMLHttpRequest"
-            }
-    headers["Host"] = settings.BDMS_IP + ":" + settings.BDMS_PORT
-    headers["Referer"] = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/ide/schedule/directedgraph/"
+    url = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/k8s/api/v1/namespaces/mytaskgraph'  #任务运行网络图 rest api
     try:
         req = requests.Session()
-        r1 = req.post(url1, data=data, headers=headers)
-        r2 = req.get(url2)
-        if r1.status_code and r2.status_code == 200:
+        r = req.get(url)
+        if r.status_code == 200:
             kd_logger.debug( 'get my task graph data success ')
-            dic = eval(r2.text)
+            dic = json.loads(r.text)
             all_task = []
             data = {}
             nodes = []
             edges = []
+            task_info = dic['task_info']
+            task_process = []
+
             #处理节点数据及颜色信息
-            for i in dic['task_info']:
-                for j in dic['task_process']:
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 1:  #执行完成(成功)
-                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#87d068"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['result'] == 2:  #执行完成(失败)
-                        nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#F50"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 2:  #等待执行
-                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#2db7f5"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 3:  #执行中
-                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#0000FF"})
-                    if i['exec_txt'] == dic['task_process'][j]['exec_txt'] and dic['task_process'][j]['status'] == 1:  #等待调度
-                         nodes.append({"id": i["id"], "label": i["exec_txt"], "color": "#A9A9A9"})
+            for i in task_info:
+                try:
+                    id = "%s" %i["id"]
+                    if dic['task_process'][id]['status'] == 1:
+                        nodes.append({"id": id, "label": i["exec_txt"], "color": "#A9A9A9"})
+                    if dic['task_process'][id]['status'] == 2:
+                        nodes.append({"id": id, "label": i["exec_txt"], "color": "#2db7f5"})
+                    if dic['task_process'][id]['status'] == 3:
+                        nodes.append({"id": id, "label": i["exec_txt"], "color": "#0000FF"}) 
+                    if dic['task_process'][id]['status'] == 4 and dic['task_process'][id]['result'] == 1:
+                        nodes.append({"id": id, "label": i["exec_txt"], "color": "#87d068"})
+                    if dic['task_process'][id]['status'] == 4 and dic['task_process'][id]['result'] == 2:
+                        nodes.append({"id": id, "label": i["exec_txt"], "color": "#F50"})
+                except Exception, e:
+                    nodes.append({"id": id, "label": i["exec_txt"], "color": "#A9A9A9"})
             # 处理依赖关系
             for depen in dic['task_info']:
                 if depen['input']:
@@ -373,38 +362,6 @@ def mytask_get_old_records(request):
     req = r.get(url)
     return req.json()
 
-def format_datetime_obj(datetime_obj):
-    if datetime_obj:
-        return datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
-    else:
-        return '<None>'
-
-def trans_result_to_status(result):
-    d = {
-        0:'INIT',
-        1:'SUCCESS',
-        2:'FAILURE'
-    }
-    return d[result]
-
-def query_records(result,beginning_exec,deadline_exec,id,new = False):
-    QS = None
-    if new == True:
-        tmpq = Q(id__gt=id)
-    else:
-        tmpq = Q(id__lt=id)
-    QS = QS & tmpq if QS else tmpq
-    if result != '':
-        tmpq = Q(result=result)
-        QS = QS & tmpq if QS else tmpq
-
-    tmpq = Q(ready_time__gte=beginning_exec,ready_time__lte=deadline_exec)
-    QS = QS & tmpq if QS else tmpq
-    if QS:
-        return Schedule_Log.objects.using('kd_agent_bdms').filter(QS).order_by('-id')
-    else:
-        return Schedule_Log.objects.using('kd_agent_bdms').all().order_by('-id')
-
 @csrf_exempt
 @return_http_json
 @trans_return_json
@@ -431,51 +388,14 @@ def mytask_get_new_records(request):
     req = r.get(url)
     return req.json()
 
-#根据条件查询任务
-def query_tasks(name=None, name_op = 'contains', scripttype=None):#,status=None,owner=None,export_flag=None):
-    QS = None
-    if name and name.strip() != '':
-        if name_op == '==':
-            QS = QS & Q(name=name) if QS else Q(name=name)
-        else :
-            QS = QS & Q(name__icontains=name) if QS else Q(name__icontains=name)
-    if scripttype:
-        QS = QS & Q(scripttype=scripttype) if QS else Q(scripttype=scripttype)
-    if QS:
-        return Task.objects.using('kd_agent_bdms').filter(QS)
-    else:
-        return Task.objects.using('kd_agent_bdms').all()
-
-def convert_dict(keywords):
-    scripttype = {
-        'ALL':0,
-        'HIVE':1,
-        'SQOOP':2,
-        'SHELL':3,
-        'SPARK':4
-    }
-    result = {
-        'ALL':'',
-        'INIT':0,
-        'SUCCESS':1,
-        'FAILURE':2
-    }
-    keywords['shelltype'] = scripttype[keywords['shelltype']]
-    keywords['executeresult'] = result[keywords['executeresult']]
-    keywords['startdate'] = datetime.strptime(keywords['startdate'], '%Y-%m-%dT%H:%M:%S')
-    keywords['enddate'] = datetime.strptime(keywords['enddate'], '%Y-%m-%dT%H:%M:%S')
-    return keywords
-
 @csrf_exempt
 @return_http_json
 @trans_return_json
 def dashboard_taskinfo(request):
-    retu_data = {}
-    retu_data['today_running_task'] = Schedule_Status.objects.using('kd_agent_bdms').filter(category = time.strftime('%Y-%m-%d',time.localtime(time.time())), status = 3).count()
-    retu_data['today_succeed_task'] = Schedule_Log.objects.using('kd_agent_bdms').filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 1).count()
-    retu_data['today_failed_task'] = Schedule_Log.objects.using('kd_agent_bdms').filter(exe_date = time.strftime('%Y-%m-%d 00:00:00',time.localtime(time.time())), result = 2).count()
-    retu_data['today_total_task'] = retu_data['today_succeed_task'] + retu_data['today_failed_task']
-    return generate_success( data = retu_data )
+    url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/dashboard/taskinfo"
+    r = requests.Session()
+    req = r.get(url)
+    return req.json()
 
 def filter_valid_data( influxdb_data_dict ):
     try:
