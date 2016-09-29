@@ -4,18 +4,29 @@ from django.test import TestCase
 from openstack.middleware.login.login import Login
 from openstack.middleware.flavor.flavor import Flavor
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
-from openstack.middleware.volume.volume import Volume, Volume_backup,Volume_snaps
+from openstack.middleware.volume.volume import Volume, Volume_backup,Volume_snaps, Volume_attach
 from openstack.middleware.image.image import Image
 from openstack.middleware.common.common import run_in_thread
+from openstack.middleware.common.common_api import CommonApi
 import json
 import base64
+import inspect
+from colorama import Fore, Back, Style
 
 def prints(msg):
-    print json.dumps(msg, indent=4)
+    caller_name = inspect.stack()[1][3]
+    if msg == 1:
+        print("%-50s%s[false]%s"%(caller_name,Fore.RED,Fore.RESET))
+    else:
+        print json.dumps(msg, indent=4)
+        print("%-50s%s[ok]%s"%(caller_name,Fore.GREEN,Fore.RESET))
 
 IMAGE_ID = ""
 FLAVOR_ID = ""
 VM_ID = ""
+VOLUME_ID = ""
+SNAPSHOT_ID = ""
+ATTACH_ID = ""
 
 class Openstack_test(TestCase):
     def test_login(self):
@@ -37,7 +48,9 @@ class Openstack_test(TestCase):
         '''
         self.test_login()
         volume = Volume()
-        volume.create(10, name="test_a")
+        ret = volume.create(10, name="test_a")
+        prints(ret)
+        return ret
 
     def test_create_volume_multiple(self):
         '''
@@ -62,7 +75,7 @@ class Openstack_test(TestCase):
         :return:
         '''
         self.test_login()
-        volume_id = ""
+        volume_id = VOLUME_ID
         volume = Volume()
         msg = volume.show_detail(volume_id)
         prints(msg)
@@ -72,21 +85,34 @@ class Openstack_test(TestCase):
         :return:
         '''
         self.test_login()
-        volume_id = ""
-        size = ""
+        volume_id = VOLUME_ID
+        size = 11
         volume = Volume()
         msg = volume.extend(volume_id,size)
         prints(msg)
 
-    def test_snap_volume(self):
+    def test_create_volume_snap(self):
         '''
         创建磁盘快照
         :return:
         '''
-        volume_id = ""
-        name = ""
+        self.test_login()
+        volume_id = VOLUME_ID
+        name = "test_snap"
         volume_snap = Volume_snaps()
         ret = volume_snap.create(volume_id,name)
+        prints(ret)
+        return ret
+
+    def test_delete_volume_snap(self):
+        '''
+        删除磁盘快照
+        :return:
+        '''
+        self.test_login()
+        snapshot_id = SNAPSHOT_ID
+        volume_snap = Volume_snaps()
+        ret = volume_snap.delete(snapshot_id)
         prints(ret)
 
     def test_create_flavor(self):
@@ -109,7 +135,7 @@ class Openstack_test(TestCase):
 
     def test_show_vm(self):
         self.test_login()
-        vm_id = ""
+        vm_id = VM_ID
         vm = Vm_manage()
         msg = vm.show_detail(vm_id)
         prints(msg)
@@ -130,8 +156,9 @@ class Openstack_test(TestCase):
         disk = [{"name": "disk_test2", "size": "10", "dev_name": "/dev/sdb"},
                 {"name": "disk_test3", "size": "10", "dev_name": "/dev/sdc"}]
         tmp_str = base64.b64encode("test")
-        msg = vm.create("test_zd3", FLAVOR_ID, IMAGE_ID, "123456",tmp_str, disk)
+        msg = vm.create("test_zd3", FLAVOR_ID, IMAGE_ID, "123456",tmp_str)
         prints(msg)
+        return msg
 
     def test_create_vm_multiple(self):
         '''
@@ -157,7 +184,7 @@ class Openstack_test(TestCase):
         vm_id = VM_ID
         vm = Vm_snap(vm_id)
         image_name = "test_snap_1"
-        ret = vm.create(vm_id, image_name)
+        ret = vm.create(image_name)
         prints(ret)
 
     def test_rebuild(self):
@@ -206,6 +233,38 @@ class Openstack_test(TestCase):
         ret = vm.get_console(vm_id)
         prints(ret)
 
+    def test_vm_attach_create(self):
+        self.test_login()
+        vm_id = VM_ID
+        volume_id = VOLUME_ID
+        volume_attach = Volume_attach()
+        ret = volume_attach.attach(vm_id,volume_id)
+        prints(ret)
+        return ret
+
+    def test_vm_attach_list(self):
+        self.test_login()
+        volume_attach = Volume_attach()
+        vm_id = VM_ID
+        ret = volume_attach.list(vm_id)
+        prints(ret)
+
+    def test_vm_attach_show_detail(self):
+        self.test_login()
+        volume_attach = Volume_attach()
+        vm_id = VM_ID
+        attach_id = ATTACH_ID
+        ret = volume_attach.show_detail(vm_id,attach_id)
+        prints(ret)
+
+    def test_vm_attach_delete(self):
+        self.test_login()
+        volume_attach = Volume_attach()
+        vm_id = VM_ID
+        attach_id = ATTACH_ID
+        ret = volume_attach.delete(vm_id,attach_id)
+        prints(ret)
+
     def test_thread(self):
         def test_t(a):
             print a
@@ -238,7 +297,7 @@ class Openstack_test(TestCase):
         self.test_login()
         volume_backup = Volume_backup()
         volume_id = VM_ID
-        volume_backup_name = ""
+        volume_backup_name = "test_volume_backup"
         ret = volume_backup.create(volume_id,volume_backup_name)
         prints(ret)
 
@@ -264,3 +323,50 @@ class Openstack_test(TestCase):
         vm_id = VM_ID
         ret = vm_control.get_console_log(vm_id)
         prints(ret)
+
+    def test_get_keypairs(self):
+        self.test_login()
+        ret = CommonApi.get_keypairs()
+        prints(ret)
+
+    def auto_test(self):
+        global VM_ID
+        global VOLUME_ID
+        global SNAPSHOT_ID
+        global ATTACH_ID
+        print "_____________________start test___________________________________"
+        self.test_list_image()
+        self.test_list_volume()
+        self.test_list_flavor()
+        self.test_list_vm()
+        self.test_list_vm_detail()
+        self.test_vbackup_list()
+        self.test_vbackup_list_detail()
+        tmp_ret = self.test_create_volume()
+        try:
+            VOLUME_ID = tmp_ret["volume"]["id"]
+        except:
+            pass
+        self.test_create_volume_multiple()
+        self.test_extend_volume()
+        tmp_ret = self.test_create_volume_snap()
+        try:
+            SNAPSHOT_ID = tmp_ret["snapshot"]["id"]
+        except:
+            pass
+        self.test_delete_volume_snap()
+        tmp_ret = self.test_create_vm()
+        try:
+            VM_ID = tmp_ret["server"]["id"]
+        except:
+            pass
+        self.test_vm_attach_list()
+        tmp_ret = self.test_vm_attach_create()
+        try:
+            ATTACH_ID = tmp_ret["volumeAttachment"]["id"]
+        except:
+            pass
+        self.test_vm_attach_show_detail()
+        self.test_vm_attach_delete()
+        self.test_create_snap()
+        print "_____________________end test___________________________________"

@@ -1,5 +1,6 @@
 # coding:utf-8
 from openstack.middleware.common.common import send_request, IP_keystone, PORT_keystone, plog
+from openstack.middleware.common.urls import url_get_token,url_project_id
 
 token = ""
 project_id = ""
@@ -25,7 +26,7 @@ class Login:
         '''
         global user_token
         method = "POST"
-        path = "/v3/auth/tokens"
+        path = url_get_token
         params = {
             "auth":
                 {
@@ -62,7 +63,7 @@ class Login:
         '''
         global project_id
         method = "GET"
-        path = "/v3/auth/projects"
+        path = url_project_id
         params = ''
         head = {"X-Auth-Token": self.user_token}
         ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
@@ -78,7 +79,7 @@ class Login:
         global token
         assert self.project_id != "", "proejct_id is none"
         method = "POST"
-        path = "/v3/auth/tokens"
+        path = url_get_token
         params = {
             "auth":
                 {
@@ -128,7 +129,7 @@ def get_project():
     global user_token
     assert user_token != "", "not login"
     method = "GET"
-    path = "/v3/auth/projects"
+    path = url_project_id
     params = ''
     head = {"X-Auth-Token": user_token}
     ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
@@ -140,3 +141,5 @@ def login_out():
     global project_id
     token = ""
     project_id = ""
+
+

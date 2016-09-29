@@ -2,12 +2,12 @@
 import urllib
 import time
 from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, \
-    get_time, dlog, TIMEOUT, DB_host, DB_name, DB_password, DB_user
-from openstack.middleware.db.db import Db
+    get_time, dlog, TIMEOUT
 from openstack.middleware.image.image import Image
 from openstack.middleware.login.login import get_token, get_proid
 from openstack.middleware.volume.volume import Volume, Volume_attach
 from openstack.models import DbVmSnap
+from openstack.middleware.common.urls import url_vm_action,url_vm_control_action,url_vm_create,url_vm_list,url_vm_list_detail
 
 
 # 虚拟机管理类
@@ -37,7 +37,7 @@ class Vm_manage:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers" % self.project_id
+        path = url_vm_list.format(project_id=self.project_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ''
@@ -53,7 +53,7 @@ class Vm_manage:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s" % (self.project_id, vm_id)
+        path = url_vm_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ''
@@ -70,7 +70,7 @@ class Vm_manage:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/detail" % self.project_id
+        path = url_vm_list_detail.format(project_id=self.project_id)
         if query_dict:
             query_str = urllib.urlencode(query_dict)
             path = "%s?%s" % (path, query_str)
@@ -97,7 +97,7 @@ class Vm_manage:
         return 0
 
     @plog("Vm_manage.create")
-    def create(self, name, flavor, image, password, userdata, disk=[]):
+    def create(self, name, flavor, image, password, userdata, key_name="", disk=[]):
         '''
         创建虚拟机,创建的接口在后台应该是异步执行的，当创建的请求发送过去后很快会有结果返回，但是虚拟机实际可能还没有创建成功
         所以需要先判断虚拟机的创建状态，如果是完成的再绑定磁盘
@@ -125,11 +125,13 @@ class Vm_manage:
         self.result.update({name: {"name": name, "id": "", "status_vm": 0,
                                    "status_disk": {}}})  # 虚拟机创建状态，0表示创建中，1表示成功，2表示失败
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers" % self.project_id
+        path = url_vm_create.format(project_id=self.project_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"server": {"name": name, "flavorRef": flavor, "imageRef": image, "adminPass": password,
                              "user_data": userdata}}
+        if key_name:
+            params["server"].update({"key_name": key_name})
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         vm_id = ret["server"]["id"]
         vm_snap = Vm_snap()
@@ -142,7 +144,7 @@ class Vm_manage:
             vm_compele_flag = 0  # 判断虚拟机是否创建完成的标志，如果置1则下面不再判断创建的状态
             for tmp_dict in disk:
                 time_int = int(time.time())
-                name_disk = tmp_dict.get("name", "%s_%s"%(name,time_int))
+                name_disk = tmp_dict.get("name", "%s_%s" % (name, time_int))
                 self.result[name]["status_disk"].update({name_disk: 0})
                 size = tmp_dict["size"]
                 availability_zone = tmp_dict.get("availability_zone", "")
@@ -176,7 +178,7 @@ class Vm_manage:
         return ret
 
     @plog("Vm_manage.create")
-    def create_multiple(self, name, flavor, image, password, userdata, min_count=1, max_count=1, disk=[]):
+    def create_multiple(self, name, flavor, image, password, userdata, min_count=1, max_count=1, key_name="", disk=[]):
         '''
         同时创建多台虚拟机，现在的测试环境只能测试功能，无法测试性能
         先实现功能，后面再测试效率，如果效率过低需要换成异步创建的方式
@@ -199,7 +201,7 @@ class Vm_manage:
         workpool.work_add()
         for i in range(max_count):
             name_new = "%s-%s" % (name, i)
-            workpool.task_add(self.create, (name_new, flavor, image, password, userdata, disk))
+            workpool.task_add(self.create, (name_new, flavor, image, password, userdata, key_name, disk))
         workpool.work_start()
         workpool.work_wait()  # 改成非阻塞的模式,通过self.result来判断是否做完
         # else:  下面的方法是调用原生的api去创建多台虚拟机，但是无法展示每台创建的进度，现在是循序调用创建单台的api
@@ -215,7 +217,7 @@ class Vm_manage:
     def delete(self, vm_id):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s" % (self.project_id, vm_id)
+        path = url_vm_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "DELETE"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
@@ -254,7 +256,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"os-start": ""}
@@ -271,7 +273,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"os-stop": ""}
@@ -288,7 +290,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"lock": ""}
@@ -305,7 +307,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"unlock": ""}
@@ -322,7 +324,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"pause": ""}
@@ -339,7 +341,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"unpause": ""}
@@ -356,7 +358,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"reboot": {"type": type}}
@@ -372,7 +374,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"resize": {"flavorRef": flavor_id, "OS-DCF:diskConfig": "AUTO"}}
@@ -395,7 +397,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"createBackup": {"name": name, "backup_type": type, "rotation": rotation}}
@@ -411,7 +413,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"migrate": ""}
@@ -427,7 +429,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {
@@ -445,7 +447,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"createImage": {"name": image_name, "metadata": {"meta_var": "meta_val"}}}
@@ -461,7 +463,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"rebuild": {"imageRef": image_id, "name": name}}
@@ -485,7 +487,7 @@ class Vm_control:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/action" % (self.project_id, vm_id)
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"os-getVNCConsole": {"type": "novnc"}}
@@ -494,17 +496,17 @@ class Vm_control:
         return ret
 
     @plog("vm_control.get_console_log")
-    def get_console_log(self,vm_id,length=30):
+    def get_console_log(self, vm_id, length=30):
         '''
         获取虚拟机日志
         :return:
         '''
         ret = 0
-        assert self.token != "","not login"
-        path = "/v2.1/%s/servers/%s/action"%(self.project_id,vm_id)
+        assert self.token != "", "not login"
+        path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"os-getConsoleOutput":{"length":length}}
+        params = {"os-getConsoleOutput": {"length": length}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
         return ret
@@ -521,7 +523,7 @@ class Vm_snap:
         找到当前主机所在的快照节点
         :return:
         '''
-        tmp_ret = DbVmSnap.objects.get(vm_id=self.vm_id,status=1)
+        tmp_ret = DbVmSnap.objects.get(vm_id=self.vm_id, status=1)
         ret = tmp_ret.image_name
         return ret
 
@@ -534,7 +536,8 @@ class Vm_snap:
         '''
         ret = 0
         time_now = get_time()
-        root_snap = DbVmSnap(image_name="root",vm_id=self.vm_id,parent_name="",image_id=image_id,status=1,time=time_now)
+        root_snap = DbVmSnap(image_name="root", vm_id=self.vm_id, parent_name="", image_id=image_id, status=1,
+                             time=time_now)
         root_snap.save()
         return ret
 
@@ -561,8 +564,8 @@ class Vm_snap:
         if image_name_new in image_list:
             ret = 2
         else:
-            DbVmSnap.objects.get(vm_id=self.vm_id,image_name=image_name_old).update(image_name=image_name_new)
-            DbVmSnap.objects.filter(vm_id=self.vm_id,parent_name=image_name_old).update(parent_name=image_name_new)
+            DbVmSnap.objects.get(vm_id=self.vm_id, image_name=image_name_old).image_name=image_name_new
+            DbVmSnap.objects.filter(vm_id=self.vm_id, parent_name=image_name_old).update(parent_name=image_name_new)
         return ret
 
     @plog("Vm_snap.delete_node")
@@ -573,9 +576,9 @@ class Vm_snap:
         :return:
         '''
         ret = 0
-        parent_name = DbVmSnap.objects.get(image_name=image_name,vm_id=self.vm_id).parent_name
-        DbVmSnap.objects.get(image_name=image_name,vm_id=self.vm_id).delete()
-        DbVmSnap.objects.filter(vm_id=self.vm_id,parent_name=image_name).update(parent_name=parent_name)
+        parent_name = DbVmSnap.objects.get(image_name=image_name, vm_id=self.vm_id).parent_name
+        DbVmSnap.objects.get(image_name=image_name, vm_id=self.vm_id).delete()
+        DbVmSnap.objects.filter(vm_id=self.vm_id, parent_name=image_name).update(parent_name=parent_name)
         return ret
 
     def set_vm(self, vm_id):
@@ -592,7 +595,7 @@ class Vm_snap:
         :param image_name:
         :return:
         '''
-        ret = DbVmSnap.objects.get(image_name=image_name,vm_id=self.vm_id)
+        ret = DbVmSnap.objects.get(image_name=image_name, vm_id=self.vm_id)
         return ret
 
     @plog("Vm_snap.get_id")
@@ -614,7 +617,7 @@ class Vm_snap:
         :return:1表示有异常，2表示名称冲突
         '''
         image_list = self.list_snap()
-        image_name = self.vm_id+image_name  #确保名称的唯一性
+        image_name = self.vm_id + image_name  # 确保名称的唯一性
         if image_name.strip() in image_list:
             ret = 2
         else:
@@ -627,9 +630,10 @@ class Vm_snap:
             assert image_id != 1
             parent_name = self.find_parent()
             assert parent_name != 1
-            date = DbVmSnap(image_name=image_name,vm_id=self.vm_id,parent_name=parent_name,image_id=image_id,status=1,time=time_now)
+            date = DbVmSnap(image_name=image_name, vm_id=self.vm_id, parent_name=parent_name, image_id=image_id,
+                            status=1, time=time_now)
             date.save()
-            DbVmSnap.objects.get(image_name=parent_name,vm_id=self.vm_id).update(status=0)
+            DbVmSnap.objects.get(image_name=parent_name, vm_id=self.vm_id).status=0
         return ret
 
     @plog("Vm_snap.rebuild")
@@ -641,11 +645,11 @@ class Vm_snap:
         '''
         ret = 0
         vm = Vm_control()
-        image_id = DbVmSnap.objects.get(image_name=image_name,vm_id=self.vm_id).image_id
+        image_id = DbVmSnap.objects.get(image_name=image_name, vm_id=self.vm_id).image_id
         ret = vm.rebuild(self.vm_id, image_id, "default")
         assert ret != 1
-        DbVmSnap.objects.get(status=1,vm_id=self.vm_id).update(status=0)
-        DbVmSnap.objects.get(image_name=image_name,vm_id=self.vm_id).update(status=1)
+        DbVmSnap.objects.get(status=1, vm_id=self.vm_id).update(status=0)
+        DbVmSnap.objects.get(image_name=image_name, vm_id=self.vm_id).status=1
         return ret
 
     @plog("Vm_snap,list_snap")
@@ -657,4 +661,3 @@ class Vm_snap:
         tmp_list = DbVmSnap.objects.filter(vm_id=self.vm_id)
         image_list = [i.image_name for i in tmp_list]
         return image_list
-

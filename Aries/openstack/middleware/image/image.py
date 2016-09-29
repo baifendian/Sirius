@@ -1,6 +1,7 @@
 # coding:utf-8
 from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, dlog, plog
 from openstack.middleware.login.login import get_token, get_proid
+from openstack.middleware.common.urls import url_image_action,url_image_list,url_image_list_detail
 import urllib
 
 
@@ -12,7 +13,7 @@ class Image:
     @plog("Image.list")
     def list(self, query_dict={}):
         assert self.token != "", "not login"
-        path = "/v2.1/%s/images" % self.project_id
+        path = url_image_list.format(project_id=self.project_id)
         if query_dict:
             query_str = urllib.urlencode(query_dict)
             path = "%s?%s" % (path, query_str)
@@ -27,7 +28,7 @@ class Image:
     def list_detail(self):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/images/detail" % self.project_id
+        path = url_image_list_detail.format(project_id=self.project_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ''
@@ -39,7 +40,7 @@ class Image:
     def show_detail(self, image_id):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/images/%s" % (self.project_id, image_id)
+        path = url_image_action.format(project_id=self.project_id,image_id=image_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ''
@@ -51,7 +52,7 @@ class Image:
     def delete(self, image_id):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/images/%s" % (self.project_id, image_id)
+        path = url_image_action.format(project_id=self.project_id,image_id=image_id)
         method = "DELETE"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ''
