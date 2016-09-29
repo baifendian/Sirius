@@ -1,7 +1,7 @@
 # coding:utf-8
 from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, dlog, plog
 from openstack.middleware.login.login import get_token, get_proid
-
+from openstack.middleware.common.urls import url_flavor_action,url_flavor_list,url_flavor_list_detail
 
 class Flavor:
     def __init__(self):
@@ -12,7 +12,8 @@ class Flavor:
     def list(self):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/flavors" % self.project_id
+        # path = "/v2.1/%s/flavors" % self.project_id
+        path = url_flavor_list.format(project_id=self.project_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ''
@@ -23,7 +24,8 @@ class Flavor:
     @plog("Flavor.show_detail")
     def show_detail(self, flavor_id):
         assert self.token != "", "not login"
-        path = "/v2.1/%s/flavors/%s" % (self.project_id, flavor_id)
+        # path = "/v2.1/%s/flavors/%s" % (self.project_id, flavor_id)
+        path = url_flavor_action.format(project_id=self.project_id,flavor_id=flavor_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
@@ -34,7 +36,8 @@ class Flavor:
     @plog("Flavor.list_detail")
     def list_detail(self):
         assert self.token != "", "not login"
-        path = "/v2.1/%s/flavors/detail" % self.project_id
+        # path = "/v2.1/%s/flavors/detail" % self.project_id
+        path = url_flavor_list_detail.format(project_id=self.project_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""

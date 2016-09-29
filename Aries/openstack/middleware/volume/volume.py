@@ -1,8 +1,15 @@
 # coding:utf-8
 import time
 
-from openstack.middleware.common.common import send_request, IP_nova, PORT_nova,IP_cinder,PORT_cinder, plog,run_in_thread,TIMEOUT, WorkPool
+from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, IP_cinder, PORT_cinder, plog, \
+    run_in_thread, TIMEOUT, WorkPool
 from openstack.middleware.login.login import get_token, get_proid
+from openstack.middleware.common.urls import url_volume_action, url_volume_attach_action, url_volume_attach_create, \
+    url_volume_attach_list, url_volume_backup_action, url_volume_backup_create, url_volume_backup_list, url_vm_action, \
+    url_volume_backup_list_detail, url_volume_backup_restore, url_volume_change, url_volume_create, url_volume_extend, \
+    url_volume_list, url_volume_list_detail, url_volume_snap_action, url_volume_snap_create, url_volume_snap_list, \
+    url_volume_snap_list_detail
+
 
 class Volume:
     def __init__(self):
@@ -25,7 +32,7 @@ class Volume:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/os-volumes" % self.project_id
+        path = url_volume_list.format(project_id=self.project_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ''
@@ -41,7 +48,7 @@ class Volume:
         :return:
         '''
         assert self.token != "", "not login"
-        path = "/v2.1/%s/os-volumes/%s" % (self.project_id, volume_id)
+        path = url_volume_action.format(project_id=self.project_id,volume_id=volume_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ''
@@ -65,7 +72,8 @@ class Volume:
         return 0
 
     @plog("Volume.create")
-    def create(self, size, availability_zone="", name="", des="", metadata="", volume_type="ceph", snapshot_id="",flag=0):
+    def create(self, size, availability_zone="", name="", des="", metadata="", volume_type="ceph", snapshot_id="",
+               flag=0):
         '''
         创建虚拟卷
         :return:
@@ -73,7 +81,7 @@ class Volume:
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/os-volumes" % self.project_id
+        path = url_volume_create.format(project_id=self.project_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"volume": {"size": size}}
@@ -92,16 +100,17 @@ class Volume:
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
         if flag:
-            volume_id = ret["volume"].get("id","")
-            t = run_in_thread(self.wait_complete,volume_id,["available"],timeout=TIMEOUT)
+            volume_id = ret["volume"].get("id", "")
+            t = run_in_thread(self.wait_complete, volume_id, ["available"], timeout=TIMEOUT)
             if t != 0:
-                self.result.update({name:2})
+                self.result.update({name: 2})
             else:
-                self.result.update({name:1})
+                self.result.update({name: 1})
         return ret
 
     @plog("Volume.create_multiple")
-    def create_multiple(self,name,num,size,availability_zone="", des="", metadata="", volume_type="ceph", snapshot_id=""):
+    def create_multiple(self, name, num, size, availability_zone="", des="", metadata="", volume_type="ceph",
+                        snapshot_id=""):
         '''
         创建多块磁盘
         :param name:
@@ -117,14 +126,15 @@ class Volume:
         ret = 0
         assert self.token != "", "not login"
         if num == 1:
-            ret = self.create(size,availability_zone,name,des,metadata,volume_type,snapshot_id,1)
+            ret = self.create(size, availability_zone, name, des, metadata, volume_type, snapshot_id, 1)
         else:
             workpool = WorkPool()
             workpool.work_add()
             for i in range(num):
-                disk_name = "%s_%s"%(name,i)
-                self.result.update({disk_name:0})
-                workpool.task_add(self.create,(size,availability_zone,disk_name,des,metadata,volume_type,snapshot_id,1))
+                disk_name = "%s_%s" % (name, i)
+                self.result.update({disk_name: 0})
+                workpool.task_add(self.create,
+                                  (size, availability_zone, disk_name, des, metadata, volume_type, snapshot_id, 1))
             workpool.work_start()
             workpool.work_wait()
         return ret
@@ -136,7 +146,7 @@ class Volume:
         :return:
         '''
         assert self.token != "", "not login"
-        path = "/v2.1/%s/os-volumes/detail" % self.project_id
+        path = url_volume_list_detail.format(project_id=self.project_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ''
@@ -152,7 +162,7 @@ class Volume:
         :return:
         '''
         assert self.token != "", "not login"
-        path = "/v2.1/%s/os-volumes/%s" % (self.project_id, volume_id)
+        path = url_volume_action.format(project_id=self.project_id,volume_id=volume_id)
         method = "DELETE"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ''
@@ -161,38 +171,39 @@ class Volume:
         return ret
 
     @plog("Volume.extend")
-    def extend(self,volume_id,size):
+    def extend(self, volume_id, size):
         '''
         扩展虚拟卷容量
         :param volume_id:
         '''
-        assert self.token != "","not login"
-        path =  "/v2/%s/volumes/%s/action" % (self.project_id, volume_id)
+        assert self.token != "", "not login"
+        path = url_volume_extend.format(project_id=self.project_id,volume_id=volume_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"os-extend":{"new_size":size}}
+        params = {"os-extend": {"new_size": size}}
         ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
         assert ret != 1, "send_request error"
         return ret
 
     @plog("Volume.change")
-    def change(self,volume_id,name="",description=""):
+    def change(self, volume_id, name="", description=""):
         '''
         修改磁盘信息
         :return:
         '''
-        assert self.token != "","not login"
-        path = "/v2/%s/volumes/%s"%(self.project_id, volume_id)
+        assert self.token != "", "not login"
+        path = url_volume_change.format(project_id=self.project_id,volume_id=volume_id)
         method = "PUT"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"volume":{}}
+        params = {"volume": {}}
         if name:
-            params["volume"].update({"name":name})
+            params["volume"].update({"name": name})
         if description:
-            params["volume"].update({"description":description})
-        ret = send_request(method,IP_cinder,PORT_cinder,path,params,head)
-        assert ret != 1,"send_request error"
+            params["volume"].update({"description": description})
+        ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
+        assert ret != 1, "send_request error"
         return ret
+
 
 class Volume_snaps():
     def __init__(self):
@@ -207,7 +218,7 @@ class Volume_snaps():
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/os-snapshots" % self.project_id
+        path = url_volume_snap_list.format(project_id=self.project_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ''
@@ -225,7 +236,7 @@ class Volume_snaps():
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/os-snapshots" % self.project_id
+        path = url_volume_snap_create.format(project_id=self.project_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"snapshot": {"volume_id": volume_id}}
@@ -244,7 +255,7 @@ class Volume_snaps():
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/os-snapshots/detail" % self.project_id
+        path = url_volume_snap_list_detail.format(project_id=self.project_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
@@ -260,7 +271,7 @@ class Volume_snaps():
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/os-snapshots/%s" % (self.project_id, snapshot_id)
+        path = url_volume_snap_action.format(project_id=self.project_id,snapshot_id=snapshot_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
@@ -276,7 +287,7 @@ class Volume_snaps():
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/os-snapshots/%s" % (self.project_id, snapshot_id)
+        path = url_volume_snap_action.format(project_id=self.project_id,snapshot_id=snapshot_id)
         method = "DELETE"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
@@ -293,7 +304,7 @@ class Volume_attach():
     def list(self, vm_id):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/os-volume_attachments" % (self.project_id, vm_id)
+        path = url_volume_attach_list.format(project_id=self.project_id,vm_id=vm_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
@@ -311,7 +322,7 @@ class Volume_attach():
         '''
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/os-volume_attachments" % (self.project_id, vm_id)
+        path = url_volume_attach_create.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"volumeAttachment": {"volumeId": volum_id}}
@@ -324,7 +335,7 @@ class Volume_attach():
     def show_detail(self, vm_id, attach_id):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/os-volume_attachments/%s" % (self.project_id, vm_id, attach_id)
+        path = url_volume_attach_action.format(project_id=self.project_id,vm_id=vm_id,attach_id=attach_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
@@ -335,7 +346,7 @@ class Volume_attach():
     def update(self, vm_id, attach_id, volume_id):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/os-volume_attachments/%s" % (self.project_id, vm_id, attach_id)
+        path = url_volume_attach_action.format(project_id=self.project_id,vm_id=vm_id,attach_id=attach_id)
         method = "PUT"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = {"volumeAttachment": {"volumeId": volume_id}}
@@ -346,12 +357,13 @@ class Volume_attach():
     def delete(self, vm_id, attach_id):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2.1/%s/servers/%s/os-volume_attachments/%s" % (self.project_id, vm_id, attach_id)
+        path = url_volume_attach_action.format(project_id=self.project_id,vm_id=vm_id,attach_id=attach_id)
         method = "DELETE"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         return ret
+
 
 class Volume_backup():
     def __init__(self):
@@ -362,7 +374,7 @@ class Volume_backup():
     def list(self):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2/%s/backups" % self.project_id
+        path = url_volume_backup_list.format(project_id=self.project_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
@@ -373,7 +385,7 @@ class Volume_backup():
     def list_detail(self):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2/%s/backups/detail" % self.project_id
+        path = url_volume_backup_list_detail.format(project_id=self.project_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
@@ -381,10 +393,10 @@ class Volume_backup():
         return ret
 
     @plog("Volume_backup.show_detail")
-    def show_detail(self,backup_id):
+    def show_detail(self, backup_id):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2/%s/backups/%s" % (self.project_id,backup_id)
+        path = url_volume_backup_action.format(project_id=self.project_id,backup_id=backup_id)
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
@@ -392,10 +404,10 @@ class Volume_backup():
         return ret
 
     @plog("Volume_backup.delete")
-    def delete(self,backup_id):
+    def delete(self, backup_id):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2/%s/backups/%s" % (self.project_id,backup_id)
+        path = url_volume_backup_action.format(project_id=self.project_id,backup_id=backup_id)
         method = "DELETE"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
@@ -403,29 +415,26 @@ class Volume_backup():
         return ret
 
     @plog("Volume_backup.restore")
-    def restore(self,backup_id,volume_id,volume_name):
+    def restore(self, backup_id, volume_id, volume_name):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2/%s/backups/%s/restore" % (self.project_id,backup_id)
+        path = url_volume_backup_restore.format(project_id=self.project_id,backup_id=backup_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"restore":{"name":volume_name}}
+        params = {"restore": {"name": volume_name}}
         if volume_id:
-            params["restore"].update({"volume_id":volume_id})
+            params["restore"].update({"volume_id": volume_id})
         ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
         return ret
 
     @plog("Volume_backup.create")
-    def create(self,volume_id,backup_name):
+    def create(self, volume_id, backup_name):
         ret = 0
         assert self.token != "", "not login"
-        path = "/v2/%s/backups" % self.project_id
+        path = url_volume_backup_create.format(project_id=self.project_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"backup":{"container":"","description":"","name":backup_name,"volume_id":volume_id,"incremental":""}}
+        params = {"backup": {"container": "", "description": "", "name": backup_name, "volume_id": volume_id,
+                             "incremental": ""}}
         ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
         return ret
-
-
-
-
