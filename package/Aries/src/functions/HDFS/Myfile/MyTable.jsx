@@ -14,12 +14,24 @@ import Tree from 'bfd-ui/lib/Tree/Tree'
 import { Form, FormItem } from 'bfd-ui/lib/Form'
 import Editable from 'bfd-ui/lib/Editable'
 import message from 'bfd-ui/lib/message'
+import hdfsTool from '../Tool/hdfsTool'
+import Spinner from 'bfd/Spinner'
 
 const MyTable = React.createClass({
   confirm_handler(path,confirm_str,func,component){
     confirm(<TextOverflow><p style={{width: '250px'}}>{confirm_str}</p></TextOverflow>,()=>{
         func(path,component);
     });
+  },
+  deleteSuccess(data){
+    message.success(data,2);
+    let dataTable = this.props.data;
+    let totalList = this.props.data.totalList;
+    let index = totalList.indexOf(component);
+    totalList.splice(index,1);
+    dataTable.totalList = totalList;
+    this.props.updateTableData(dataTable,-1);
+    console.log("-----trash-------");
   },
   trash(path,component){
     path = `${this.props.cur_path}/${path}`;
@@ -29,18 +41,7 @@ const MyTable = React.createClass({
                                             });
     deleteUrl = deleteUrl.replace(/\/\//g,"/");
     console.log("trash path"+path);
-    xhr({ type: 'DELETE',url:deleteUrl,
-        success: data =>{
-          let dataTable = this.props.data;
-          let totalList = this.props.data.totalList;
-          let index = totalList.indexOf(component);
-          totalList.splice(index,1);
-          dataTable.totalList = totalList;
-          this.props.updateTableData(dataTable,-1);
-          console.log("-----trash-------");
-          message.success(data,2);
-        }
-    });
+    hdfsTool.xhrProxy("DELETE",deleteUrl,{},this.deleteSuccess,this.openWait,this.closeWait);
   },
   compress(path,component){
     console.log("compress....."+path);
@@ -57,6 +58,11 @@ const MyTable = React.createClass({
       }
     })
   },
+  shareSuccess(data){
+    this.proxy_path = data;
+    this.setState({modalTitle:"share"});
+    this.openModal();
+  },
   share(path,component){
     let cur_path = `${this.props.cur_path}/${path}`
     console.log("share...."+cur_path);
@@ -64,14 +70,7 @@ const MyTable = React.createClass({
                                            spaceName : this.props.cur_space,
                                            relativePath : cur_path
                                           });
-    xhr({
-      type: 'POST',url:shareUrl,
-      success:data =>{
-        this.proxy_path = data;
-        this.setState({modalTitle:"share"});
-        this.openModal();
-      }
-    })
+    hdfsTool.xhrProxy("POST",shareUrl,{},this.shareSuccess,this.openWait,this.closeWait);
   },
   downLoad(path,component){
     path = `${this.props.cur_path}/${path}`;
@@ -119,6 +118,7 @@ const MyTable = React.createClass({
                                             spaceName : this.props.cur_space,
                                             targetPath : targetPath
                                           });
+
     xhr({type: 'PUT',url: renameUrl,
         success:data =>  {
           message.success(data, 2);
@@ -203,6 +203,7 @@ const MyTable = React.createClass({
                                          });
     xhr({ type: 'POST',url: mkdirsUrl,
         success:data1 =>  {
+          message.success(data,2);
           let data = this.props.data;
           let totalList =data.totalList;
           console.log(data);
@@ -214,10 +215,18 @@ const MyTable = React.createClass({
           data.totalList = totalList;
           this.props.updateTableData(data,-1);
           console.log("----------saveEdit------------");
-          message.success(data,2);
         }
     });
-
+  },
+  Waiting:{
+    0:()=>{ return <div className="upload-modal"><Spinner /></div> },
+    1:()=>{ return null },
+  },
+  openWait(){
+    this.setState({isWaiting:1});
+  },
+  closeWait(data){
+    this.setState({isWaiting:0});
   },
   getInitialState:function(){
    return {
@@ -225,6 +234,7 @@ const MyTable = React.createClass({
     treeData:[],
     is_first:0,
     data:this.props.data,
+    isWaiting:1,
     column:[{
     title:'文件名',
     key:'name',
@@ -293,6 +303,7 @@ const MyTable = React.createClass({
                 <ModalBody>
                   {this.modalBody[this.state.modalTitle].call(this)}
                 </ModalBody>
+                {this.Waiting[this.state.isWaiting].call(this)}
               </Modal>
           </div>
   }
