@@ -475,9 +475,37 @@ const Progress_model = React.createClass({
   getInitialState() {
     return {
       percent: 0,
-      status: '',
+      status: '正在重置',
     };
   },
+
+  componentWillMount(){
+  const _this=this
+  let url = OPEN.UrlList()['instances']+"?name="+this.props.text['id']
+  let interval=setInterval(function(){
+  xhr({
+      type: 'GET',
+      url: url,
+      async:false,
+      success(data) {
+        console.log(data)
+        if (data['status']=="ACTIVE" || data['status'] == "ERROR" || data['status']=="SHUTOFF") {
+            _this.setState({status:data['status']})
+            clearTimeout(interval)
+        }
+    }
+    })   
+  /* if ( _this.state.percent > 99){
+      clearTimeout(interval)
+      
+    }
+    else{
+     _this.increase()
+    }*/
+    },5000)
+
+  },
+
 
   increase() {
     let percent = this.state.percent + 10;
@@ -494,10 +522,11 @@ const Progress_model = React.createClass({
     this.setState({percent});
   },
   render() {
-
+   // let percent = {()=>return (<span>特殊图</span>)}
     return (
       <div>
-        <Progress percent={this.state.percent}/><span>正在创建</span>
+        {/*<Progress percent={this.state.percent}/><span>正在创建</span>*/}
+        <span>{this.state.status}</span>
       </div>
     );
   },

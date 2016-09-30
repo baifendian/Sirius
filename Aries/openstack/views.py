@@ -14,6 +14,7 @@ from openstack.middleware.flavor.flavor import Flavor
 from common import json_data
 from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach
+import time
 
 # from
 from django.views.decorators.csrf import csrf_exempt
@@ -87,7 +88,18 @@ def instances(request):
     if request.method == "GET":
         imagess = Image()
         flavorss = Flavor()
-        host_list = vm_manage.list_detail({})
+        host_id=request.GET.get('name')
+        if host_id:
+            return_data=vm_manage.show_detail(host_id)['server']
+            ret['status']=return_data['status']
+            ret['id']=return_data['id']
+            ret['name']=return_data['name']
+            json_status = json_data(ret)
+            response = HttpResponse(json_status)
+            response['Access-Control-Allow-Origin'] = '*'
+            response['Content-Type'] = 'application/json'
+            return response
+        host_list = vm_manage.list_detail()
         currentPages = request.GET.get('currentPage')
         pageSizes = request.GET.get('pageSize')
         if currentPages and pageSizes:
@@ -203,10 +215,10 @@ def instances(request):
             request_list = request.POST.getlist('data')[0]
             for keys, values in eval(request_list).items():
                 host_vm_delete = vm_manage.delete(keys)
-
                 if host_vm_delete == 1:
                     ret[values] = False
                 else:
+                    time.sleep(1)
                     ret[values] = True
         elif host_method == "vnc":
             host_id = eval(request.POST.get('data'))['host_id']
@@ -242,6 +254,8 @@ def instances(request):
                 if return_data == 1:
                     ret[host_name] = False
                 else:
+                    print 'test'
+                    print json.dumps(vm_manage.show_detail(host_id), indent=4)
                     ret[host_name] = True
 
         elif host_method == "host_status":

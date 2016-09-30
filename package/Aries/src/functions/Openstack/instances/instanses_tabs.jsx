@@ -210,13 +210,14 @@ const Host_details = React.createClass({
 const Tabs_List = React.createClass({
   render() {
     return (
-      <Tabs>
+      <Tabs >
         <TabList>
           <Tab>主机详情</Tab>
           <Tab>备份</Tab>
           <Tab>监控</Tab>
           <Tab>启动日志</Tab>
         </TabList>
+        <div style={{overflow:'auto'}}>
         <TabPanel>
           <Host_details host_desc={this.props.host_desc}/>
         </TabPanel>
@@ -227,7 +228,10 @@ const Tabs_List = React.createClass({
           <Echarts_s/>
         </TabPanel>
         <TabPanel>启动日志</TabPanel>
-      </Tabs>)
+        </div>
+      </Tabs>
+
+      )
   }
 })
 

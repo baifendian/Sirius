@@ -77,9 +77,9 @@ export default React.createClass({
         order: false,
         render: (text, item)=> {
           // console.log('text_text',text)
-          /* if (text=="active" || text == "error" || text=="stopped"){return (<span>{text}</span>)}else{
-           return (<div><Progress_model/></div>)}*/
-          return (<span>{text}</span>)
+           if (text=="ACTIVE" || text == "ERROR" || text=="SHUTOFF"){return (<span>{text}</span>)}else{
+           return (<div><Progress_model text={item}/></div>)}
+          //return (<span>{text}</span>)
         }
       }, {
         title: '创建时间',
@@ -160,9 +160,9 @@ export default React.createClass({
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top = totalHeight2 + "px"
     ReactDOM.findDOMNode(this.refs.Table_t).childNodes[0].style.width = totalwidth_t + 'px'
     ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].style.height = totalHeight + 'px'
-
+    console.log(ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes,'1111111re')
+    ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes[1].style.height=(totalHeight1)+'px'
     if (totalHeight <= height_table) {
-
       for (let i = 0; i < ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length; i++) {
         if (i == (table_trlengt - 1)) {
           totalwidth = totalwidth + 17
@@ -382,7 +382,7 @@ export default React.createClass({
                 </div>
               </SubSplitPanel>
               <SubSplitPanel ref="SubSplitPanel">
-                <Tabs_List host_desc={this.state.host_desc}/>
+                <Tabs_List host_desc={this.state.host_desc} ref="Tabs_list"/>
               </SubSplitPanel>
             </SplitPanel>
           </div>
