@@ -147,24 +147,32 @@ var mod = React.createClass({
     // 将url请求与回调都放到一起，便于管理
     this.userData['clusterInfoCallBackFunc'] = {
       'cpu':        ( value )=>{ 
-                      CMDR.getClusterCPUInfo( value,(executedData)=>{
-                        this.insertDataToChart( 'cpu',executedData )
-                      })  
+                      CMDR.getClusterCPUInfo( 
+                        value,
+                        (executedData) => { this.insertDataToChart( 'cpu',executedData ) },
+                        (errorInfo) => { this.loadClusterInfoError( 'cpu',errorInfo ) } 
+                      ) 
                     },
       'memory':     ( value )=>{ 
-                      CMDR.getClusterMemoryInfo( value,(executedData)=>{
-                        this.insertDataToChart( 'memory',executedData )
-                      })
+                      CMDR.getClusterMemoryInfo(
+                        value,
+                        (executedData) => { this.insertDataToChart( 'memory',executedData ) },
+                        (errorInfo) => { this.loadClusterInfoError( 'memory',errorInfo ) } 
+                      )
                     },
       'network':    ( value )=>{ 
-                      CMDR.getClusterNetworkInfo( value,(executedData)=>{
-                        this.insertDataToChart( 'network',executedData )
-                      })  
+                      CMDR.getClusterNetworkInfo(
+                        value,
+                        (executedData) => { this.insertDataToChart( 'network',executedData ) },
+                        (errorInfo) => { this.loadClusterInfoError( 'network',errorInfo ) } 
+                      )  
                     },
       'filesystem': ( value )=>{ 
-                      CMDR.getClusterFilesystemInfo( value ,(executedData)=>{
-                        this.insertDataToChart( 'filesystem',executedData )
-                      })
+                      CMDR.getClusterFilesystemInfo(
+                        value,
+                        (executedData) => { this.insertDataToChart( 'filesystem',executedData ) },
+                        (errorInfo) => { this.loadClusterInfoError( 'filesystem',errorInfo ) } 
+                      )
                     },
     }
 
@@ -308,6 +316,10 @@ var mod = React.createClass({
       data: dataArr
     }
     return obj
+  },
+
+  loadClusterInfoError( chartName,errorInfo ){
+    console.log( chartName,errorInfo )
   },
 
   insertDataToChart( chartName,executedData ){

@@ -16,7 +16,7 @@ var ClusterCommonInfo = React.createClass({
   getInitialState: function () {    
     let state_dict = {
       recordsTableHeight:200,         // FixedTable组件的高度
-      detailInfoTableHeight:100,         // FixedTable组件的高度
+      detailInfoTableHeight:100,      // FixedTable组件下面详情框的高度
       searchInputKey:'',
       filteredData:undefined,
       detailText:''

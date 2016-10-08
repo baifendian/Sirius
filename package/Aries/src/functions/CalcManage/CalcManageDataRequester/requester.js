@@ -27,32 +27,32 @@ var CalcManageDataRequester = {
     }
   },
 
-  getClusterCPUInfo( minutes,callback ){
+  getClusterCPUInfo( minutes,successCallback,errorCallBack=undefined ){
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustercpuinfo'], {
       'minutes':minutes
     })
-    this.xhrGetDataEnhanced(url, callback)
+    this.xhrGetDataEnhanced(url, successCallback,errorCallBack)
   },
   
-  getClusterMemoryInfo( minutes,callback ){
+  getClusterMemoryInfo( minutes,successCallback,errorCallBack=undefined ){
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustermemoryinfo'], {
       'minutes':minutes
     })
-    this.xhrGetDataEnhanced(url, callback)
+    this.xhrGetDataEnhanced(url, successCallback,errorCallBack)
   },
 
-  getClusterNetworkInfo( minutes,callback ){
+  getClusterNetworkInfo( minutes,successCallback,errorCallBack=undefined ){
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusternetworkinfo'], {
       'minutes':minutes
     })
-    this.xhrGetDataEnhanced(url, callback)
+    this.xhrGetDataEnhanced(url, successCallback,errorCallBack)
   },
 
-  getClusterFilesystemInfo( minutes,callback ){
+  getClusterFilesystemInfo( minutes,successCallback,errorCallBack=undefined ){
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusterfilesysteminfo'], {
       'minutes':minutes
     })
-    this.xhrGetDataEnhanced(url, callback)
+    this.xhrGetDataEnhanced(url, successCallback,errorCallBack)
   },
 
   getMyTaskOldRecords( oldestrecordid,requestnumber,keywords,callback ) {
@@ -135,12 +135,15 @@ var CalcManageDataRequester = {
    * xhrGetData用起来太麻烦，但是并没有限制
    * xhrGetDataEnhanced用起来简单，不需要传入url，但是在实现的时候需要用注意一些点
    */
-  xhrGetDataEnhanced(url, callback) {
+  xhrGetDataEnhanced(url, successCallback, errorCallBack=undefined) {
     xhr({
       url: url,
       type: 'GET',
       success: (retu_data) => {
-        callback( retu_data)
+        successCallback && successCallback( retu_data )
+      },
+      error: (retu_data) =>{
+        errorCallBack && errorCallBack( retu_data )
       }
     })
   },

@@ -28,7 +28,8 @@ export default React.createClass({
           'Name':'Name' + i,
           'Ingress':['ip1','ip2','ip3'],
           'Rules':[{'Url':'url1','ServiceName':'ServiceName1'}],
-          'DetailInfo':[['DetailInfo1']]
+          'DetailInfo':[['DetailInfo1']],
+          'CreationTime':'2016-05-06 01:02:03'
         })
       }
       this.state.dataTableDataArr = executedData
