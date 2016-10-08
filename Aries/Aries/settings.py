@@ -289,22 +289,9 @@ KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx_1_2_4')
 KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')
 
 #codis设置
-CODIS_LOCAL_DIR = os.path.join(BASE_DIR, "codis/redisconf/")
-CODIS_COMMOND_DIR = os.path.join(BASE_DIR, "codis/commandlog/")
-CODIS_DATADIR = os.path.join(BASE_DIR, "codis/serverconf/data/")
-CODIS_LOGFILE_DIR = os.path.join(BASE_DIR, "codis/serverconf/log/")
-CODIS_PIDFILE_DIR = os.path.join(BASE_DIR, "codis/serverconf/pid/")
-CODIS_SHOME = os.path.join(BASE_DIR, "codis/")
-
 CODIS_SETTINGS = SETTINGS["CODIS"]
-CODIS_INDEX_LINE = CODIS_SETTINGS["INDEX_LINE"]
-CODIS_ZK_ADDR = CODIS_SETTINGS["ZK_ADDR"]
-#CODIS_HOST_INFO = [0,'172.24.3.64','root','',0,'a',0]
-CODIS_HOST_INFO = CODIS_SETTINGS["HOST_INFO"]
-CODIS_MEMORY_MAX = CODIS_SETTINGS["MEMORY_MAX"]
-OPENTSDB_URL = CODIS_SETTINGS["PENTSDB_URL"]
-SSH_PKEY = CODIS_SETTINGS["SSH_PKEY"] 
-SSH_KNOWN_HOSTS =  CODIS_SETTINGS['SSH_KNOWN_HOSTS']
+CODIS_REST_URL =  CODIS_SETTINGS['CODIS_REST_URL']
+OPENTSDB_URL =  CODIS_SETTINGS['OPENTSDB_URL']
 
 #openstack设置：
 OPENSTACK_SETTINGS = SETTINGS["OPENSTACK"]
