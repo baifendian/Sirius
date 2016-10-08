@@ -42,9 +42,10 @@ const Disk_list = React.createClass({
   handlerequest(){
     const self = this
     this.setState({loading: true})
+    let url=OPEN.UrlList['volumes']
     xhr({
       type: 'POST',
-      url: 'openstack/volumes/',
+      url: url,
       data: {
         method: 'attach',
         disk: this.state.select_disk,
@@ -309,6 +310,7 @@ const Vm_image = React.createClass({
       if (res[i] == true) {
         OPEN.update_url(this.props.self, "instances")
         message.success('修改成功！')
+        this.props.self.setState({title_status:'正在重置'})
       } else {
         message.success('修改失败！')
       }
@@ -476,9 +478,11 @@ const Disk_model = React.createClass({
 
   componentWillMount: function() {
     const _this = this
+    let url_v=OPEN.UrlList()['volumes']
+    let url_f=OPEN.UrlList()['flavors']
     xhr({
       type: 'GET',
-      url: 'openstack/volumes/',
+      url: url_v,
       success(data) {
         let disk_list = []
         let disk_object = {}
@@ -493,7 +497,7 @@ const Disk_model = React.createClass({
     })
     xhr({
       type: 'GET',
-      url: 'openstack/flavors/',
+      url: url_f,
       success(data) {
         let flavor_list = []
         let flavor_object = {}

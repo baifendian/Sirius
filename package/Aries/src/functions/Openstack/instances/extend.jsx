@@ -354,7 +354,11 @@ const Create_model = React.createClass({
   handleSuccess(res) {
     // console.log(res)
     this.props._this.setState({loading: false, url: "openstack/bfddashboard/instances/?" + Math.random()})
-    message.success('创建成功！')
+    //console.log(res['status'])
+    if (res['status']){
+    message.success('创建成功!')}else{
+      message.danger('创建失败!')
+    }
   },
   disk_value(name){
   },
@@ -475,7 +479,7 @@ const Progress_model = React.createClass({
   getInitialState() {
     return {
       percent: 0,
-      status: '正在重置',
+      status: this.props.title_status,
     };
   },
 
@@ -488,16 +492,15 @@ const Progress_model = React.createClass({
       url: url,
       async:false,
       success(data) {
-        console.log(data)
+        //console.log(data)
         if (data['status']=="ACTIVE" || data['status'] == "ERROR" || data['status']=="SHUTOFF") {
             _this.setState({status:data['status']})
             clearTimeout(interval)
         }
     }
-    })   
+  })   
   /* if ( _this.state.percent > 99){
       clearTimeout(interval)
-      
     }
     else{
      _this.increase()
@@ -522,10 +525,8 @@ const Progress_model = React.createClass({
     this.setState({percent});
   },
   render() {
-   // let percent = {()=>return (<span>特殊图</span>)}
     return (
       <div>
-        {/*<Progress percent={this.state.percent}/><span>正在创建</span>*/}
         <span>{this.state.status}</span>
       </div>
     );

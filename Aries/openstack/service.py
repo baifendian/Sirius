@@ -2,12 +2,13 @@
 from openstack.middleware.login.login import Login, get_token, get_project
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
-from common import json_data
+from common import *
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
 from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps
 from django.http import HttpResponse
 import json
 import logging
+import traceback
 
 openstack_log = logging.getLogger("openstack_log")
 
@@ -44,9 +45,24 @@ def login():
     login.proid_login()
     login.token_login()
 
+def user_login():
+    def ensure_login(func):
+        def ensure_login_wrapper(request,*args, **kwargs):
+            try:
+                login()
+                openstack_log.info('login success')
+                retu_obj = func(request,*args,**kwargs)
+                openstack_log.info('execute func %s success' % func)
+                return retu_obj
+            except:
+                s = traceback.format_exc()
+                openstack_log.error('execute func %s failure : %s' % (func, s))
+        return ensure_login_wrapper
+    return ensure_login
 
+@user_login()
 def volumes_create(request):
-    login()
+#    login()
     ret = {}
     volumes_name = request.POST.get('name')
     volumes_count = int(request.POST.get('count'))
@@ -62,9 +78,9 @@ def volumes_create(request):
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def volumes_delete(request):
-    login()
+   # login()
     ret = {}
     sys = {}
     volume = Volume()
@@ -78,9 +94,9 @@ def volumes_delete(request):
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def volumes_amend(request):
-    login()
+  #  login()
     ret = {}
     size = request.POST.get('count')
     volumes_size = eval(request.POST.get('data'))['size']
@@ -106,17 +122,17 @@ def volumes_amend(request):
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def instances(request):
     ret = {}
-    login()
+  #  login()
     vm_manage = Vm_manage()
     for i in vm_manage.list()['servers']:
         ret[i['name']] = i['id']
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def volumes_host(request):
     ret = {}
     host_id = request.POST.get('host_id')
@@ -137,9 +153,9 @@ def volumes_host(request):
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def volumes_uninstall(request):
-    login()
+  #  login()
     ret = {}
     data = eval(request.POST.get('data'))
     host_id = data['host_id']
@@ -159,10 +175,10 @@ def volumes_uninstall(request):
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def volumes_backup(request):
     ret = {}
-    login()
+ #   login()
     name = request.POST.get('name')
     volumes_id = eval(request.POST.get('data'))['id']
     volumes_name = eval(request.POST.get('data'))['name']
@@ -181,10 +197,10 @@ def volumes_backup(request):
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def volumes_backup_get(request):
     ret = {}
-    login()
+#    login()
     volume_snaps = Volume_snaps()
     volume = Volume()
     ret['totalList'] = []
@@ -200,10 +216,10 @@ def volumes_backup_get(request):
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def openstack_project(request):
     ret = {}
-    login()
+   # login()
     try:
         return_data = get_project()
         ret['totalList'] = []
@@ -222,10 +238,10 @@ def openstack_project(request):
         ret = json_data(ret)
         return ret
 
-
+@user_login()
 def volumes_Redact(request):
     ret = {}
-    login()
+  #  login()
     openstack_log.info(request.POST)
     volumes_id = request.POST.get('id')
     volumes_name = request.POST.get('name')
@@ -242,10 +258,10 @@ def volumes_Redact(request):
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def instances_backup(request):
     ret = {}
-    login()
+#    login()
     instances_id = request.POST.get('id')
     instances_name = request.POST.get('name')
     instances_name_b = request.POST.get('name_bakup')
@@ -261,9 +277,9 @@ def instances_backup(request):
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def instances_search(request):
-    login()
+#    login()
     ret = {}
     imagess = Image()
     flavorss = Flavor()
@@ -307,7 +323,7 @@ def instances_search(request):
         except:
             sys['image'] = '-'
         sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
-        sys['created'] = host['created']
+        sys['created'] = time_handle(host['created'])
         sys['status'] = host['status']
         for key, value in host['addresses'].items():
             for ip in value:

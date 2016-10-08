@@ -24,6 +24,7 @@ import {Tabs_List} from './instanses_tabs'
 export default React.createClass({
   getInitialState: function () {
     return {
+      title_status:'内容加载中',
       text_text: "",
       host_list: [],
       host_list_id: [],
@@ -78,7 +79,7 @@ export default React.createClass({
         render: (text, item)=> {
           // console.log('text_text',text)
            if (text=="ACTIVE" || text == "ERROR" || text=="SHUTOFF"){return (<span>{text}</span>)}else{
-           return (<div><Progress_model text={item}/></div>)}
+           return (<div><Progress_model text={item} title_status={this.state.title_status}/></div>)}
           //return (<span>{text}</span>)
         }
       }, {
@@ -160,8 +161,7 @@ export default React.createClass({
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top = totalHeight2 + "px"
     ReactDOM.findDOMNode(this.refs.Table_t).childNodes[0].style.width = totalwidth_t + 'px'
     ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].style.height = totalHeight + 'px'
-    console.log(ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes,'1111111re')
-    ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes[1].style.height=(totalHeight1)+'px'
+    ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes[1].style.height=(totalHeight1-totalHeight2-35)+'px'
     if (totalHeight <= height_table) {
       for (let i = 0; i < ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length; i++) {
         if (i == (table_trlengt - 1)) {
@@ -209,7 +209,6 @@ export default React.createClass({
     }
   },
   handleRowClick(row) {
-    // console.log('rowclick', row)
      if (row == this.state.host_desc){
       this.setState({host_desc: ''})
       this.count_initialization()
@@ -219,10 +218,8 @@ export default React.createClass({
      }
   },
   handleOrder(name, sort) {
-    // console.log(name, sort)
   },
   callback_status(name){
-    console.log(name,'hahahahuidiao')
     this.handleOpen(name)
   },
   handleOpen(name) {
@@ -240,7 +237,8 @@ export default React.createClass({
         this.setState({
           text_text: text,
           host_status: "重启虚拟机",
-          host_post: 'restart'
+          host_post: 'restart',
+          title_status: "正在重启"
         })
         break;
       case 3:
@@ -252,7 +250,8 @@ export default React.createClass({
         this.setState({
           text_text: text,
           host_status: "关闭虚拟机",
-          host_post: 'stop'
+          host_post: 'stop',
+          title_status: "正在关闭"
         })
         break;
       case 4:
@@ -264,7 +263,8 @@ export default React.createClass({
         this.setState({
           text_text: text,
           host_status: "删除虚拟机",
-          host_post: 'delete'
+          host_post: 'delete',
+          title_status: "正在删除"
         })
         break;
       case 5:
@@ -299,14 +299,17 @@ export default React.createClass({
       }
     }
     this.count_initialization()
-
+  },
+  handleSplit(){
+    let hand_height=ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[2].style.height
+    hand_height=hand_height.split('p')[0]-35
+    ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes[1].style.height=hand_height+'px'
   },
   requestArgs: {
     pageName: "instances",
   },
   render() {
     let spaceName = Openstackconf.getCurSpace(this)
-    //  console.log('111',this.state.height_h)
     let height_ht = this.state.height_h
     return (
       <div className="function-data-moduleA">
@@ -381,7 +384,7 @@ export default React.createClass({
                   </DataTable>
                 </div>
               </SubSplitPanel>
-              <SubSplitPanel ref="SubSplitPanel">
+              <SubSplitPanel ref="SubSplitPanel_t">
                 <Tabs_List host_desc={this.state.host_desc} ref="Tabs_list"/>
               </SubSplitPanel>
             </SplitPanel>
