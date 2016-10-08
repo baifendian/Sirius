@@ -305,17 +305,17 @@ class GetAllCodisInfo(APIView):
         query_url = opentsdb_url + "/api/query/"
         codis_info = Codis.objects.get(codis_id=int(codis_id))
         ops_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "sum","metric":"codis.pv.count","rate":"true",\
-                     "tags":{"db":codis_info.product_id}}]} 
+                     "downsample":"10m-avg","tags":{"db":codis_info.product_id}}]} 
         latency_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.proxy.command.spent",\
-                             "tags":{"db":codis_info.product_id,"cmd":"*"}}]}
+                             "downsample":"10m-avg","tags":{"db":codis_info.product_id,"cmd":"*"}}]}
         total_expired_keys = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_expired_keys",\
-                             "tags":{"db":codis_info.product_id}}]}
+                             "downsample":"10m-avg","tags":{"db":codis_info.product_id}}]}
         total_keys = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_keys",\
-                             "tags":{"db":codis_info.product_id}}]}
+                             "downsample":"10m-avg","tags":{"db":codis_info.product_id}}]}
         total_usedmemory = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.usedmemory",\
-                             "tags":{"db":codis_info.product_id}}]}
+                             "downsample":"10m-avg","tags":{"db":codis_info.product_id}}]}
         total_maxmemory = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_maxmemory",\
-                             "tags":{"db":codis_info.product_id}}]}
+                             "downsample":"10m-avg","tags":{"db":codis_info.product_id}}]}
         latency_info = requests.post(query_url,data=json.dumps(latency_query_args),timeout=10)
         ops_info = requests.post(query_url,data=json.dumps(ops_query_args),timeout=10)
         expired_keys = requests.post(query_url,data=json.dumps(total_expired_keys),timeout=10)
@@ -361,10 +361,10 @@ class GetAllCodisInfo(APIView):
             allkeysdata = v
             break
         for k,v in json.loads(usedmemory.text)[0]['dps'].items():
-            usedmemorydata = v/(1024*1024*1024)
+            usedmemorydata = round(v/(1024*1024*1024),2)
             break
         for k,v in json.loads(maxmemory.text)[0]['dps'].items():
-            maxmemorydata = v/(1024*1024*1024)
+            maxmemorydata = round(v/(1024*1024*1024),2)
             break
         data={"ops":opsdata,"expiredkeysdata":expiredkeysdata,"allkeysdata":allkeysdata,"usedmemorydata":usedmemorydata,"maxmemorydata":maxmemorydata,"latency":latencydata}
         result={
