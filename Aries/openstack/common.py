@@ -4,9 +4,10 @@ from openstack.middleware.login.login import Login
 from middleware.image.image import Image
 from middleware.flavor.flavor import Flavor
 # from common import json_data
-from openstack.middleware.vm.vm import Vm_manage
 from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach
+from decimal import *
+
 import logging
 openstack_log = logging.getLogger("openstack_log")
 
@@ -44,8 +45,6 @@ def volumes_deal(host,disk_list,volumes_id):
         openstack_log.error("虚拟机磁盘:{0}".format(e))
     return volumes_name_list
 
-
-
 class OpenAPI(object):
     def __init__(self):
         pass
@@ -77,3 +76,11 @@ class OpenAPI(object):
 
             ret['totalList'].append(sys)
             test_list.append(sys)
+
+def size_handle(size):
+    return str((round(Decimal(int(size)) / Decimal(1024) / Decimal(1024), 2))) + 'MB'
+
+def time_handle(time):
+    return  ' '.join( time.split('.')[0].split('Z')[0].split('T'))
+
+

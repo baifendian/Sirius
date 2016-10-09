@@ -354,7 +354,11 @@ const Create_model = React.createClass({
   handleSuccess(res) {
     // console.log(res)
     this.props._this.setState({loading: false, url: "openstack/bfddashboard/instances/?" + Math.random()})
-    message.success('创建成功！')
+    //console.log(res['status'])
+    if (res['status']){
+    message.success('创建成功!')}else{
+      message.danger('创建失败!')
+    }
   },
   disk_value(name){
   },
@@ -475,9 +479,36 @@ const Progress_model = React.createClass({
   getInitialState() {
     return {
       percent: 0,
-      status: '',
+      status: this.props.title_status,
     };
   },
+
+  componentWillMount(){
+  const _this=this
+  let url = OPEN.UrlList()['instances']+"?name="+this.props.text['id']
+  let interval=setInterval(function(){
+  xhr({
+      type: 'GET',
+      url: url,
+      async:false,
+      success(data) {
+        //console.log(data)
+        if (data['status']=="ACTIVE" || data['status'] == "ERROR" || data['status']=="SHUTOFF") {
+            _this.setState({status:data['status']})
+            clearTimeout(interval)
+        }
+    }
+  })   
+  /* if ( _this.state.percent > 99){
+      clearTimeout(interval)
+    }
+    else{
+     _this.increase()
+    }*/
+    },5000)
+
+  },
+
 
   increase() {
     let percent = this.state.percent + 10;
@@ -494,10 +525,9 @@ const Progress_model = React.createClass({
     this.setState({percent});
   },
   render() {
-
     return (
       <div>
-        <Progress percent={this.state.percent}/><span>正在创建</span>
+        <span>{this.state.status}</span>
       </div>
     );
   },
