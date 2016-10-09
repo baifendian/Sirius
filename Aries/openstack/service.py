@@ -356,6 +356,45 @@ def vmdisk_show(request):
     ret = json_data(ret)
     return ret
 
+def cpu_monitor(request):
+    ret={}
+    ret['date'] = []
+    ret['cpu_monitor']=[]
+    list={}
+    list['data'] = []
+    list['legend'] = 'free'
+    list_usr={}
+    list_usr['data'] = []
+    list_usr['legend'] = 'use'
+    for i in range(60):
+        data_y='2016-10-9 16:%s:00' % (i)
+        ret['date'].append(data_y)
+        list['data'].append(i)
+        list_usr['data'].append('20')
+    ret['cpu_monitor'].append(list)
+    ret['cpu_monitor'].append(list_usr)
+    ret = json_data(ret)
+    return ret
+
+def mem_monitor(request):
+    ret={}
+    ret['date'] = []
+    ret['mem_monitor']=[]
+    list={}
+    list['data'] = []
+    list['legend'] = 'free'
+    list_usr={}
+    list_usr['data'] = []
+    list_usr['legend'] = 'use'
+    for i in range(60):
+        data_y='2016-10-9 16:%s:00' % (i)
+        ret['date'].append(data_y)
+        list['data'].append(i)
+        list_usr['data'].append('20')
+    ret['mem_monitor'].append(list)
+    ret['mem_monitor'].append(list_usr)
+    ret = json_data(ret)
+    return ret
 
 Methods = {
     "GET": {
@@ -363,6 +402,8 @@ Methods = {
         "backup": volumes_backup_get,
         "instances_search": instances_search,
         "vmdisk_show": vmdisk_show,
+        "cpu_monitor": cpu_monitor,
+        "mem_monitor":mem_monitor,
     },
     "POST": {
         "CREATE": volumes_create,

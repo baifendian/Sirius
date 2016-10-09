@@ -28,6 +28,12 @@ var Datarequest = {
     let url = this.UrlList()['volumes_post'] + "?name=instances"
     this.xhrGetData(_this, url, fun)
   },
+
+  Get_instances_cpu(_this,name,fun){
+    let url = this.UrlList()['instances_post']+"?name="+name
+    this.xhrGetData(_this,url,fun)
+  },
+
   Get_project(_this, fun){
     let url = this.UrlList()['project']
     this.xhrGetData(_this, url, fun)

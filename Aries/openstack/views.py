@@ -14,8 +14,6 @@ from openstack.middleware.flavor.flavor import Flavor
 from common import *
 from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach
-
-# from
 from django.views.decorators.csrf import csrf_exempt
 import base64
 from decimal import *
@@ -417,3 +415,4 @@ def volumes(request):
     response['Access-Control-Allow-Origin'] = '*'
     response['Content-Type'] = 'application/json'
     return response
+
