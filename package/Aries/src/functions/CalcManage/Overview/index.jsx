@@ -318,8 +318,14 @@ var mod = React.createClass({
     return obj
   },
 
+  // 在这里可以分别获取每种info是否获取成功，但是如何展示是个问题
   loadClusterInfoError( chartName,errorInfo ){
-    console.log( chartName,errorInfo )
+    this.echartHideLoading( chartName )
+    let logStr = Toolkit.strFormatter.formatString( 'query cluster info ( {infoType} ) failure ---- {errorInfo}',{
+      'infoType':chartName,
+      'errorInfo':errorInfo
+    } )
+    console.log( logStr )
   },
 
   insertDataToChart( chartName,executedData ){
