@@ -2,7 +2,7 @@
 from openstack.middleware.login.login import Login, get_token, get_project
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
-from common import *
+from common import json_data,volumes_deal,time_handle,size_handle
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
 from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps
 from django.http import HttpResponse
@@ -337,11 +337,48 @@ def instances_search(request):
     return ret
 
 
+def vm_uninstall(request):
+    login()
+    ret = {}
+    data = eval(request.POST.get('data'))
+    host_id = data['host_id']
+    volumes_id = data['disk_id']
+    host_name = data['host_name']
+    volumes_name = data['disk_name']
+    volume_attach = Volume_attach()
+    return_data = volume_attach.delete(host_id, volumes_id)
+    vm_manage = Vm_manage()
+    if return_data != 1:
+        vm_details = vm_manage.show_detail(host_id)['server']
+        ret['disk_list'] = volumes_deal(host_name, vm_details, volumes_id)
+        ret['host_name'] = host_name
+        ret['status'] = True
+        ret['volumes_name'] = volumes_name
+    else:
+        ret['host_name'] = host_name
+        ret['status'] = False
+        ret['volumes_name'] = volumes_name
+    ret = json_data(ret)
+    return ret
+
+
+def vmdisk_show(request):
+    login()
+    ret = {}
+    vm_id = request.GET.get('id')
+    vm_manage = Vm_manage()
+    vm_details = vm_manage.show_detail(vm_id)['server']
+    ret['disk_list'] = volumes_deal(vm_details['name'], vm_details, vm_id)
+    ret = json_data(ret)
+    return ret
+
+
 Methods = {
     "GET": {
         "instances": instances,
         "backup": volumes_backup_get,
         "instances_search": instances_search,
+        "vmdisk_show": vmdisk_show,
     },
     "POST": {
         "CREATE": volumes_create,
@@ -352,5 +389,6 @@ Methods = {
         'backup': volumes_backup,
         'Redact': volumes_Redact,
         'instances_backup': instances_backup,
+        'vm_uninstall': vm_uninstall,
     }
 }

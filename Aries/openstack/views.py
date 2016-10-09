@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from openstack.middleware.login.login import Login, get_token
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
-from common import *
+from common import json_data,volumes_deal,time_handle,size_handle
 from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach
 import time
@@ -81,10 +81,6 @@ def instances(request):
     ret = {}
     disk = []
     sys = {}
-  #  login = Login("openstack", "baifendian2016")
-   # login.user_token_login()
-   # login.proid_login()
-   # login.token_login()
     vm_manage = Vm_manage()
     volume_s = Volume()
     if request.method == "GET":
@@ -235,9 +231,9 @@ def instances(request):
                 return_data = {}
                 return_data['console'] = {}
                 return_data['console']['url'] = False
-                ret=return_data
+                ret = return_data
             else:
-                ret=host_vnc
+                ret = host_vnc
         elif host_method == "update":
             type_vm = request.POST.get('type_vm')
             if type_vm == "flavor":
@@ -275,10 +271,6 @@ def instances(request):
 def images(request):
     """ 获取images"""
     sys = {}
-   # login = Login("openstack", "baifendian2016")
-    #login.user_token_login()
-    #login.proid_login()
-    #login.token_login()
     image = Image()
     if request.method == 'GET':
         sys['totalList'] = []
@@ -288,7 +280,7 @@ def images(request):
             ret = {}
             if len(i['metadata']) > 0:
                 try:
-                    if i['metadata']['image_type'] =="snapshot":
+                    if i['metadata']['image_type'] == "snapshot":
                         continue
                 except:
                     ret['public'] = "YES"
@@ -323,10 +315,6 @@ def images(request):
 @user_login()
 def flavors(request):
     ret = {}
- #   login = Login("openstack", "baifendian2016")
-#    login.user_token_login()
-#    login.proid_login()
-#    login.token_login()
     flavor = Flavor()
     ret['totalList'] = []
     ret['name'] = {}
@@ -364,14 +352,11 @@ def flavors(request):
     response['Content-Type'] = 'application/json'
     return response
 
+
 @csrf_exempt
 @user_login()
 def volumes(request):
     ret = {}
-#    login = Login("openstack", "baifendian2016")
-#    login.user_token_login()
-#    login.proid_login()
-#    login.token_login()
     volume_s = Volume()
     vm_manage = Vm_manage()
     if request.method == "GET":
@@ -418,8 +403,10 @@ def volumes(request):
                 if return_data == 1:
                     sys['status'] = False
                 else:
+                    vm_details = vm_manage.show_detail(host)['server']
+                    ret['disk_list'] = volumes_deal(vm_details['name'], vm_details, i)
                     sys['device'] = return_data['volumeAttachment']['device']
-                    sys['servername'] = vm_manage.show_detail(host)['server']['name']
+                    sys['servername'] = vm_details['name']
                     volume_d = volume_s.show_detail(i)
                     if volume_d['volume']['displayName'] == None:
                         sys['volumename'] = volume_d['volume']['id']
@@ -433,5 +420,3 @@ def volumes(request):
     response['Access-Control-Allow-Origin'] = '*'
     response['Content-Type'] = 'application/json'
     return response
-
-

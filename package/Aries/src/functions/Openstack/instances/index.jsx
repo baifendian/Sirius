@@ -223,17 +223,20 @@ export default React.createClass({
     this.handleOpen(name)
   },
   handleOpen(name) {
-    let text = '您已选择'
+    let text = ''
     switch (name) {
       case 1:
         OPEN.posthoststop(this, 'instances', this.state.select_all, "start")
         break;
       case 2:
+         text = '确定要重启虚拟机'
         this.refs.modal.open()
         for (var i = 0; i < this.state.host_list.length; i++) {
-          text = text + '"' + this.state.host_list[i] + '"' + ','
+          if (i==this.state.host_list.length-1){
+          text = text + '"' + this.state.host_list[i] + '"' +'？'}else{
+           text = text + '"' + this.state.host_list[i] + '"'+'、'
+          }
         }
-        text = text + "请确认您的选择。云主机将会被重启"
         this.setState({
           text_text: text,
           host_status: "重启虚拟机",
@@ -242,11 +245,15 @@ export default React.createClass({
         })
         break;
       case 3:
+       text = '确定要关闭虚拟机'
         this.refs.modal.open()
         for (var i = 0; i < this.state.host_list.length; i++) {
-          text = text + '"' + this.state.host_list[i] + '"' + ','
+          if (i==this.state.host_list.length-1){
+          text = text + '"' + this.state.host_list[i] + '"'+'?'}else{
+           text = text + '"' + this.state.host_list[i] + '"'+'、'
+          }
         }
-        text = text + "请确认您的选择。云主机将会被关闭"
+
         this.setState({
           text_text: text,
           host_status: "关闭虚拟机",
@@ -255,11 +262,14 @@ export default React.createClass({
         })
         break;
       case 4:
+        text = '确定要删除虚拟机'
         this.refs.modal.open()
         for (var i = 0; i < this.state.host_list.length; i++) {
-          text = text + '"' + this.state.host_list[i] + '"' + ','
+          if (i==this.state.host_list.length-1){
+          text = text + '"' + this.state.host_list[i] + '"' +'?'}else{
+           text = text + '"' + this.state.host_list[i] + '"'+'、'
+          }
         }
-        text = text + "请确认您的选择。云主机将会被删除"
         this.setState({
           text_text: text,
           host_status: "删除虚拟机",
@@ -346,9 +356,9 @@ export default React.createClass({
                 <div>
                   <h4>{this.state.text_text}</h4>
                 </div>
-                <div className="create_host">
-                  <Button onClick={this.handleclean.bind(this, this.state.host_post)}>确定</Button>
-                  <Button onClick={this.handleclean.bind(this, 'clean')}>关闭</Button>
+                <div className="openstack_button_si" >
+                  <Button onClick={this.handleclean.bind(this, this.state.host_post)} >确定</Button>
+                  <Button onClick={this.handleclean.bind(this, 'clean')} style={{margin:"0px 0px 0px 100px"}}>取消</Button>
                 </div>
               </ModalBody>
             </Modal>

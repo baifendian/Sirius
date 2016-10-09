@@ -54,6 +54,10 @@ const Create_volumes=React.createClass({
     this.refs.modal_m.open()
   },
 
+  handleclose() {
+    this.refs.modal_m.close()
+  },
+
   render() {
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
@@ -92,6 +96,7 @@ const Create_volumes=React.createClass({
                 <FormTextarea />
               </FormItem>
               <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>创建</button>
+              <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
             </Form>
         </ModalBody>
         </Modal>
