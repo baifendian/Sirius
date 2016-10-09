@@ -5,6 +5,9 @@ from openstack.middleware.common.urls import url_get_token,url_project_id
 token = ""
 project_id = ""
 user_token = ""
+admin_token = ""
+admin_project_id = ""
+admin_user_token = ""
 
 
 class Login:
@@ -118,6 +121,41 @@ class Login:
 def get_token():
     return token
 
+@plog("admin_login")
+def admin_login():
+    global admin_token
+    global user_token
+    global project_id
+    global token
+    global admin_project_id
+    global admin_user_token
+    user_token_tmp = user_token
+    token_tmp = token
+    project_id_tmp = project_id
+    admin_username = "admin"
+    admin_password = "baifendianadmin2016"
+    admin_login = Login(admin_username,admin_password)
+    admin_login.user_token_login()
+    admin_login.proid_login()
+    admin_login.token_login()
+    admin_user_token = user_token
+    admin_token = token
+    admin_project_id = project_id
+    user_token = user_token_tmp
+    project_id = project_id_tmp
+    token = token_tmp
+
+@plog("get_admin_token")
+def get_admin_token():
+    if admin_token == "":
+        admin_login()
+    return admin_token
+
+def get_admin_project_id():
+    if admin_project_id == "":
+        admin_login()
+    return admin_project_id
+
 def get_proid():
     return project_id
 
@@ -134,7 +172,6 @@ def get_project():
     head = {"X-Auth-Token": user_token}
     ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
     return ret
-
 
 def login_out():
     global token

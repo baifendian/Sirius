@@ -127,6 +127,12 @@ class Openstack_test(TestCase):
         msg = flavor.list()
         prints(msg)
 
+    def test_list_flavor_detail(self):
+        self.test_login()
+        flavor = Flavor()
+        msg = flavor.list_detail()
+        prints(msg)
+
     def test_list_vm(self):
         self.test_login()
         vm = Vm_manage()
@@ -146,6 +152,12 @@ class Openstack_test(TestCase):
         query = {"name": "ddd"}
         msg = vm.list_detail(query)
         prints(msg)
+
+    def test_get_vm_avzone(self):
+        self.test_login()
+        vm = Vm_manage()
+        ret = vm.get_avzone()
+        prints(ret)
 
     def test_create_vm(self):
         '''
@@ -329,20 +341,35 @@ class Openstack_test(TestCase):
         ret = CommonApi.get_keypairs()
         prints(ret)
 
+    def test_get_az(self):
+        self.test_login()
+        ret = CommonApi.get_azinfo()
+        prints(ret)
+
+    def test_get_hv(self):
+        self.test_login()
+        ret = CommonApi.get_hvinfo()
+        prints(ret)
+
+
     def auto_test(self):
         global VM_ID
         global VOLUME_ID
         global SNAPSHOT_ID
         global ATTACH_ID
         print "_____________________start test___________________________________"
+        #list
         self.test_list_image()
         self.test_list_volume()
         self.test_list_flavor()
+        self.test_list_flavor_detail()
         self.test_list_vm()
         self.test_list_vm_detail()
         self.test_vbackup_list()
         self.test_vbackup_list_detail()
+        #volume
         tmp_ret = self.test_create_volume()
+        time.sleep(10)
         try:
             VOLUME_ID = tmp_ret["volume"]["id"]
         except:
@@ -354,7 +381,10 @@ class Openstack_test(TestCase):
             SNAPSHOT_ID = tmp_ret["snapshot"]["id"]
         except:
             pass
+        time.sleep(10)
         self.test_delete_volume_snap()
+        #vm
+        self.test_get_vm_avzone()
         tmp_ret = self.test_create_vm()
         try:
             VM_ID = tmp_ret["server"]["id"]
@@ -367,6 +397,7 @@ class Openstack_test(TestCase):
         except:
             pass
         self.test_vm_attach_show_detail()
+        time.sleep(10)
         self.test_vm_attach_delete()
         self.test_create_snap()
         print "_____________________end test___________________________________"

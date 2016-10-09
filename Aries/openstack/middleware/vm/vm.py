@@ -8,6 +8,7 @@ from openstack.middleware.login.login import get_token, get_proid
 from openstack.middleware.volume.volume import Volume, Volume_attach
 from openstack.models import DbVmSnap
 from openstack.middleware.common.urls import url_vm_action,url_vm_control_action,url_vm_create,url_vm_list,url_vm_list_detail
+from openstack.middleware.common.common_api import CommonApi
 
 
 # 虚拟机管理类
@@ -128,8 +129,9 @@ class Vm_manage:
         path = url_vm_create.format(project_id=self.project_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        avzone = self.get_avzone()
         params = {"server": {"name": name, "flavorRef": flavor, "imageRef": image, "adminPass": password,
-                             "user_data": userdata}}
+                             "user_data": userdata,"availability_zone":avzone}}
         if key_name:
             params["server"].update({"key_name": key_name})
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
@@ -223,6 +225,28 @@ class Vm_manage:
         params = ""
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         return ret
+
+    @plog("Vm_manage.get_avzone")
+    def get_avzone(self):
+        list_hy_info = CommonApi.get_hvinfo()["hypervisors"]
+        def _util_az(az_info):
+            list_hosts = az_info["hosts"]
+            list_hy_info_tmp = filter(lambda i:i["hypervisor_hostname"] in list_hosts and i["status"] == "enabled",list_hy_info)
+            total_vcpu = 0
+            total_vcpu_used = 0
+            total_mem = 0
+            total_mem_free = 0
+            for host_info in list_hy_info_tmp:
+                total_vcpu += host_info["vcpus"]*4
+                total_vcpu_used += host_info["vcpus_used"]
+                total_mem += host_info["memory_mb"]
+                total_mem_free += host_info["free_ram_mb"]
+            total_mem_used = total_mem - total_mem_free
+            util = round(float(total_vcpu_used)/float(total_vcpu),2) + round(float(total_mem_used)/float(total_mem),2)
+            return util
+        list_az_info = CommonApi.get_azinfo()["aggregates"]
+        av_zone = reduce(lambda x,y:x if _util_az(x) <= _util_az(y) else y,list_az_info)["availability_zone"]
+        return av_zone
 
 
 # 虚拟机控制类
