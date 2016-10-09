@@ -16,10 +16,21 @@ from django.conf import settings
 import json
 from service import *
 from openstack.middleware.image.image import Image
-from common import json_data
+from common import *
 from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps
 
+
+class instances(APIView):
+    def get(self,request,format=None):
+        method = request.GET.get('name')
+        ret = Methods.get('GET').get(method)(request)
+        return packageResponse(ret)
+
+    def post(self,request,format=None):
+        method = request.POST.get('method')
+        ret = Methods.get('POST').get(method)(request)
+        return packageResponse(ret)
 
 class volumes(APIView):
     def get(self, request, format=None):
@@ -77,3 +88,5 @@ class overview(APIView):
         ret['volume'] = volume_len
         ret = json_data(ret)
         return packageResponse(ret)
+
+

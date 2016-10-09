@@ -53,6 +53,10 @@ const Redact = React.createClass({
     this.refs.form.save()
   },
 
+  handleclose() {
+    this.props._this.refs.modal.close()
+  },
+
   handleSuccess(res) {
     this.props._self.setState({loading:false})
     OPEN.update_url(this.props._self,"volumes")
@@ -82,6 +86,7 @@ const Redact = React.createClass({
           </FormItem>
           <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>修改
           </button>
+          <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
         </Form>
       </div>
     )
@@ -133,6 +138,10 @@ const Backup_disk = React.createClass({
     this.refs.form.save()
   },
 
+  handleclose() {
+    this.props._this.refs.modal.close()
+  },
+
   handleSuccess(res) {
     this.props._self.setState({loading:false})
     if (res['status']){
@@ -166,6 +175,7 @@ const Backup_disk = React.createClass({
           </FormItem>
           <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>创建
           </button>
+          <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
         </Form>
       </div>
     )
@@ -241,6 +251,10 @@ const Uninstall_disk = React.createClass({
     // console.log(OPEN.UrlList()['instances'])
   },
 
+  handleclose() {
+    this.props._this.refs.modal.close()
+  },
+
   render() {
     const {formData} = this.state
     let url = OPEN.UrlList()['volumes_post']
@@ -270,6 +284,7 @@ const Uninstall_disk = React.createClass({
           </DataTable>
           <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>卸载
           </button>
+          <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
         </Form>
       </div>
     )
@@ -346,6 +361,11 @@ const Loading_disk = React.createClass({
   componentWillMount: function () {
     OPEN.Get_instances(this, this.xhrCallback)
   },
+
+  handleclose() {
+    this.props._this.refs.modal.close()
+  },
+
   xhrCallback: (_this, executedData) => {
     _this.setState({
       dataTableDataArr: executedData,
@@ -376,6 +396,7 @@ const Loading_disk = React.createClass({
           </FormItem>
           <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>确定
           </button>
+          <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
         </Form>
       </div>
     )
@@ -423,6 +444,10 @@ const Extend = React.createClass({
     this.refs.form.save()
   },
 
+  handleclose() {
+    this.props._this.refs.modal.close()
+  },
+
   handleSuccess(res) {
     this.props._self.setState({loading:false})
     this.props._self.setState({button_statuss:true})
@@ -457,6 +482,7 @@ const Extend = React.createClass({
           </FormItem>
           <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>修改
           </button>
+          <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
         </Form>
       </div>
     )

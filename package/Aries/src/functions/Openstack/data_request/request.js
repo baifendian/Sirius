@@ -11,26 +11,26 @@ var Datarequest = {
       'flavors': 'openstack/flavors/',
       'volumes_post': 'openstack/volumes_post/',
       'project': 'openstack/project/',
-      'search': 'openstack/search/'
+      'search': 'openstack/search/',
+      'instances_post': 'openstack/instances_post/',
     }
   },
   open_vnc(_this, select_host, fun){
     let url = this.UrlList()['instances']
     let host_id = {"host_id": select_host}
-    //console.log('url',url,host_id,'vnc',fun)
     this.xhrPostData(_this, url, host_id, 'vnc', fun)
+  },
+  Get_vmdisk(_this,vm_id,fun){
+    let url=this.UrlList()['instances_post']+"?name=vmdisk_show&id="+vm_id
+    this.xhrGetData(_this,url,fun)
   },
   Get_instances(_this, fun){
     let url = this.UrlList()['volumes_post'] + "?name=instances"
-    //  console.log(url)
     this.xhrGetData(_this, url, fun)
-    //return 1
   },
   Get_project(_this, fun){
     let url = this.UrlList()['project']
     this.xhrGetData(_this, url, fun)
-    // console.log(data)
-    // return data
   },
   Get_volumes_backup(_this, fun){
     let url = this.UrlList()['volumes_post'] + "?name=backup"
@@ -46,7 +46,6 @@ var Datarequest = {
       host_select[data_select[i]['id']] = data_select[i]['name']
     }
     _this.setState({loading: true})
-    //console.log('url........',url)
     this.xhrPostData(_this, _url, host_select, host_status, this.dispose_data)
   },
   update_url(_this, url, self){
@@ -99,7 +98,6 @@ var Datarequest = {
     if (host_status == "restart") {
       if (successful.length > 0) notification['success']({message: '虚拟机重启', description: successful + '重启成功',})
       if (error.length > 0) {
-        //message.success(error + '重启失败')
         notification['success']({message: '虚拟机重启', description: successful + '重启失败',});
       }
       if (same.length > 0) {
@@ -109,7 +107,7 @@ var Datarequest = {
     }
     if (host_status == "delete") {
       if (successful.length > 0) {
-        notification['success']({message: '虚拟机删除', description: successful + '删除成功',});
+        notification['success']({message: '虚拟机删除', description: successful + '删除成功',})
       }
       if (error.length > 0) {
         notification['success']({message: '虚拟机删除', description: successful + '删除失败',});
