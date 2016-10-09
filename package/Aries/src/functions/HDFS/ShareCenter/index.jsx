@@ -24,7 +24,7 @@ export default React.createClass({
               key:"id",
               render:(item, component)=> {
                   let proxy_path = component.proxy_path;
-                  let proxy_arr = proxy_path.split("/").slice(-3);
+                  let proxy_arr = proxy_path.split("/").slice(-4);
                   let proxyStr = proxy_arr.join("/")
                   let spaceName = HdfsConf.getCurSpace(this);
                   let url = `/${proxyStr}?cur_space=${spaceName}`;
@@ -35,7 +35,7 @@ export default React.createClass({
               key:"proxy_path",
               render:(item, component)=> {
                 let proxy_path = component.proxy_path;
-                let proxy_arr = proxy_path.split("/").slice(-3);
+                let proxy_arr = proxy_path.split("/").slice(-4);
                 let proxyStr = proxy_arr.join("/")
                 let spaceName = HdfsConf.getCurSpace(this);
                 let url = `/${proxyStr}?cur_space=${spaceName}`;

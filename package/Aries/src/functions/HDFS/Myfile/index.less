@@ -2,46 +2,51 @@
   a:hover{
     cursor:pointer;
   }
-  .head{
-    .upload-modal{
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: -1px;
-      left: 0;
-      opacity: .5;
-      z-index: 1040;
-      background-color: #000;
-      .progress-bar{
-        z-index: 1041;
-        position: absolute;
-        top: 40%;
-        left: 40%;
-        .progress{
+  .upload-modal{
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    opacity: .5;
+    z-index: 1040;
+    background-color: #000;
+    .bfd-spinner{
+      position: absolute;
+      top: 45%;
+      right: 50%;
+    }
+    .progress-bar{
+      z-index: 1041;
+      position: absolute;
+      top: 40%;
+      left: 40%;
+      .progress{
+        height: 20px;
+        background: #ebebeb;
+        border-radius: 10px;
+        width: 400px;
+        > span {
+          margin: 0px;
           height: 20px;
-          background: #ebebeb;
+          min-width: 0px;
+          float: left;
+          text-align: right;
+          border: 1px solid;
+          border-color: #bfbfbf #b3b3b3 #9e9e9e;
+          color: #000;
+        }
+        .green{
+          background: #42a5f6;
+          border-color: #78b337 #6ba031;
           border-radius: 10px;
-          width: 400px;
-          > span {
-            margin: 0px;
-            height: 20px;
-            min-width: 0px;
-            float: left;
-            text-align: right;
-            border: 1px solid;
-            border-color: #bfbfbf #b3b3b3 #9e9e9e;
-            color: #000;
-          }
-          .green{
-            background: #42a5f6;
-            border-color: #78b337 #6ba031;
-            border-radius: 10px;
-          }
-
         }
 
       }
+
     }
+  }
+  .head{
     .table-div{
       display: inline;
       margin-right: 20px;
