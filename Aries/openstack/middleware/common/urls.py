@@ -1,4 +1,3 @@
-from common import IP_NOVA,PORT_NOVA,IP_CINDER,PORT_CINDER,IP_KEYSTONE,PORT_KEYSTONE
 version_token = "v3"
 version_nova = "v2.1"
 version_cinder = "v2"
@@ -13,7 +12,7 @@ url_project_id = "/%s/auth/projects"%version_token
 #flavor
 url_flavor_list = common_nova + "flavors"
 url_flavor_action = common_nova + "flavors/{flavor_id}"
-url_flavor_list_detail = common_nova + "flavors/detaild"
+url_flavor_list_detail = common_nova + "flavors/detail"
 
 #image
 url_image_list = common_nova + "images"
@@ -50,7 +49,8 @@ url_volume_backup_restore = common_cinder + "backups/{backup_id}/restore"
 
 #common api
 url_keypairs = common_nova + "os-keypairs"
-
+url_az_info = common_nova + "os-aggregates"
+url_hv_info = common_nova + "os-hypervisors/detail"
 
 
 

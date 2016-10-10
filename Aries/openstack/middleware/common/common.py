@@ -107,8 +107,8 @@ def send_request(methods, ip, port, path, params, head={}, flag=0):
             conn.request(methods, path, params_str)
         res = conn.getresponse()
         # print res.status, res.reason
-        assert res.status in [200, 201, 202, 203, 204], "send_request status=%s,reason=%s,params=%s" % (
-        res.status, res.reason, params_str)
+        assert res.status in [200, 201, 202, 203, 204], "send_request status=%s,reason=%s,path=%s,params=%s" % (
+        res.status, res.reason, path,params_str)
         if flag:
             token_id = res.getheader("X-Subject-Token", "")
             res_json = json.loads(res.read())

@@ -18,11 +18,11 @@ def prints(msg):
     if msg == 1:
         print("%-50s%s[false]%s"%(caller_name,Fore.RED,Fore.RESET))
     else:
-        print json.dumps(msg, indent=4)
+        # print json.dumps(msg, indent=4)
         print("%-50s%s[ok]%s"%(caller_name,Fore.GREEN,Fore.RESET))
 
-IMAGE_ID = ""
-FLAVOR_ID = ""
+IMAGE_ID = "e2aec20b-a965-42b7-98a6-c0f9e7ca5c3f"
+FLAVOR_ID = "c2a8d2cf-bc61-499f-86a6-616de6db5948"
 VM_ID = ""
 VOLUME_ID = ""
 SNAPSHOT_ID = ""
@@ -127,6 +127,12 @@ class Openstack_test(TestCase):
         msg = flavor.list()
         prints(msg)
 
+    def test_list_flavor_detail(self):
+        self.test_login()
+        flavor = Flavor()
+        msg = flavor.list_detail()
+        prints(msg)
+
     def test_list_vm(self):
         self.test_login()
         vm = Vm_manage()
@@ -146,6 +152,12 @@ class Openstack_test(TestCase):
         query = {"name": "ddd"}
         msg = vm.list_detail(query)
         prints(msg)
+
+    def test_get_vm_avzone(self):
+        self.test_login()
+        vm = Vm_manage()
+        ret = vm.get_avzone()
+        prints(ret)
 
     def test_create_vm(self):
         '''
@@ -329,24 +341,42 @@ class Openstack_test(TestCase):
         ret = CommonApi.get_keypairs()
         prints(ret)
 
+    def test_get_az(self):
+        self.test_login()
+        ret = CommonApi.get_azinfo()
+        prints(ret)
+
+    def test_get_hv(self):
+        self.test_login()
+        ret = CommonApi.get_hvinfo()
+        prints(ret)
+
+
     def auto_test(self):
         global VM_ID
         global VOLUME_ID
         global SNAPSHOT_ID
         global ATTACH_ID
         print "_____________________start test___________________________________"
+        #list
         self.test_list_image()
         self.test_list_volume()
         self.test_list_flavor()
+        self.test_list_flavor_detail()
         self.test_list_vm()
         self.test_list_vm_detail()
         self.test_vbackup_list()
         self.test_vbackup_list_detail()
+        self.test_get_az()
+        self.test_get_hv()
+        #volume
         tmp_ret = self.test_create_volume()
+        time.sleep(10)
         try:
             VOLUME_ID = tmp_ret["volume"]["id"]
         except:
             pass
+        self.test_show_volume()
         self.test_create_volume_multiple()
         self.test_extend_volume()
         tmp_ret = self.test_create_volume_snap()
@@ -354,12 +384,18 @@ class Openstack_test(TestCase):
             SNAPSHOT_ID = tmp_ret["snapshot"]["id"]
         except:
             pass
+        time.sleep(10)
         self.test_delete_volume_snap()
+        #vm
+        self.test_get_vm_avzone()
         tmp_ret = self.test_create_vm()
         try:
             VM_ID = tmp_ret["server"]["id"]
         except:
             pass
+        self.test_show_vm()
+        self.test_vm_console()
+        self.test_console_log()
         self.test_vm_attach_list()
         tmp_ret = self.test_vm_attach_create()
         try:
@@ -367,6 +403,7 @@ class Openstack_test(TestCase):
         except:
             pass
         self.test_vm_attach_show_detail()
+        time.sleep(10)
         self.test_vm_attach_delete()
         self.test_create_snap()
         print "_____________________end test___________________________________"
