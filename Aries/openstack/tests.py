@@ -18,11 +18,11 @@ def prints(msg):
     if msg == 1:
         print("%-50s%s[false]%s"%(caller_name,Fore.RED,Fore.RESET))
     else:
-        print json.dumps(msg, indent=4)
+        # print json.dumps(msg, indent=4)
         print("%-50s%s[ok]%s"%(caller_name,Fore.GREEN,Fore.RESET))
 
-IMAGE_ID = ""
-FLAVOR_ID = ""
+IMAGE_ID = "e2aec20b-a965-42b7-98a6-c0f9e7ca5c3f"
+FLAVOR_ID = "c2a8d2cf-bc61-499f-86a6-616de6db5948"
 VM_ID = ""
 VOLUME_ID = ""
 SNAPSHOT_ID = ""
@@ -367,6 +367,8 @@ class Openstack_test(TestCase):
         self.test_list_vm_detail()
         self.test_vbackup_list()
         self.test_vbackup_list_detail()
+        self.test_get_az()
+        self.test_get_hv()
         #volume
         tmp_ret = self.test_create_volume()
         time.sleep(10)
@@ -374,6 +376,7 @@ class Openstack_test(TestCase):
             VOLUME_ID = tmp_ret["volume"]["id"]
         except:
             pass
+        self.test_show_volume()
         self.test_create_volume_multiple()
         self.test_extend_volume()
         tmp_ret = self.test_create_volume_snap()
@@ -390,6 +393,9 @@ class Openstack_test(TestCase):
             VM_ID = tmp_ret["server"]["id"]
         except:
             pass
+        self.test_show_vm()
+        self.test_vm_console()
+        self.test_console_log()
         self.test_vm_attach_list()
         tmp_ret = self.test_vm_attach_create()
         try:
