@@ -13,6 +13,7 @@ var Datarequest = {
       'project': 'openstack/project/',
       'search': 'openstack/search/',
       'instances_post': 'openstack/instances_post/',
+      'instances_log': 'openstack/instances_log/',
     }
   },
   open_vnc(_this, select_host, fun){

@@ -11,6 +11,118 @@ import {Row, Col} from 'bfd/Layout'
 import echarts from 'echarts'
 import {Timeline} from 'antd'
 import TextOverflow from 'bfd/TextOverflow'
+import update from 'react-update'
+import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
+import {Component} from 'react'
+import Input from 'bfd/Input'
+import ReactDOM from 'react-dom'
+
+class Show_log extends Component {
+  constructor(props) {
+    super()
+    this.update = update.bind(this)
+    this.state = {
+      formData: {
+        brand: 0
+      },
+      logs: '',
+      count:'30',
+      height: ''
+    }
+  }
+
+  shouldComponentUpdate(nextProps,nextState){
+    if (nextProps.host_desc === this.props.host_desc){
+      console.log(this.props.host_desc,'gengx1')
+
+    }else{
+      console.log(this.props.host_desc,'gengx2')
+      this.get_all(nextProps.host_desc['id'])
+    }
+    if (nextProps.height_log === this.props.height_log){
+      console.log(nextProps.height_log,'gengx133')
+    }else{
+      console.log(nextProps.height_log,'gengx2444')
+      this.height_log(nextProps.height_log)
+    }
+
+
+    return nextProps.host_desc === this.props.host_desc
+  }
+
+  xhrCallback(_this, executedData) {
+    console.log('executedData',executedData)
+    _this.setState({
+      logs: executedData
+    })
+  }
+
+  handleChange(value){
+    console.log(value,'..value')
+    console.log(value.target.value)
+    this.setState({count:value.target.value})
+  }
+
+  componentWillMount(){
+   // let host_id = this.props.host_desc['id']
+    //let url = OPEN.UrlList()['instances_log']+'/'+host_id+'/'+1000+'/'
+    //OPEN.xhrGetData(this,url,this.xhrCallback)
+    this.get_count()
+    
+  //   ReactDOM.findDOMNode(this.refs.textarea).style.height=this.props.height_log+'px'
+  }
+
+  componentDidMount(){
+    console.log(ReactDOM.findDOMNode(this.refs.textarea_t))
+    this.height_log(this.props.height_log)
+  }
+
+  height_log(height_t){
+    ReactDOM.findDOMNode(this.refs.textarea_t).style.height=(height_t-50)+'px'
+  }
+
+  get_count(){
+    let host_id = this.props.host_desc['id']
+    let url = OPEN.UrlList()['instances_log']+'/'+host_id+'/'+this.state.count+'/'
+    OPEN.xhrGetData(this,url,this.xhrCallback)
+  }
+
+  get_all(id){
+    let host_id = this.props.host_desc['id']
+    let url = OPEN.UrlList()['instances_log']+'/'+id+'/000/'
+    OPEN.xhrGetData(this,url,this.xhrCallback)
+  }
+
+  handleDateSelect(date) {
+    this.update('set', 'formData.date', date)
+  }
+
+  handleSuccess(res) {
+    console.log(res)
+    message.success('操作成功！')
+  }
+
+  render(){
+    console.log('..xhrGetData',this.state.logs)
+    console.log('..xhrCallback',this.props.height_log)
+    let logs=this.state.logs['output']
+    const { formData } = this.state
+    return (
+      <div >
+        <Row>
+          <Col col="md-6">
+            <span style={{margin:'10px',fontSize:'22px'}}>云主机控制台日志</span>
+          </Col>
+          <Col col="md-6">
+            <Input placeholder="请输入日志长度" onChange={::this.handleChange}/><Button onClick={::this.get_count} >查询</Button><Button onClick={::this.get_all}>完整日志</Button>
+          </Col>
+        </Row>
+        <textarea value={logs} style={{width:'1000px'}} ref="textarea_t" >
+        </textarea>
+      </div>
+    )
+  }
+}
 
 
 const Host_Timeline = React.createClass({
@@ -49,30 +161,20 @@ const Echarts_s = React.createClass({
 
   dataManage(_this,data) {
     console.log(data,'...data')
-    /*
-      返回值数据结构、仅供参考！
-      {data:{date:['2016-10-9 15:52:00','2016-10-9 15:52:00'],
-      data_cpu:[{'legend':'free',data:['11','22']},
-                {'legend':'use',data:['33','44']}
-      ]}}
-    */  
     let legend=[]
     let xaxis=[]
     let option={}
     let series=[]
     let keys_d=''
     Object.keys(data).map((keys,item)=>{
-      console.log(data,'...data')
-      console.log(data[keys],'..key')
       if (keys!='date'){
         for (let i in data[keys]){
           legend.push(data[keys][i]['legend'])
           let series_s=this.series_t(data[keys][i]['legend'],data[keys][i]['data'])
           series.push(series_s)
         }
-        console.log(series,'series_s...')
         keys_d=keys
-    }
+      }
     })
 
     let dom_id=echarts.init(document.getElementById(keys_d))
@@ -127,7 +229,7 @@ const Echarts_s = React.createClass({
     this.initData()
    // var echarts_cpu = echarts.init(document.getElementById('echarts_cpu'));
   //  var echarts_mem = echarts.init(document.getElementById('echarts_mem'));
-    echarts_mem.setOption(
+    /*echarts_mem.setOption(
     {tooltip : {
         trigger: 'axis'
     },
@@ -193,25 +295,32 @@ const Echarts_s = React.createClass({
             data:[820, 932, 901, 934, 1290, 1330, 1320]
         }
     ]
-    });
+    });*/
   },
 
   render(){
+    let monitor_list = [
+      [{ 'name':'cpu','id':'cpu_monitor'},{ 'name':'内存','str':'mem_monitor'}]
+    ]
 
+    let return_monitor = monitor_list.map((keys,item)=>{
+      console.log(keys,'keys.........item')
+
+    })
     return (
       <div>
-      <Row>
-        <Col col="md-6">
-          <h4>CPU</h4>
-          <div id="cpu_monitor" style={{height: '400px'}}>
-          </div>
-        </Col>
-        <Col col="md-6">
-          <h4>内存</h4>
-          <div id="mem_monitor" style={{height: '400px'}}>
-          </div>
-        </Col>
-      </Row>
+        <Row>
+          <Col col="md-6">
+            <h4>CPU</h4>
+            <div id="cpu_monitor" style={{height: '400px'}}>
+            </div>
+          </Col>
+          <Col col="md-6">
+            <h4>内存</h4>
+            <div id="mem_monitor" style={{height: '400px'}}>
+            </div>
+          </Col>
+        </Row>
       </div>
     )
   }
@@ -285,15 +394,48 @@ const Host_details = React.createClass({
 })
 
 const Tabs_List = React.createClass({
+  getInitialState: function () {
+    return {
+      id:'',
+      logs:'',
+    }
+  },
+
+  componentWillMount(){
+    console.log('text..............textarea')
+  },
+
+  test(id){
+    //this.get_all(id)
+
+  },
+
+  xhrCallback(_this, executedData) {
+    console.log('executedData',executedData)
+    _this.setState({
+      logs: executedData
+    })
+  },
+
+  get_all(id){
+   // console.log(this.props.host_desc)
+    //let host_id = this.props.host_desc['id']
+    let url = OPEN.UrlList()['instances_log']+id+'/000/'
+    console.log(url)
+    OPEN.xhrGetData(this,url,this.xhrCallback)
+  },
+
   render() {
+    console.log('111111111......',this.state.id)
     return (
-      <Tabs>
+      <Tabs >
         <TabList>
           <Tab>主机详情</Tab>
           <Tab>备份</Tab>
           <Tab>监控</Tab>
           <Tab>启动日志</Tab>
         </TabList>
+        <div style={{overflow:'auto'}}>
         <TabPanel>
           <Host_details host_desc={this.props.host_desc}/>
         </TabPanel>
@@ -303,8 +445,13 @@ const Tabs_List = React.createClass({
         <TabPanel>
           <Echarts_s/>
         </TabPanel>
-        <TabPanel>启动日志</TabPanel>
-      </Tabs>)
+        <TabPanel>
+          <Show_log host_desc={this.props.host_desc} height_log={this.props.height_log} ref="show_logs"/>
+        </TabPanel>
+        </div>
+      </Tabs>
+
+      )
   }
 })
 

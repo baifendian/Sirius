@@ -13,7 +13,7 @@ url_project_id = "/%s/auth/projects"%version_token
 #flavor
 url_flavor_list = common_nova + "flavors"
 url_flavor_action = common_nova + "flavors/{flavor_id}"
-url_flavor_list_detail = common_nova + "flavors/detaild"
+url_flavor_list_detail = common_nova + "flavors/detail"
 
 #image
 url_image_list = common_nova + "images"

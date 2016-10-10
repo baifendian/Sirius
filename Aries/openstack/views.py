@@ -11,15 +11,16 @@ from django.http import HttpResponseRedirect, HttpResponse
 from openstack.middleware.login.login import Login, get_token
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
-from common import *
+from common import json_data,volumes_deal,time_handle,size_handle
 from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach
+import time
+from openstack.service import user_login
 from django.views.decorators.csrf import csrf_exempt
 import base64
 from decimal import *
 import json
 import logging
-
 openstack_log = logging.getLogger("openstack_log")
 
 
@@ -72,20 +73,28 @@ def create_host(request):
 
 
 @csrf_exempt
+@user_login()
 def instances(request):
     ret = {}
     disk = []
     sys = {}
-    login = Login("openstack", "baifendian2016")
-    login.user_token_login()
-    login.proid_login()
-    login.token_login()
     vm_manage = Vm_manage()
     volume_s = Volume()
     if request.method == "GET":
         imagess = Image()
         flavorss = Flavor()
-        host_list = vm_manage.list_detail({})
+        host_id=request.GET.get('name')
+        if host_id:
+            return_data=vm_manage.show_detail(host_id)['server']
+            ret['status']=return_data['status']
+            ret['id']=return_data['id']
+            ret['name']=return_data['name']
+            json_status = json_data(ret)
+            response = HttpResponse(json_status)
+            response['Access-Control-Allow-Origin'] = '*'
+            response['Content-Type'] = 'application/json'
+            return response
+        host_list = vm_manage.list_detail()
         currentPages = request.GET.get('currentPage')
         pageSizes = request.GET.get('pageSize')
         if currentPages and pageSizes:
@@ -105,7 +114,7 @@ def instances(request):
             except:
                 sys['image'] = '-'
             sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
-            sys['created'] = ' '.join( host['created'].split('Z')[0].split('T'))
+            sys['created'] = time_handle(host['created'])
             sys['status'] = host['status']
             try:
                 volumes_list=host['os-extended-volumes:volumes_attached']
@@ -113,7 +122,7 @@ def instances(request):
                 for volmes_dict in volumes_list:
                     volumes_name={}
                     volumes_details=volume_s.show_detail(volmes_dict['id'])
-                    if volumes_details['volume']['displayName'] == None:
+                    if not volumes_details['volume']['displayName']:
                         volumes_name['disk_name']=volumes_details['volume']['id']
                     else:
                         volumes_name['disk_name']=volumes_details['volume']['displayName']
@@ -152,9 +161,10 @@ def instances(request):
             host_create = vm_manage.create_multiple(host_name, host_flavor, host_image, host_password, host_userdata,
                                                     int(host_count), int(host_count), disk)
             if host_create != 1:
-                ret['status'] = 'NO'
+                ret['status'] = True
+                openstack_log.info("虚拟机创建:{0}".format(host_create))
             else:
-                ret['status'] = "YES"
+                ret['status'] = False
         elif host_method == "start":
             request_list = request.POST.getlist('data')[0]
             host_vm_start = Vm_control()
@@ -196,16 +206,21 @@ def instances(request):
                     else:
                         ret[values] = True
 
-
         elif host_method == "delete":
             request_list = request.POST.getlist('data')[0]
             for keys, values in eval(request_list).items():
                 host_vm_delete = vm_manage.delete(keys)
-
                 if host_vm_delete == 1:
                     ret[values] = False
                 else:
-                    ret[values] = True
+                    while True:
+                        try:
+                            return_data = vm_manage.show_detail(keys)['server']
+                        except:
+                            ret[values] = True
+                            openstack_log.info("虚拟机删除成功:{0}".format(keys))
+                            break
+
         elif host_method == "vnc":
             host_id = eval(request.POST.get('data'))['host_id']
             vm_control = Vm_control()
@@ -250,14 +265,10 @@ def instances(request):
     response['Content-Type'] = 'application/json'
     return response
 
-
+@user_login()
 def images(request):
     """ 获取images"""
     sys = {}
-    login = Login("openstack", "baifendian2016")
-    login.user_token_login()
-    login.proid_login()
-    login.token_login()
     image = Image()
     if request.method == 'GET':
         sys['totalList'] = []
@@ -277,8 +288,7 @@ def images(request):
                     ret['format'] = 'QCOW2'
                     ret['image_status'] = i['status']
                     ret['id'] = i['id']
-                    ret['size'] = str(
-                        (round(Decimal(int(i['OS-EXT-IMG-SIZE:size'])) / Decimal(1024) / Decimal(1024), 2))) + 'MB'
+                    ret['size'] = size_handle(i['OS-EXT-IMG-SIZE:size'])
             else:
                 ret['public'] = "YES"
                 ret['type_image'] = "镜像"
@@ -287,8 +297,7 @@ def images(request):
                 ret['format'] = 'QCOW2'
                 ret['image_status'] = i['status']
                 ret['id'] = i['id']
-                ret['size'] = str(
-                    (round(Decimal(int(i['OS-EXT-IMG-SIZE:size'])) / Decimal(1024) / Decimal(1024), 2))) + 'MB'
+                ret['size'] = size_handle(i['OS-EXT-IMG-SIZE:size'])
             sys['totalList'].append(ret)
         sys['currentPage'] = 1
         sys['totalPageNum'] = len(sys['totalList'])
@@ -301,12 +310,9 @@ def images(request):
 
 
 @csrf_exempt
+@user_login()
 def flavors(request):
     ret = {}
-    login = Login("openstack", "baifendian2016")
-    login.user_token_login()
-    login.proid_login()
-    login.token_login()
     flavor = Flavor()
     ret['totalList'] = []
     ret['name'] = {}
@@ -346,12 +352,9 @@ def flavors(request):
 
 
 @csrf_exempt
+@user_login()
 def volumes(request):
     ret = {}
-    login = Login("openstack", "baifendian2016")
-    login.user_token_login()
-    login.proid_login()
-    login.token_login()
     volume_s = Volume()
     vm_manage = Vm_manage()
     if request.method == "GET":
@@ -359,15 +362,15 @@ def volumes(request):
         volumes_list = volume_s.list_detail()
         for disk in volumes_list['volumes']:
             sys = {}
-            if disk['displayName'] == None:
+            if not disk['displayName']:
                 sys['name'] = disk['id']
             else:
                 sys['name'] = disk['displayName']
             sys['id'] = disk['id']
             sys['size'] = disk['size']
             sys['voumetype'] = 'ceph'
-            sys['created'] = ' '.join(disk['createdAt'].split('.')[0].split('Z')[0].split('T'))
-            sys['backupd'] = ' '.join(disk['createdAt'].split('.')[0].split('Z')[0].split('T'))
+            sys['created'] = time_handle(disk['createdAt'])
+            sys['backupd'] = time_handle(disk['createdAt'])
             sys['displayDescription'] = disk['displayDescription']
             if len(disk['attachments'][0].keys()) == 4:
                 for disk_host in disk['attachments']:
@@ -416,3 +419,19 @@ def volumes(request):
     response['Content-Type'] = 'application/json'
     return response
 
+@user_login()
+def instances_log(request,id,line):
+    return_data=''
+    if line=='000':
+        print line
+        vm_control=Vm_control()
+        return_data=vm_control.get_console_log(id)
+    else:
+        vm_control=Vm_control()
+        return_data=vm_control.get_console_log(id,line)
+    print return_data
+    json_status = json_data(return_data)
+    response = HttpResponse(json_status)
+    response['Access-Control-Allow-Origin'] = '*'
+    response['Content-Type'] = 'application/json'
+    return response
