@@ -273,7 +273,7 @@ const Uninstall_disk = React.createClass({
           onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
-          <div>当前链接虚拟机</div>
+          <div>注意：卸载云硬盘之前，请确保该云硬盘在主机的操作系统中处于未挂载状态 (unmounted)。</div>
           <DataTable
             url={this.state.url}
             showPage="false"
