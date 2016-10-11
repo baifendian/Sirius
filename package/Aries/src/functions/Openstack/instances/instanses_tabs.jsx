@@ -68,7 +68,6 @@ class Show_log extends Component {
   }
 
   componentDidMount(){
-    console.log(ReactDOM.findDOMNode(this.refs.host_width).clientWidth)
     ReactDOM.findDOMNode(this.refs.textarea_t).style.width=(ReactDOM.findDOMNode(this.refs.host_width).clientWidth-10)+'px'
   }
 
@@ -150,7 +149,6 @@ const Echarts_s = React.createClass({
   },
 
   dataManage(_this,data) {
-    console.log(data,'...data')
     let legend=[]
     let xaxis=[]
     let option={}
@@ -319,32 +317,7 @@ const Tabs_List = React.createClass({
     }
   },
 
-  componentWillMount(){
-    console.log('text..............textarea')
-  },
-
-  test(id){
-    //this.get_all(id)
-
-  },
-
-  xhrCallback(_this, executedData) {
-    console.log('executedData',executedData)
-    _this.setState({
-      logs: executedData
-    })
-  },
-
-  get_all(id){
-   // console.log(this.props.host_desc)
-    //let host_id = this.props.host_desc['id']
-    let url = OPEN.UrlList()['instances_log']+id+'/000/'
-    console.log(url)
-    OPEN.xhrGetData(this,url,this.xhrCallback)
-  },
-
   render() {
-    console.log('111111111......',this.state.id)
     return (
       <Tabs >
         <TabList>

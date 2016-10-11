@@ -224,7 +224,6 @@ export default React.createClass({
      }else{
       this.setState({host_desc: row})
       this.count_height()
-      console.log(this.refs.Tabs_list)
     }
     this.getDataConsole(row)
   },
@@ -340,7 +339,6 @@ export default React.createClass({
     let hand_height=ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[2].style.height
     hand_height=hand_height.split('p')[0]-35
     ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes[1].style.height=hand_height+'px'
-    console.log(ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes[1])
     this.setState({height_log:hand_height})
   },
   requestArgs: {
