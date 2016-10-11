@@ -423,13 +423,11 @@ def volumes(request):
 def instances_log(request,id,line):
     return_data=''
     if line=='000':
-        print line
         vm_control=Vm_control()
         return_data=vm_control.get_console_log(id)
     else:
         vm_control=Vm_control()
         return_data=vm_control.get_console_log(id,line)
-    print return_data
     json_status = json_data(return_data)
     response = HttpResponse(json_status)
     response['Access-Control-Allow-Origin'] = '*'

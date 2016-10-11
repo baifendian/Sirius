@@ -27,99 +27,89 @@ class Show_log extends Component {
       },
       logs: '',
       count:'30',
-      height: ''
+      height: '',
+      id:''
     }
   }
 
   shouldComponentUpdate(nextProps,nextState){
-    if (nextProps.host_desc === this.props.host_desc){
-      console.log(this.props.host_desc,'gengx1')
-
+    /*注释部分代码暂时保存以后可能会用到*/
+   /* if (nextProps.host_desc === this.props.host_desc){
     }else{
-      console.log(this.props.host_desc,'gengx2')
-      this.get_all(nextProps.host_desc['id'])
-    }
-    if (nextProps.height_log === this.props.height_log){
-      console.log(nextProps.height_log,'gengx133')
-    }else{
-      console.log(nextProps.height_log,'gengx2444')
+      this.get_count(nextProps.host_desc['id'],30)
+    }*/
+    if (nextProps.height_log !== this.props.height_log){
       this.height_log(nextProps.height_log)
     }
-
-
-    return nextProps.host_desc === this.props.host_desc
+    return true
   }
 
+ /* componentWillReceiveProps(nextProps){
+    if (nextProps.host_desc !== this.props.host_desc){
+      //this.setState({count:30})
+      this.setState({logs:'tesxaaas'})
+      this.get_count(nextProps.host_desc['id'],30)
+    }
+  }*/
+
   xhrCallback(_this, executedData) {
-    console.log('executedData',executedData)
-    _this.setState({
-      logs: executedData
+    _this.props._self.setState({
+      logs: executedData,
+      logs_loading:false
     })
   }
 
   handleChange(value){
-    console.log(value,'..value')
-    console.log(value.target.value)
     this.setState({count:value.target.value})
   }
 
   componentWillMount(){
-   // let host_id = this.props.host_desc['id']
-    //let url = OPEN.UrlList()['instances_log']+'/'+host_id+'/'+1000+'/'
-    //OPEN.xhrGetData(this,url,this.xhrCallback)
-    this.get_count()
-    
-  //   ReactDOM.findDOMNode(this.refs.textarea).style.height=this.props.height_log+'px'
+    this.get_all()
   }
 
   componentDidMount(){
-    console.log(ReactDOM.findDOMNode(this.refs.textarea_t))
-    this.height_log(this.props.height_log)
+    console.log(ReactDOM.findDOMNode(this.refs.host_width).clientWidth)
+    ReactDOM.findDOMNode(this.refs.textarea_t).style.width=(ReactDOM.findDOMNode(this.refs.host_width).clientWidth-10)+'px'
   }
 
   height_log(height_t){
     ReactDOM.findDOMNode(this.refs.textarea_t).style.height=(height_t-50)+'px'
   }
 
-  get_count(){
+  get_count(id,count){
+    this.props._self.setState({logs_loading:true})
     let host_id = this.props.host_desc['id']
-    let url = OPEN.UrlList()['instances_log']+'/'+host_id+'/'+this.state.count+'/'
+    let url = OPEN.UrlList()['instances_log']+'/'+host_id+'/'+count+'/'
     OPEN.xhrGetData(this,url,this.xhrCallback)
   }
 
-  get_all(id){
+  get_all(){
+    this.props._self.setState({logs_loading:true})
     let host_id = this.props.host_desc['id']
-    let url = OPEN.UrlList()['instances_log']+'/'+id+'/000/'
+    let url = OPEN.UrlList()['instances_log']+'/'+host_id+'/000/'
     OPEN.xhrGetData(this,url,this.xhrCallback)
-  }
-
-  handleDateSelect(date) {
-    this.update('set', 'formData.date', date)
-  }
-
-  handleSuccess(res) {
-    console.log(res)
-    message.success('操作成功！')
   }
 
   render(){
-    console.log('..xhrGetData',this.state.logs)
-    console.log('..xhrCallback',this.props.height_log)
-    let logs=this.state.logs['output']
+    let logs=this.props.logs['output']
+    let host_id=this.props.host_desc['id']
+    let count=this.state.count
     const { formData } = this.state
     return (
-      <div >
-        <Row>
+      <Spin spinning={this.props._self.state.logs_loading}>
+      <div ref="host_width">
+        <Row >
           <Col col="md-6">
             <span style={{margin:'10px',fontSize:'22px'}}>云主机控制台日志</span>
           </Col>
           <Col col="md-6">
-            <Input placeholder="请输入日志长度" onChange={::this.handleChange}/><Button onClick={::this.get_count} >查询</Button><Button onClick={::this.get_all}>完整日志</Button>
+            <Input placeholder="请输入日志长度" onChange={::this.handleChange}/><Button onClick={::this.get_count.bind(this,host_id,count)} >查询</Button><Button onClick={::this.get_all}>完整日志</Button>
           </Col>
         </Row>
-        <textarea value={logs} style={{width:'1000px'}} ref="textarea_t" >
+        <textarea value={logs} style={{padding:'5px 0px 0px 15px',marginLeft:"10px"}} ref="textarea_t" >
         </textarea>
       </div>
+      </Spin>
     )
   }
 }
@@ -212,10 +202,8 @@ const Echarts_s = React.createClass({
 
   initData(){
     Object.keys(this.dom_id()).map((key,item)=>{
-      console.log('object',key,item)
       OPEN.Get_instances_cpu(this,this.dom_id()[key],this.dataManage)
     })
-    //OPEN.Get_instances_cpu(this,'cpu_monitor',this.dataManage)
   },
 
   dom_id(){
@@ -227,75 +215,6 @@ const Echarts_s = React.createClass({
 
   componentDidMount(){
     this.initData()
-   // var echarts_cpu = echarts.init(document.getElementById('echarts_cpu'));
-  //  var echarts_mem = echarts.init(document.getElementById('echarts_mem'));
-    /*echarts_mem.setOption(
-    {tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
-    },
-    toolbox: {
-      show : true,
-      eature : {
-        saveAsImage : {show: true}
-      }
-    },
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : ['周一','周二','周三','周四','周五','周六','周日']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-              formatter: '{value} k'
-        }
-      }
-    ],
-    series : [
-        {
-            name:'邮件营销',
-            type:'line',
-            stack: '总量',
-            itemStyle: {normal: {areaStyle: {type: 'default'}}},
-            data:[120, 132, 101, 134, 90, 230, 210]
-        },
-        {
-            name:'联盟广告',
-            type:'line',
-            stack: '总量',
-            itemStyle: {normal: {areaStyle: {type: 'default'}}},
-            data:[220, 182, 191, 234, 290, 330, 310]
-        },
-        {
-            name:'视频广告',
-            type:'line',
-            stack: '总量',
-            itemStyle: {normal: {areaStyle: {type: 'default'}}},
-            data:[150, 232, 201, 154, 190, 330, 410]
-        },
-        {
-            name:'直接访问',
-            type:'line',
-            stack: '总量',
-            itemStyle: {normal: {areaStyle: {type: 'default'}}},
-            data:[320, 332, 301, 334, 390, 330, 320]
-        },
-        {
-            name:'搜索引擎',
-            type:'line',
-            stack: '总量',
-            itemStyle: {normal: {areaStyle: {type: 'default'}}},
-            data:[820, 932, 901, 934, 1290, 1330, 1320]
-        }
-    ]
-    });*/
   },
 
   render(){
@@ -304,7 +223,6 @@ const Echarts_s = React.createClass({
     ]
 
     let return_monitor = monitor_list.map((keys,item)=>{
-      console.log(keys,'keys.........item')
 
     })
     return (
@@ -446,7 +364,7 @@ const Tabs_List = React.createClass({
           <Echarts_s/>
         </TabPanel>
         <TabPanel>
-          <Show_log host_desc={this.props.host_desc} height_log={this.props.height_log} ref="show_logs"/>
+          <Show_log host_desc={this.props.host_desc} height_log={this.props.height_log} logs={this.props.logs} ref="show_logs" _self={this.props._this}/>
         </TabPanel>
         </div>
       </Tabs>

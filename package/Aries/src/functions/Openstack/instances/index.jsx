@@ -39,6 +39,8 @@ export default React.createClass({
       url_vnc: "",
       height_h: "",
       button_statuss: true,
+      logs:'',
+      logs_loading:'',
       url: "openstack/bfddashboard/instances/",
       column: [{
         title: '名称',
@@ -224,7 +226,23 @@ export default React.createClass({
       this.count_height()
       console.log(this.refs.Tabs_list)
     }
+    this.getDataConsole(row)
   },
+
+  getDataConsole(row){
+    this.setState({logs_loading:true})
+    let host_id = row['id']
+    let url = OPEN.UrlList()['instances_log']+'/'+host_id+'/30/'
+    OPEN.xhrGetData(this,url,this.xhrCallback)
+  },
+
+  xhrCallback(_this,executedData) {
+    _this.setState({
+      logs: executedData,
+      logs_loading:false
+    })
+  },
+
   handleOrder(name, sort) {
   },
   callback_status(name){
@@ -349,15 +367,7 @@ export default React.createClass({
             <Button onClick={this.handleOpen.bind(this, 5)}
                     style={{float: "left", margin: '0px 10px 0px 0px'}}>刷新</Button>
             <Create_model _this={this}/>
-            {/*<Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 1)} style={{float: "left"}}>启动</Button>
-            <Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 2)} style={{float: "left"}}>重启</Button>
-            <Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 3)} style={{float: "left"}}>停止</Button>
-            <Button disabled={this.state.button_status} type="danger" onClick={this.handleOpen.bind(this, 4)}
-                    style={{float: "left"}}>删除</Button>*/}
             <Disk_model vm_list={this.state.select_all} ref="model_model" handleOpen={this.handleOpen} _this={this} button_status={this.state.button_status} button_statuss={this.state.button_statuss}/>
-            {/*<div style={{float: 'right'}}>
-             <Extend _this={this}/>
-             </div>*/}
             <Modal ref="modal">
               <ModalHeader>
                 <h4>{this.state.host_status}</h4>
@@ -405,7 +415,7 @@ export default React.createClass({
                 </div>
               </SubSplitPanel>
               <SubSplitPanel ref="SubSplitPanel_t">
-                <Tabs_List host_desc={this.state.host_desc} height_log={this.state.height_log} ref="Tabs_list"/>
+                <Tabs_List host_desc={this.state.host_desc} height_log={this.state.height_log} logs={this.state.logs} _this={this} ref="Tabs_list"/>
               </SubSplitPanel>
             </SplitPanel>
           </div>
