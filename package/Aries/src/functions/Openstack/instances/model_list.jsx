@@ -100,7 +100,7 @@ const Disk_list = React.createClass({
   handlerequest(){
     const self = this
     this.setState({loading: true})
-    let url=OPEN.UrlList['volumes']
+    let url=OPEN.UrlList()['volumes']
     xhr({
       type: 'POST',
       url: url,

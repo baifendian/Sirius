@@ -248,9 +248,9 @@ const conf = {
         }]
       },
       flavors: {
-        headText: "类型",
+        headText: "云类型",
         navigationTexts: [{
-          text: "类型",
+          text: "云类型",
           url: "/CloudHost/Calculation/Flavors?cur_space=${spaceName}"
         }]
       },

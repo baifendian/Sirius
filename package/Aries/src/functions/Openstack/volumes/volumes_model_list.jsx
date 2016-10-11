@@ -58,12 +58,13 @@ const Redact = React.createClass({
   },
 
   handleSuccess(res) {
-    this.props._self.setState({loading:false})
+    this.props._self.setState({loading:false,button_status:true,button_statuss:true})
     OPEN.update_url(this.props._self,"volumes")
    if (res['status']){
     message.success('修改成功！')}else{
       message.danger('修改失败')
     }
+
   },
   render() {
     const {formData} = this.state
@@ -108,7 +109,7 @@ const Backup_disk = React.createClass({
     return {
       formData: {
         data: this.volumes_id(),
-        method: 'backup'
+        method: 'snapshot'
       },
       volumes_id: this.volumes_id()
     }
@@ -449,10 +450,9 @@ const Extend = React.createClass({
   },
 
   handleSuccess(res) {
-    this.props._self.setState({loading:false})
-    this.props._self.setState({button_statuss:true})
+    this.props._self.setState({loading:false,button_statuss:true,button_status:true})
     if (res['status']==true){
-    message.success('保存成功！')}else{
+      message.success('修改成功！')}else{
       if (res['status']=='error'){
         message.danger(res['totalList'])
       }else{
@@ -460,6 +460,8 @@ const Extend = React.createClass({
       }
     }
     OPEN.update_url(this.props._self,"volumes")
+    //this.props._self.setState({button_statuss:true})
+   // this.props._self.setState({button_status:true})
   },
   render() {
     const {formData} = this.state
