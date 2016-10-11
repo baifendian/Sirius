@@ -233,7 +233,7 @@ const Uninstall_disk = React.createClass({
       this.props._self.setState({loading:true})
       this.refs.form.save()
     }else{
-      message.danger('未挂载')
+      message.danger('未加载')
     }
   },
 

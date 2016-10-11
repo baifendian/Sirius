@@ -121,9 +121,9 @@ const Disk_list = React.createClass({
               message: '添加成功',
               description: '磁盘' + data['totalList'][i]['volumename'] + '已连接到了虚拟机' + data['totalList'][i]['servername'] + ',磁盘盘符是' + data['totalList'][i]['device'],
             });*/
-            message.success('挂载成功')
+            message.success('加载成功')
           }else{
-            message.danger('挂载失败')
+            message.danger('加载失败')
           }
         }
       },
@@ -168,7 +168,7 @@ const Disk_list = React.createClass({
           <div style={{border: '1px solid #2196f3', margin: '0px 0px 28px 0px'}}></div>
           <div style={{"margin-top": "10px"}}>
             <Row>
-              <span>挂载云硬盘</span>
+              <span>加载云硬盘</span>
             </Row>
           </div>
           <div style={{"margin-top": "10px"}} >
