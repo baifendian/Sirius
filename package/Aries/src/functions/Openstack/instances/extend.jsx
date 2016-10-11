@@ -352,10 +352,8 @@ const Create_model = React.createClass({
   },
 
   handleSuccess(res) {
-    console.log(res)
     this.props._this.setState({loading: false, url: "openstack/bfddashboard/instances/?" + Math.random()})
-    console.log(res['status'])
-    if (res['status']==true){
+    if (res['status']){
       message.success('创建成功!')}else{
       message.danger('创建失败!')
     }
