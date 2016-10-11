@@ -8,9 +8,12 @@ import { SplitPanel, SubSplitPanel } from 'bfd-ui/lib/SplitPanel'
 import DynamicTable from 'public/DynamicTable'
 import NavigationInPage from 'public/NavigationInPage'
 import Toolkit from 'public/Toolkit/index.js'
+import { AutoLayoutDiv , layoutInfoGenerator } from 'public/AutoLayout'
 
 import CalcManageConf from '../UrlConf'
 import './index.less'
+
+
 
 var ClusterCommonInfo = React.createClass({
   getInitialState: function () {    
@@ -29,47 +32,27 @@ var ClusterCommonInfo = React.createClass({
     this.storeConstData = {
       dataTableConfigDict:config.dataTableConfigDict,
       rootDivClassName:config.rootDivClassName,
-      defaultDetailText:config.defaultDetailText
+      defaultDetailText:config.defaultDetailText,
     }
     this.storeVarData = {
       dataTableDataArr:this.props.dataTableDataArr
     }
-  },
 
-  componentDidMount(){
-    this.calcDesiredHeight()
-    window.onresize = ()=>{ this.onWindowResize() }
-  },
-
-  onWindowResize(){
-    window.onresize = undefined
-    this.calcDesiredHeight()
-    window.onresize = ()=>{ this.onWindowResize() }
-  },
-
-  calcRootDivHeight(){
-    let totalHeight = document.body.clientHeight
-    totalHeight -= document.getElementById('header').clientHeight
-    totalHeight -= document.getElementById('footer').clientHeight
-    totalHeight -= 20*2               // 去掉设置的子页面padding
-    return totalHeight
-  },
-
-  calcDesiredHeight(){
-    let rootDivHeight = this.calcRootDivHeight()
-    ReactDOM.findDOMNode(this.refs.RootDiv).style.height = (rootDivHeight+'px')
-
-    let splitPanelHeight = rootDivHeight - ReactDOM.findDOMNode(this.refs.NavigationInPage).clientHeight
-
-    let splitPanel = ReactDOM.findDOMNode( this.refs.SplitPanel )
-    let topHeight = parseInt(splitPanelHeight/3) * 2
-    let bottomHeight = splitPanelHeight - topHeight
-    splitPanel.style.height = splitPanelHeight + 'px'
-    splitPanel.childNodes[0].style.height = topHeight + 'px'
-    splitPanel.childNodes[1].style.top = topHeight + 'px'
-    splitPanel.childNodes[2].style.height = bottomHeight + 'px'
-
-    this.onSplitPanelHeightChange( 0,0,topHeight,bottomHeight )
+    // 保存四个节点的ID，以方便传给AutoLayoutDiv来自动计算组件高度
+    this.storeConstData['divIDs'] = {
+      rootDivID:Toolkit.generateGUID(),
+      searchInputFatherDivID:Toolkit.generateGUID(),
+      navigationInPageID:Toolkit.generateGUID(),
+      splitPanelID:Toolkit.generateGUID(),
+    }
+    this.storeConstData['autoLayoutInfos'] = [
+      layoutInfoGenerator( this.storeConstData['divIDs']['rootDivID'],true ),
+      layoutInfoGenerator( this.storeConstData['divIDs']['searchInputFatherDivID'],false,'Const_0' ),
+      layoutInfoGenerator( this.storeConstData['divIDs']['navigationInPageID'],false,'Const' ),
+      layoutInfoGenerator( this.storeConstData['divIDs']['splitPanelID'],false,'Var',( newHeight )=>{
+        this.onHeightChanged( newHeight )
+      } ),
+    ]
   },
 
   onSearchByKey( value ){
@@ -156,6 +139,20 @@ var ClusterCommonInfo = React.createClass({
     dynamicTable.style.height = (newBottomHeight-47) + 'px'
   },
 
+  onHeightChanged( splitPanelHeight ){
+    splitPanelHeight -= 10
+
+    let splitPanel = ReactDOM.findDOMNode( this.refs.SplitPanel )
+    let topHeight = parseInt(splitPanelHeight/3) * 2
+    let bottomHeight = splitPanelHeight - topHeight
+    splitPanel.style.height = splitPanelHeight + 'px'
+    splitPanel.childNodes[0].style.height = topHeight + 'px'
+    splitPanel.childNodes[1].style.top = topHeight + 'px'
+    splitPanel.childNodes[2].style.height = bottomHeight + 'px'
+
+    this.onSplitPanelHeightChange( 0,0,topHeight,bottomHeight )
+  },
+
   render: function (){
     if ( this.storeVarData.dataTableDataArr !== this.props.dataTableDataArr ){      
       // 如果namespace发生切换，则会进入这个函数体内
@@ -175,8 +172,8 @@ var ClusterCommonInfo = React.createClass({
     }
 
     return (      
-      <div ref="RootDiv" className={this.storeConstData.rootDivClassName} >
-        <div className="SearchInputFatherDiv">
+      <div id={this.storeConstData['divIDs']['rootDivID']} ref="RootDiv" className={this.storeConstData.rootDivClassName} >
+        <div id={this.storeConstData['divIDs']['searchInputFatherDivID']}  className="SearchInputFatherDiv">
           <SearchInput key={Toolkit.generateGUID()}
                         ref="SearchInput"
                         placeholder="请输入查询关键字" 
@@ -185,34 +182,39 @@ var ClusterCommonInfo = React.createClass({
                         defaultValue={this.state.searchInputKey}
                         label="查询" />
         </div>
-        <NavigationInPage ref="NavigationInPage" 
-                          headText={CalcManageConf.getNavigationData({
-                            pageName:this.props.navigationKey,
-                            type : 'headText'
-                          })} 
-                          naviTexts={CalcManageConf.getNavigationData({
-                            pageName:this.props.navigationKey,
-                            type:'navigationTexts',
-                            spaceName:this.props.spaceName
-                          })} />
-        <SplitPanel ref='SplitPanel'
-                    onSplit={this.onSplitPanelHeightChange} 
-                    className='SplitPanel' 
-                    direct="hor">
-          <SubSplitPanel>
-            <div className="DataTableFatherDiv">
-              <DataTable className="DataTable" ref="DataTable" data={data} 
-                         onRowClick={this.onTableRowClick}
-                         onOrder={this.onTableHeadOrder}
-                         showPage={this.storeConstData.dataTableConfigDict.showPage} 
-                         column={this.storeConstData.dataTableConfigDict.column } />
-            </div>
-          </SubSplitPanel>
-          <SubSplitPanel>
-            <div className="Text">详情</div>
-            <DynamicTable ref='DynamicTable' dynamicTableTextArray={text}/>
-          </SubSplitPanel>
-        </SplitPanel>
+        <div id={this.storeConstData['divIDs']['navigationInPageID']}>
+          <NavigationInPage ref="NavigationInPage" 
+                            headText={CalcManageConf.getNavigationData({
+                              pageName:this.props.navigationKey,
+                              type : 'headText'
+                            })} 
+                            naviTexts={CalcManageConf.getNavigationData({
+                              pageName:this.props.navigationKey,
+                              type:'navigationTexts',
+                              spaceName:this.props.spaceName
+                            })} />
+        </div>
+        <div id={this.storeConstData['divIDs']['splitPanelID']}>
+          <SplitPanel ref='SplitPanel'
+                      onSplit={this.onSplitPanelHeightChange} 
+                      className='SplitPanel' 
+                      direct="hor">
+            <SubSplitPanel>
+              <div className="DataTableFatherDiv">
+                <DataTable className="DataTable" ref="DataTable" data={data} 
+                          onRowClick={this.onTableRowClick}
+                          onOrder={this.onTableHeadOrder}
+                          showPage={this.storeConstData.dataTableConfigDict.showPage} 
+                          column={this.storeConstData.dataTableConfigDict.column } />
+              </div>
+            </SubSplitPanel>
+            <SubSplitPanel>
+              <div className="Text">详情</div>
+              <DynamicTable ref='DynamicTable' dynamicTableTextArray={text}/>
+            </SubSplitPanel>
+          </SplitPanel>
+        </div>
+        <AutoLayoutDiv layoutInfos={this.storeConstData['autoLayoutInfos']} />
       </div>
     ) 
   }
