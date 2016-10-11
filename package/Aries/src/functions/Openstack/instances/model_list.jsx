@@ -155,7 +155,7 @@ const Disk_list = React.createClass({
       <Spin size="large" spinning={this.state.loading}>
         <div>
           <div>
-              <div></div>
+              <div>注意：卸载云硬盘之前，请确保该云硬盘在主机的操作系统中处于未挂载状态 (unmounted)。</div>
               <DataTable
                 data={data}
                 showPage="false"
