@@ -35,7 +35,7 @@ const OverviewConf={
       content: [
                 {label:"虚拟机:",value:"openstack_vm_count"},
                 {label:"镜像个数:",value:"openstack_image_count"},
-                {label:"云磁盘个数:",value:"openstack_disk_count"}
+                {label:"云硬盘个数:",value:"openstack_disk_count"}
                ]
     },{
       title:"用户",

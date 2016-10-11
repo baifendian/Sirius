@@ -271,9 +271,9 @@ const conf = {
         }]
       },
       volumes: {
-        headText: "云磁盘",
+        headText: "云硬盘",
         navigationTexts: [{
-          text: "云磁盘",
+          text: "云硬盘",
           url: "/CloudHost/Storage/Volumes?cur_space=${spaceName}"
         }]
       },

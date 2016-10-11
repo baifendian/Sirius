@@ -25,7 +25,7 @@ export default React.createClass({
         bdms_task_count: 0, //今日总任务
         openstack_vm_count: "0/0", //虚拟机(9/10)
         openstack_image_count: 0, //镜像个数
-        openstack_disk_count: 0, //云磁盘个数
+        openstack_disk_count: 0, //云硬盘个数
         userAuth_member_count: 0, //当前space成员个数
     };
   },

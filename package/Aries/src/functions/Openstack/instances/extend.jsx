@@ -38,10 +38,10 @@ const Extend = React.createClass({
     return (
       <div>
         <Select ref="type_property" className="type_property">
-          <Option >主机名=</Option>
-          <Option value="status">状态=</Option>
-          <Option value="image">镜像=</Option>
-          <Option value="flavor">类型=</Option>
+          <Option >主机名</Option>
+          <Option value="status">状态</Option>
+          <Option value="image">镜像</Option>
+          <Option value="flavor">类型</Option>
         </Select>
         <SearchInput className="extend_class" placeholder="请" onSearch={this.handleClick} onChange={this.handleChange}
                      size="sm" ref="type_input"/>
@@ -156,7 +156,7 @@ const Create_model_disk = React.createClass({
       } else {
         return (
           <div key={ i }>
-            <FormItem label="数据盘" name={item} className="disk_create">
+            <FormItem label="云硬盘" name={item} className="disk_create">
               <FormInput placeholder="10GB~1TB" ></FormInput><Icon type=" fa-times"
                                                                   onClick={this.create_disk.bind(this, 2, {item}, {i})}/>
             </FormItem>
@@ -169,7 +169,7 @@ const Create_model_disk = React.createClass({
       <div>
         <div>{nav}</div>
         <Icon type="plus-square" onClick={this.create_disk.bind(this, 1)}/><span>您还可选配</span><span
-        className="disk_span">{this.state.disk_number}</span><span>快</span>
+        className="disk_span">{this.state.disk_number}</span><span>块</span>
       </div>
     )
   }
@@ -380,7 +380,7 @@ const Create_model = React.createClass({
         <button className="btn btn-primary" onClick={this.handleOpen}>创建</button>
         <Modal ref="modal">
           <ModalHeader>
-            <h2>云主机创建</h2>
+            <h2>虚拟机创建</h2>
           </ModalHeader>
           <ModalBody className="">
             <div >
@@ -403,7 +403,7 @@ const Create_model = React.createClass({
                     <Col col="md-8">{this.state.host_flavor_name}</Col>
                   </Row>
                   <Row style={{margin: "5px 0px 0px 0px"}}>
-                    <Col col="md-4">cpu</Col>
+                    <Col col="md-4">vCPU</Col>
                     <Col col="md-8">{this.state.host_cpu}</Col>
                   </Row>
                   <Row style={{margin: "5px 0px 0px 0px"}}>
@@ -415,7 +415,7 @@ const Create_model = React.createClass({
                     <Col col="md-8">{this.state.host_image}</Col>
                   </Row>
                   <Row style={{margin: "5px 0px 0px 0px"}}>
-                    <Col col="md-4">磁盘</Col>
+                    <Col col="md-4">云硬盘</Col>
                     <Col col="md-8">
                       {disk}
                     </Col>
