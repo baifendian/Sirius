@@ -68,11 +68,11 @@ export default React.createClass({
         key: 'flavor',
         order: false
       }, {
-        title: '镜像名',
+        title: '镜像',
         key: 'image',
         order: false
       }, {
-        title: 'IP地址',
+        title: '内网IP',
         key: 'ip',
       }, {
         title: '状态',
@@ -111,7 +111,7 @@ export default React.createClass({
       OPEN.open_vnc(this, return_data, this.requestvnc);
     } else {
       if (return_data['console']['url'] == false) {
-        message.danger('vnc故障请联系管理员')
+        message.danger('VNC故障请联系管理员')
         id.setState({loading: false})
       } else {
         this.refs.model_disk.open()
