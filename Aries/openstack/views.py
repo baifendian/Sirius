@@ -16,14 +16,11 @@ from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach
 import time
 from openstack.service import user_login
-
-# from
 from django.views.decorators.csrf import csrf_exempt
 import base64
 from decimal import *
 import json
 import logging
-
 openstack_log = logging.getLogger("openstack_log")
 
 
@@ -125,7 +122,7 @@ def instances(request):
                 for volmes_dict in volumes_list:
                     volumes_name={}
                     volumes_details=volume_s.show_detail(volmes_dict['id'])
-                    if volumes_details['volume']['displayName'] == None:
+                    if not volumes_details['volume']['displayName']:
                         volumes_name['disk_name']=volumes_details['volume']['id']
                     else:
                         volumes_name['disk_name']=volumes_details['volume']['displayName']
@@ -165,6 +162,7 @@ def instances(request):
                                                     int(host_count), int(host_count), disk)
             if host_create != 1:
                 ret['status'] = True
+                openstack_log.info("虚拟机创建:{0}".format(host_create))
             else:
                 ret['status'] = False
         elif host_method == "start":
@@ -364,7 +362,7 @@ def volumes(request):
         volumes_list = volume_s.list_detail()
         for disk in volumes_list['volumes']:
             sys = {}
-            if disk['displayName'] == None:
+            if not disk['displayName']:
                 sys['name'] = disk['id']
             else:
                 sys['name'] = disk['displayName']
@@ -416,6 +414,21 @@ def volumes(request):
                 ret['totalList'].append(sys)
             openstack_log.info(ret)
     json_status = json_data(ret)
+    response = HttpResponse(json_status)
+    response['Access-Control-Allow-Origin'] = '*'
+    response['Content-Type'] = 'application/json'
+    return response
+
+@user_login()
+def instances_log(request,id,line):
+    return_data=''
+    if line=='000':
+        vm_control=Vm_control()
+        return_data=vm_control.get_console_log(id)
+    else:
+        vm_control=Vm_control()
+        return_data=vm_control.get_console_log(id,line)
+    json_status = json_data(return_data)
     response = HttpResponse(json_status)
     response['Access-Control-Allow-Origin'] = '*'
     response['Content-Type'] = 'application/json'
