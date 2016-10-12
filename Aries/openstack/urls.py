@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from openstack.views import instances,create_host,volumes,login,logout,images,flavors
+from openstack.views import instances,create_host,volumes,login,logout,images,flavors,instances_log
 import rests
 
 
@@ -33,4 +33,5 @@ urlpatterns = [
     url(r'^search/$',rests.search.as_view(),name="search"),
     url(r'home/overview/$',rests.overview.as_view(),name="home"),
     url(r'^instances_post/$',rests.instances.as_view(),name='instances_post'),
+    url(r'^instances_log/(?P<id>\S*)/(?P<line>\d*)/$',instances_log,name="instances_log"),
 ]

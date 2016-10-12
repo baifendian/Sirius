@@ -216,7 +216,7 @@ class Snapshot_redact extends Component {
         rules={this.rules} 
         onSuccess={::this.handleSuccess}
       >
-        <FormItem label="云硬盘名称" required name="name">
+        <FormItem label="快照名称" required name="name">
           <FormInput />
         </FormItem>
         <FormItem label="描述" name="desc" help="500个字符以内">
@@ -275,10 +275,10 @@ export default React.createClass({
           const menu = (
             <Menu onClick={this.handleMenuClick.bind(this,component)}>
             { /*<Menu.Item key="Snapshot_redact">编辑快照</Menu.Item>*/}
-              <Menu.Item key="snapshot_delete">删除云盘快照</Menu.Item>
+              <Menu.Item key="snapshot_delete">删除快照</Menu.Item>
             </Menu>
           );
-          return (<Dropdown1.Button onClick={this.handleButtonClick.bind(this,component)} overlay={menu} type="ghost"  trigger={['click']}>编辑云盘</Dropdown1.Button>)
+          return (<Dropdown1.Button onClick={this.handleButtonClick.bind(this,component)} overlay={menu} type="ghost"  trigger={['click']}>编辑快照</Dropdown1.Button>)
         },
       }
       ]

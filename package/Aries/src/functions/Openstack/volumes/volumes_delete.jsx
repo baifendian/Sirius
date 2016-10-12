@@ -68,7 +68,7 @@ const Delete_volumes = React.createClass({
         <Button type="danger" className="btn btn-primary" onClick={this.handleOpen} disabled={this.props.button_statuss}>删除</Button>
         <Modal ref="modal_m">
           <ModalHeader>
-            <h4>确认 删除云磁盘</h4>
+            <h4>确认删除云硬盘</h4>
           </ModalHeader>
           <ModalBody>
             <Form
@@ -84,7 +84,7 @@ const Delete_volumes = React.createClass({
               </div>
               <div>
                 <Button type="danger" style={{marginLeft: '100px'}} className="btn btn-primary"
-                        onClick={this.handleSave}>删除</Button>
+                        onClick={this.handleSave}>确认</Button>
                 <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
               </div>
             </Form>

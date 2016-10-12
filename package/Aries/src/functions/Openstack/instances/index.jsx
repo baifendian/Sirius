@@ -25,6 +25,7 @@ export default React.createClass({
   getInitialState: function () {
     return {
       title_status:'内容加载中',
+      height_log:'',
       text_text: "",
       host_list: [],
       host_list_id: [],
@@ -38,16 +39,17 @@ export default React.createClass({
       url_vnc: "",
       height_h: "",
       button_statuss: true,
+      logs:'',
+      logs_loading:'',
       url: "openstack/bfddashboard/instances/",
       column: [{
         title: '名称',
         order: false,
         render: (text, item) => {
-          let path = "/openstack/" + item['id'] + '/'
           return (
             <div>
               <div>
-                <a href="#">
+                <a  href = "javascript:void(0);" onClick = {this.handleClick.bind(this, item)} >
                   <TextOverflow>
                     <p style={{width: '110px'}}>{text} </p>
                   </TextOverflow>
@@ -66,11 +68,11 @@ export default React.createClass({
         key: 'flavor',
         order: false
       }, {
-        title: '镜像名',
+        title: '镜像',
         key: 'image',
         order: false
       }, {
-        title: 'IP地址',
+        title: '内网IP',
         key: 'ip',
       }, {
         title: '状态',
@@ -91,9 +93,15 @@ export default React.createClass({
     }
   },
   handleClick(item, event) {
-    event = event ? event : window.event;
-    event.stopPropagation();
-    this.refs.modal.open()
+    //event = event ? event : window.event;
+    //event.stopPropagation();
+    //this.refs.modal.open()
+   /* if (this.state.host_desc){
+      this.count_initialization()
+      this.setState({host_desc: ''})
+    }else{
+      this.count_height()
+    }*/
   },
   onPageChange(page) {
   },
@@ -103,7 +111,7 @@ export default React.createClass({
       OPEN.open_vnc(this, return_data, this.requestvnc);
     } else {
       if (return_data['console']['url'] == false) {
-        message.danger('vnc故障请联系管理员')
+        message.danger('VNC故障请联系管理员')
         id.setState({loading: false})
       } else {
         this.refs.model_disk.open()
@@ -209,14 +217,30 @@ export default React.createClass({
     }
   },
   handleRowClick(row) {
-     if (row == this.state.host_desc){
+    if (row == this.state.host_desc){
       this.setState({host_desc: ''})
       this.count_initialization()
      }else{
       this.setState({host_desc: row})
       this.count_height()
-     }
+    }
+    this.getDataConsole(row)
   },
+
+  getDataConsole(row){
+    this.setState({logs_loading:true})
+    let host_id = row['id']
+    let url = OPEN.UrlList()['instances_log']+'/'+host_id+'/30/'
+    OPEN.xhrGetData(this,url,this.xhrCallback)
+  },
+
+  xhrCallback(_this,executedData) {
+    _this.setState({
+      logs: executedData,
+      logs_loading:false
+    })
+  },
+
   handleOrder(name, sort) {
   },
   callback_status(name){
@@ -314,6 +338,7 @@ export default React.createClass({
     let hand_height=ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[2].style.height
     hand_height=hand_height.split('p')[0]-35
     ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes[1].style.height=hand_height+'px'
+    this.setState({height_log:hand_height})
   },
   requestArgs: {
     pageName: "instances",
@@ -339,15 +364,7 @@ export default React.createClass({
             <Button onClick={this.handleOpen.bind(this, 5)}
                     style={{float: "left", margin: '0px 10px 0px 0px'}}>刷新</Button>
             <Create_model _this={this}/>
-            {/*<Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 1)} style={{float: "left"}}>启动</Button>
-            <Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 2)} style={{float: "left"}}>重启</Button>
-            <Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 3)} style={{float: "left"}}>停止</Button>
-            <Button disabled={this.state.button_status} type="danger" onClick={this.handleOpen.bind(this, 4)}
-                    style={{float: "left"}}>删除</Button>*/}
             <Disk_model vm_list={this.state.select_all} ref="model_model" handleOpen={this.handleOpen} _this={this} button_status={this.state.button_status} button_statuss={this.state.button_statuss}/>
-            {/*<div style={{float: 'right'}}>
-             <Extend _this={this}/>
-             </div>*/}
             <Modal ref="modal">
               <ModalHeader>
                 <h4>{this.state.host_status}</h4>
@@ -395,7 +412,7 @@ export default React.createClass({
                 </div>
               </SubSplitPanel>
               <SubSplitPanel ref="SubSplitPanel_t">
-                <Tabs_List host_desc={this.state.host_desc} ref="Tabs_list"/>
+                <Tabs_List host_desc={this.state.host_desc} height_log={this.state.height_log} logs={this.state.logs} _this={this} ref="Tabs_list"/>
               </SubSplitPanel>
             </SplitPanel>
           </div>

@@ -166,8 +166,9 @@ const Backup_disk = React.createClass({
           onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
-          <div><h4>此云硬盘已加载到虚拟机。在某些情况下，从已加载的云硬盘上做备份会导致备份损坏的情况。</h4></div>
-          <div><h4>推荐卸载云硬盘后做备份。</h4></div>
+          <div>当你对正在运行的虚拟机或者已经绑定的云硬盘做在线备份时，需要注意以下几点：</div>
+          <div>1. 快照只能捕获在快照任务开始时已经写入磁盘的数据，不包括当时位于缓存里的数据。</div>
+          <div>2. 为了保证数据的完整性，先停止虚拟机或解绑云硬盘，进行离线快照。</div>
           <FormItem label="备份名称" required name="name">
             <FormInput style={{width: '200px'}}></FormInput>
           </FormItem>
@@ -273,7 +274,7 @@ const Uninstall_disk = React.createClass({
           onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
-          <div><h4>当前链接虚拟机</h4></div>
+          <div>注意：卸载云硬盘之前，请确保该云硬盘在主机的操作系统中处于未挂载状态 (unmounted)。</div>
           <DataTable
             url={this.state.url}
             showPage="false"
@@ -389,6 +390,7 @@ const Loading_disk = React.createClass({
           onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
+          <div>注意：如果你需要在Linux系统启动时自动挂载硬盘，请不要使用在 /etc/fstab 中直接指定 /dev/sdc1 这样的写法， 因为在云中设备的顺序编码在关机、开机过程中可能发生改变，推荐使用 UUID 或者 LABEL 的方式来指定。</div>
           <FormItem label="加载到" name="brand">
             <Select searchable name="host1" ref="select">
               <Option>请选择</Option>
@@ -502,11 +504,11 @@ const Model_list = React.createClass({
   },
   values(){
     return {
-      'Redact': "编辑云盘",
+      'Redact': "编辑云硬盘",
       'Extend': "扩展云硬盘",
-      'Loading_disk': "加载云磁盘",
-      'Uninstall_disk': "卸载云磁盘",
-      'Backup_disk': '创建备份'
+      'Loading_disk': "加载云硬盘",
+      'Uninstall_disk': "卸载云硬盘",
+      'Backup_disk': '创建快照'
     }
   },
   modulevalue(){
@@ -562,9 +564,9 @@ const Model_list = React.createClass({
       <Menu onClick={this.handleMenuClick}>
         <Menu.Item key="Redact" disabled={this.props.button_status}>编辑云硬盘</Menu.Item>
         <Menu.Item key="Extend" disabled={this.props.button_status}>扩展云硬盘</Menu.Item>
-        <Menu.Item key="Loading_disk" disabled={this.props.button_status}>加载硬盘</Menu.Item>
-        <Menu.Item key="Uninstall_disk" disabled={this.props.button_status}>卸载硬盘</Menu.Item>
-        <Menu.Item key="Backup_disk" disabled={this.props.button_status}>创建备份</Menu.Item>
+        <Menu.Item key="Loading_disk" disabled={this.props.button_status}>加载云硬盘</Menu.Item>
+        <Menu.Item key="Uninstall_disk" disabled={this.props.button_status}>卸载云硬盘</Menu.Item>
+        <Menu.Item key="Backup_disk" disabled={this.props.button_status}>创建快照</Menu.Item>
       </Menu>
     )
     return (

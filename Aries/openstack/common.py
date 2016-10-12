@@ -31,7 +31,7 @@ def volumes_deal(host,disk_list,volumes_id):
             volumes_name = {}
             volumes_details = volume_s.show_detail(volmes_dict['id'])
             if volumes_id != volumes_details['volume']['id']:
-                if volumes_details['volume']['displayName'] == None:
+                if not volumes_details['volume']['displayName']:
                     volumes_name['disk_name'] = volumes_details['volume']['id']
                 else:
                     volumes_name['disk_name'] = volumes_details['volume']['displayName']

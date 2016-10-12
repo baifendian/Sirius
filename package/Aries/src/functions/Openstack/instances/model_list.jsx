@@ -27,12 +27,12 @@ const Disk_list = React.createClass({
       disk_list: this.props.disk_list,
       disk_object: this.props.disk_object,
       loading: false,
-      column: [{ title: '磁盘名', order: false, key: 'disk_name'},
+      column: [{ title: '云硬盘名', order: false, key: 'disk_name'},
               {  title: '盘符',   order: false , key: 'device',},
               {  title: '大小',   order: false , key: 'size',},
               {  title: '操作',   order: false , key: 'operation',
               render: (text, item)=> {
-                  return <a href = "javascript:void(0);" onClick = {this.handleClick.bind(this, text)}>卸载云盘</a>
+                  return <a href = "javascript:void(0);" onClick = {this.handleClick.bind(this, text)}>卸载云硬盘</a>
               }
             }],
      }
@@ -121,16 +121,16 @@ const Disk_list = React.createClass({
               message: '添加成功',
               description: '磁盘' + data['totalList'][i]['volumename'] + '已连接到了虚拟机' + data['totalList'][i]['servername'] + ',磁盘盘符是' + data['totalList'][i]['device'],
             });*/
-            message.success('挂载成功')
+            message.success('加载成功')
           }else{
-            message.danger('挂载失败')
+            message.danger('加载失败')
           }
         }
       },
       error() {
         self.props._this.refs.model_disk.close()
         self.setState({loading: false})
-        notification['error']({message: '异常', description: '请检查虚拟机跟磁盘',});
+        notification['error']({message: '异常', description: '请检查虚拟机和云硬盘',});
       }
     })
 
@@ -155,7 +155,7 @@ const Disk_list = React.createClass({
       <Spin size="large" spinning={this.state.loading}>
         <div>
           <div>
-              <div></div>
+              <div>注意：卸载云硬盘之前，请确保该云硬盘在主机的操作系统中处于未挂载状态 (unmounted)。</div>
               <DataTable
                 data={data}
                 showPage="false"
@@ -168,11 +168,11 @@ const Disk_list = React.createClass({
           <div style={{border: '1px solid #2196f3', margin: '0px 0px 28px 0px'}}></div>
           <div style={{"margin-top": "10px"}}>
             <Row>
-              <span>挂载云硬盘</span>
+              <span>加载云硬盘</span>
             </Row>
           </div>
           <div style={{"margin-top": "10px"}} >
-            <span>选择磁盘:</span>
+            <span>选择云硬盘:</span>
             <MultipleSelect onChange={this.handleChange} style={{'margin-left': '22px'}} ref="select_t">
               {disk_display}
             </MultipleSelect>
@@ -390,10 +390,10 @@ const Vm_image = React.createClass({
     for (var i in res) {
       if (res[i] == true) {
         OPEN.update_url(this.props.self, "instances")
-        message.success('修改成功！')
+        message.success('重置成功！')
         this.props.self.setState({title_status:'正在重置'})
       } else {
-        message.success('修改失败！')
+        message.success('重置失败！')
       }
     }
   },
@@ -610,7 +610,7 @@ const Disk_model = React.createClass({
       <Menu onClick={this.handleMenuClick} style={{"text-align":"center"}}>
         <Menu.Item key="1" disabled={this.props.button_status} >启动</Menu.Item>
         <Menu.Item key="2" disabled={this.props.button_status}>重启</Menu.Item>
-        <Menu.Item key="3" disabled={this.props.button_status}>关闭</Menu.Item>
+        <Menu.Item key="3" disabled={this.props.button_status}>关机</Menu.Item>
         <Menu.Item key="Vm_Backup" disabled={this.props.button_statuss}>创建备份</Menu.Item>
         <Menu.Item key="Disk_list" disabled={this.props.button_statuss}>管理云硬盘</Menu.Item>
         <Menu.Item key="Vm_Type" disabled={this.props.button_statuss}>更改配置</Menu.Item>

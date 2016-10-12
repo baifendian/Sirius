@@ -11,6 +11,107 @@ import {Row, Col} from 'bfd/Layout'
 import echarts from 'echarts'
 import {Timeline} from 'antd'
 import TextOverflow from 'bfd/TextOverflow'
+import update from 'react-update'
+import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
+import {Component} from 'react'
+import Input from 'bfd/Input'
+import ReactDOM from 'react-dom'
+
+class Show_log extends Component {
+  constructor(props) {
+    super()
+    this.update = update.bind(this)
+    this.state = {
+      formData: {
+        brand: 0
+      },
+      logs: '',
+      count:'30',
+      height: '',
+      id:''
+    }
+  }
+
+  shouldComponentUpdate(nextProps,nextState){
+    /*注释部分代码暂时保存以后可能会用到*/
+   /* if (nextProps.host_desc === this.props.host_desc){
+    }else{
+      this.get_count(nextProps.host_desc['id'],30)
+    }*/
+    if (nextProps.height_log !== this.props.height_log){
+      this.height_log(nextProps.height_log)
+    }
+    return true
+  }
+
+ /* componentWillReceiveProps(nextProps){
+    if (nextProps.host_desc !== this.props.host_desc){
+      //this.setState({count:30})
+      this.setState({logs:'tesxaaas'})
+      this.get_count(nextProps.host_desc['id'],30)
+    }
+  }*/
+
+  xhrCallback(_this, executedData) {
+    _this.props._self.setState({
+      logs: executedData,
+      logs_loading:false
+    })
+  }
+
+  handleChange(value){
+    this.setState({count:value.target.value})
+  }
+
+  componentWillMount(){
+    this.get_all()
+  }
+
+  componentDidMount(){
+    ReactDOM.findDOMNode(this.refs.textarea_t).style.width=(ReactDOM.findDOMNode(this.refs.host_width).clientWidth-10)+'px'
+  }
+
+  height_log(height_t){
+    ReactDOM.findDOMNode(this.refs.textarea_t).style.height=(height_t-50)+'px'
+  }
+
+  get_count(id,count){
+    this.props._self.setState({logs_loading:true})
+    let host_id = this.props.host_desc['id']
+    let url = OPEN.UrlList()['instances_log']+'/'+host_id+'/'+count+'/'
+    OPEN.xhrGetData(this,url,this.xhrCallback)
+  }
+
+  get_all(){
+    this.props._self.setState({logs_loading:true})
+    let host_id = this.props.host_desc['id']
+    let url = OPEN.UrlList()['instances_log']+'/'+host_id+'/000/'
+    OPEN.xhrGetData(this,url,this.xhrCallback)
+  }
+
+  render(){
+    let logs=this.props.logs['output']
+    let host_id=this.props.host_desc['id']
+    let count=this.state.count
+    const { formData } = this.state
+    return (
+      <Spin spinning={this.props._self.state.logs_loading}>
+      <div ref="host_width">
+        <Row >
+          <Col col="md-6">
+            <span style={{margin:'10px',fontSize:'22px'}}>云主机控制台日志</span>
+          </Col>
+          <Col col="md-6">
+            <Input placeholder="请输入日志长度" onChange={::this.handleChange}/><Button onClick={::this.get_count.bind(this,host_id,count)} >查询</Button><Button onClick={::this.get_all}>完整日志</Button>
+          </Col>
+        </Row>
+        <textarea value={logs} style={{padding:'5px 0px 0px 15px',marginLeft:"10px"}} ref="textarea_t" >
+        </textarea>
+      </div>
+      </Spin>
+    )
+  }
+}
 
 
 const Host_Timeline = React.createClass({
@@ -39,102 +140,103 @@ const Host_Timeline = React.createClass({
 
 
 const Echarts_s = React.createClass({
-  componentDidMount(){
-    var myChart = echarts.init(document.getElementById('echarts1'));
-    var base = +new Date(1968, 9, 3);
-    var oneDay = 24 * 3600 * 1000;
-    var date = [];
-
-    var data = [Math.random() * 300];
-
-    for (var i = 1; i < 20000; i++) {
-      var now = new Date(base += oneDay);
-      date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
-      data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
+  getInitialState: function () {
+    return {
+      cpu_data:{},
+      mem:{},
+      dom_id:['echarts_cpu','echarts_mem','echarts_disk'],
     }
-    myChart.setOption({
-      tooltip: {
-        trigger: 'axis',
-        position: function (pt) {
-          return [pt[0], '10%'];
-        }
-      },
-      title: {
-        left: 'center',
-        text: '内存展示',
-      },
-      legend: {
-        top: 'bottom',
-        data: ['意向']
-      },
-      toolbox: {
-        feature: {
-          dataZoom: {
-            yAxisIndex: 'none'
-          },
-          restore: {},
-          saveAsImage: {}
-        }
-      },
-      xAxis: {
-        type: 'category',
-        boundaryGap: false,
-        data: date
-      },
-      yAxis: {
-        type: 'value',
-        boundaryGap: [0, '100%']
-      },
-      dataZoom: [{
-        type: 'inside',
-        start: 0,
-        end: 10
-      }, {
-        start: 0,
-        end: 10,
-        handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
-        handleSize: '80%',
-        handleStyle: {
-          color: '#fff',
-          shadowBlur: 3,
-          shadowColor: 'rgba(0, 0, 0, 0.6)',
-          shadowOffsetX: 2,
-          shadowOffsetY: 2
-        }
-      }],
-      series: [
-        {
-          name: '模拟数据',
-          type: 'line',
-          smooth: true,
-          symbol: 'none',
-          sampling: 'average',
-          itemStyle: {
-            normal: {
-              color: 'rgb(255, 70, 131)'
-            }
-          },
-          areaStyle: {
-            normal: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-                offset: 0,
-                color: 'rgb(255, 158, 68)'
-              }, {
-                offset: 1,
-                color: 'rgb(255, 70, 131)'
-              }])
-            }
-          },
-          data: data
-        }
-      ]
-    });
-
   },
-  render(){
 
+  dataManage(_this,data) {
+    let legend=[]
+    let xaxis=[]
+    let option={}
+    let series=[]
+    let keys_d=''
+    Object.keys(data).map((keys,item)=>{
+      if (keys!='date'){
+        for (let i in data[keys]){
+          legend.push(data[keys][i]['legend'])
+          let series_s=this.series_t(data[keys][i]['legend'],data[keys][i]['data'])
+          series.push(series_s)
+        }
+        keys_d=keys
+      }
+    })
+
+    let dom_id=echarts.init(document.getElementById(keys_d))
+    dom_id.setOption(
+    { tooltip : { trigger: 'axis' },
+      legend: { data: legend },
+      calculable : true,
+      xAxis : [
+        {
+          type : 'category',
+          boundaryGap : false,
+          data : data['date']
+        }
+      ],
+      yAxis : [
+        {
+          type : 'value',
+          axisLabel : {
+            formatter: '{value} k'
+          }
+        }
+      ],
+      series : series})
+  },
+
+  series_t(lineName,dataArr ){
+    let obj = {
+      type: 'line',
+      itemStyle: {normal: {areaStyle: {type: 'default'}}},    
+      name: lineName,
+      data: dataArr
+    }
+    return obj
+  },
+
+  initData(){
+    Object.keys(this.dom_id()).map((key,item)=>{
+      OPEN.Get_instances_cpu(this,this.dom_id()[key],this.dataManage)
+    })
+  },
+
+  dom_id(){
+    return {
+      'CPU':'cpu_monitor',
+      'MEM':'mem_monitor'
+    }
+  },
+
+  componentDidMount(){
+    this.initData()
+  },
+
+  render(){
+    let monitor_list = [
+      [{ 'name':'cpu','id':'cpu_monitor'},{ 'name':'内存','str':'mem_monitor'}]
+    ]
+
+    let return_monitor = monitor_list.map((keys,item)=>{
+
+    })
     return (
-      <div id="echarts1" style={{height: '400px'}}>
+      <div>
+        <Row>
+          <Col col="md-6">
+            <h4>CPU</h4>
+            <div id="cpu_monitor" style={{height: '400px'}}>
+            </div>
+          </Col>
+          <Col col="md-6">
+            <h4>内存</h4>
+            <div id="mem_monitor" style={{height: '400px'}}>
+            </div>
+          </Col>
+        </Row>
       </div>
     )
   }
@@ -208,6 +310,13 @@ const Host_details = React.createClass({
 })
 
 const Tabs_List = React.createClass({
+  getInitialState: function () {
+    return {
+      id:'',
+      logs:'',
+    }
+  },
+
   render() {
     return (
       <Tabs >
@@ -227,7 +336,9 @@ const Tabs_List = React.createClass({
         <TabPanel>
           <Echarts_s/>
         </TabPanel>
-        <TabPanel>启动日志</TabPanel>
+        <TabPanel>
+          <Show_log host_desc={this.props.host_desc} height_log={this.props.height_log} logs={this.props.logs} ref="show_logs" _self={this.props._this}/>
+        </TabPanel>
         </div>
       </Tabs>
 

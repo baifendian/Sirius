@@ -271,16 +271,16 @@ const conf = {
         }]
       },
       volumes: {
-        headText: "云磁盘",
+        headText: "云硬盘",
         navigationTexts: [{
-          text: "云磁盘",
+          text: "云硬盘",
           url: "/CloudHost/Storage/Volumes?cur_space=${spaceName}"
         }]
       },
       backup: {
-        headText: "备份",
+        headText: "快照",
         navigationTexts: [{
-          text: "备份",
+          text: "快照",
           url: "/CloudHost/Storage/Backup?cur_space=${spaceName}"
         }]
       },
