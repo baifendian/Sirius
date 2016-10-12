@@ -42,9 +42,9 @@ print SETTINGS
 SECRET_KEY = '4q+z5arz(+!__dtzxpn*n7g@3w0s7x)xtr+v!ts9m!-vzp=^)4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 APPEND_SLASH=False
 # Application definition
 INSTALLED_APPS = (
