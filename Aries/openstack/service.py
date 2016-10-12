@@ -373,7 +373,6 @@ def vmdisk_show(request):
 
 @user_login()
 def snapshot_create(request):
-    print request.POST
     ret={}
     name=request.POST.get('name')
     snapshot=request.POST.get('snapshot')
@@ -383,6 +382,34 @@ def snapshot_create(request):
     snapshot_id=request.POST.get('id')
     volume=Volume()
     return_data=volume.create(size=size,name=name,des=desc,snapshot_id=snapshot_id,)
+    if return_data != 1:
+        ret['status']=True
+    else:
+        ret['status']=False
+    ret = json_data(ret)
+    return ret
+
+@user_login()
+def snapshot_delete(request):
+    ret={}
+    snapshot_id=request.POST.get('id')
+    volume_snaps=Volume_snaps()
+    return_data=volume_snaps.delete(snapshot_id)
+    if return_data != 1:
+        ret['status'] = True
+    else:
+        ret['status'] = False
+    ret = json_data(ret)
+    return ret
+
+@user_login()
+def snapshot_redact(request):
+    ret={}
+    snapshot_id=request.POST.get('id')
+    snapshot_name=request.POST.get('name')
+    snapshot_desc=request.POST.get('desc')
+    volume_snaps = Volume_snaps()
+    return_data=volume_snaps.change(snapshot_id,des=snapshot_desc,name=snapshot_name)
     if return_data != 1:
         ret['status']=True
     else:
@@ -408,5 +435,7 @@ Methods = {
         'instances_backup': instances_backup,
         'vm_uninstall': vm_uninstall,
         'snapshot_create':snapshot_create,
+        'snapshot_delete':snapshot_delete,
+        'snapshot_redact':snapshot_redact,
     }
 }

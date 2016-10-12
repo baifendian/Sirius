@@ -44,6 +44,7 @@ class Create_disk extends Component {
     formData['name']=snapshot['displayName']
     formData['snapshot']=0
     formData['type']=0
+    formData['desc']=snapshot['displayDescription']
     formData['size']=snapshot['size'].toString()
     this.setState({formData})
   }
@@ -53,6 +54,8 @@ class Create_disk extends Component {
   }
 
   handleSuccess(res) {
+    this.props.self.refs.modal.close()
+    this.props.refresh()
     if (res['status']){
       message.success('创建成功')
     }else{
@@ -62,12 +65,9 @@ class Create_disk extends Component {
   }
 
   render() {
-   // let formData1=this.props.formData
-    //formData1['id']=this.props.snapshot['id']
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
     let snapshot=this.props.snapshot['displayName']
-  //  this.setState({formData:formData1})
     return (
       <Form 
         action={url}
@@ -76,7 +76,7 @@ class Create_disk extends Component {
         rules={this.rules} 
         onSuccess={::this.handleSuccess}
       >
-        <FormItem label="云盘名称" required name="name">
+        <FormItem label="云硬盘名称" required name="name">
           <FormInput />
         </FormItem>
         <FormItem label="快照源" name="snapshot">
@@ -90,13 +90,14 @@ class Create_disk extends Component {
             <Option value={1}>ceph</Option>
           </FormSelect>
         </FormItem>
-        <FormItem label="云盘大小" required name="size">
+        <FormItem label="云硬盘大小" required name="size">
           <FormInput />
         </FormItem>
         <FormItem label="描述" name="desc" help="500个字符以内">
           <FormTextarea style={{width: "260px"}}/>
         </FormItem>
-        <FormSubmit>创建</FormSubmit>
+        <FormSubmit>确定</FormSubmit>
+         <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.props.modalClose}>取消</button>
       </Form>
     )
   }
@@ -104,6 +105,60 @@ class Create_disk extends Component {
 
 
 class Snapshot_delete extends Component {
+  constructor(props) {
+    super()
+    this.update = update.bind(this)
+    this.state = {
+      formData: {
+        method: 'snapshot_delete'
+      }
+    }
+  }
+
+  componentWillMount(){
+    let snapshot=this.props.snapshot
+    let formData=this.state.formData
+    formData['id']=snapshot['id']
+    formData['name']=snapshot['displayName']
+    this.setState({formData})
+  }
+
+  handleDateSelect(date) {
+    this.update('set', 'formData.date', date)
+  }
+
+  handleSuccess(res) {
+    this.props.self.refs.modal.close()
+    this.props.refresh()
+    if (res['status']){
+      message.success('删除成功')
+    }else{
+      message.success('删除失败')
+    }
+    
+  }
+
+  render() {
+    const { formData } = this.state
+    let url=OPEN.UrlList()['volumes_post']
+    let snapshot=this.props.snapshot['displayName']
+    return (
+      <Form 
+        action={url}
+        data={formData} 
+        onChange={formData => this.update('set', { formData })}
+        rules={this.rules} 
+        onSuccess={::this.handleSuccess}
+      >
+        <div style={{height: '100px'}}><h4>确定要删除快照"{snapshot}"?</h4></div>
+        <FormSubmit>确定</FormSubmit>
+        <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.props.modalClose}>取消</button>
+      </Form>
+    )
+  }
+}
+
+class Snapshot_redact extends Component {
   constructor(props) {
     super()
     this.update = update.bind(this)
@@ -119,7 +174,7 @@ class Snapshot_delete extends Component {
     }
     this.state = {
       formData: {
-        method: 'snapshot_create'
+        method: 'snapshot_redact'
       }
     }
   }
@@ -130,9 +185,7 @@ class Snapshot_delete extends Component {
     let formData=this.state.formData
     formData['id']=snapshot['id']
     formData['name']=snapshot['displayName']
-    formData['snapshot']=0
-    formData['type']=0
-    formData['size']=snapshot['size'].toString()
+    formData['desc']=snapshot['displayDescription']
     this.setState({formData})
   }
 
@@ -141,21 +194,20 @@ class Snapshot_delete extends Component {
   }
 
   handleSuccess(res) {
+    this.props.self.refs.modal.close()
+    this.props.refresh()
     if (res['status']){
-      message.success('创建成功')
+      message.success('修改成功')
     }else{
-      message.success('创建失败')
+      message.success('修改失败')
     }
     
   }
 
   render() {
-   // let formData1=this.props.formData
-    //formData1['id']=this.props.snapshot['id']
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
     let snapshot=this.props.snapshot['displayName']
-  //  this.setState({formData:formData1})
     return (
       <Form 
         action={url}
@@ -164,12 +216,19 @@ class Snapshot_delete extends Component {
         rules={this.rules} 
         onSuccess={::this.handleSuccess}
       >
-        <span>删除{snapshot}</span>
-        <FormSubmit>删除</FormSubmit>
+        <FormItem label="云硬盘名称" required name="name">
+          <FormInput />
+        </FormItem>
+        <FormItem label="描述" name="desc" help="500个字符以内">
+          <FormTextarea style={{width: "260px"}}/>
+        </FormItem>
+        <FormSubmit>确定</FormSubmit>
+         <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.props.modalClose}>取消</button>
       </Form>
     )
   }
 }
+
 
 
 export default React.createClass({
@@ -215,52 +274,54 @@ export default React.createClass({
         render: (item, component) => {
           const menu = (
             <Menu onClick={this.handleMenuClick.bind(this,component)}>
-              <Menu.Item key="1">编辑快照</Menu.Item>
+            { /*<Menu.Item key="Snapshot_redact">编辑快照</Menu.Item>*/}
               <Menu.Item key="snapshot_delete">删除云盘快照</Menu.Item>
             </Menu>
           );
-          return (<Dropdown1.Button onClick={this.handleButtonClick.bind(this,component)} overlay={menu} type="ghost"  trigger={['click']}>创建云硬盘</Dropdown1.Button>)
+          return (<Dropdown1.Button onClick={this.handleButtonClick.bind(this,component)} overlay={menu} type="ghost"  trigger={['click']}>编辑云盘</Dropdown1.Button>)
         },
       }
       ]
     }
   },
-  handleOpen(name) {
-    //console.log(this.state.images_list)
-  },
-
-  handleRowClick(row) {
-  //  this.setState({snapshot:row})
-  },
 
   handleButtonClick(e) {
-   // this.setState({snapshot:e})
     this.refs.modal.open()
-    let title=this.values()['create_disk']
+    /*let title=this.values()['create_disk']
     let modal=this.modulevalue(e)['create_disk']
-    console.log(title,modal)
+    this.setState({title,modal})*/
+    let title=this.values()['Snapshot_redact']
+    let modal=this.modulevalue(e)['Snapshot_redact']
     this.setState({title,modal})
   },
 
   handleMenuClick(e,event) {
-    console.log(e,'1111111')
-    console.log(event,'1111111')
     this.refs.modal.open()
     let title=this.values()[event['key']]
     let modal=this.modulevalue(e)[event['key']]
     this.setState({title,modal})
   },
 
+  refresh(){
+    let url=OPEN.UrlList()['volumes_post'] + '?name=backup'+'&wd='+Math.random()
+    this.setState({url})
+  },
+
+  modalClose(){
+    this.refs.modal.close()
+  },
    values(){
     return {
       'create_disk': "创建云硬盘",
-       'snapshot_delete': "删除云硬盘"
+       'snapshot_delete': "删除云硬盘",
+       'Snapshot_redact': "编辑快照"
     }
   },
   modulevalue(e){
     return {
-      'create_disk': <Create_disk snapshot={e}/>,
-      'snapshot_delete': <Snapshot_delete snapshot={e}/>,
+      'create_disk': <Create_disk snapshot={e} self={this} refresh={this.refresh} modalClose={this.modalClose}/>,
+      'snapshot_delete': <Snapshot_delete snapshot={e} self={this} refresh={this.refresh} modalClose={this.modalClose}/>,
+      'Snapshot_redact': <Snapshot_redact snapshot={e} self={this} refresh={this.refresh} modalClose={this.modalClose}/>
     }
   },
 
@@ -305,7 +366,7 @@ export default React.createClass({
         })}/>
         <Spin spinning={this.state.loading}>
           <div ref="backup_bu">
-            <Button onClick={this.handleOpen.bind(this, 5)} style={{margin: '0px 10px 0px 0px'}}>刷新</Button>
+            <Button onClick={this.refresh} style={{margin: '0px 10px 0px 0px'}}>刷新</Button>
           </div>
           <div className="DataTableFatherDiv_backup">
             <DataTable
