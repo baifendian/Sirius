@@ -212,9 +212,13 @@ def volumes_backup_get(request):
         sys['status'] = i['status']
         sys['volume_name'] = volume.show_detail(i['volumeId'])['volume']['displayName']
         ret['totalList'].append(sys)
-
     ret = json_data(ret)
     return ret
+
+def volumes_backup_t(request):
+    print request.GET
+    print '111111111111111'
+    pass
 
 @user_login()
 def openstack_project(request):
@@ -416,6 +420,7 @@ Methods = {
     "GET": {
         "instances": instances,
         "backup": volumes_backup_get,
+        "backup_t": volumes_backup_t,
         "instances_search": instances_search,
         "vmdisk_show": vmdisk_show,
         "cpu_monitor": cpu_monitor,

@@ -154,6 +154,11 @@ export default render((
               cb(null, require('./functions/Openstack/volumes/backup').default)
             })
           }}/>
+          <Route path="Backup_t" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Openstack/volumes/backup_t').default)
+            })
+          }}/>
         </Route>
         <Route path="Manage">
           <Route path="Project" getComponent={(location, cb) => {
