@@ -166,7 +166,7 @@ const Backup_disk = React.createClass({
           onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
-          <div>当你对正在运行的虚拟机或者已经绑定的云硬盘做在线备份时，需要注意以下几点：</div>
+          <div>当你对正在运行的虚拟机或者已经绑定的云硬盘做在线快照时，需要注意以下几点：</div>
           <div>1. 快照只能捕获在快照任务开始时已经写入磁盘的数据，不包括当时位于缓存里的数据。</div>
           <div>2. 为了保证数据的完整性，先停止虚拟机或解绑云硬盘，进行离线快照。</div>
           <FormItem label="备份名称" required name="name">
