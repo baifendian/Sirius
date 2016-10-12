@@ -1,12 +1,5 @@
-import React, { Component } from 'react';
-import PureRenderMixin from 'react-addons-pure-render-mixin';
 
-import findAllByType from 'bfd-ui/lib/findAllByType.js'
-import Toolkit from 'public/Toolkit/index.js'
-
-import './index.less'
-
-
+import React from 'react';
 
 /**
  * 为了尽可能地提供较多的特性，heightProp 这个字符串包含了较多含义。它可能是以下值：
