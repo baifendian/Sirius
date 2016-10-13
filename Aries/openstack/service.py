@@ -4,7 +4,7 @@ from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
 from common import json_data,volumes_deal,time_handle,size_handle
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
-from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps
+from openstack.middleware.volume.volume import Volume, Volume_attach,Volume_snaps
 from django.http import HttpResponse
 import json
 import logging
@@ -176,7 +176,7 @@ def volumes_uninstall(request):
     return ret
 
 @user_login()
-def volumes_backup(request):
+def volumes_snapshot(request):
     ret = {}
  #   login()
     name = request.POST.get('name')
@@ -206,6 +206,7 @@ def volumes_backup_get(request):
     ret['totalList'] = []
     for i in volume_snaps.list_detail()['snapshots']:
         sys = {}
+        sys['id']=i['id']
         sys['displayName'] = i['displayName']
         sys['displayDescription'] = i['displayDescription']
         sys['size'] = i['size']
@@ -336,9 +337,8 @@ def instances_search(request):
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def vm_uninstall(request):
-    login()
     ret = {}
     data = eval(request.POST.get('data'))
     host_id = data['host_id']
@@ -361,14 +361,60 @@ def vm_uninstall(request):
     ret = json_data(ret)
     return ret
 
-
+@user_login()
 def vmdisk_show(request):
-    login()
     ret = {}
     vm_id = request.GET.get('id')
     vm_manage = Vm_manage()
     vm_details = vm_manage.show_detail(vm_id)['server']
     ret['disk_list'] = volumes_deal(vm_details['name'], vm_details, vm_id)
+    ret = json_data(ret)
+    return ret
+
+
+@user_login()
+def snapshot_create(request):
+    ret={}
+    name=request.POST.get('name')
+    snapshot=request.POST.get('snapshot')
+    desc=request.POST.get('desc')
+    type=request.POST.get('type')
+    size=request.POST.get('size')
+    snapshot_id=request.POST.get('id')
+    volume=Volume()
+    return_data=volume.create(size=size,name=name,des=desc,snapshot_id=snapshot_id,)
+    if return_data != 1:
+        ret['status']=True
+    else:
+        ret['status']=False
+    ret = json_data(ret)
+    return ret
+
+@user_login()
+def snapshot_delete(request):
+    ret={}
+    snapshot_id=request.POST.get('id')
+    volume_snaps=Volume_snaps()
+    return_data=volume_snaps.delete(snapshot_id)
+    if return_data != 1:
+        ret['status'] = True
+    else:
+        ret['status'] = False
+    ret = json_data(ret)
+    return ret
+
+@user_login()
+def snapshot_redact(request):
+    ret={}
+    snapshot_id=request.POST.get('id')
+    snapshot_name=request.POST.get('name')
+    snapshot_desc=request.POST.get('desc')
+    volume_snaps = Volume_snaps()
+    return_data=volume_snaps.change(snapshot_id,des=snapshot_desc,name=snapshot_name)
+    if return_data != 1:
+        ret['status']=True
+    else:
+        ret['status']=False
     ret = json_data(ret)
     return ret
 
@@ -427,9 +473,12 @@ Methods = {
         "amend": volumes_amend,
         'Loading_disk': volumes_host,
         'uninstall': volumes_uninstall,
-        'backup': volumes_backup,
+        'snapshot': volumes_snapshot,
         'Redact': volumes_Redact,
         'instances_backup': instances_backup,
         'vm_uninstall': vm_uninstall,
+        'snapshot_create':snapshot_create,
+        'snapshot_delete':snapshot_delete,
+        'snapshot_redact':snapshot_redact,
     }
 }
