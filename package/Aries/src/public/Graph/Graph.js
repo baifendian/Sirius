@@ -41,18 +41,26 @@ var Graph = React.createClass({
 
     // Options
     var options = {
-      layout: {
-        improvedLayout: true,
-        hierarchical: {
-          levelSeparation: 150,
-          nodeSpacing: 180,
-          treeSpacing: 100,
-          direction: "UD",
-          sortMethod: "hubsize",
-          //blockShifting: true,
-          //edgeMinimization: true,
-          parentCentralization: true,
+      nodes: {
+        shape: 'dot',
+        scaling: {
+          min: 10,
+          max: 30
+        },
+        font: {
+          size: 30,
+          face: 'Tahoma'
         }
+      },
+      edges: {
+        width: 0.15,
+        color: {
+          inherit: 'from'
+        },
+        smooth: {
+          type: 'continuous'
+        },
+        arrows: "to",
       },
       interaction: {
         dragNodes: true,
@@ -60,21 +68,20 @@ var Graph = React.createClass({
         keyboard: true,
       },
       physics: {
-        enabled: false
+        stabilization: false,
+        barnesHut: {
+          gravitationalConstant: -60000,
+          springConstant: 0.0008,
+          springLength: 800,
+        }
       },
-      edges: {
-        color: '#000000',
-        width: 0.5,
-        //arrowScaleFactor: 100,
-        //style: "arrow",
-        arrows: "to",
-        dashes: false,
-      },
-      nodes: {
-        shape: 'dot',
-      },
+      interaction: {
+        tooltipDelay: 200,
+        dragNodes: true,
+        navigationButtons: true,
+        hideEdgesOnDrag: true
+      }
     };
-
     var network = new vis.Network(container, this.props.graph, options);
   }
 
