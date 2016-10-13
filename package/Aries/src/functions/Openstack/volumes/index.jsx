@@ -194,6 +194,7 @@ const Progress_model = React.createClass({
     return {
       percent: 0,
       status: false,
+      status_s: this.props.text['status'],
     };
   },
 
@@ -207,7 +208,7 @@ const Progress_model = React.createClass({
       async:false,
       success(data) {
         if (data['status'] != 'backing-up' && data['status'] != 'restoring-backup') {
-            _this.setState({status:data['status']})
+            _this.setState({status:true,status_s:data['status']})
             clearTimeout(interval)
         }
     }
@@ -225,10 +226,10 @@ const Progress_model = React.createClass({
     if (this.state.status){
     return (
       <div>
-        <span>{this.state.status}</span>
+        <span>{this.state.status_s}</span>
       </div>
     )}else{
-      if (this.state.status == 'restoring-backup'){
+      if (this.state.status_s != 'restoring-backup'){
       return (
       <div>
         <Progress percent={100} showInfo={false} style={{width:'50%'}}/><div>创建备份</div>

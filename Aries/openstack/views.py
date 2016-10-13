@@ -382,6 +382,8 @@ def volumes(request):
                 sys['name'] = disk['displayName']
             sys['id'] = disk['id']
             sys['size'] = disk['size']
+            if disk['status'] == 'deleting':
+                continue
             sys['status']=disk['status']
             sys['voumetype'] = 'ceph'
             sys['created'] = time_handle(disk['createdAt'])

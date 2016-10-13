@@ -14,8 +14,95 @@ import update from 'react-update'
 import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
 import {Component} from 'react'
 import message from 'bfd/message'
-import xhr from 'bfd-ui/lib/xhr'
-import { Progress } from 'antd';
+
+class Create_disk extends Component {
+  constructor(props) {
+    super()
+    this.update = update.bind(this)
+    this.rules = {
+      name(v) {
+        if (!v) return '请输入名字'
+       // if (v.length > 5) return '用户群名称不能超过5个字符'
+      },
+      size(v) {
+       if (!v) return '请输入数字'
+       // if (v.length > 5) return '用户群名称不能超过5个字符'
+      }
+    }
+    this.state = {
+      formData: {
+        method: 'snapshot_create'
+      }
+    }
+  }
+
+  componentWillMount(){
+    console.log(this.props.snapshot,'111111')
+    let snapshot=this.props.snapshot
+    let formData=this.state.formData
+    formData['id']=snapshot['id']
+    formData['name']=snapshot['displayName']
+    formData['snapshot']=0
+    formData['type']=0
+    formData['desc']=snapshot['displayDescription']
+    formData['size']=snapshot['size'].toString()
+    this.setState({formData})
+  }
+
+  handleDateSelect(date) {
+    this.update('set', 'formData.date', date)
+  }
+
+  handleSuccess(res) {
+    this.props.self.refs.modal.close()
+    this.props.refresh()
+    if (res['status']){
+      message.success('创建成功')
+    }else{
+      message.success('创建失败')
+    }
+    
+  }
+
+  render() {
+    const { formData } = this.state
+    let url=OPEN.UrlList()['volumes_post']
+    let snapshot=this.props.snapshot['displayName']
+    return (
+      <Form 
+        action={url}
+        data={formData} 
+        onChange={formData => this.update('set', { formData })}
+        rules={this.rules} 
+        onSuccess={::this.handleSuccess}
+      >
+        <FormItem label="云硬盘名称" required name="name">
+          <FormInput />
+        </FormItem>
+        <FormItem label="快照源" name="snapshot">
+          <FormSelect style={{width: "183px"}}>
+            <Option value={0}>{snapshot}</Option>
+          </FormSelect>
+        </FormItem>
+        <FormItem label="类型" name="type" >
+          <FormSelect style={{width: "183px"}}>
+            <Option value={0}>未选择云类型</Option>
+            <Option value={1}>ceph</Option>
+          </FormSelect>
+        </FormItem>
+        <FormItem label="云硬盘大小" required name="size">
+          <FormInput />
+        </FormItem>
+        <FormItem label="描述" name="desc" help="500个字符以内">
+          <FormTextarea style={{width: "260px"}}/>
+        </FormItem>
+        <FormSubmit>确定</FormSubmit>
+         <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.props.modalClose}>取消</button>
+      </Form>
+    )
+  }
+}
+
 
 class Snapshot_delete extends Component {
   constructor(props) {
@@ -32,7 +119,7 @@ class Snapshot_delete extends Component {
     let snapshot=this.props.snapshot
     let formData=this.state.formData
     formData['id']=snapshot['id']
-    formData['name']=snapshot['name']
+    formData['name']=snapshot['displayName']
     this.setState({formData})
   }
 
@@ -54,7 +141,7 @@ class Snapshot_delete extends Component {
   render() {
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
-    let snapshot=this.props.snapshot['name']
+    let snapshot=this.props.snapshot['displayName']
     return (
       <Form 
         action={url}
@@ -129,7 +216,7 @@ class Snapshot_redact extends Component {
         rules={this.rules} 
         onSuccess={::this.handleSuccess}
       >
-        <FormItem label="云硬盘名称" required name="name">
+        <FormItem label="快照名称" required name="name">
           <FormInput />
         </FormItem>
         <FormItem label="描述" name="desc" help="500个字符以内">
@@ -142,50 +229,6 @@ class Snapshot_redact extends Component {
   }
 }
 
-const Progress_model = React.createClass({
-  getInitialState() {
-    return {
-      percent: 0,
-      status: false,
-    };
-  },
-
-  componentWillMount(){
-  const _this=this
-  let url = OPEN.UrlList()['volumes_post']+"?name=backup_t"+"&id="+this.props.text['id']
-  let interval=setInterval(function(){
-  xhr({
-      type: 'GET',
-      url: url,
-      async:false,
-      success(data) {
-        //console.log(data)
-        if (data['status']=="available") {
-            _this.setState({status:data['status']})
-            clearTimeout(interval)
-        }
-    }
-  })   
-  },10000)
-  },
-  render() {
-    if (this.state.status){
-    return (
-      <div>
-        <span>{this.state.status}</span>
-      </div>
-    )}else{
-      if (this.props.text['status']!='restoring'){
-      return (
-      <div>
-        <Progress percent={100} showInfo={false} style={{width:'50%'}}/><div>创建中</div>
-      </div>)}else{
-      return  (<div> <Progress percent={100} showInfo={false} style={{width:'50%'}}/><div>恢复中</div></div>)
-      }
-    
-    }
-  },
-})
 
 
 export default React.createClass({
@@ -195,14 +238,14 @@ export default React.createClass({
       title:'',
       modal:'',
       snapshot:'',
-      url: OPEN.UrlList()['volumes_post'] + '?name=backup_t',
+      url: OPEN.UrlList()['volumes_post'] + '?name=backup',
       column: [{
         title: '名称',
         order: false,
-        key: 'name'
+        key: 'displayName'
       }, {
         title: '描述',
-        key: 'description',
+        key: 'displayDescription',
         order: false
       }, {
         title: '大小',
@@ -218,11 +261,7 @@ export default React.createClass({
       }, {
         title: '状态',
         key: 'status',
-        order: false,
-        render:(text,item) =>{
-           if (text=="available"){return (<span>{text}</span>)}else{
-           return (<div><Progress_model text={item} title_status={this.state.title_status}/></div>)}
-        }
+        order: false
       }, {
         title: '硬盘名称',
         key: 'volume_name',
@@ -236,10 +275,10 @@ export default React.createClass({
           const menu = (
             <Menu onClick={this.handleMenuClick.bind(this,component)}>
             { /*<Menu.Item key="Snapshot_redact">编辑快照</Menu.Item>*/}
-              <Menu.Item key="snapshot_delete">删除云硬盘备份</Menu.Item>
+              <Menu.Item key="snapshot_delete">删除快照</Menu.Item>
             </Menu>
           );
-          return (<Dropdown1.Button onClick={this.handleButtonClick.bind(this,component)} overlay={menu} type="ghost"  trigger={['click']}>恢复备份</Dropdown1.Button>)
+          return (<Dropdown1.Button onClick={this.handleButtonClick.bind(this,component)} overlay={menu} type="ghost"  trigger={['click']}>编辑快照</Dropdown1.Button>)
         },
       }
       ]
@@ -264,7 +303,7 @@ export default React.createClass({
   },
 
   refresh(){
-    let url=OPEN.UrlList()['volumes_post'] + '?name=backup_t'+'&wd='+Math.random()
+    let url=OPEN.UrlList()['volumes_post'] + '?name=backup'+'&wd='+Math.random()
     this.setState({url})
   },
 
@@ -273,12 +312,14 @@ export default React.createClass({
   },
    values(){
     return {
-       'snapshot_delete': "删除云硬盘备份",
-       'Snapshot_redact': "恢复备份"
+      'create_disk': "创建云硬盘",
+       'snapshot_delete': "删除云硬盘",
+       'Snapshot_redact': "编辑快照"
     }
   },
   modulevalue(e){
     return {
+      'create_disk': <Create_disk snapshot={e} self={this} refresh={this.refresh} modalClose={this.modalClose}/>,
       'snapshot_delete': <Snapshot_delete snapshot={e} self={this} refresh={this.refresh} modalClose={this.modalClose}/>,
       'Snapshot_redact': <Snapshot_redact snapshot={e} self={this} refresh={this.refresh} modalClose={this.modalClose}/>
     }

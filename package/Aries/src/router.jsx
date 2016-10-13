@@ -149,14 +149,14 @@ export default render((
               cb(null, require('./functions/Openstack/volumes').default)
             })
           }}/>
+          <Route path="Snapshot" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/Openstack/volumes/snapshot').default)
+            })
+          }}/>
           <Route path="Backup" getComponent={(location, cb) => {
             require.ensure([], require => {
               cb(null, require('./functions/Openstack/volumes/backup').default)
-            })
-          }}/>
-          <Route path="Backup_t" getComponent={(location, cb) => {
-            require.ensure([], require => {
-              cb(null, require('./functions/Openstack/volumes/backup_t').default)
             })
           }}/>
         </Route>
