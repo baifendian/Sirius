@@ -58,12 +58,13 @@ const Redact = React.createClass({
   },
 
   handleSuccess(res) {
-    this.props._self.setState({loading:false})
+    this.props._self.setState({loading:false,button_status:true,button_statuss:true})
     OPEN.update_url(this.props._self,"volumes")
    if (res['status']){
     message.success('修改成功！')}else{
       message.danger('修改失败')
     }
+
   },
   render() {
     const {formData} = this.state
@@ -108,7 +109,7 @@ const Backup_disk = React.createClass({
     return {
       formData: {
         data: this.volumes_id(),
-        method: 'backup'
+        method: 'snapshot'
       },
       volumes_id: this.volumes_id()
     }
@@ -165,9 +166,9 @@ const Backup_disk = React.createClass({
           onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
-          <div>当你对正在运行的虚拟机或者已经绑定的云硬盘做在线备份时，需要注意以下几点：</div>
-          <div>1. 备份只能捕获在备份任务开始时已经写入磁盘的数据，不包括当时位于缓存里的数据。</div>
-          <div>2. 为了保证数据的完整性，先停止虚拟机或解绑云硬盘，进行离线备份。</div>
+          <div>当你对正在运行的虚拟机或者已经绑定的云硬盘做在线快照时，需要注意以下几点：</div>
+          <div>1. 快照只能捕获在快照任务开始时已经写入磁盘的数据，不包括当时位于缓存里的数据。</div>
+          <div>2. 为了保证数据的完整性，先停止虚拟机或解绑云硬盘，进行离线快照。</div>
           <FormItem label="备份名称" required name="name">
             <FormInput style={{width: '200px'}}></FormInput>
           </FormItem>
@@ -320,7 +321,7 @@ const Uninstall_disk = React.createClass({
       this.props._self.setState({loading:true})
       this.refs.form.save()
     }else{
-      message.danger('未加载')
+      message.danger('未挂载')
     }
   },
 
@@ -538,10 +539,9 @@ const Extend = React.createClass({
   },
 
   handleSuccess(res) {
-    this.props._self.setState({loading:false})
-    this.props._self.setState({button_statuss:true})
+    this.props._self.setState({loading:false,button_statuss:true,button_status:true})
     if (res['status']==true){
-    message.success('保存成功！')}else{
+      message.success('修改成功！')}else{
       if (res['status']=='error'){
         message.danger(res['totalList'])
       }else{
@@ -549,6 +549,8 @@ const Extend = React.createClass({
       }
     }
     OPEN.update_url(this.props._self,"volumes")
+    //this.props._self.setState({button_statuss:true})
+   // this.props._self.setState({button_status:true})
   },
   render() {
     const {formData} = this.state
@@ -593,8 +595,12 @@ const Model_list = React.createClass({
       'Extend': "扩展云硬盘",
       'Loading_disk': "加载云硬盘",
       'Uninstall_disk': "卸载云硬盘",
+<<<<<<< HEAD
       'Backup_disk': "创建备份",
       'Backup_disk_t': "创建备份1"
+=======
+      'Backup_disk': '创建快照'
+>>>>>>> df0a360b67d438c18fbf389c83a05e42bd7fcc41
     }
   },
   modulevalue(){
@@ -653,8 +659,12 @@ const Model_list = React.createClass({
         <Menu.Item key="Extend" disabled={this.props.button_status}>扩展云硬盘</Menu.Item>
         <Menu.Item key="Loading_disk" disabled={this.props.button_status}>加载云硬盘</Menu.Item>
         <Menu.Item key="Uninstall_disk" disabled={this.props.button_status}>卸载云硬盘</Menu.Item>
+<<<<<<< HEAD
         <Menu.Item key="Backup_disk" disabled={this.props.button_status}>创建备份</Menu.Item>
         <Menu.Item key="Backup_disk_t" disabled={this.props.button_status}>创建备份</Menu.Item>
+=======
+        <Menu.Item key="Backup_disk" disabled={this.props.button_status}>创建快照</Menu.Item>
+>>>>>>> df0a360b67d438c18fbf389c83a05e42bd7fcc41
       </Menu>
     )
     return (

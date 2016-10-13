@@ -217,7 +217,6 @@ export default React.createClass({
     }
   },
   handleRowClick(row) {
-    this.refs.Tabs_list.test(row['id'])
     if (row == this.state.host_desc){
       this.setState({host_desc: ''})
       this.count_initialization()

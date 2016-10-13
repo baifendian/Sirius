@@ -103,6 +103,8 @@ export default React.createClass({
     }
     if (selectedRows.length > 0){
       this.setState({button_statuss:false})
+    }else{
+      this.setState({button_statuss:true})
     }
     this.setState({select_all:selectedRows})
   },
