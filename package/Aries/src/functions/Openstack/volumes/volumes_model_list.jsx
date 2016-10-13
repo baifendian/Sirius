@@ -194,7 +194,7 @@ const Backup_disk_t = React.createClass({
     return {
       formData: {
         data: this.volumes_id(),
-        method: 'backup'
+        method: 'backup_t'
       },
       volumes_id: this.volumes_id()
     }
@@ -604,7 +604,7 @@ const Model_list = React.createClass({
       'Uninstall_disk': <Uninstall_disk volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
       'Backup_disk': <Backup_disk volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
       'Redact': <Redact volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
-      'Backup_disk_t': <Backup_disk volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
+      'Backup_disk_t': <Backup_disk_t volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
     }
   },
   handleButtonClick(e) {

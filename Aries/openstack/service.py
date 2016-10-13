@@ -4,7 +4,7 @@ from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
 from common import json_data,volumes_deal,time_handle,size_handle
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
-from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps
+from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps,Volume_backup
 from django.http import HttpResponse
 import json
 import logging
@@ -198,6 +198,24 @@ def volumes_backup(request):
     return ret
 
 @user_login()
+def volumes_backup_p(request):
+    ret = {}
+ #   login()
+    print request.POST
+    name = request.POST.get('name')
+    volumes_id = eval(request.POST.get('data'))['id']
+    volumes_name = eval(request.POST.get('data'))['name']
+    desc = request.POST.get('desc')
+    volume_backup=Volume_backup()
+    return_data=volume_backup.create(volumes_id,name)
+    if return_data != 1:
+        ret['status'] = True
+    else:
+        ret['status'] = False
+    ret = json_data(ret)
+    return ret
+
+@user_login()
 def volumes_backup_get(request):
     ret = {}
 #    login()
@@ -215,10 +233,38 @@ def volumes_backup_get(request):
     ret = json_data(ret)
     return ret
 
+@user_login()
 def volumes_backup_t(request):
     print request.GET
-    print '111111111111111'
-    pass
+    ret={}
+    volume = Volume()
+    volume_backup=Volume_backup()
+    host_id=request.GET.get('id')
+    if host_id:
+        return_data = volume_backup.show_detail(host_id)['backup']
+        ret['status'] = return_data['status']
+        ret['id'] = return_data['id']
+        ret['name'] = return_data['name']
+        ret = json_data(ret)
+        return ret
+    else:
+        ret['totalList'] = []
+        return_data = volume_backup.list_detail()
+        for i in return_data['backups']:
+            sys={}
+            sys['name']=i['name']
+            sys['description']=i['description']
+            sys['size']=i['size']
+            sys['status']=i['status']
+            try:
+                sys['volume_name'] = volume.show_detail(i['volume_id'])['volume']['displayName']
+            except:
+                sys['volume_name'] = '-'
+            sys['id']=i['id']
+            ret['totalList'].append(sys)
+        ret = json_data(ret)
+        return ret
+
 
 @user_login()
 def openstack_project(request):
@@ -436,5 +482,6 @@ Methods = {
         'Redact': volumes_Redact,
         'instances_backup': instances_backup,
         'vm_uninstall': vm_uninstall,
+        'backup_t': volumes_backup_p
     }
 }
