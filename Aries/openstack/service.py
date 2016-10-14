@@ -201,7 +201,6 @@ def volumes_snapshot(request):
 def volumes_backup_p(request):
     ret = {}
  #   login()
-    print request.POST
     name = request.POST.get('name')
     volumes_id = eval(request.POST.get('data'))['id']
     volumes_name = eval(request.POST.get('data'))['name']
@@ -236,7 +235,6 @@ def volumes_backup_get(request):
 
 @user_login()
 def volumes_backup_t(request):
-    print request.GET
     ret={}
     volume = Volume()
     volume_backup=Volume_backup()
@@ -518,7 +516,6 @@ def  backup_restore(request):
     backup_id=request.POST.get('id')
     volume_backup=Volume_backup()
     return_data=volume_backup.restore(backup_id=backup_id,volume_id=disk,volume_name=name)
-    print return_data
     if return_data != 1:
         ret['status'] = True
     else:
@@ -528,7 +525,6 @@ def  backup_restore(request):
 
 @user_login()
 def backup_delete(request):
-    print request.POST
     ret={}
     backup_id=request.POST.get('id')
     volume_backup = Volume_backup()

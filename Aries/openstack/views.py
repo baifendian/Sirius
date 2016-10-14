@@ -159,7 +159,7 @@ def instances(request):
                 if 'disk' in keys:
                     disk.append({"size": values})
             host_create = vm_manage.create_multiple(host_name, host_flavor, host_image, host_password, host_userdata,
-                                                    int(host_count), int(host_count), disk)
+                                                    int(host_count), int(host_count),key_name='',disk=disk)
             if host_create != 1:
                 ret['status'] = True
                 openstack_log.info("虚拟机创建:{0}".format(host_create))

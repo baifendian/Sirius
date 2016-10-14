@@ -106,21 +106,6 @@ class Snapshot_extend extends Component {
     this.setState({formData})
     let url=OPEN.UrlList()['volumes']
     let _this=this
-    xhr({
-      type: 'GET',
-      url: url,
-      success(data) {
-        let disk_list = []
-        let disk_object = {}
-        for (var i in data['totalList']) {
-          if (!data['totalList'][i]['device']) {
-            disk_list.push(data['totalList'][i]['name'])
-            disk_object[data['totalList'][i]['name']] = data['totalList'][i]['id']
-          }
-        }
-       _this.setState({disk_list, disk_object,loading:false})
-      }
-    })
   }
 
   handleSuccess(res) {
@@ -140,9 +125,6 @@ class Snapshot_extend extends Component {
     let url=OPEN.UrlList()['volumes_post']
     let snapshot=this.props.snapshot['displayName']
     let disk_object=this.state.disk_object
-   /* let nav=Object.keys(disk_object).map((key,item)=>{
-      return(<Option value={disk_object[key]} key={key}>{key}</Option>)
-    })*/
     return (
       <Form 
         action={url}
@@ -151,10 +133,10 @@ class Snapshot_extend extends Component {
         rules={this.rules} 
         onSuccess={::this.handleSuccess}
       >
-        <FormItem label="云硬盘名称" required name="name">
+        <FormItem label="新云硬盘名称" required name="name">
           <FormInput />
         </FormItem>
-        <FormItem label="新云硬盘" name="type" >
+        <FormItem label="新云硬盘" name="disk" style={{display:"none"}}>
           <FormSelect style={{width: "183px"}}>
             <Option >创建一个新的云硬盘</Option>
           </FormSelect>
@@ -189,10 +171,13 @@ class Snapshot_redact extends Component {
     let snapshot=this.props.snapshot
     let formData=this.state.formData
     formData['id']=snapshot['id']
+    formData['disk']=snapshot['volume_id']
+    formData['name']=snapshot['volume_name']
     this.setState({formData})
     let url=OPEN.UrlList()['volumes']
     let _this=this
-   /* xhr({
+   /*暂时保留 
+   xhr({
       type: 'GET',
       url: url,
       success(data) {
@@ -220,11 +205,11 @@ class Snapshot_redact extends Component {
   }
 
 
-
   render() {
     const { formData } = this.state
     let url=OPEN.UrlList()['volumes_post']
-    let snapshot=this.props.snapshot['displayName']
+    let volume_name=this.props.snapshot['volume_name']
+    let backup_name=this.props.snapshot['name']
     let disk_object=this.state.disk_object
    /* let nav=Object.keys(disk_object).map((key,item)=>{
       return(<Option value={disk_object[key]} key={key}>{key}</Option>)
@@ -237,7 +222,7 @@ class Snapshot_redact extends Component {
         rules={this.rules} 
         onSuccess={::this.handleSuccess}
       >
-        <div style={{height: '100px'}}><h4>确定要恢复备份"{snapshot}"?</h4></div>
+        <div style={{height: '100px'}}><h4>是否把备份"{backup_name}"恢复到云硬盘"{volume_name}"?</h4></div>
         <FormSubmit>确定</FormSubmit>
          <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.props.modalClose}>取消</button>
       </Form>
@@ -263,7 +248,6 @@ const Progress_model = React.createClass({
       url: url,
       async:false,
       success(data) {
-        //console.log(data)
         if (data['status']!="restoring" && data['status'] != "creating") {
             _this.setState({status:true,status_s:data['status']})
             clearTimeout(interval)
@@ -324,7 +308,6 @@ export default React.createClass({
         key: 'status',
         order: false,
         render:(text,item) =>{
-          console.log(item)
            if (text !="restoring" && text !="creating"){return (<span>{text}</span>)}else{
            return (<div><Progress_model text={item} title_status={this.state.title_status}/></div>)}
         }
@@ -341,7 +324,7 @@ export default React.createClass({
           const menu = (
             <Menu onClick={this.handleMenuClick.bind(this,component)}>
               <Menu.Item key="snapshot_extend">恢复到新云硬盘</Menu.Item>
-              <Menu.Item key="snapshot_delete">删除云硬盘备份</Menu.Item>
+              <Menu.Item key="snapshot_delete">删除备份</Menu.Item>
             </Menu>
           );
           return (<Dropdown1.Button onClick={this.handleButtonClick.bind(this,component)} overlay={menu} type="ghost"  trigger={['click']}>恢复备份</Dropdown1.Button>)
@@ -356,9 +339,16 @@ export default React.createClass({
     /*let title=this.values()['create_disk']
     let modal=this.modulevalue(e)['create_disk']
     this.setState({title,modal})*/
-    let title=this.values()['snapshot_redact']
-    let modal=this.modulevalue(e)['snapshot_redact']
-    this.setState({title,modal})
+
+    if (e['volume_id']){
+      let title=this.values()['snapshot_redact']
+      let modal=this.modulevalue(e)['snapshot_redact']
+      this.setState({title,modal})
+    }else{
+      let title=this.values()['snapshot_extend']
+      let modal=this.modulevalue(e)['snapshot_extend']
+      this.setState({title,modal})
+    }
   },
 
   handleMenuClick(e,event) {

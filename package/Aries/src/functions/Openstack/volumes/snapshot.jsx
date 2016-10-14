@@ -350,7 +350,7 @@ export default React.createClass({
     }
   },
   requestArgs: {
-    pageName: "backup",
+    pageName: "snapshot",
   },
   render() {
     let spaceName = Openstackconf.getCurSpace(this)

@@ -47,7 +47,6 @@ export default React.createClass({
         title: '状态',
         key: 'servername',
         render: (text, item) => {
-          console.log(item['status'],'11111dfasintem')
           if (item['status'] !='backing-up' && item['status'] != 'restoring-backup'){
             if (text){
               return (<span>已连接到<TextOverflow><p style={{width: '100px'}}>{text}</p></TextOverflow></span>)
