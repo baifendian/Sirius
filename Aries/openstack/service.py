@@ -458,6 +458,16 @@ def mem_monitor(request):
     ret = json_data(ret)
     return ret
 
+@user_login()
+def instances_backup_show(request):
+    print request.GET
+    backup_id=request.GET.get('id')
+    print backup_id
+    vm_snap=Vm_snap(backup_id)
+    return_data=vm_snap.list_snap()
+    print return_data
+    return HttpResponse('AA')
+
 Methods = {
     "GET": {
         "instances": instances,
@@ -466,6 +476,7 @@ Methods = {
         "vmdisk_show": vmdisk_show,
         "cpu_monitor": cpu_monitor,
         "mem_monitor":mem_monitor,
+        "instances_backup_show":instances_backup_show,
     },
     "POST": {
         "CREATE": volumes_create,

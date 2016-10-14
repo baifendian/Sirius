@@ -315,8 +315,12 @@ const Vm_Backup = React.createClass({
   },
 
   handleSuccess(res) {
-    this.props._this.refs.modal.close()
-    message.success('保存成功！')
+    console.log(res)
+    this.props._this.refs.model_disk.close()
+    if (res['status']){
+      message.success('创建备份成功！')}else{
+      message.danger('创建备份失败!')
+    }
   },
   render() {
     const {formData} = this.state
