@@ -7,6 +7,10 @@ from middleware.flavor.flavor import Flavor
 from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach
 from decimal import *
+import urllib2
+import traceback
+import datetime
+import time
 
 import logging
 openstack_log = logging.getLogger("openstack_log")
@@ -83,4 +87,27 @@ def size_handle(size):
 def time_handle(time):
     return  ' '.join( time.split('.')[0].split('Z')[0].split('T'))
 
+def sendhttp(url,data):
+    header = {"Content-Type": "application/json"}
+    request = urllib2.Request(url, data)
+    for key in header:
+        request.add_header(key, header[key])
+    try:
+        result = urllib2.urlopen(request)
+        result_t=json.loads(result.read())
+    except:
+        result_t = traceback.format_exc()
+    else:
+        result.close()
+    return result_t
 
+def sendhttpdata(start,metric,aggregator='sum',compute='*',instance='*'):
+    return json.dumps({"start":start,"queries":[{"metric":metric,"aggregator":aggregator,"tags":{"compute":compute,"instance":instance}}]})
+
+def sendhttpdate(type,interval):
+    data={
+    'minutes': (datetime.datetime.now() - datetime.timedelta(minutes=interval)).strftime("%Y-%m-%d %H:%M:%S"),
+    'hours': (datetime.datetime.now() - datetime.timedelta(hours=interval)).strftime("%Y-%m-%d %H:%M:%S"),
+    'days': (datetime.datetime.now() - datetime.timedelta(days=interval)).strftime("%Y-%m-%d %H:%M:%S")
+    }
+    return int(str(time.mktime(time.strptime(data[type], "%Y-%m-%d %H:%M:%S"))).split('.')[0])

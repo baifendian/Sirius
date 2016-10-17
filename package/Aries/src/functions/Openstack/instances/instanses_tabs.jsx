@@ -239,19 +239,6 @@ class Host_Timeline extends Component {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 const Echarts_s = React.createClass({
   getInitialState: function () {
     return {
@@ -312,33 +299,109 @@ const Echarts_s = React.createClass({
   },
 
   initData(){
-    Object.keys(this.dom_id()).map((key,item)=>{
+    /*Object.keys(this.dom_id()).map((key,item)=>{
       OPEN.Get_instances_cpu(this,this.dom_id()[key],this.dataManage)
-    })
+    })*/
+    return {
+      'cpu_monitor': OPEN.Get_instances_cpu(this,'cpu_monitor',this.dataManage),
+      'mem_monitor': OPEN.Get_instances_cpu(this,'cpu_monitor',this.dataManage),
+    }
+  },
+
+  initchart(){
+    let legend=[]
+    let xaxis=[]
+    let option={}
+    let series=[]
+    let keys_d=''
+    for (let i in this.dom_id()){
+    let dom_id=echarts.init(document.getElementById(this.dom_id()[i]))
+    dom_id.setOption(
+    {  title: {
+        text: '堆叠区域图'
+    },tooltip : { trigger: 'axis' },
+      legend: { data: legend },
+      calculable : true,
+      xAxis : [
+        {
+          type : 'category',
+          boundaryGap : false,
+          data : []
+        }
+      ],
+      yAxis : [
+        {
+          type : 'value',
+          boundaryGap: [0, '100%'],
+            splitLine: {
+              show: false
+          },
+          //axisLabel: {
+          //  formatter: function (val) {
+         //       return val+ '%';
+          //  }
+          axisLabel:{
+            formatter: this.chart_y()[i]
+          }
+        },
+      ],
+      series : series})
+    }
+  },
+
+  chart_y(){
+    return{
+    'CPU': (val)=>{return val+'%'},
+    'MEM': (val)=>{return val+'k'},
+    'disk_io':(val)=>{return val},
+    'disk_network':(val)=>{return val+'bps'},
+    'net_network':(val)=>{return val+'bps'},
+    'network_monitor_p': (val)=>{return val+'bys'}
+    }
   },
 
   dom_id(){
     return {
       'CPU':'cpu_monitor',
-      'MEM':'mem_monitor'
+      'MEM':'mem_monitor',
+      'disk_io':'disk_io_monitor',
+      'disk_network':'disk_network_monitor',
+      'net_network':'network_monitor',
+      'network_monitor_p':'network_monitor_p'
     }
   },
 
   componentDidMount(){
-    this.initData()
+    //this.initData()
+    this.initchart()
   },
 
   render(){
     let monitor_list = [
-      [{ 'name':'cpu','id':'cpu_monitor'},{ 'name':'内存','str':'mem_monitor'}]
+      [{ 'name':'cpu','id':'cpu_monitor'},{ 'name':'内存','id':'mem_monitor'}],
+      [{ 'name':'disk_iops','id':'disk_io_monitor'},{ 'name':'disk_bps','id':'disk_network_monitor'}],
+      [{ 'name':'network','id':'network_monitor'},{ 'name':'network_P','id':'network_monitor_p'}]
     ]
 
     let return_monitor = monitor_list.map((keys,item)=>{
+        return (
+          <Row>
+            {keys.map((keyss,items)=>{
+              return (
+                <Col col="md-6">
+                  <h4>{keyss['name']}</h4>
+                  <div id={keyss['id']} style={{height: '300px'}}>
+                  </div>
+                </Col>
+                )
+            })}
+          </Row>)
+      })
 
-    })
     return (
       <div>
-        <Row>
+        {return_monitor}
+        {/*<Row>
           <Col col="md-6">
             <h4>CPU</h4>
             <div id="cpu_monitor" style={{height: '400px'}}>
@@ -349,7 +412,7 @@ const Echarts_s = React.createClass({
             <div id="mem_monitor" style={{height: '400px'}}>
             </div>
           </Col>
-        </Row>
+        </Row>*/}
       </div>
     )
   }

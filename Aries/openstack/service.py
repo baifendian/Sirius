@@ -2,13 +2,14 @@
 from openstack.middleware.login.login import Login, get_token, get_project
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
-from common import json_data,volumes_deal,time_handle,size_handle
+from common import json_data,volumes_deal,time_handle,size_handle,sendhttp,sendhttpdata,sendhttpdate
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
 from openstack.middleware.volume.volume import Volume, Volume_attach,Volume_snaps
 from django.http import HttpResponse
 import json
 import logging
 import traceback
+import time
 
 openstack_log = logging.getLogger("openstack_log")
 
@@ -421,20 +422,18 @@ def snapshot_redact(request):
 def cpu_monitor(request):
     ret={}
     ret['date'] = []
-    ret['cpu_monitor']=[]
-    list={}
-    list['data'] = []
-    list['legend'] = 'free'
-    list_usr={}
-    list_usr['data'] = []
-    list_usr['legend'] = 'use'
-    for i in range(60):
-        data_y='2016-10-9 16:%s:00' % (i)
-        ret['date'].append(data_y)
-        list['data'].append(i)
-        list_usr['data'].append('20')
-    ret['cpu_monitor'].append(list)
-    ret['cpu_monitor'].append(list_usr)
+    ret['cpu_monitor'] = []
+    time_stamp=sendhttpdate('minutes',20)
+    data=sendhttpdata(time_stamp,metric='sys.cpu.util',aggregator='sum',compute='*',instance='instance-00000437')
+    return_data=sendhttp('http://172.24.4.33:4242/api/query',data)
+    for i in return_data:
+        sys={}
+        sys['legend']=i['metric']
+        sys['data'] = []
+        for key,value in i['dps'].items():
+            ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(float(key))))
+            sys['data'].append(str(value)[:4])
+        ret['cpu_monitor'].append(sys)
     ret = json_data(ret)
     return ret
 
