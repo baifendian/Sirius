@@ -423,7 +423,8 @@ def cpu_monitor(request):
     ret={}
     ret['date'] = []
     ret['cpu_monitor'] = []
-    time_stamp=sendhttpdate('minutes',20)
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
     data=sendhttpdata(time_stamp,metric='sys.cpu.util',aggregator='sum',compute='*',instance='instance-00000437')
     return_data=sendhttp('http://172.24.4.33:4242/api/query',data)
     for i in return_data:
@@ -434,26 +435,117 @@ def cpu_monitor(request):
             ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(float(key))))
             sys['data'].append(str(value)[:4])
         ret['cpu_monitor'].append(sys)
+    ret['date'].sort()
     ret = json_data(ret)
     return ret
 
 def mem_monitor(request):
-    ret={}
-    ret['date'] = []
-    ret['mem_monitor']=[]
-    list={}
-    list['data'] = []
-    list['legend'] = 'free'
-    list_usr={}
-    list_usr['data'] = []
-    list_usr['legend'] = 'use'
-    for i in range(60):
-        data_y='2016-10-9 16:%s:00' % (i)
-        ret['date'].append(data_y)
-        list['data'].append(i)
-        list_usr['data'].append('20')
-    ret['mem_monitor'].append(list)
-    ret['mem_monitor'].append(list_usr)
+    ret = {}
+    ret['mem_monitor'] = []
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
+    metrics=['sys.mem.free_mem','sys.mem.total_mem','sys.mem.util']
+    for i in metrics:
+        ret['date'] = []
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437')
+        return_data = sendhttp('http://172.24.4.33:4242/api/query', data)
+        for i in return_data:
+            sys = {}
+            sys['legend'] = i['metric']
+            sys['data'] = []
+            for key, value in i['dps'].items():
+                ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
+                sys['data'].append(str(round(value/1024,2)))
+            ret['mem_monitor'].append(sys)
+    ret['date'].sort()
+    ret = json_data(ret)
+    return ret
+
+def disk_iops_monitor(request):
+    ret = {}
+    ret['disk_iops_monitor'] = []
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
+    metrics=['sys.disk.read_ops','sys.disk.write_ops']
+    for i in metrics:
+        ret['date'] = []
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437',name='*')
+        return_data = sendhttp('http://172.24.4.33:4242/api/query', data)
+        for i in return_data:
+            sys = {}
+            sys['legend'] = i['tags']['name']+'_'+i['metric']
+            sys['data'] = []
+            for key, value in i['dps'].items():
+                ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
+                sys['data'].append(str(value))
+            ret['disk_iops_monitor'].append(sys)
+    ret['date'].sort()
+    ret = json_data(ret)
+    return ret
+
+def disk_bps_monitor(request):
+    ret = {}
+    ret['disk_bps_monitor'] = []
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
+    metrics=['sys.disk.read_bps','sys.disk.write_bps']
+    for i in metrics:
+        ret['date'] = []
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437',name='*')
+        return_data = sendhttp('http://172.24.4.33:4242/api/query', data)
+        for i in return_data:
+            sys = {}
+            sys['legend'] = i['tags']['name']+'_'+i['metric']
+            sys['data'] = []
+            for key, value in i['dps'].items():
+                ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
+                sys['data'].append(str(value))
+            ret['disk_bps_monitor'].append(sys)
+    ret['date'].sort()
+    ret = json_data(ret)
+    return ret
+
+def network_monitor(request):
+    ret = {}
+    ret['network_monitor'] = []
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
+    metrics=['sys.nic.tx_bytes_second','sys.nic.rx_bytes_second']
+    for i in metrics:
+        ret['date'] = []
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-000004cc',name='*')
+        return_data = sendhttp('http://172.24.4.33:4242/api/query', data)
+        for i in return_data:
+            sys = {}
+            sys['legend'] = i['tags']['name']+'_'+i['metric']
+            sys['data'] = []
+            for key, value in i['dps'].items():
+                ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
+                sys['data'].append(str(value))
+            ret['network_monitor'].append(sys)
+    ret['date'].sort()
+    ret = json_data(ret)
+    return ret
+
+def network_monitor_packets(request):
+    ret = {}
+    ret['network_monitor_packets'] = []
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
+    metrics=['sys.nic.tx_packets_second','sys.nic.rx_packets_second']
+    for i in metrics:
+        ret['date'] = []
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-000004cc',name='*')
+        return_data = sendhttp('http://172.24.4.33:4242/api/query', data)
+        for i in return_data:
+            sys = {}
+            sys['legend'] =  i['tags']['name']+'_'+i['metric']
+            sys['data'] = []
+            for key, value in i['dps'].items():
+                ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
+                sys['data'].append(str(value))
+            ret['network_monitor_packets'].append(sys)
+    ret['date'].sort()
     ret = json_data(ret)
     return ret
 
@@ -475,6 +567,10 @@ Methods = {
         "vmdisk_show": vmdisk_show,
         "cpu_monitor": cpu_monitor,
         "mem_monitor":mem_monitor,
+        'disk_iops_monitor':disk_iops_monitor,
+        'disk_bps_monitor':disk_bps_monitor,
+        'network_monitor':network_monitor,
+        'network_monitor_packets':network_monitor_packets,
         "instances_backup_show":instances_backup_show,
     },
     "POST": {

@@ -17,6 +17,7 @@ import {Component} from 'react'
 import Input from 'bfd/Input'
 import ReactDOM from 'react-dom'
 import FixedTable from 'bfd/FixedTable'
+import ButtonGroup from 'bfd/ButtonGroup'
 
 class Show_log extends Component {
   constructor(props) {
@@ -33,18 +34,21 @@ class Show_log extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps,nextState){
-    /*注释部分代码暂时保存以后可能会用到*/
-   /* if (nextProps.host_desc === this.props.host_desc){
+  /*shouldComponentUpdate(nextProps,nextState){
+    注释部分代码暂时保存以后可能会用到
+    if (nextProps.host_desc === this.props.host_desc){
     }else{
       this.get_count(nextProps.host_desc['id'],30)
-    }*/
+    }
     if (nextProps.height_log !== this.props.height_log){
       this.height_log(nextProps.height_log)
     }
     return true
-  }
+  }*/
 
+  componentWillUpdate(){
+    this.height_log(this.props.height_log)
+  }
  /* componentWillReceiveProps(nextProps){
     if (nextProps.host_desc !== this.props.host_desc){
       //this.setState({count:30})
@@ -240,15 +244,13 @@ class Host_Timeline extends Component {
 
 
 const Echarts_s = React.createClass({
-  getInitialState: function () {
-    return {
-      cpu_data:{},
-      mem:{},
-      dom_id:['echarts_cpu','echarts_mem','echarts_disk'],
-    }
+  componentWillUpdate(){
+    this.initData()
+    //this.initchart()
   },
 
   dataManage(_this,data) {
+    console.log(data)
     let legend=[]
     let xaxis=[]
     let option={}
@@ -279,16 +281,17 @@ const Echarts_s = React.createClass({
       ],
       yAxis : [
         {
-          type : 'value',
+         // type : 'value',
+         show: true,
           axisLabel : {
-            formatter: '{value} k'
+            formatter: this.initchart_y()[keys_d]
           }
         }
       ],
       series : series})
   },
 
-  series_t(lineName,dataArr ){
+  series_t(lineName,dataArr){
     let obj = {
       type: 'line',
       itemStyle: {normal: {areaStyle: {type: 'default'}}},    
@@ -299,12 +302,14 @@ const Echarts_s = React.createClass({
   },
 
   initData(){
-    /*Object.keys(this.dom_id()).map((key,item)=>{
-      OPEN.Get_instances_cpu(this,this.dom_id()[key],this.dataManage)
-    })*/
+    let id=this.props.host_desc['id']
     return {
-      'cpu_monitor': OPEN.Get_instances_cpu(this,'cpu_monitor',this.dataManage),
-      'mem_monitor': OPEN.Get_instances_cpu(this,'cpu_monitor',this.dataManage),
+      'cpu_monitor': OPEN.Get_instances_cpu(this,'cpu_monitor',id,'59_minutes',this.dataManage),
+      'mem_monitor': OPEN.Get_instances_cpu(this,'mem_monitor',id,'59_minutes',this.dataManage),
+      'disk_iops_monitor': OPEN.Get_instances_cpu(this,'disk_iops_monitor',id,'59_minutes',this.dataManage),
+      'disk_bps_monitor': OPEN.Get_instances_cpu(this,'disk_bps_monitor',id,'59_minutes',this.dataManage),
+      'network_monitor_packets': OPEN.Get_instances_cpu(this,'network_monitor_packets',id,'59_minutes',this.dataManage),
+      'network_monitor': OPEN.Get_instances_cpu(this,'network_monitor',id,'59_minutes',this.dataManage)
     }
   },
 
@@ -336,12 +341,8 @@ const Echarts_s = React.createClass({
             splitLine: {
               show: false
           },
-          //axisLabel: {
-          //  formatter: function (val) {
-         //       return val+ '%';
-          //  }
           axisLabel:{
-            formatter: this.chart_y()[i]
+            formatter: this.initchart_y()[this.dom_id()[i]]
           }
         },
       ],
@@ -349,70 +350,69 @@ const Echarts_s = React.createClass({
     }
   },
 
-  chart_y(){
+  initchart_y(){
     return{
-    'CPU': (val)=>{return val+'%'},
-    'MEM': (val)=>{return val+'k'},
-    'disk_io':(val)=>{return val},
-    'disk_network':(val)=>{return val+'bps'},
-    'net_network':(val)=>{return val+'bps'},
-    'network_monitor_p': (val)=>{return val+'bys'}
+      'cpu_monitor': (val)=>{return val+'%'},
+      'mem_monitor': (val)=>{return val+'M'},
+      'disk_iops_monitor':(val)=>{return val},
+      'disk_bps_monitor':(val)=>{return val+'b'},
+      'network_monitor':(val)=>{return val+'b'},
+      'network_monitor_packets': (val)=>{return val+'b'}
     }
   },
 
   dom_id(){
     return {
       'CPU':'cpu_monitor',
-      'MEM':'mem_monitor',
-      'disk_io':'disk_io_monitor',
-      'disk_network':'disk_network_monitor',
-      'net_network':'network_monitor',
-      'network_monitor_p':'network_monitor_p'
+      'Memory':'mem_monitor',
+      'Disk_iops':'disk_iops_monitor',
+      'Disk_bps':'disk_bps_monitor',
+      'Network_bytes':'network_monitor',
+      'Network_packets':'network_monitor_packets'
     }
   },
 
   componentDidMount(){
-    //this.initData()
+    this.initData()
     this.initchart()
+  },
+
+  handleChange(value,text) {
+    console.log(value,text)
+    let id=this.props.host_desc['id']
+    OPEN.Get_instances_cpu(this,this.dom_id()[text],id,value,this.dataManage)
   },
 
   render(){
     let monitor_list = [
-      [{ 'name':'cpu','id':'cpu_monitor'},{ 'name':'内存','id':'mem_monitor'}],
-      [{ 'name':'disk_iops','id':'disk_io_monitor'},{ 'name':'disk_bps','id':'disk_network_monitor'}],
-      [{ 'name':'network','id':'network_monitor'},{ 'name':'network_P','id':'network_monitor_p'}]
+      [{ 'name':'CPU','id':'cpu_monitor'},{ 'name':'Memory','id':'mem_monitor'}],
+      [{ 'name':'Disk_iops','id':'disk_iops_monitor'},{ 'name':'Disk_bps','id':'disk_bps_monitor'}],
+      [{ 'name':'Network_bytes','id':'network_monitor'},{ 'name':'Network_packets','id':'network_monitor_packets'}]
     ]
 
     let return_monitor = monitor_list.map((keys,item)=>{
-        return (
-          <Row>
-            {keys.map((keyss,items)=>{
-              return (
-                <Col col="md-6">
-                  <h4>{keyss['name']}</h4>
-                  <div id={keyss['id']} style={{height: '300px'}}>
-                  </div>
-                </Col>
-                )
-            })}
-          </Row>)
+      return (
+        <Row key={item}>
+          {keys.map((keyss,items)=>{
+            return (
+              <Col col="md-6" key={items}>
+                <span style={{fontSize:"23px"}}>{keyss['name']}</span>
+                <ButtonGroup defaultValue="1" onChange={(value)=>this.handleChange(value,keyss['name'])} >
+                  <Button value="59_minutes" style={{width:'101px',height:'20px'}}>最近一小时</Button>
+                  <Button value="1_days" style={{width:'101px',height:'20px'}}>最近一天</Button>
+                  <Button value="15_days" style={{width:'101px',height:'20px'}}>最近15天</Button>
+                </ButtonGroup>
+                <div id={keyss['id']} style={{height: '300px'}}>
+                </div>
+              </Col>
+              )
+          })}
+        </Row>)
       })
 
     return (
       <div>
         {return_monitor}
-        {/*<Row>
-          <Col col="md-6">
-            <h4>CPU</h4>
-            <div id="cpu_monitor" style={{height: '400px'}}>
-            </div>
-          </Col>
-          <Col col="md-6">
-            <h4>内存</h4>
-            <div id="mem_monitor" style={{height: '400px'}}>
-            </div>
-          </Col>
-        </Row>*/}
       </div>
     )
   }
@@ -486,13 +486,6 @@ const Host_details = React.createClass({
 })
 
 const Tabs_List = React.createClass({
-  getInitialState: function () {
-    return {
-      id:'',
-      logs:'',
-    }
-  },
-
   render() {
     return (
       <Tabs >
@@ -509,16 +502,14 @@ const Tabs_List = React.createClass({
         <TabPanel>
           <Host_Timeline/>
         </TabPanel>
-        <TabPanel>
-          <Echarts_s/>
+        <TabPanel >
+          <Echarts_s host_desc={this.props.host_desc}/>
         </TabPanel>
         <TabPanel>
           <Show_log host_desc={this.props.host_desc} height_log={this.props.height_log} logs={this.props.logs} ref="show_logs" _self={this.props._this}/>
         </TabPanel>
         </div>
-      </Tabs>
-
-      )
+      </Tabs>)
   }
 })
 

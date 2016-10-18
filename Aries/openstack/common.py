@@ -101,8 +101,11 @@ def sendhttp(url,data):
         result.close()
     return result_t
 
-def sendhttpdata(start,metric,aggregator='sum',compute='*',instance='*'):
-    return json.dumps({"start":start,"queries":[{"metric":metric,"aggregator":aggregator,"tags":{"compute":compute,"instance":instance}}]})
+def sendhttpdata(start,metric,aggregator='sum',compute='*',instance='*',name=None):
+    if name == None:
+        return json.dumps({"start":start,"queries":[{"metric":metric,"aggregator":aggregator,"tags":{"compute":compute,"instance":instance}}]})
+    else:
+        return json.dumps({"start": start, "queries": [{"metric": metric, "aggregator": aggregator, "tags": {"compute": compute, "instance": instance,'name':name}}]})
 
 def sendhttpdate(type,interval):
     data={
