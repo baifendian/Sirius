@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from user_auth.models import *
 from ldap_client import ldap_get_vaild
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.conf import settings
 
 def is_admin(account,cur_space_in):
     is_supper = 0
@@ -170,3 +171,17 @@ def index(request):
         user = ""
     user = json.dumps(user)
     return render_to_response('index/index.html',locals())
+
+def permission_check(request):
+    from django.contrib import admin
+    from django.conf.urls import patterns,url,include
+    import urls
+    admin.autodiscover()
+    if request.META.has_key('HTTP_X_FORWARDED_FOR'):
+        ip =  request.META['HTTP_X_FORWARDED_FOR']
+    else:
+        ip = request.META['REMOTE_ADDR']
+    if not ip.startswith(settings.PERMISSION_IP_1) and not ip.startswith(settings.PERMISSION_IP_2):
+        return HttpResponse('<h2>Outer Net Is Not Allowed</h2>')
+    else:
+        urls.urlpatterns[0] =  url(r'^admin/', include(admin.site.urls))
