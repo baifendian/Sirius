@@ -4,7 +4,7 @@ from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
 from common import json_data,volumes_deal,time_handle,size_handle
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
-from openstack.middleware.volume.volume import Volume, Volume_attach,Volume_snaps
+from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps,Volume_backup
 from django.http import HttpResponse
 import json
 import logging
@@ -198,6 +198,23 @@ def volumes_snapshot(request):
     return ret
 
 @user_login()
+def volumes_backup_p(request):
+    ret = {}
+ #   login()
+    name = request.POST.get('name')
+    volumes_id = eval(request.POST.get('data'))['id']
+    volumes_name = eval(request.POST.get('data'))['name']
+    desc = request.POST.get('desc')
+    volume_backup=Volume_backup()
+    return_data=volume_backup.create(volumes_id,name)
+    if return_data != 1:
+        ret['status'] = True
+    else:
+        ret['status'] = False
+    ret = json_data(ret)
+    return ret
+
+@user_login()
 def volumes_backup_get(request):
     ret = {}
 #    login()
@@ -213,9 +230,42 @@ def volumes_backup_get(request):
         sys['status'] = i['status']
         sys['volume_name'] = volume.show_detail(i['volumeId'])['volume']['displayName']
         ret['totalList'].append(sys)
-
     ret = json_data(ret)
     return ret
+
+@user_login()
+def volumes_backup_t(request):
+    ret={}
+    volume = Volume()
+    volume_backup=Volume_backup()
+    host_id=request.GET.get('id')
+    if host_id:
+        return_data = volume_backup.show_detail(host_id)['backup']
+        ret['status'] = return_data['status']
+        ret['id'] = return_data['id']
+        ret['name'] = return_data['name']
+        ret = json_data(ret)
+        return ret
+    else:
+        ret['totalList'] = []
+        return_data = volume_backup.list_detail()
+        for i in return_data['backups']:
+            sys={}
+            sys['name']=i['name']
+            sys['description']=i['description']
+            sys['size']=i['size']
+            sys['status']=i['status']
+            try:
+                sys['volume_name'] = volume.show_detail(i['volume_id'])['volume']['displayName']
+                sys['volume_id'] = i['volume_id']
+            except:
+                sys['volume_name'] = '-'
+                sys['volume_id'] = False
+            sys['id']=i['id']
+            ret['totalList'].append(sys)
+        ret = json_data(ret)
+        return ret
+
 
 @user_login()
 def openstack_project(request):
@@ -458,10 +508,39 @@ def mem_monitor(request):
     ret = json_data(ret)
     return ret
 
+@user_login()
+def  backup_restore(request):
+    ret={}
+    name=request.POST.get('name')
+    disk=request.POST.get('disk')
+    backup_id=request.POST.get('id')
+    volume_backup=Volume_backup()
+    return_data=volume_backup.restore(backup_id=backup_id,volume_id=disk,volume_name=name)
+    if return_data != 1:
+        ret['status'] = True
+    else:
+        ret['status'] = False
+    ret = json_data(ret)
+    return ret
+
+@user_login()
+def backup_delete(request):
+    ret={}
+    backup_id=request.POST.get('id')
+    volume_backup = Volume_backup()
+    request_data=volume_backup.delete(backup_id=backup_id)
+    if request_data != 1:
+        ret['status'] = True
+    else:
+        ret['status'] = False
+    ret=json_data(ret)
+    return ret
+
 Methods = {
     "GET": {
         "instances": instances,
         "backup": volumes_backup_get,
+        "backup_t": volumes_backup_t,
         "instances_search": instances_search,
         "vmdisk_show": vmdisk_show,
         "cpu_monitor": cpu_monitor,
@@ -477,8 +556,11 @@ Methods = {
         'Redact': volumes_Redact,
         'instances_backup': instances_backup,
         'vm_uninstall': vm_uninstall,
+        'backup_t': volumes_backup_p,
         'snapshot_create':snapshot_create,
         'snapshot_delete':snapshot_delete,
         'snapshot_redact':snapshot_redact,
+        'backup_restore':backup_restore,
+        'backup_delete':backup_delete,
     }
 }

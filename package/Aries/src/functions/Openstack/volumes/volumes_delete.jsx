@@ -42,16 +42,23 @@ const Delete_volumes = React.createClass({
     this.props._this.setState({button_statuss:true})
   },
   handleOpen() {
-    this.refs.modal_m.open()
     let volumes_object = {}
     let volumes_name = ''
+    let status_d=true
     for (var i in this.props.select_all) {
       volumes_object[this.props.select_all[i]['id']] = this.props.select_all[i]['name']
-      
+      if (this.props.select_all[i]['device'] && this.props.select_all[i]['servername']){
+         message.danger('请先卸载云硬盘')
+         status_d=false
+         break
+      }
       if (i==this.props.select_all.length-1){
         volumes_name = volumes_name +'"'+ this.props.select_all[i]['name']+'"'}else{
         volumes_name = volumes_name + '"'+this.props.select_all[i]['name']+'"' + '、'
       }
+    }
+    if (status_d){
+      this.refs.modal_m.open()
     }
     this.setState({volumes_name, formData: {volumes_object: volumes_object, method: 'delete'}})
   },
