@@ -1,13 +1,14 @@
 #coding:utf-8
 import time
 from django.test import TestCase
-from openstack.middleware.login.login import Login
+from openstack.middleware.login.login import Login, get_admin_token, get_admin_project_id
 from openstack.middleware.flavor.flavor import Flavor
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
 from openstack.middleware.volume.volume import Volume, Volume_backup,Volume_snaps, Volume_attach
 from openstack.middleware.image.image import Image
 from openstack.middleware.common.common import run_in_thread
 from openstack.middleware.common.common_api import CommonApi
+from openstack.middleware.user.user import User
 import json
 import base64
 import inspect
@@ -25,8 +26,11 @@ IMAGE_ID = "e2aec20b-a965-42b7-98a6-c0f9e7ca5c3f"
 FLAVOR_ID = "c2a8d2cf-bc61-499f-86a6-616de6db5948"
 VM_ID = ""
 VOLUME_ID = ""
+VOLUME_SNAP_ID = ""
 SNAPSHOT_ID = ""
 ATTACH_ID = ""
+PROJECT_ID = ""
+USER_NAME = ""
 
 class Openstack_test(TestCase):
     def test_login(self):
@@ -34,6 +38,47 @@ class Openstack_test(TestCase):
         login.user_token_login()
         login.proid_login()
         login.token_login()
+
+    def test_user_list(self):
+        user = User()
+        msg = user.list()
+        prints(msg)
+
+    def test_get_user_project(self):
+        user = User()
+        name = "openstack"
+        msg = user.get_user_project(name)
+        prints(msg)
+
+    def test_get_project_user(self):
+        user = User()
+        project_id = PROJECT_ID
+        msg = user.get_project_user(project_id)
+        prints(msg)
+
+    def test_user_create(self):
+        user = User()
+        name = "test_user"
+        project_id = PROJECT_ID
+        password = "123456"
+        msg = user.create(name,project_id=project_id,password=password)
+        prints(msg)
+
+    def test_project_user_add(self):
+        user = User()
+        user_name = USER_NAME
+        project_id = PROJECT_ID
+        user_id = user.get_id_by_name(user_name)
+        msg = user.project_user_add(project_id,user_id)
+        prints(msg)
+
+    def test_project_user_del(self):
+        user = User()
+        user_name = USER_NAME
+        project_id = PROJECT_ID
+        user_id = user.get_id_by_name(user_name)
+        msg = user.project_user_del(project_id,user_id)
+        prints(msg)
 
     def test_list_image(self):
         self.test_login()
@@ -80,6 +125,16 @@ class Openstack_test(TestCase):
         msg = volume.show_detail(volume_id)
         prints(msg)
 
+    def test_delete_volume(self):
+        '''
+        :return:
+        '''
+        self.test_login()
+        volume_id = VOLUME_ID
+        volume = Volume()
+        msg = volume.delete(volume_id)
+        prints(msg)
+
     def test_extend_volume(self):
         '''
         :return:
@@ -101,6 +156,18 @@ class Openstack_test(TestCase):
         name = "test_snap"
         volume_snap = Volume_snaps()
         ret = volume_snap.create(volume_id,name)
+        prints(ret)
+        return ret
+
+    def test_change_volume_snap(self):
+        '''
+        创建磁盘快照
+        :return:
+        '''
+        self.test_login()
+        volume_snap_id = VOLUME_SNAP_ID
+        volume_snap = Volume_snaps()
+        ret = volume_snap.change(volume_snap_id,name="asd",des="111111")
         prints(ret)
         return ret
 
