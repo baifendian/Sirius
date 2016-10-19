@@ -36,6 +36,7 @@ url_volume_change = common_cinder + "volumes/{volume_id}"
 url_volume_snap_list = url_volume_snap_create = common_nova + "os-snapshots"
 url_volume_snap_list_detail = common_nova + "os-snapshots/detail"
 url_volume_snap_action = common_nova + "os-snapshots/{snapshot_id}"
+url_volume_snap_change = common_cinder + "snapshots/{snapshot_id}"
 
 #volume_attach
 url_volume_attach_list =url_volume_attach_create = common_nova + "servers/{vm_id}/os-volume_attachments"
@@ -51,6 +52,13 @@ url_volume_backup_restore = common_cinder + "backups/{backup_id}/restore"
 url_keypairs = common_nova + "os-keypairs"
 url_az_info = common_nova + "os-aggregates"
 url_hv_info = common_nova + "os-hypervisors/detail"
+
+#user api
+url_user_common = "/%s/users"%version_token
+url_user_action = "/%s/users/{user_id}"%version_token
+url_user_project = "/%s/users/{user_id}/projects"%version_token
+url_project_member = "/%s/role_assignments"%version_token
+url_project_user_action = "/%s/OS-INHERIT/projects/{project_id}/users/{user_id}/roles/{role_id}/inherited_to_projects"%version_token
 
 
 
