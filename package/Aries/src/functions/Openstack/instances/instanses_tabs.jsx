@@ -212,7 +212,6 @@ class Host_Timeline extends Component {
         height={200}
         data={this.state.data}
         column={this.state.column}
-        onRowClick={::this.handleRowClick}
         onOrder={::this.handleOrder}
         onCheckboxSelect={::this.handleCheckboxSelect}
       />
@@ -268,8 +267,8 @@ const Echarts_s = React.createClass({
     })
 
     let dom_id=echarts.init(document.getElementById(keys_d))
-    dom_id.setOption(
-    { tooltip : { trigger: 'axis' },
+    dom_id.setOption({ 
+      tooltip : { trigger: 'axis' },
       legend: { data: legend },
       calculable : true,
       xAxis : [
@@ -433,8 +432,20 @@ const Host_details = React.createClass({
     let host_desd = this.props.host_desc[0]
     return host_desd
   },
+
+  date(){
+    let time=this.props.host_desc['created']
+    let nowtime=new Date()
+    let difftime = nowtime.getTime() - new Date(time).getTime()
+    let days=Math.floor(difftime/(24*3600*1000))
+    var hours=Math.floor((difftime%(24*3600*1000))/(3600*1000)) 
+    var minutes=Math.floor(((difftime%(24*3600*1000))%(3600*1000))/(60*1000)) 
+    return days+'天'+hours+'小时'+minutes+'分'
+  },
   render(){
     //console.log(this.props.host_desc,'.........aaaa')
+    //let text=this.date()
+    //console.log(text,'text')
     const list=[1]
     const nav = this.props.host_desc['disk_list'] && this.props.host_desc['disk_list'].map((item,i)=>{
       return (
@@ -472,7 +483,7 @@ const Host_details = React.createClass({
           <Col col="md-2" style={{}}>创建时间:</Col>
           <Col col="md-2" style={{}}>{this.props.host_desc['created']}</Col>
           <Col col="md-2" style={{}}>已创建:</Col>
-          <Col col="md-4" style={{}}>3小时</Col>
+          <Col col="md-4" style={{}}>{this.date()}</Col>
         </Row>
         <Row>
           <span>磁盘:</span>

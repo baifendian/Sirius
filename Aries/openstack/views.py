@@ -159,7 +159,7 @@ def instances(request):
                 if 'disk' in keys:
                     disk.append({"size": values})
             host_create = vm_manage.create_multiple(host_name, host_flavor, host_image, host_password, host_userdata,
-                                                    int(host_count), int(host_count), disk)
+                                                    int(host_count), int(host_count),key_name='',disk=disk)
             if host_create != 1:
                 ret['status'] = True
                 openstack_log.info("虚拟机创建:{0}".format(host_create))
@@ -358,6 +358,20 @@ def volumes(request):
     volume_s = Volume()
     vm_manage = Vm_manage()
     if request.method == "GET":
+        host_id=request.GET.get('name')
+        if host_id:
+            return_data=volume_s.show_detail(host_id)['volume']
+            if not return_data['displayName']:
+                ret['name'] = return_data['id']
+            else:
+                ret['name'] = return_data['displayName']
+            ret['id'] = return_data['id']
+            ret['status']=return_data['status']
+            json_status = json_data(ret)
+            response = HttpResponse(json_status)
+            response['Access-Control-Allow-Origin'] = '*'
+            response['Content-Type'] = 'application/json'
+            return response
         ret['totalList'] = []
         volumes_list = volume_s.list_detail()
         for disk in volumes_list['volumes']:
@@ -368,6 +382,9 @@ def volumes(request):
                 sys['name'] = disk['displayName']
             sys['id'] = disk['id']
             sys['size'] = disk['size']
+            if disk['status'] == 'deleting':
+                continue
+            sys['status']=disk['status']
             sys['voumetype'] = 'ceph'
             sys['created'] = time_handle(disk['createdAt'])
             sys['backupd'] = time_handle(disk['createdAt'])

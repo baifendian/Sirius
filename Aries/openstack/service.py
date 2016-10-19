@@ -4,8 +4,9 @@ from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
 from common import json_data,volumes_deal,time_handle,size_handle,sendhttp,sendhttpdata,sendhttpdate
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
-from openstack.middleware.volume.volume import Volume, Volume_attach,Volume_snaps
+from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps,Volume_backup
 from django.http import HttpResponse
+from Aries.settings import MONITOR_URL
 import json
 import logging
 import traceback
@@ -142,11 +143,17 @@ def volumes_host(request):
     volumes_id = eval(data)['id']
     volumes_name = eval(data)['name']
     volume_attach = Volume_attach()
+    volume=Volume()
     return_data = volume_attach.attach(host_id, volumes_id)
     if return_data != 1:
-        ret['vm'] = host_name
-        ret['status'] = True
-        ret['volumes'] = volumes_name
+        while True:
+            time.sleep(1)
+            return_show = volume.show_detail(volumes_id)['volume']['status']
+            if return_show != 'attaching':
+                ret['vm'] = host_name
+                ret['status'] = True
+                ret['volumes'] = volumes_name
+                break
     else:
         ret['vm'] = host_name
         ret['status'] = False
@@ -199,6 +206,23 @@ def volumes_snapshot(request):
     return ret
 
 @user_login()
+def volumes_backup_p(request):
+    ret = {}
+ #   login()
+    name = request.POST.get('name')
+    volumes_id = eval(request.POST.get('data'))['id']
+    volumes_name = eval(request.POST.get('data'))['name']
+    desc = request.POST.get('desc')
+    volume_backup=Volume_backup()
+    return_data=volume_backup.create(volumes_id,name)
+    if return_data != 1:
+        ret['status'] = True
+    else:
+        ret['status'] = False
+    ret = json_data(ret)
+    return ret
+
+@user_login()
 def volumes_backup_get(request):
     ret = {}
 #    login()
@@ -214,9 +238,42 @@ def volumes_backup_get(request):
         sys['status'] = i['status']
         sys['volume_name'] = volume.show_detail(i['volumeId'])['volume']['displayName']
         ret['totalList'].append(sys)
-
     ret = json_data(ret)
     return ret
+
+@user_login()
+def volumes_backup_t(request):
+    ret={}
+    volume = Volume()
+    volume_backup=Volume_backup()
+    host_id=request.GET.get('id')
+    if host_id:
+        return_data = volume_backup.show_detail(host_id)['backup']
+        ret['status'] = return_data['status']
+        ret['id'] = return_data['id']
+        ret['name'] = return_data['name']
+        ret = json_data(ret)
+        return ret
+    else:
+        ret['totalList'] = []
+        return_data = volume_backup.list_detail()
+        for i in return_data['backups']:
+            sys={}
+            sys['name']=i['name']
+            sys['description']=i['description']
+            sys['size']=i['size']
+            sys['status']=i['status']
+            try:
+                sys['volume_name'] = volume.show_detail(i['volume_id'])['volume']['displayName']
+                sys['volume_id'] = i['volume_id']
+            except:
+                sys['volume_name'] = '-'
+                sys['volume_id'] = False
+            sys['id']=i['id']
+            ret['totalList'].append(sys)
+        ret = json_data(ret)
+        return ret
+
 
 @user_login()
 def openstack_project(request):
@@ -426,16 +483,15 @@ def cpu_monitor(request):
     date=request.GET.get('date').split('_')
     time_stamp=sendhttpdate(date[1],int(date[0]))
     data=sendhttpdata(time_stamp,metric='sys.cpu.util',aggregator='sum',compute='*',instance='instance-00000437')
-    return_data=sendhttp('http://172.24.4.33:4242/api/query',data)
+    return_data=sendhttp(MONITOR_URL,data)
     for i in return_data:
         sys={}
         sys['legend']=i['metric']
         sys['data'] = []
-        for key,value in i['dps'].items():
+        for key in sorted(i['dps'].iterkeys()):
             ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(float(key))))
-            sys['data'].append(str(value)[:4])
+            sys['data'].append(str(i['dps'][key])[:4])
         ret['cpu_monitor'].append(sys)
-    ret['date'].sort()
     ret = json_data(ret)
     return ret
 
@@ -448,14 +504,14 @@ def mem_monitor(request):
     for i in metrics:
         ret['date'] = []
         data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437')
-        return_data = sendhttp('http://172.24.4.33:4242/api/query', data)
+        return_data = sendhttp(MONITOR_URL, data)
         for i in return_data:
             sys = {}
             sys['legend'] = i['metric']
             sys['data'] = []
-            for key, value in i['dps'].items():
+            for key in sorted(i['dps'].iterkeys()):
                 ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
-                sys['data'].append(str(round(value/1024,2)))
+                sys['data'].append(str(round(i['dps'][key]/1024,2)))
             ret['mem_monitor'].append(sys)
     ret['date'].sort()
     ret = json_data(ret)
@@ -470,14 +526,14 @@ def disk_iops_monitor(request):
     for i in metrics:
         ret['date'] = []
         data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437',name='*')
-        return_data = sendhttp('http://172.24.4.33:4242/api/query', data)
+        return_data = sendhttp(MONITOR_URL, data)
         for i in return_data:
             sys = {}
             sys['legend'] = i['tags']['name']+'_'+i['metric']
             sys['data'] = []
-            for key, value in i['dps'].items():
+            for key in sorted(i['dps'].iterkeys()):
                 ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
-                sys['data'].append(str(value))
+                sys['data'].append(str(i['dps'][key]))
             ret['disk_iops_monitor'].append(sys)
     ret['date'].sort()
     ret = json_data(ret)
@@ -492,14 +548,14 @@ def disk_bps_monitor(request):
     for i in metrics:
         ret['date'] = []
         data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437',name='*')
-        return_data = sendhttp('http://172.24.4.33:4242/api/query', data)
+        return_data = sendhttp(MONITOR_URL, data)
         for i in return_data:
             sys = {}
             sys['legend'] = i['tags']['name']+'_'+i['metric']
             sys['data'] = []
-            for key, value in i['dps'].items():
+            for key in sorted(i['dps'].iterkeys()):
                 ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
-                sys['data'].append(str(value))
+                sys['data'].append(str(i['dps'][key]))
             ret['disk_bps_monitor'].append(sys)
     ret['date'].sort()
     ret = json_data(ret)
@@ -514,14 +570,14 @@ def network_monitor(request):
     for i in metrics:
         ret['date'] = []
         data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-000004cc',name='*')
-        return_data = sendhttp('http://172.24.4.33:4242/api/query', data)
+        return_data = sendhttp(MONITOR_URL, data)
         for i in return_data:
             sys = {}
             sys['legend'] = i['tags']['name']+'_'+i['metric']
             sys['data'] = []
-            for key, value in i['dps'].items():
+            for key in sorted(i['dps'].iterkeys()):
                 ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
-                sys['data'].append(str(value))
+                sys['data'].append(str(i['dps'][key]))
             ret['network_monitor'].append(sys)
     ret['date'].sort()
     ret = json_data(ret)
@@ -536,16 +592,32 @@ def network_monitor_packets(request):
     for i in metrics:
         ret['date'] = []
         data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-000004cc',name='*')
-        return_data = sendhttp('http://172.24.4.33:4242/api/query', data)
+        return_data = sendhttp(MONITOR_URL, data)
         for i in return_data:
             sys = {}
             sys['legend'] =  i['tags']['name']+'_'+i['metric']
             sys['data'] = []
-            for key, value in i['dps'].items():
+            for key in sorted(i['dps'].iterkeys()):
                 ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
-                sys['data'].append(str(value))
+                sys['data'].append(str(i['dps'][key]))
             ret['network_monitor_packets'].append(sys)
     ret['date'].sort()
+    ret = json_data(ret)
+    return ret
+
+
+@user_login()
+def  backup_restore(request):
+    ret={}
+    name=request.POST.get('name')
+    disk=request.POST.get('disk')
+    backup_id=request.POST.get('id')
+    volume_backup=Volume_backup()
+    return_data=volume_backup.restore(backup_id=backup_id,volume_id=disk,volume_name=name)
+    if return_data != 1:
+        ret['status'] = True
+    else:
+        ret['status'] = False
     ret = json_data(ret)
     return ret
 
@@ -559,10 +631,24 @@ def instances_backup_show(request):
     print return_data
     return HttpResponse('AA')
 
+def backup_delete(request):
+    ret={}
+    backup_id=request.POST.get('id')
+    volume_backup = Volume_backup()
+    request_data=volume_backup.delete(backup_id=backup_id)
+    if request_data != 1:
+        ret['status'] = True
+    else:
+        ret['status'] = False
+    ret=json_data(ret)
+    return ret
+
+
 Methods = {
     "GET": {
         "instances": instances,
         "backup": volumes_backup_get,
+        "backup_t": volumes_backup_t,
         "instances_search": instances_search,
         "vmdisk_show": vmdisk_show,
         "cpu_monitor": cpu_monitor,
@@ -583,8 +669,11 @@ Methods = {
         'Redact': volumes_Redact,
         'instances_backup': instances_backup,
         'vm_uninstall': vm_uninstall,
+        'backup_t': volumes_backup_p,
         'snapshot_create':snapshot_create,
         'snapshot_delete':snapshot_delete,
         'snapshot_redact':snapshot_redact,
+        'backup_restore':backup_restore,
+        'backup_delete':backup_delete,
     }
 }

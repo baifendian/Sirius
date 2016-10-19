@@ -186,7 +186,8 @@ const App = React.createClass({
                   </NavItem>
                   <NavItem key={32} href="CloudHost/Storage" icon="hdd-o" title="存储">
                     <NavItem href={`CloudHost/Storage/Volumes?${params}`} title="云硬盘" />
-                    <NavItem href={`CloudHost/Storage/Backup?${params}`} title="快照" />
+                    <NavItem href={`CloudHost/Storage/Snapshot?${params}`} title="快照" />
+                    <NavItem href={`CloudHost/Storage/Backup?${params}`} title="备份" />
                   </NavItem>
                    <NavItem key={33} href="CloudHost/Manage" icon="credit-card-alt" title="管理">
                     <NavItem href={`CloudHost/Manage/Project?${params}`} title="项目管理" />

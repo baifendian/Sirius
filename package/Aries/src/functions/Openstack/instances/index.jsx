@@ -35,7 +35,7 @@ export default React.createClass({
       select_all: [],
       select_host: '',
       host_desc: '',
-      button_status: "disabled",
+      button_status: true,
       url_vnc: "",
       height_h: "",
       button_statuss: true,

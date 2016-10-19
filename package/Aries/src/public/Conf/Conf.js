@@ -277,10 +277,17 @@ const conf = {
           url: "/CloudHost/Storage/Volumes?cur_space=${spaceName}"
         }]
       },
-      backup: {
+      snapshot: {
         headText: "快照",
         navigationTexts: [{
           text: "快照",
+          url: "/CloudHost/Storage/Snapshot?cur_space=${spaceName}"
+        }]
+      },
+      backup: {
+        headText: "备份",
+        navigationTexts: [{
+          text: "备份",
           url: "/CloudHost/Storage/Backup?cur_space=${spaceName}"
         }]
       },

@@ -14,7 +14,8 @@ import ReactDOM from 'react-dom'
 import Model_list from './volumes_model_list'
 import Openstackconf from '../Conf/Openstackconf'
 import {Spin} from 'antd'
-
+import { Progress } from 'antd'
+import xhr from 'bfd-ui/lib/xhr'
 
 export default React.createClass({
 
@@ -46,10 +47,14 @@ export default React.createClass({
         title: '状态',
         key: 'servername',
         render: (text, item) => {
-          if (text){
-            return (<span>已连接到<TextOverflow><p style={{width: '100px'}}>{text}</p></TextOverflow></span>)
+          if (item['status'] !='backing-up' && item['status'] != 'restoring-backup'){
+            if (text){
+              return (<span>已连接到<TextOverflow><p style={{width: '100px'}}>{text}</p></TextOverflow></span>)
+            }else{
+              return(<span>未连接</span>)
+            }
           }else{
-            return(<span>未连接</span>)
+            return (<div><Progress_model text={item}/></div>)
           }
         }
       }, {
@@ -179,4 +184,62 @@ export default React.createClass({
       </div>
     )
   }
+})
+
+
+
+const Progress_model = React.createClass({
+  getInitialState() {
+    return {
+      percent: 0,
+      status: false,
+      status_s: this.props.text['status'],
+    };
+  },
+
+  componentWillMount(){
+  const _this=this
+  let url = OPEN.UrlList()['volumes']+"?name="+this.props.text['id']
+  let interval=setInterval(function(){
+  xhr({
+      type: 'GET',
+      url: url,
+      async:false,
+      success(data) {
+        if (data['status'] != 'backing-up' && data['status'] != 'restoring-backup') {
+            _this.setState({status:true,status_s:data['status']})
+            clearTimeout(interval)
+        }
+    }
+  })   
+  /* if ( _this.state.percent > 99){
+      clearTimeout(interval)
+    }
+    else{
+     _this.increase()
+    }*/
+    },10000)
+
+  },
+  render() {
+    if (this.state.status){
+    return (
+      <div>
+        <span>{this.state.status_s}</span>
+      </div>
+    )}else{
+      if (this.state.status_s != 'restoring-backup'){
+      return (
+      <div>
+        <Progress percent={100} showInfo={false} style={{width:'50%'}}/><div>创建备份</div>
+      </div>
+    )}else{
+      return (
+      <div>
+        <Progress percent={100} showInfo={false} style={{width:'50%'}}/><div>备份恢复中</div>
+      </div>
+      )
+      }
+    }
+  },
 })

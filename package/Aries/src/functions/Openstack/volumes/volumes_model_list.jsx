@@ -79,7 +79,7 @@ const Redact = React.createClass({
           onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
-          <FormItem label="备份名称" required name="name">
+          <FormItem label="云硬盘名称" required name="name">
             <FormInput style={{width: '200px'}}></FormInput>
           </FormItem>
           <FormItem label="描述" name="desc" help="500个字符以内">
@@ -95,7 +95,7 @@ const Redact = React.createClass({
 })
 
 
-const Backup_disk = React.createClass({
+const Snapshot_disk = React.createClass({
   getInitialState() {
     this.update = update.bind(this)
     this.rules = {
@@ -110,6 +110,92 @@ const Backup_disk = React.createClass({
       formData: {
         data: this.volumes_id(),
         method: 'snapshot'
+      },
+      volumes_id: this.volumes_id()
+    }
+  },
+  volumes_id(){
+    let volumes_id = {}
+    let volumes_size = {}
+    //console.log(this.props.volumes_all)
+    for (let i in this.props.volumes_all) {
+      // console.log(this.props.volumes_all[i])
+      volumes_id['size'] = this.props.volumes_all[i]['size']
+      volumes_id['name'] = this.props.volumes_all[i]['name']
+      volumes_id['id'] = this.props.volumes_all[i]['id']
+    }
+    return volumes_id
+  },
+  handleDateSelect(date) {
+    const formData = this.state.formData
+    formData.date = date
+    this.setState({formData})
+  },
+
+  handleSave() {
+    //console.log(this.state.formData)
+    this.props._this.refs.modal.close()
+    this.props._self.setState({loading:true})
+    this.refs.form.save()
+  },
+
+  handleclose() {
+    this.props._this.refs.modal.close()
+  },
+
+  handleSuccess(res) {
+    this.props._self.setState({loading:false})
+    if (res['status']){
+    message.success('快照成功')}else{
+    message.danger('快照失败')
+    }
+    OPEN.update_url(this.props._self,"volumes")
+    this.props._self.setState({button_status:true})
+    this.props._self.setState({button_statuss:true})
+  },
+  render() {
+    const {formData} = this.state
+    let url = OPEN.UrlList()['volumes_post']
+    return (
+      <div >
+        <Form
+          ref="form"
+          action={url}
+          data={formData}
+          rules={this.rules}
+          onChange={formData => this.update('set', { formData })}
+          onSuccess={this.handleSuccess}
+        >
+          <div>当你对正在运行的虚拟机或者已经绑定的云硬盘做在线快照时，需要注意以下几点：</div>
+          <div>1. 快照只能捕获在快照任务开始时已经写入磁盘的数据，不包括当时位于缓存里的数据。</div>
+          <div>2. 为了保证数据的完整性，先停止虚拟机或解绑云硬盘，进行离线快照。</div>
+          <FormItem label="快照名称" required name="name">
+            <FormInput style={{width: '200px'}}></FormInput>
+          </FormItem>
+          <FormItem label="描述" name="desc" help="500个字符以内">
+            <FormTextarea />
+          </FormItem>
+          <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleSave}>创建
+          </button>
+          <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
+        </Form>
+      </div>
+    )
+  }
+})
+
+const Backup_disk = React.createClass({
+  getInitialState() {
+    this.update = update.bind(this)
+    this.rules = {
+      name(v) {
+        if (!v) return '请填写备份名称'
+      }
+    }
+    return {
+      formData: {
+        data: this.volumes_id(),
+        method: 'backup_t'
       },
       volumes_id: this.volumes_id()
     }
@@ -166,9 +252,9 @@ const Backup_disk = React.createClass({
           onChange={formData => this.update('set', { formData })}
           onSuccess={this.handleSuccess}
         >
-          <div>当你对正在运行的虚拟机或者已经绑定的云硬盘做在线快照时，需要注意以下几点：</div>
-          <div>1. 快照只能捕获在快照任务开始时已经写入磁盘的数据，不包括当时位于缓存里的数据。</div>
-          <div>2. 为了保证数据的完整性，先停止虚拟机或解绑云硬盘，进行离线快照。</div>
+          <div>当你对正在运行的虚拟机或者已经绑定的云硬盘做在线备份时，需要注意以下几点：</div>
+          <div>1. 备份只能捕获在快照任务开始时已经写入磁盘的数据，不包括当时位于缓存里的数据。</div>
+          <div>2. 为了保证数据的完整性，先停止虚拟机或解绑云硬盘，进行离线备份。</div>
           <FormItem label="备份名称" required name="name">
             <FormInput style={{width: '200px'}}></FormInput>
           </FormItem>
@@ -183,6 +269,7 @@ const Backup_disk = React.createClass({
     )
   }
 })
+
 
 const Uninstall_disk = React.createClass({
   getInitialState() {
@@ -508,7 +595,8 @@ const Model_list = React.createClass({
       'Extend': "扩展云硬盘",
       'Loading_disk': "加载云硬盘",
       'Uninstall_disk': "卸载云硬盘",
-      'Backup_disk': '创建快照'
+      'Backup_disk': "创建备份",
+      'Snapshot_disk': '创建快照'
     }
   },
   modulevalue(){
@@ -516,8 +604,9 @@ const Model_list = React.createClass({
       'Extend': <Extend volumes_all={this.props.select_all} _this={this} _self={this.props._this}/>,
       'Loading_disk': <Loading_disk volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
       'Uninstall_disk': <Uninstall_disk volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
-      'Backup_disk': <Backup_disk volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
+      'Snapshot_disk': <Snapshot_disk volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
       'Redact': <Redact volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
+      'Backup_disk': <Backup_disk volumes_all={this.props.select_all} _this={this}  _self={this.props._this}/>,
     }
   },
   handleButtonClick(e) {
@@ -566,7 +655,8 @@ const Model_list = React.createClass({
         <Menu.Item key="Extend" disabled={this.props.button_status}>扩展云硬盘</Menu.Item>
         <Menu.Item key="Loading_disk" disabled={this.props.button_status}>加载云硬盘</Menu.Item>
         <Menu.Item key="Uninstall_disk" disabled={this.props.button_status}>卸载云硬盘</Menu.Item>
-        <Menu.Item key="Backup_disk" disabled={this.props.button_status}>创建快照</Menu.Item>
+        <Menu.Item key="Snapshot_disk" disabled={this.props.button_status}>创建快照</Menu.Item>
+        <Menu.Item key="Backup_disk" disabled={this.props.button_status}>创建备份</Menu.Item>    
       </Menu>
     )
     return (
