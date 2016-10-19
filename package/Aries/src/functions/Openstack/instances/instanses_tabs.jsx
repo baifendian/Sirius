@@ -3,7 +3,6 @@ import {Menu, Dropdown as Dropdown1, Icon} from 'antd'
 import Button from 'bfd-ui/lib/Button'
 import {Modal, ModalHeader, ModalBody} from 'bfd-ui/lib/Modal'
 import {Spin} from 'antd'
-import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
 import OPEN from '../data_request/request.js'
 import {Tabs, TabList, Tab, TabPanel} from 'bfd/Tabs'
@@ -18,6 +17,8 @@ import Input from 'bfd/Input'
 import ReactDOM from 'react-dom'
 import FixedTable from 'bfd/FixedTable'
 import ButtonGroup from 'bfd/ButtonGroup'
+import xhr from 'bfd/xhr'
+import DataTable from 'bfd/DataTable'
 
 class Show_log extends Component {
   constructor(props) {
@@ -34,21 +35,18 @@ class Show_log extends Component {
     }
   }
 
-  /*shouldComponentUpdate(nextProps,nextState){
-    注释部分代码暂时保存以后可能会用到
+  shouldComponentUpdate(nextProps,nextState){
+    /*注释部分代码暂时保存以后可能会用到
     if (nextProps.host_desc === this.props.host_desc){
     }else{
       this.get_count(nextProps.host_desc['id'],30)
-    }
+    }*/
     if (nextProps.height_log !== this.props.height_log){
       this.height_log(nextProps.height_log)
     }
     return true
-  }*/
-
-  componentWillUpdate(){
-    this.height_log(this.props.height_log)
   }
+
  /* componentWillReceiveProps(nextProps){
     if (nextProps.host_desc !== this.props.host_desc){
       //this.setState({count:30})
@@ -118,57 +116,29 @@ class Show_log extends Component {
   }
 }
 
-/*
-const Host_Timeline = React.createClass({
-  getInitialState: function () {
-    return {
-      name: '11'
-    }
-  },
-  data(){
 
-  },
-  render(){
-
-    return (
-      <div>
-        <Timeline>
-          <Timeline.Item>test 2016-09-21</Timeline.Item>
-          <Timeline.Item>test1 2016-09-22</Timeline.Item>
-          <Timeline.Item>test2 2016-09-23</Timeline.Item>
-          <Timeline.Item>test3 2016-09-24</Timeline.Item>
-        </Timeline>
-      </div>
-    )
-  }
-})*/
-
-class Host_Timeline extends Component {
+class Host_Timeline1 extends Component {
   constructor(props) {
     super()
     this.state = {
-      url: "/api/table",
       column: [{
-        title: '序号',
-        key: 'sequence'
-      },{
-        primary: true,
         title: 'ID',
         key: 'id',
-        hide: true
+        order: false,
+        width:'300px'
       }, {
         title: '姓名',
-        order: true,
+        order: false,
       //  width: '100px',
         render: (text, item) => {
           return <a href="javascript:void(0);" onClick={this.handleClick.bind(this, item)}>{text}</a>
         },
         key: 'name'
-      }, /*{
-        title: '年龄',
-        key: 'age',
-        order: 'desc'
       }, {
+        title: '描述',
+        key: 'desc',
+        order: false
+      },/* {
         title: '国家/地区',
         key: 'country',
         width: '20%',
@@ -177,43 +147,23 @@ class Host_Timeline extends Component {
         }
       },*/ {
         title: '注册日期',
-        key: 'regdate',
-        order: 'asc'
-      }, {
-        title: '操作',
-        /**
-         * @param item  当前数据对象
-         * @param component 当前
-         * @returns {XML}  返回dom对象
-         */
-        render: (item, component) => {
-          return <a href = "javascript:void(0);" onClick = {this.handleClick.bind(this, item)}>编辑</a>
-        },
-        key: 'operation' //注：operation 指定为操作选项和数据库内字段毫无关联，其他key 都必须与数据库内一致
+        key: 'time',
+        order: false
       }],
-      data: [
-        {id: 1, name: '张三', age: 28, gender: 'male', country: '中国', area: '北京', regdate: '2016-03-01' },
-        {id: 2, name: '李四', age: 25, gender: 'female', country: '中国', area: '杭州', regdate: '2016-04-11' },
-        {id: 3, name: '王五', age: 43, gender: 'male', country: '中国', area: '沈阳', regdate: '2016-05-06' },
-        {id: 4, name: '赵某某', age: 30, gender: 'female', country: '中国', area: '上海', regdate: '2016-03-09' },
-        {id: 5, name: '钱某某', age: 39, gender: 'male', country: '中国', area: '深圳', regdate: '2015-11-11' },
-        {id: 6, name: '孙某某', age: 50, gender: 'male', country: '中国', area: '石家庄', regdate: '2016-06-01' },
-        {id: 7, name: '周某某', age: 21, gender: 'female', country: '中国', area: '西安', regdate: '2016-08-13' },
-        {id: 8, name: '吴某某', age: 19, gender: 'female', country: '中国', area: '天津', regdate: '2016-02-22' },
-        {id: 9, name: '郑某某', age: 51, gender: 'male', country: '中国', area: '武汉', regdate: '2016-01-18' },
-        {id: 10, name: '冯某某', age: 24, gender: 'male', country: '中国', area: '广州', regdate: '2016-09-20' }
-      ]
+      data: []
     }
   }
 
   render() {
+    let data=this.props.instance_backup
+    console.log(this.state.data,'ff')
+    console.log(this.props.instance_backup,'ff11')
     return (
       <FixedTable 
         height={200}
-        data={this.state.data}
+        data={data}
         column={this.state.column}
         onOrder={::this.handleOrder}
-        onCheckboxSelect={::this.handleCheckboxSelect}
       />
     )
   }
@@ -224,12 +174,32 @@ class Host_Timeline extends Component {
     console.log(item)
   }
 
-  handleCheckboxSelect(selectedRows) {
-    console.log('rows:', selectedRows)
+  initdata(){
+   /* let url=OPEN.UrlList()['instances_post']+'?name=instances_backup_show'+'&id='+this.props.host_desc['id']
+    xhr({
+      type: 'GET',
+      url: url,
+      success(data) {
+        console.log(data,'xhr')
+        return data
+      }
+    })*/
+    this.setState({data:this.props.instance_backup}) 
+  }
+
+  componentWillUpdate(){
+    //this.setState({data:this.props.instance_backup}) 
   }
 
   componentWillMount(){
-    
+    //let url=OPEN.UrlList()['instances_post']+'?name=instances_backup_show'+'&id='+this.props.host_desc['id']
+    //OPEN.xhrGetData(this,url,this.xhrCallback)   
+   // this.setState({data:this.props.instance_backup}) 
+  }
+
+  xhrCallback(_this, executedData) {
+    let data = executedData['data']
+    _this.setState({data})
   }
 
   handleRowClick(row) {
@@ -240,6 +210,82 @@ class Host_Timeline extends Component {
     console.log(name, sort)
   }
 }
+
+class Host_Timeline extends Component {
+  constructor(props) {
+    super()
+    this.state = {
+      column: [{
+        title: '序号',
+        key: 'sequence'
+      },{
+        primary: false,
+        title: 'ID',
+        key: 'id',
+        width: '300px'
+      }, {
+        title: '名称',
+        order: false,
+        width: '100px',
+        render: (text, item) => {
+          return <a href="javascript:void(0);" onClick={this.handleClick.bind(this, item)}>{text}</a>
+        },
+        key: 'name'
+      }, {
+        title: '描述',
+        key: 'desc',
+        order: false
+      },{
+        title: '创建时间',
+        key: 'time',
+        order: false
+      }]
+    }
+  }
+
+  render() {
+    let data = {
+      totalList: this.props.instance_backup,
+      totalPageNum: 1
+    }
+    return (
+      <DataTable 
+        //url={this.state.url}
+        data={data}
+        onPageChange={::this.onPageChange} 
+        showPage="false"
+        column={this.state.column} 
+        howRow={10}
+        onRowClick={::this.handleRowClick}
+        onOrder={::this.handleOrder}
+      /> 
+    )
+  }
+
+  handleClick(item, event) {
+    event = event ? event : window.event;
+    event.stopPropagation();
+    console.log(item)
+  }
+
+  onPageChange(page) {
+    this.setState({
+      url: "/api/table"
+    })
+  }
+
+  handleRowClick(row) {
+    console.log('rowclick', row)
+  }
+
+  handleOrder(name, sort) {
+    console.log(name, sort)
+  }
+}
+
+
+
+
 
 
 const Echarts_s = React.createClass({
@@ -511,13 +557,13 @@ const Tabs_List = React.createClass({
           <Host_details host_desc={this.props.host_desc}/>
         </TabPanel>
         <TabPanel>
-          <Host_Timeline/>
+          <Host_Timeline host_desc={this.props.host_desc} instance_backup={this.props.instance_backup}/>
         </TabPanel>
         <TabPanel >
           <Echarts_s host_desc={this.props.host_desc}/>
         </TabPanel>
         <TabPanel>
-          <Show_log host_desc={this.props.host_desc} height_log={this.props.height_log} logs={this.props.logs} ref="show_logs" _self={this.props._this}/>
+          <Show_log host_desc={this.props.host_desc} height_log={this.props.height_log} logs={this.props.logs} ref="show_logs" _self={this.props._this} />
         </TabPanel>
         </div>
       </Tabs>)

@@ -149,11 +149,9 @@ var Datarequest = {
         url: url,
         type: 'GET',
         success: (retu_data) => {
-        fun(_this, retu_data);
-    // console.log(retu_data)
-    // return retu_data
-  }
-  })
+        fun(_this, retu_data)
+      }
+    })
   }
 }
 

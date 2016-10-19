@@ -327,12 +327,18 @@ def instances_backup(request):
     openstack_log.info(request.POST)
     vm_snap = Vm_snap(instances_id)
     return_data = vm_snap.create(instances_name_b)
-    if return_data != 1:
+    print return_data
+    if return_data == 2:
+        ret['name'] = instances_name
+        ret['status'] = False
+        ret['return'] = False
+    elif return_data != 1:
         ret['name'] = instances_name
         ret['status'] = True
     else:
         ret['name'] = instances_name
         ret['status'] = False
+        ret['return'] = True
     ret = json_data(ret)
     return ret
 
@@ -623,13 +629,22 @@ def  backup_restore(request):
 
 @user_login()
 def instances_backup_show(request):
-    print request.GET
+    ret={}
     backup_id=request.GET.get('id')
-    print backup_id
     vm_snap=Vm_snap(backup_id)
     return_data=vm_snap.list_snap()
-    print return_data
-    return HttpResponse('AA')
+    ret['data']=[]
+    for i in return_data:
+        sys={}
+        sys['name']=i['image_name'].replace(i['vm_id'],'')
+        if sys['name'] == 'root':
+            continue
+        sys['id']= i['image_id']
+        sys['time']=i['time'].strftime('%Y-%m-%d %H:%M:%S')
+        ret['data'].append(sys)
+    print ret
+    ret=json_data(ret)
+    return ret
 
 def backup_delete(request):
     ret={}
