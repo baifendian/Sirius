@@ -1,15 +1,21 @@
 # coding:utf-8
+import os
 import urllib
 import time
+
+from django.core.exceptions import ObjectDoesNotExist
+
 from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, \
-    get_time, dlog, TIMEOUT
+    get_time, dlog, TIMEOUT,OPENSTACK_KEY_PATH
 from openstack.middleware.image.image import Image
 from openstack.middleware.login.login import get_token, get_proid
 from openstack.middleware.volume.volume import Volume, Volume_attach
 from openstack.models import DbVmSnap
 from openstack.middleware.common.urls import url_vm_action,url_vm_control_action,url_vm_create,url_vm_list,url_vm_list_detail
 from openstack.middleware.common.common_api import CommonApi
-
+from threading import Lock
+import base64
+lock = Lock()
 
 # 虚拟机管理类
 class Vm_manage:
@@ -63,7 +69,7 @@ class Vm_manage:
         return ret
 
     @plog("Vm_mange.list_detail")
-    def list_detail(self, query_dict={}):
+    def list_detail(self, query_dict=None):
         '''
         列出虚拟机详细信息
         :param query_list:查询的条件{"name":"","ip":"","status":"",........}
@@ -98,7 +104,7 @@ class Vm_manage:
         return 0
 
     @plog("Vm_manage.create")
-    def create(self, name, flavor, image, password, userdata, key_name="", disk=[]):
+    def create(self, name, flavor, image, password, userdata, key_name="",disk=None):
         '''
         创建虚拟机,创建的接口在后台应该是异步执行的，当创建的请求发送过去后很快会有结果返回，但是虚拟机实际可能还没有创建成功
         所以需要先判断虚拟机的创建状态，如果是完成的再绑定磁盘
@@ -123,6 +129,8 @@ class Vm_manage:
         :return:
         '''
         ret = 0
+        if disk is None:
+            disk = []
         self.result.update({name: {"name": name, "id": "", "status_vm": 0,
                                    "status_disk": {}}})  # 虚拟机创建状态，0表示创建中，1表示成功，2表示失败
         assert self.token != "", "not login"
@@ -131,7 +139,9 @@ class Vm_manage:
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         avzone = self.get_avzone()
         params = {"server": {"name": name, "flavorRef": flavor, "imageRef": image, "adminPass": password,
-                             "user_data": userdata,"availability_zone":avzone}}
+                             "availability_zone":avzone}}
+        if userdata:
+            params["server"].update({"user_data":userdata})
         if key_name:
             params["server"].update({"key_name": key_name})
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
@@ -179,8 +189,8 @@ class Vm_manage:
             self.result[name]["status_vm"] = 1 if t == 0 else 2
         return ret
 
-    @plog("Vm_manage.create")
-    def create_multiple(self, name, flavor, image, password, userdata, min_count=1, max_count=1, key_name="", disk=[]):
+    @plog("Vm_manage.create_multiple")
+    def create_multiple(self, name, flavor, image, password,min_count=1, max_count=1, key_name="", disk=None):
         '''
         同时创建多台虚拟机，现在的测试环境只能测试功能，无法测试性能
         先实现功能，后面再测试效率，如果效率过低需要换成异步创建的方式
@@ -195,15 +205,23 @@ class Vm_manage:
         :return:
         '''
         ret = 0
+        if disk is None:
+            disk = []
         assert self.token != "", "not login"
         if min_count > max_count:
             max_count = min_count
         # if disk:  # 创建多个带磁盘的虚拟机需要用线程池来做，暂时默认为三个线程
+        if os.path.exists(OPENSTACK_KEY_PATH):
+            with open(OPENSTACK_KEY_PATH,"r") as fp:
+                tmp_str = fp.read()
+                userdata = base64.b64encode(tmp_str)
+        else:
+            userdata = ""
         workpool = WorkPool()
         workpool.work_add()
         for i in range(max_count):
             name_new = "%s-%s" % (name, i)
-            workpool.task_add(self.create, (name_new, flavor, image, password, userdata, key_name, disk))
+            workpool.task_add(self.create, (name_new, flavor, image, password, userdata, key_name,disk))
         workpool.work_start()
         workpool.work_wait()  # 改成非阻塞的模式,通过self.result来判断是否做完
         # else:  下面的方法是调用原生的api去创建多台虚拟机，但是无法展示每台创建的进度，现在是循序调用创建单台的api
@@ -228,7 +246,14 @@ class Vm_manage:
 
     @plog("Vm_manage.get_avzone")
     def get_avzone(self):
-        list_hy_info = CommonApi.get_hvinfo()["hypervisors"]
+        global lock
+        lock.acquire()
+        try:
+            list_hy_info = CommonApi.get_hvinfo()["hypervisors"]
+            list_az_info = CommonApi.get_azinfo()["aggregates"]
+            lock.release()
+        except:
+            lock.release()
         def _util_az(az_info):
             list_hosts = az_info["hosts"]
             list_hy_info_tmp = filter(lambda i:i["hypervisor_hostname"] in list_hosts and i["status"] == "enabled",list_hy_info)
@@ -244,7 +269,6 @@ class Vm_manage:
             total_mem_used = total_mem - total_mem_free
             util = round(float(total_vcpu_used)/float(total_vcpu),2) + round(float(total_mem_used)/float(total_mem),2)
             return util
-        list_az_info = CommonApi.get_azinfo()["aggregates"]
         av_zone = reduce(lambda x,y:x if _util_az(x) <= _util_az(y) else y,list_az_info)["availability_zone"]
         return av_zone
 
@@ -520,7 +544,7 @@ class Vm_control:
         return ret
 
     @plog("vm_control.get_console_log")
-    def get_console_log(self, vm_id, length=30):
+    def get_console_log(self, vm_id, length=0):
         '''
         获取虚拟机日志
         :return:
@@ -530,7 +554,9 @@ class Vm_control:
         path = url_vm_control_action.format(project_id=self.project_id,vm_id=vm_id)
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"os-getConsoleOutput": {"length": length}}
+        params = {"os-getConsoleOutput": {}}
+        if length:
+            params["os-getConsoleOutput"].update({"length":length})
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
         return ret
@@ -547,8 +573,12 @@ class Vm_snap:
         找到当前主机所在的快照节点
         :return:
         '''
-        tmp_ret = DbVmSnap.objects.get(vm_id=self.vm_id, status=1)
-        ret = tmp_ret.image_name
+        try:
+            tmp_ret = DbVmSnap.objects.get(vm_id=self.vm_id, status=1)
+            ret = tmp_ret.image_name
+        except ObjectDoesNotExist,err:
+            ret = 2
+            dlog("Vm_snap.find_parent warning:%s"%err,lever="WARNING")
         return ret
 
     @plog("Vm_snap.create_root_snap")
@@ -584,11 +614,14 @@ class Vm_snap:
         :return:0表示正常，1表示有异常，2表示名称冲突
         '''
         ret = 0
-        image_list = self.list_snap()
+        image_list_tmp = self.list_snap()
+        image_list = [i["image_name"] for i in image_list_tmp]
         if image_name_new in image_list:
             ret = 2
         else:
-            DbVmSnap.objects.get(vm_id=self.vm_id, image_name=image_name_old).image_name=image_name_new
+            tmp = DbVmSnap.objects.get(vm_id=self.vm_id, image_name=image_name_old)
+            tmp.image_name = image_name_new
+            tmp.save()
             DbVmSnap.objects.filter(vm_id=self.vm_id, parent_name=image_name_old).update(parent_name=image_name_new)
         return ret
 
@@ -640,7 +673,8 @@ class Vm_snap:
         :param image_name:
         :return:1表示有异常，2表示名称冲突
         '''
-        image_list = self.list_snap()
+        image_list_tmp = self.list_snap()
+        image_list = [i["image_name"] for i in image_list_tmp]
         image_name = self.vm_id + image_name  # 确保名称的唯一性
         if image_name.strip() in image_list:
             ret = 2
@@ -654,10 +688,20 @@ class Vm_snap:
             assert image_id != 1
             parent_name = self.find_parent()
             assert parent_name != 1
+            if parent_name == 2:
+                vm = Vm_manage()
+                vm_image_id = vm.show_detail(self.vm_id)["server"]["image"].get("id","")
+                assert vm_image_id != "","can not get image_id"
+                tmp_ret = self.create_root_snap(vm_image_id)
+                assert tmp_ret != 1
+                parent_name = self.find_parent()
+                assert parent_name!= 1 or parent_name != 2
             date = DbVmSnap(image_name=image_name, vm_id=self.vm_id, parent_name=parent_name, image_id=image_id,
                             status=1, time=time_now)
             date.save()
-            DbVmSnap.objects.get(image_name=parent_name, vm_id=self.vm_id).status=0
+            tmp = DbVmSnap.objects.get(image_name=parent_name, vm_id=self.vm_id)
+            tmp.status = 0
+            tmp.save()
         return ret
 
     @plog("Vm_snap.rebuild")
@@ -672,8 +716,12 @@ class Vm_snap:
         image_id = DbVmSnap.objects.get(image_name=image_name, vm_id=self.vm_id).image_id
         ret = vm.rebuild(self.vm_id, image_id, "default")
         assert ret != 1
-        DbVmSnap.objects.get(status=1, vm_id=self.vm_id).update(status=0)
-        DbVmSnap.objects.get(image_name=image_name, vm_id=self.vm_id).status=1
+        tmp = DbVmSnap.objects.get(status=1, vm_id=self.vm_id)
+        tmp.status = 0
+        tmp.save()
+        tmp = DbVmSnap.objects.get(image_name=image_name, vm_id=self.vm_id)
+        tmp.status = 1
+        tmp.save()
         return ret
 
     @plog("Vm_snap,list_snap")
@@ -683,5 +731,6 @@ class Vm_snap:
         :return:
         '''
         tmp_list = DbVmSnap.objects.filter(vm_id=self.vm_id)
-        image_list = [i.image_name for i in tmp_list]
+        image_list = tmp_list.values()
         return image_list
+
