@@ -5,8 +5,7 @@ import './extend.less'
 import {Modal, ModalHeader, ModalBody} from 'bfd-ui/lib/Modal'
 import OPEN from '../data_request/request.js'
 import update from 'react-update'
-import {Progress, Button} from 'antd'
-const ButtonGroup = Button.Group
+import Button from 'bfd/Button'
 import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
 import message from 'bfd-ui/lib/message'
 import Icon from 'bfd-ui/lib/Icon'
@@ -322,17 +321,16 @@ const Create_model = React.createClass({
         )
       }
     }),
-      xhr({
-        type: 'GET',
-        url: 'openstack/flavors/',
-        success(data) {
-          self.setState({
-            host_flavors: data['name'],
-            loading: false
-          })
-        }
-      })
-
+    xhr({
+      type: 'GET',
+      url: 'openstack/flavors/',
+      success(data) {
+        self.setState({
+          host_flavors: data['name'],
+          loading: false
+        })
+      }
+    })
   },
   handleDateSelect(date) {
     const formData = this.state.formData
@@ -375,7 +373,7 @@ const Create_model = React.createClass({
 
     return (
       <div style={{float: "left", margin: '0px 10px 0px 0px'}}>
-        <button className="btn btn-primary" onClick={this.handleOpen}>创建</button>
+        <Button className="" onClick={this.handleOpen}>创建</Button>
         <Modal ref="modal">
           <ModalHeader>
             <h2>虚拟机创建</h2>
@@ -496,13 +494,7 @@ const Progress_model = React.createClass({
             clearTimeout(interval)
         }
     }
-  })   
-  /* if ( _this.state.percent > 99){
-      clearTimeout(interval)
-    }
-    else{
-     _this.increase()
-    }*/
+    })
     },5000)
 
   },

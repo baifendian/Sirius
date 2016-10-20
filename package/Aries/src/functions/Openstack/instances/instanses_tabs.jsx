@@ -117,104 +117,11 @@ class Show_log extends Component {
 }
 
 
-class Host_Timeline1 extends Component {
-  constructor(props) {
-    super()
-    this.state = {
-      column: [{
-        title: 'ID',
-        key: 'id',
-        order: false,
-        width:'300px'
-      }, {
-        title: '姓名',
-        order: false,
-      //  width: '100px',
-        render: (text, item) => {
-          return <a href="javascript:void(0);" onClick={this.handleClick.bind(this, item)}>{text}</a>
-        },
-        key: 'name'
-      }, {
-        title: '描述',
-        key: 'desc',
-        order: false
-      },/* {
-        title: '国家/地区',
-        key: 'country',
-        width: '20%',
-        render: (text, item) => {
-          return item.country + "/" + item.area
-        }
-      },*/ {
-        title: '注册日期',
-        key: 'time',
-        order: false
-      }],
-      data: []
-    }
-  }
-
-  render() {
-    let data=this.props.instance_backup
-    console.log(this.state.data,'ff')
-    console.log(this.props.instance_backup,'ff11')
-    return (
-      <FixedTable 
-        height={200}
-        data={data}
-        column={this.state.column}
-        onOrder={::this.handleOrder}
-      />
-    )
-  }
-
-  handleClick(item, event) {
-    event = event ? event : window.event;
-    event.stopPropagation();
-    console.log(item)
-  }
-
-  initdata(){
-   /* let url=OPEN.UrlList()['instances_post']+'?name=instances_backup_show'+'&id='+this.props.host_desc['id']
-    xhr({
-      type: 'GET',
-      url: url,
-      success(data) {
-        console.log(data,'xhr')
-        return data
-      }
-    })*/
-    this.setState({data:this.props.instance_backup}) 
-  }
-
-  componentWillUpdate(){
-    //this.setState({data:this.props.instance_backup}) 
-  }
-
-  componentWillMount(){
-    //let url=OPEN.UrlList()['instances_post']+'?name=instances_backup_show'+'&id='+this.props.host_desc['id']
-    //OPEN.xhrGetData(this,url,this.xhrCallback)   
-   // this.setState({data:this.props.instance_backup}) 
-  }
-
-  xhrCallback(_this, executedData) {
-    let data = executedData['data']
-    _this.setState({data})
-  }
-
-  handleRowClick(row) {
-    console.log('rowclick', row)
-  }
-
-  handleOrder(name, sort) {
-    console.log(name, sort)
-  }
-}
-
 class Host_Timeline extends Component {
   constructor(props) {
     super()
     this.state = {
+      loading: false,
       column: [{
         title: '序号',
         key: 'sequence'
@@ -239,6 +146,12 @@ class Host_Timeline extends Component {
         title: '创建时间',
         key: 'time',
         order: false
+      },{
+        title: '操作',
+        render: (item, component) => {
+          return <a href = "javascript:void(0);" onClick = {this.handleClick.bind(this, item)}>删除</a>
+        },
+        key: 'operation'
       }]
     }
   }
@@ -249,37 +162,34 @@ class Host_Timeline extends Component {
       totalPageNum: 1
     }
     return (
+      <Spin spinning={this.state.loading}>
       <DataTable 
         //url={this.state.url}
         data={data}
-        onPageChange={::this.onPageChange} 
+        //onPageChange={::this.onPageChange} 
         showPage="false"
         column={this.state.column} 
         howRow={10}
-        onRowClick={::this.handleRowClick}
-        onOrder={::this.handleOrder}
+        //onRowClick={::this.handleRowClick}
+        //onOrder={::this.handleOrder}
       /> 
+      </Spin>
     )
+  }
+
+  xhrCallback(_this, executedData) {
+    let data = executedData['data']
+    _this.props._self.setState({instance_backup:data})
+    _this.setState({loading:false})
   }
 
   handleClick(item, event) {
     event = event ? event : window.event;
     event.stopPropagation();
+    this.setState({loading:true})
+    let url=OPEN.UrlList()['instances_post']+'?name=instances_backup_delete'+'&backup_name='+item['name']+'&id='+item['vm_id']
+    OPEN.xhrGetData(this,url,this.xhrCallback)  
     console.log(item)
-  }
-
-  onPageChange(page) {
-    this.setState({
-      url: "/api/table"
-    })
-  }
-
-  handleRowClick(row) {
-    console.log('rowclick', row)
-  }
-
-  handleOrder(name, sort) {
-    console.log(name, sort)
   }
 }
 
@@ -289,9 +199,13 @@ class Host_Timeline extends Component {
 
 
 const Echarts_s = React.createClass({
-  componentWillUpdate(){
+  componentWillUpdate(nextProps){
     this.initData()
+   /* if (nextProps.host_desc !== this.props.host_desc){
+      this.initData()
+    }
     //this.initchart()
+    console.log(nextProps,'nextProps')*/
   },
 
   dataManage(_this,data) {
@@ -423,7 +337,6 @@ const Echarts_s = React.createClass({
   },
 
   handleChange(value,text) {
-    console.log(value,text)
     let id=this.props.host_desc['id']
     OPEN.Get_instances_cpu(this,this.dom_id()[text],id,value,this.dataManage)
   },
@@ -489,9 +402,6 @@ const Host_details = React.createClass({
     return days+'天'+hours+'小时'+minutes+'分'
   },
   render(){
-    //console.log(this.props.host_desc,'.........aaaa')
-    //let text=this.date()
-    //console.log(text,'text')
     const list=[1]
     const nav = this.props.host_desc['disk_list'] && this.props.host_desc['disk_list'].map((item,i)=>{
       return (
@@ -557,7 +467,7 @@ const Tabs_List = React.createClass({
           <Host_details host_desc={this.props.host_desc}/>
         </TabPanel>
         <TabPanel>
-          <Host_Timeline host_desc={this.props.host_desc} instance_backup={this.props.instance_backup}/>
+          <Host_Timeline host_desc={this.props.host_desc} instance_backup={this.props.instance_backup} _self={this.props._this}/>
         </TabPanel>
         <TabPanel >
           <Echarts_s host_desc={this.props.host_desc}/>

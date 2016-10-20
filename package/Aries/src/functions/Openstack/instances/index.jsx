@@ -236,7 +236,6 @@ export default React.createClass({
 
   xhrCallback_backup(_this,executedData){
     let data=executedData['data']
-    console.log(data,'instance_backup')
     _this.setState({
       instance_backup:data
     })
@@ -332,13 +331,7 @@ export default React.createClass({
       OPEN.posthoststop(this, 'instances', this.state.select_all, this.state.host_post)
     }
   },
-  handleOpen_re() {
-    this.refs.modal.open()
-    this.setState({test: "重启"})
-  },
-  disk_model_open(){
-    this.refs.model_disk.open()
-  },
+
   componentDidMount(){
     window.onresize = ()=> {
       if (this.state.host_desc) {

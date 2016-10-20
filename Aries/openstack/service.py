@@ -51,14 +51,19 @@ def user_login():
     def ensure_login(func):
         def ensure_login_wrapper(request,*args, **kwargs):
             try:
-                login()
-                openstack_log.info('login success')
                 retu_obj = func(request,*args,**kwargs)
                 openstack_log.info('execute func %s success' % func)
                 return retu_obj
             except:
-                s = traceback.format_exc()
-                openstack_log.error('execute func %s failure : %s' % (func, s))
+                try:
+                    login()
+                    openstack_log.info('login success')
+                    retu_obj = func(request, *args, **kwargs)
+                    openstack_log.info('execute func %s success' % func)
+                    return retu_obj
+                except:
+                    s = traceback.format_exc()
+                    openstack_log.error('execute func %s failure : %s' % (func, s))
         return ensure_login_wrapper
     return ensure_login
 
@@ -640,9 +645,9 @@ def instances_backup_show(request):
         if sys['name'] == 'root':
             continue
         sys['id']= i['image_id']
+        sys['vm_id']=i['vm_id']
         sys['time']=i['time'].strftime('%Y-%m-%d %H:%M:%S')
         ret['data'].append(sys)
-    print ret
     ret=json_data(ret)
     return ret
 
@@ -653,6 +658,30 @@ def backup_delete(request):
     request_data=volume_backup.delete(backup_id=backup_id)
     if request_data != 1:
         ret['status'] = True
+    else:
+        ret['status'] = False
+    ret=json_data(ret)
+    return ret
+
+def instances_backup_delete(request):
+    ret={}
+    vm_id = request.GET.get('id')
+    backup_name=str(vm_id)+str(request.GET.get('backup_name'))
+    vm_snap=Vm_snap(vm_id)
+    return_data=vm_snap.delete_node(backup_name)
+    if return_data != 1:
+        #ret['status'] = True
+        return_data = vm_snap.list_snap()
+        ret['data'] = []
+        for i in return_data:
+            sys = {}
+            sys['name'] = i['image_name'].replace(i['vm_id'], '')
+            if sys['name'] == 'root':
+                continue
+            sys['id'] = i['image_id']
+            sys['vm_id'] = i['vm_id']
+            sys['time'] = i['time'].strftime('%Y-%m-%d %H:%M:%S')
+            ret['data'].append(sys)
     else:
         ret['status'] = False
     ret=json_data(ret)
@@ -673,6 +702,7 @@ Methods = {
         'network_monitor':network_monitor,
         'network_monitor_packets':network_monitor_packets,
         "instances_backup_show":instances_backup_show,
+        "instances_backup_delete":instances_backup_delete,
     },
     "POST": {
         "CREATE": volumes_create,

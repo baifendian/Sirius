@@ -113,7 +113,7 @@ const Disk_list = React.createClass({
         self.props._this.refs.model_disk.close()
         OPEN.update_url(self.props.self,"instances")
         self.setState({loading: false})
-        console.log(data)
+        //console.log(data)
         //self.Disk_list()
         for (var i in data['totalList']) {
           if (data['totalList'][i]['status']){

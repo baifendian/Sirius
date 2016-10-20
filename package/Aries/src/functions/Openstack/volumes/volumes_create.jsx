@@ -63,7 +63,7 @@ const Create_volumes=React.createClass({
     let url=OPEN.UrlList()['volumes_post']
     return (
       <div style={{float:"left",margin: "0px 10px 0px 10px"}}>
-      <button className="btn btn-primary" onClick={this.handleOpen}>创建</button>
+      <Button  onClick={this.handleOpen}>创建</Button>
         <Modal ref="modal_m">
           <ModalHeader>
             <h4>创建</h4>

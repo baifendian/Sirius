@@ -9,13 +9,14 @@ import NavigationInPage from 'public/NavigationInPage'
 import Openstackconf from '../Conf/Openstackconf'
 import TextOverflow from 'bfd-ui/lib/TextOverflow'
 import ReactDOM from 'react-dom'
+import OPEN from '../data_request/request.js'
 
 
 export default React.createClass({
   getInitialState: function () {
     return {
       loading: false,
-      url: "openstack/flavors/",
+      url: OPEN.UrlList()['flavors'],
       column: [{
         title: '名称',
         order: false,
