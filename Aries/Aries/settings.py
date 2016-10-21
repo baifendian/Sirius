@@ -32,6 +32,7 @@ FTP_LOCAL_DIR=os.path.join(BASE_DIR.rstrip("Aries"), "download/")
 FILE_PATH=os.path.join(BASE_DIR.rstrip("Aries"), "sbin")
 file_name='{0}/Aries.yaml'.format(FILE_PATH).replace('\\','/')
 yaml_file = open(file_name)
+OPENSTACK_KEY_PATH = os.path.join(BASE_DIR,"openstack/middleware/common/key.yaml")
 SETTINGS = yaml.load(yaml_file)
 print SETTINGS
 

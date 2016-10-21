@@ -9,7 +9,7 @@ import os
 import errno
 import time
 import ConfigParser
-from Aries.settings import BASE_DIR,IP_CINDER,PORT_CINDER,IP_KEYSTONE,PORT_KEYSTONE,IP_NOVA,PORT_NOVA,DATABASES
+from Aries.settings import BASE_DIR,IP_CINDER,PORT_CINDER,IP_KEYSTONE,PORT_KEYSTONE,IP_NOVA,PORT_NOVA,DATABASES,OPENSTACK_KEY_PATH
 # from openstack.views import openstack_log
 openstack_log = logging.getLogger("openstack_log")
 pro_path = os.path.join(BASE_DIR,"openstack/middleware/common")

@@ -8,7 +8,7 @@ from openstack.middleware.common.urls import url_volume_action, url_volume_attac
     url_volume_attach_list, url_volume_backup_action, url_volume_backup_create, url_volume_backup_list, url_vm_action, \
     url_volume_backup_list_detail, url_volume_backup_restore, url_volume_change, url_volume_create, url_volume_extend, \
     url_volume_list, url_volume_list_detail, url_volume_snap_action, url_volume_snap_create, url_volume_snap_list, \
-    url_volume_snap_list_detail
+    url_volume_snap_list_detail, url_volume_snap_change
 
 
 class Volume:
@@ -186,7 +186,7 @@ class Volume:
         return ret
 
     @plog("Volume.change")
-    def change(self, volume_id, name="", description=""):
+    def change(self, volume_id,description,name=""):
         '''
         修改磁盘信息
         :return:
@@ -195,11 +195,9 @@ class Volume:
         path = url_volume_change.format(project_id=self.project_id,volume_id=volume_id)
         method = "PUT"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
-        params = {"volume": {}}
+        params = {"volume": {"description":description}}
         if name:
             params["volume"].update({"name": name})
-        if description:
-            params["volume"].update({"description": description})
         ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
         assert ret != 1, "send_request error"
         return ret
@@ -276,6 +274,25 @@ class Volume_snaps():
         head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
         params = ""
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
+        return ret
+
+    @plog("Volume_snap.change")
+    def change(self,snapshot_id,des,name=""):
+        '''
+        修改快照名称和描述信息
+        :param name:
+        :param des:
+        :return:
+        '''
+        ret = 0
+        assert self.token != "","not login"
+        path = url_volume_snap_change.format(project_id=self.project_id,snapshot_id=snapshot_id)
+        method = "PUT"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.token}
+        params = {"snapshot":{"description":des}}
+        if name:
+            params["snapshot"].update({"name":name})
+        ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
         return ret
 
     @plog("Volume_snaps.delete")
