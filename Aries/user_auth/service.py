@@ -8,6 +8,7 @@ import logging
 from django.http import HttpResponse
 import json
 from hdfs.tools import *
+from openstack.middleware.user.user import User
 ac_logger = logging.getLogger("access_log")
 StatusCode={"GET_SUCCESS":200,
              "GET_FAILED":500,
@@ -176,6 +177,17 @@ def spaceMemberPost(request,pk):
     #deleteSpaceUserRoles.delete()
     deleteUser = list((set(oldUser)) - set(newUser2))
     addUser = list((set(newUser2)) - set(oldUser))
+    if space.title == "openstack":
+        space_name = space.name
+        try:
+            user_obj = User()
+            addUserName = [getObjById(Account,uid).name for uid in addUser]
+            deleteUserName = [getObjById(Account,uid).name for uid in deleteUser]
+            user_obj.user_attach(space_name,addUserName,deleteUserName)
+        except Exception,e:
+            ac_logger.error("%s" %e)
+            result["code"] = StatusCode["POST_FAILED"]
+            result["data"] = "%s" %e
     role_name = "spaceViewer"
     role = getObjByAttr(Role,"name",role_name)[0]
     for uid in addUser:

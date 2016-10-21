@@ -58,8 +58,9 @@ url_user_common = "/%s/users"%version_token
 url_user_action = "/%s/users/{user_id}"%version_token
 url_user_project = "/%s/users/{user_id}/projects"%version_token
 url_project_member = "/%s/role_assignments"%version_token
-url_project_user_action = "/%s/OS-INHERIT/projects/{project_id}/users/{user_id}/roles/{role_id}/inherited_to_projects"%version_token
-
+url_project_user_action = "/%s/projects/{project_id}/users/{user_id}/roles/{role_id}"%version_token
+url_project_user_del = "/%s/projects/{project_id}/users/{user_id}/roles/{role_id}"%version_token
+url_project_list = "/%s/projects"%version_token
 
 
 

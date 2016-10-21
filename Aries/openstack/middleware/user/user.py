@@ -2,7 +2,8 @@
 import urllib
 import md5
 from openstack.middleware.common.common import send_request,plog, IP_keystone, PORT_keystone
-from openstack.middleware.common.urls import url_user_common, url_user_action,url_user_project,url_project_member,url_project_user_action
+from openstack.middleware.common.urls import url_user_common, url_user_action,url_user_project,url_project_member,url_project_user_action,url_project_user_del, \
+    url_project_list
 from openstack.middleware.login.login import get_admin_project_id,get_admin_token
 class User(object):
     def __init__(self):
@@ -20,6 +21,24 @@ class User(object):
         '''
         assert self.admin_token != "","can not login with admin user"
         path = url_user_common
+        method = "GET"
+        head = {"Content-Type": "application/json", "X-Auth-Token": self.admin_token}
+        params = ""
+        if query_dict:
+            query_str = urllib.urlencode(query_dict)
+            path = "%s?%s" % (path, query_str)
+        ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
+        return ret
+
+    @plog("User.list_pro")
+    def list_pro(self,query_dict=None):
+        '''
+        列出所有project，由于都是keystone的接口，所以和user的放在一起
+        :param query_dict:
+        :return:
+        '''
+        assert self.admin_token != "","can not login with admin user"
+        path = url_project_list
         method = "GET"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.admin_token}
         params = ""
@@ -61,6 +80,19 @@ class User(object):
         assert tmp_dict != 1
         user_id = tmp_dict["users"][0].get("id","")
         return user_id
+
+    @plog("User.get_id_by_name_pro")
+    def get_id_by_name_pro(self,name):
+        '''
+        通过project名字获取project id
+        :param name:
+        :return:
+        '''
+        tmp_dict = self.list_pro({"name":name})
+        assert tmp_dict != 1
+        pro_id = tmp_dict["projects"][0].get("id","")
+        return pro_id
+
 
     @plog("User.delete")
     def delete(self):
@@ -121,7 +153,7 @@ class User(object):
         将user从project中移除
         :return:
         '''
-        path = url_project_user_action.format(project_id=project_id,user_id=user_id,role_id=self.role_id)
+        path = url_project_user_del.format(project_id=project_id,user_id=user_id,role_id=self.role_id)
         method = "DELETE"
         params = ""
         head = {"Content-Type": "application/json", "X-Auth-Token": self.admin_token}
@@ -129,7 +161,7 @@ class User(object):
         return ret
 
     @plog("User.user_attach")
-    def user_attach(self,project_id,user_add_list=None,user_del_list=None):
+    def user_attach(self,project_name,user_add_list=None,user_del_list=None):
         '''
         1.判断新增用户是否存在，不存在则创建用户
         2.将新增用户加入project中(不需要判断是否已存在于project中)
@@ -140,18 +172,23 @@ class User(object):
         user_list_tmp = self.list().get("users",[])
         user_list = {}
         map(lambda i:user_list.update({i["name"]:i["id"]}),user_list_tmp)
+        project_id = self.get_id_by_name_pro(project_name)
         if user_add_list:
             for user in user_add_list:
-                if user not in user_list:
+                if user and user not in user_list: #防止user为空
                     ret_tmp = self.create(user,project_id,self.password)
                     assert ret_tmp != 1,'create user faild'
+                    user_id = ret_tmp["user"].get("id","")
                 else:
-                    ret_tmp = self.project_user_add(project_id,user_list[user])
-                    assert ret_tmp != 1,"add user to project faild"
+                    user_id = user_list[user]
+                ret_tmp = self.project_user_add(project_id,user_id)
+                assert ret_tmp != 1,"add user to project faild"
         if user_del_list:
-            project_user_list = self.get_project_user(project_id)
+            project_user_list_tmp = self.get_project_user(project_id)["role_assignments"]
+            project_user_list = [i["user"]["id"] for i in project_user_list_tmp]
             for user in user_del_list:
-                if user in project_user_list:
-                    ret_tmp = self.project_user_del(project_id,user_list[user])
+                user_id = user_list.get(user,"")
+                if user_id in project_user_list:
+                    ret_tmp = self.project_user_del(project_id,user_id)
                     assert ret_tmp != 1,"del user from project faild"
         return ret

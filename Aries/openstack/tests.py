@@ -44,6 +44,16 @@ class Openstack_test(TestCase):
         msg = user.list()
         prints(msg)
 
+    def test_pro_list(self):
+        user = User()
+        msg = user.list_pro()
+        prints(msg)
+
+    def test_get_pro_id(self):
+        user = User()
+        msg = user.get_id_by_name_pro("openstack")
+        prints(msg)
+
     def test_get_user_project(self):
         user = User()
         name = "openstack"
@@ -79,6 +89,13 @@ class Openstack_test(TestCase):
         user_id = user.get_id_by_name(user_name)
         msg = user.project_user_del(project_id,user_id)
         prints(msg)
+
+    def test_user_attach(self):
+        user = User()
+        project_id = PROJECT_ID
+        user_add_list = ["test_user1","test_user2"]
+        ret = user.user_attach(project_id,user_add_list)
+        prints(ret)
 
     def test_list_image(self):
         self.test_login()
