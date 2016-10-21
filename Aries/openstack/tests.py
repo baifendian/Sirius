@@ -435,6 +435,16 @@ class Openstack_test(TestCase):
         ret = CommonApi.get_hvinfo()
         prints(ret)
 
+    def test_get_domain(self):
+        self.test_login()
+        ret = CommonApi.get_domain_id()
+        prints(ret)
+
+    def test_get_role(self):
+        self.test_login()
+        ret = CommonApi.get_role_id()
+        prints(ret)
+
 
     def auto_test(self):
         global VM_ID

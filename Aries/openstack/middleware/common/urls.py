@@ -52,6 +52,8 @@ url_volume_backup_restore = common_cinder + "backups/{backup_id}/restore"
 url_keypairs = common_nova + "os-keypairs"
 url_az_info = common_nova + "os-aggregates"
 url_hv_info = common_nova + "os-hypervisors/detail"
+url_domain_info = "/%s/domains"%version_token
+url_role_info = "/%s/roles"%version_token
 
 #user api
 url_user_common = "/%s/users"%version_token

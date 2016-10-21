@@ -5,12 +5,23 @@ from openstack.middleware.common.common import send_request,plog, IP_keystone, P
 from openstack.middleware.common.urls import url_user_common, url_user_action,url_user_project,url_project_member,url_project_user_action,url_project_user_del, \
     url_project_list
 from openstack.middleware.login.login import get_admin_project_id,get_admin_token
+from openstack.middleware.common.common_api import CommonApi
 class User(object):
     def __init__(self):
         self.admin_token = get_admin_token()
-        self.role_id = "f4f7c960435f4745abd0a08126dab279"     #普通用户role id，暂时写死就可以了
-        self.domain_id = "48fc8e31d60348008001455ec8d19a14"   #domain_id固定，现在官方API有问题
         self.password = md5.md5("baifendian").hexdigest()
+        self.domain_id = ""
+        self.role_id = ""
+
+    @plog("User._get_domain")
+    def _get_domian(self):
+        if not self.domain_id:
+            self.domain_id = CommonApi.get_domain_id({"name":"default"})["domains"][0]["id"]
+
+    @plog("User._get_role")
+    def _get_role(self):
+        if not self.role_id:
+            self.role_id = CommonApi.get_role_id({"name":"user"})["roles"][0]["id"]
 
     @plog("User.list")
     def list(self,query_dict=None):
@@ -58,6 +69,7 @@ class User(object):
         :return:
         '''
         assert self.admin_token != "","can not login with admin user"
+        self._get_domian()
         path = url_user_common
         method = "POST"
         head = {"Content-Type": "application/json", "X-Auth-Token": self.admin_token}
@@ -125,6 +137,7 @@ class User(object):
         :return:返回结果中只有user的id，没有name
         '''
         path = url_project_member
+        self._get_role()
         query_dict = {"role.id":self.role_id,"scope.project.id":project_id,"include_subtree":True}
         query_str = urllib.urlencode(query_dict)
         path = "%s?%s" % (path, query_str)
@@ -140,6 +153,7 @@ class User(object):
         将user加入project中
         :return:
         '''
+        self._get_role()
         path = url_project_user_action.format(project_id=project_id,user_id=user_id,role_id=self.role_id)
         method = "PUT"
         params = ""
@@ -153,6 +167,7 @@ class User(object):
         将user从project中移除
         :return:
         '''
+        self._get_role()
         path = url_project_user_del.format(project_id=project_id,user_id=user_id,role_id=self.role_id)
         method = "DELETE"
         params = ""

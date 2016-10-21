@@ -1,7 +1,9 @@
 # coding:utf-8
+import urllib
+
 from openstack.middleware.login.login import get_token, get_proid,get_admin_project_id,get_admin_token, admin_login
-from common import send_request, plog,IP_nova,PORT_nova
-from urls import url_keypairs,url_az_info,url_hv_info
+from common import send_request, plog,IP_nova,PORT_nova,IP_keystone,PORT_keystone
+from urls import url_keypairs,url_az_info,url_hv_info,url_domain_info,url_role_info
 
 class CommonApi:
     def __init__(self):
@@ -74,3 +76,38 @@ class CommonApi:
             assert ret != 1,"send_request error"
         return ret
 
+    @classmethod
+    @plog("CommonApi.get_domain_id")
+    def get_domain_id(cls,query_dict=None):
+        '''
+        获取domain_id
+        :return:
+        '''
+        admin_token = get_admin_token()
+        path = url_domain_info
+        if query_dict:
+            query_str = urllib.urlencode(query_dict)
+            path = "%s?%s" % (path, query_str)
+        method = "GET"
+        head = {"Content-Type": "application/json", "X-Auth-Token": admin_token}
+        params = ""
+        ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
+        return ret
+
+    @classmethod
+    @plog("CommonApi.get_role_id")
+    def get_role_id(cls,query_dict=None):
+        '''
+        获取domain_id
+        :return:
+        '''
+        admin_token = get_admin_token()
+        path = url_role_info
+        if query_dict:
+            query_str = urllib.urlencode(query_dict)
+            path = "%s?%s" % (path, query_str)
+        method = "GET"
+        head = {"Content-Type": "application/json", "X-Auth-Token": admin_token}
+        params = ""
+        ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
+        return ret
