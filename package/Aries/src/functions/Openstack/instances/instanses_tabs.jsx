@@ -102,9 +102,9 @@ class Show_log extends Component {
       <div ref="host_width">
         <Row >
           <Col col="md-6">
-            <span style={{margin:'10px',fontSize:'22px'}}>云主机控制台日志</span>
+            <span style={{margin:'10px',fontSize:'22px'}}></span>
           </Col>
-          <Col col="md-6">
+          <Col col="md-6" style={{textAlign: 'right',paddingRight:'21px'}}>
             <Input placeholder="请输入日志长度" onChange={::this.handleChange}/><Button onClick={::this.get_count.bind(this,host_id,count)} >查询</Button><Button onClick={::this.get_all}>完整日志</Button>
           </Col>
         </Row>

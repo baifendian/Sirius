@@ -87,7 +87,7 @@ const Delete_volumes = React.createClass({
               onSuccess={this.handleSuccess}
             >
               <div style={{height: '100px'}}>
-                <h4>确定要删除云硬盘{this.state.volumes_name}?</h4>
+                <span>确定要删除云硬盘{this.state.volumes_name}?</span>
               </div>
               <div>
                 <Button type="danger" style={{marginLeft: '100px'}} className="btn btn-primary"

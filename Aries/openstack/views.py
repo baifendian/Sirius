@@ -158,7 +158,7 @@ def instances(request):
             for keys, values in request.POST.items():
                 if 'disk' in keys:
                     disk.append({"size": values})
-            host_create = vm_manage.create_multiple(host_name, host_flavor, host_image, host_password, host_userdata,
+            host_create = vm_manage.create_multiple(host_name, host_flavor, host_image, host_password,
                                                     int(host_count), int(host_count),key_name='',disk=disk)
             if host_create != 1:
                 ret['status'] = True

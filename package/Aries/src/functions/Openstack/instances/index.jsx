@@ -379,7 +379,7 @@ export default React.createClass({
               </ModalHeader>
               <ModalBody>
                 <div>
-                  <h4>{this.state.text_text}</h4>
+                  <span>{this.state.text_text}</span>
                 </div>
                 <div className="openstack_button_si" >
                   <Button onClick={this.handleclean.bind(this, this.state.host_post)} >确定</Button>
