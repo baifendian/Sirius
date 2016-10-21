@@ -98,7 +98,7 @@ class CommonApi:
     @plog("CommonApi.get_role_id")
     def get_role_id(cls,query_dict=None):
         '''
-        获取domain_id
+        获取role_id
         :return:
         '''
         admin_token = get_admin_token()
