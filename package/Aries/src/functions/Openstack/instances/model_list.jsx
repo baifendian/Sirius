@@ -113,7 +113,7 @@ const Disk_list = React.createClass({
         self.props._this.refs.model_disk.close()
         OPEN.update_url(self.props.self,"instances")
         self.setState({loading: false})
-        console.log(data)
+        //console.log(data)
         //self.Disk_list()
         for (var i in data['totalList']) {
           if (data['totalList'][i]['status']){
@@ -276,9 +276,6 @@ const Vm_Backup = React.createClass({
     this.rules = {
       name(v) {
         if (!v) return '名称不能为空'
-      },
-      date(v) {
-        if (!v) return '日期不能为空'
       }
     }
     return {
@@ -306,6 +303,8 @@ const Vm_Backup = React.createClass({
   },
 
   handleSave() {
+    this.props._this.refs.model_disk.close()
+    this.props.self.setState({loading: true})
     this.refs.form.save()
   },
 
@@ -315,8 +314,15 @@ const Vm_Backup = React.createClass({
   },
 
   handleSuccess(res) {
-    this.props._this.refs.modal.close()
-    message.success('保存成功！')
+    this.props.self.setState({loading: false})
+  //  this.props._this.refs.model_disk.close()
+    if (res['status']){
+      message.success('创建备份成功！')}else{
+        if (res['return']){
+        message.danger('创建备份失败!')}else{
+        message.danger('备份名冲突!')
+        }
+    }
   },
   render() {
     const {formData} = this.state
@@ -538,7 +544,7 @@ const Disk_model = React.createClass({
   },
   modulevalue(){
     return {
-      'Vm_Backup': <Vm_Backup vm_list={this.props.vm_list} _this={this}/>,
+      'Vm_Backup': <Vm_Backup vm_list={this.props.vm_list} _this={this} self={this.props._this}/>,
       'Disk_list': <Disk_list vm_list={this.props.vm_list} disk_list={this.state.disk_list} disk_object={this.state.disk_object} _this={this} self={this.props._this} data={this.state.data}/>,
       'Vm_Type': <Vm_Type vm_list={this.props.vm_list} flavor_list={this.state.flavor_list} flavor_object={this.state.flavor_object} _this={this} self={this.props._this}/>,
       'Vm_image': <Vm_image vm_list={this.props.vm_list} data_list={this.state.data_list} data_object={this.state.data_object} _this={this} self={this.props._this}/>,

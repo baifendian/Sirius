@@ -72,7 +72,7 @@ const Delete_volumes = React.createClass({
     let url = OPEN.UrlList()['volumes_post']
     return (
       <div style={{float: "left", margin: "0px 10px 0px 0px"}}>
-        <Button type="danger" className="btn btn-primary" onClick={this.handleOpen} disabled={this.props.button_statuss}>删除</Button>
+        <Button type="danger"  onClick={this.handleOpen} disabled={this.props.button_statuss}>删除</Button>
         <Modal ref="modal_m">
           <ModalHeader>
             <h4>确认删除云硬盘</h4>

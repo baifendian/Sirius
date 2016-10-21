@@ -2,13 +2,15 @@
 from openstack.middleware.login.login import Login, get_token, get_project
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
-from common import json_data,volumes_deal,time_handle,size_handle
+from common import json_data,volumes_deal,time_handle,size_handle,sendhttp,sendhttpdata,sendhttpdate
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
 from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps,Volume_backup
 from django.http import HttpResponse
+from Aries.settings import MONITOR_URL
 import json
 import logging
 import traceback
+import time
 
 openstack_log = logging.getLogger("openstack_log")
 
@@ -49,14 +51,19 @@ def user_login():
     def ensure_login(func):
         def ensure_login_wrapper(request,*args, **kwargs):
             try:
-                login()
-                openstack_log.info('login success')
                 retu_obj = func(request,*args,**kwargs)
                 openstack_log.info('execute func %s success' % func)
                 return retu_obj
             except:
-                s = traceback.format_exc()
-                openstack_log.error('execute func %s failure : %s' % (func, s))
+                try:
+                    login()
+                    openstack_log.info('login success')
+                    retu_obj = func(request, *args, **kwargs)
+                    openstack_log.info('execute func %s success' % func)
+                    return retu_obj
+                except:
+                    s = traceback.format_exc()
+                    openstack_log.error('execute func %s failure : %s' % (func, s))
         return ensure_login_wrapper
     return ensure_login
 
@@ -141,11 +148,17 @@ def volumes_host(request):
     volumes_id = eval(data)['id']
     volumes_name = eval(data)['name']
     volume_attach = Volume_attach()
+    volume=Volume()
     return_data = volume_attach.attach(host_id, volumes_id)
     if return_data != 1:
-        ret['vm'] = host_name
-        ret['status'] = True
-        ret['volumes'] = volumes_name
+        while True:
+            time.sleep(1)
+            return_show = volume.show_detail(volumes_id)['volume']['status']
+            if return_show != 'attaching':
+                ret['vm'] = host_name
+                ret['status'] = True
+                ret['volumes'] = volumes_name
+                break
     else:
         ret['vm'] = host_name
         ret['status'] = False
@@ -319,12 +332,18 @@ def instances_backup(request):
     openstack_log.info(request.POST)
     vm_snap = Vm_snap(instances_id)
     return_data = vm_snap.create(instances_name_b)
-    if return_data != 1:
+    print return_data
+    if return_data == 2:
+        ret['name'] = instances_name
+        ret['status'] = False
+        ret['return'] = False
+    elif return_data != 1:
         ret['name'] = instances_name
         ret['status'] = True
     else:
         ret['name'] = instances_name
         ret['status'] = False
+        ret['return'] = True
     ret = json_data(ret)
     return ret
 
@@ -471,42 +490,132 @@ def snapshot_redact(request):
 def cpu_monitor(request):
     ret={}
     ret['date'] = []
-    ret['cpu_monitor']=[]
-    list={}
-    list['data'] = []
-    list['legend'] = 'free'
-    list_usr={}
-    list_usr['data'] = []
-    list_usr['legend'] = 'use'
-    for i in range(60):
-        data_y='2016-10-9 16:%s:00' % (i)
-        ret['date'].append(data_y)
-        list['data'].append(i)
-        list_usr['data'].append('20')
-    ret['cpu_monitor'].append(list)
-    ret['cpu_monitor'].append(list_usr)
+    ret['cpu_monitor'] = []
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
+    data=sendhttpdata(time_stamp,metric='sys.cpu.util',aggregator='sum',compute='*',instance='instance-00000437')
+    return_data=sendhttp(MONITOR_URL,data)
+    for i in return_data:
+        sys={}
+        sys['legend']=i['metric']
+        sys['data'] = []
+        for key in sorted(i['dps'].iterkeys()):
+            ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(float(key))))
+            sys['data'].append(str(i['dps'][key])[:4])
+        ret['cpu_monitor'].append(sys)
     ret = json_data(ret)
     return ret
 
 def mem_monitor(request):
-    ret={}
-    ret['date'] = []
-    ret['mem_monitor']=[]
-    list={}
-    list['data'] = []
-    list['legend'] = 'free'
-    list_usr={}
-    list_usr['data'] = []
-    list_usr['legend'] = 'use'
-    for i in range(60):
-        data_y='2016-10-9 16:%s:00' % (i)
-        ret['date'].append(data_y)
-        list['data'].append(i)
-        list_usr['data'].append('20')
-    ret['mem_monitor'].append(list)
-    ret['mem_monitor'].append(list_usr)
+    ret = {}
+    ret['mem_monitor'] = []
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
+    metrics=['sys.mem.free_mem','sys.mem.total_mem','sys.mem.util']
+    for i in metrics:
+        ret['date'] = []
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437')
+        return_data = sendhttp(MONITOR_URL, data)
+        for i in return_data:
+            sys = {}
+            sys['legend'] = i['metric']
+            sys['data'] = []
+            for key in sorted(i['dps'].iterkeys()):
+                ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
+                sys['data'].append(str(round(i['dps'][key]/1024,2)))
+            ret['mem_monitor'].append(sys)
+    ret['date'].sort()
     ret = json_data(ret)
     return ret
+
+def disk_iops_monitor(request):
+    ret = {}
+    ret['disk_iops_monitor'] = []
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
+    metrics=['sys.disk.read_ops','sys.disk.write_ops']
+    for i in metrics:
+        ret['date'] = []
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437',name='*')
+        return_data = sendhttp(MONITOR_URL, data)
+        for i in return_data:
+            sys = {}
+            sys['legend'] = i['tags']['name']+'_'+i['metric']
+            sys['data'] = []
+            for key in sorted(i['dps'].iterkeys()):
+                ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
+                sys['data'].append(str(i['dps'][key]))
+            ret['disk_iops_monitor'].append(sys)
+    ret['date'].sort()
+    ret = json_data(ret)
+    return ret
+
+def disk_bps_monitor(request):
+    ret = {}
+    ret['disk_bps_monitor'] = []
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
+    metrics=['sys.disk.read_bps','sys.disk.write_bps']
+    for i in metrics:
+        ret['date'] = []
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437',name='*')
+        return_data = sendhttp(MONITOR_URL, data)
+        for i in return_data:
+            sys = {}
+            sys['legend'] = i['tags']['name']+'_'+i['metric']
+            sys['data'] = []
+            for key in sorted(i['dps'].iterkeys()):
+                ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
+                sys['data'].append(str(i['dps'][key]))
+            ret['disk_bps_monitor'].append(sys)
+    ret['date'].sort()
+    ret = json_data(ret)
+    return ret
+
+def network_monitor(request):
+    ret = {}
+    ret['network_monitor'] = []
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
+    metrics=['sys.nic.tx_bytes_second','sys.nic.rx_bytes_second']
+    for i in metrics:
+        ret['date'] = []
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-000004cc',name='*')
+        return_data = sendhttp(MONITOR_URL, data)
+        for i in return_data:
+            sys = {}
+            sys['legend'] = i['tags']['name']+'_'+i['metric']
+            sys['data'] = []
+            for key in sorted(i['dps'].iterkeys()):
+                ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
+                sys['data'].append(str(i['dps'][key]))
+            ret['network_monitor'].append(sys)
+    ret['date'].sort()
+    ret = json_data(ret)
+    return ret
+
+def network_monitor_packets(request):
+    ret = {}
+    ret['network_monitor_packets'] = []
+    date=request.GET.get('date').split('_')
+    time_stamp=sendhttpdate(date[1],int(date[0]))
+    metrics=['sys.nic.tx_packets_second','sys.nic.rx_packets_second']
+    for i in metrics:
+        ret['date'] = []
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-000004cc',name='*')
+        return_data = sendhttp(MONITOR_URL, data)
+        for i in return_data:
+            sys = {}
+            sys['legend'] =  i['tags']['name']+'_'+i['metric']
+            sys['data'] = []
+            for key in sorted(i['dps'].iterkeys()):
+                ret['date'].append(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(key))))
+                sys['data'].append(str(i['dps'][key]))
+            ret['network_monitor_packets'].append(sys)
+    ret['date'].sort()
+    ret = json_data(ret)
+    return ret
+
 
 @user_login()
 def  backup_restore(request):
@@ -524,6 +633,24 @@ def  backup_restore(request):
     return ret
 
 @user_login()
+def instances_backup_show(request):
+    ret={}
+    backup_id=request.GET.get('id')
+    vm_snap=Vm_snap(backup_id)
+    return_data=vm_snap.list_snap()
+    ret['data']=[]
+    for i in return_data:
+        sys={}
+        sys['name']=i['image_name'].replace(i['vm_id'],'')
+        if sys['name'] == 'root':
+            continue
+        sys['id']= i['image_id']
+        sys['vm_id']=i['vm_id']
+        sys['time']=i['time'].strftime('%Y-%m-%d %H:%M:%S')
+        ret['data'].append(sys)
+    ret=json_data(ret)
+    return ret
+
 def backup_delete(request):
     ret={}
     backup_id=request.POST.get('id')
@@ -536,6 +663,31 @@ def backup_delete(request):
     ret=json_data(ret)
     return ret
 
+def instances_backup_delete(request):
+    ret={}
+    vm_id = request.GET.get('id')
+    backup_name=str(vm_id)+str(request.GET.get('backup_name'))
+    vm_snap=Vm_snap(vm_id)
+    return_data=vm_snap.delete_node(backup_name)
+    if return_data != 1:
+        #ret['status'] = True
+        return_data = vm_snap.list_snap()
+        ret['data'] = []
+        for i in return_data:
+            sys = {}
+            sys['name'] = i['image_name'].replace(i['vm_id'], '')
+            if sys['name'] == 'root':
+                continue
+            sys['id'] = i['image_id']
+            sys['vm_id'] = i['vm_id']
+            sys['time'] = i['time'].strftime('%Y-%m-%d %H:%M:%S')
+            ret['data'].append(sys)
+    else:
+        ret['status'] = False
+    ret=json_data(ret)
+    return ret
+
+
 Methods = {
     "GET": {
         "instances": instances,
@@ -545,6 +697,12 @@ Methods = {
         "vmdisk_show": vmdisk_show,
         "cpu_monitor": cpu_monitor,
         "mem_monitor":mem_monitor,
+        'disk_iops_monitor':disk_iops_monitor,
+        'disk_bps_monitor':disk_bps_monitor,
+        'network_monitor':network_monitor,
+        'network_monitor_packets':network_monitor_packets,
+        "instances_backup_show":instances_backup_show,
+        "instances_backup_delete":instances_backup_delete,
     },
     "POST": {
         "CREATE": volumes_create,

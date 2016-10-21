@@ -37,7 +37,6 @@ class Create_disk extends Component {
   }
 
   componentWillMount(){
-    console.log(this.props.snapshot,'111111')
     let snapshot=this.props.snapshot
     let formData=this.state.formData
     formData['id']=snapshot['id']

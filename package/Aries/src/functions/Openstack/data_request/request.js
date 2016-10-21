@@ -30,8 +30,8 @@ var Datarequest = {
     this.xhrGetData(_this, url, fun)
   },
 
-  Get_instances_cpu(_this,name,fun){
-    let url = this.UrlList()['instances_post']+"?name="+name
+  Get_instances_cpu(_this,name,id,date,fun){
+    let url = this.UrlList()['instances_post']+"?name="+name+"&id="+id+'&date='+date
     this.xhrGetData(_this,url,fun)
   },
 
@@ -149,11 +149,9 @@ var Datarequest = {
         url: url,
         type: 'GET',
         success: (retu_data) => {
-        fun(_this, retu_data);
-    // console.log(retu_data)
-    // return retu_data
-  }
-  })
+        fun(_this, retu_data)
+      }
+    })
   }
 }
 

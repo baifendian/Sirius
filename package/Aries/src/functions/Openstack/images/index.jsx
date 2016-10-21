@@ -8,13 +8,14 @@ import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
 import Openstackconf from '../Conf/Openstackconf'
 import ReactDOM from 'react-dom'
+import OPEN from '../data_request/request.js'
 
 
 export default React.createClass({
   getInitialState: function () {
     return {
       loading: false,
-      url: "openstack/images/",
+      url: OPEN.UrlList()['images'],
       column: [{
         title: '镜像名称',
         order: false,

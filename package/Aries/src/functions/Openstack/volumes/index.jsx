@@ -5,7 +5,6 @@ import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import TextOverflow from 'bfd-ui/lib/TextOverflow'
 import {Create_volumes} from './volumes_create'
 import {Delete_volumes} from './volumes_delete'
-
 import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
 import { SplitPanel, SubSplitPanel } from 'bfd/SplitPanel'
@@ -21,7 +20,7 @@ export default React.createClass({
 
    getInitialState: function () {
     return {      
-      url: "openstack/volumes/",
+      url: OPEN.UrlList()['volumes'],
       loading: false,
       select_all:'',
       button_status: true,

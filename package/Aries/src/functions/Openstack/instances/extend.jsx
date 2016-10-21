@@ -5,8 +5,7 @@ import './extend.less'
 import {Modal, ModalHeader, ModalBody} from 'bfd-ui/lib/Modal'
 import OPEN from '../data_request/request.js'
 import update from 'react-update'
-import {Progress, Button} from 'antd'
-const ButtonGroup = Button.Group
+import Button from 'bfd/Button'
 import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea } from 'bfd/Form'
 import message from 'bfd-ui/lib/message'
 import Icon from 'bfd-ui/lib/Icon'
@@ -53,122 +52,54 @@ const Extend = React.createClass({
 const Create_model_disk = React.createClass({
   getInitialState() {
     return {
-      disk_counter: 1,
       disk_number: 3,
-      disk_list: [10],
-      host_disk: ['--'],
+      number: 3
     }
   },
-
-  create_disk(name, number, number_s){
-    if (name == '1') {
-      let arr = this.state.disk_list;
-      let disk_counters = this.state.disk_counter
-      let host_diskss = this.props.disks_m.state.host_disks
-      if (this.state.disk_list.length < 4) {
-        let disk_numbers = this.state.disk_number - 1
-        let disk_mm = this.props.disks_m.state.host_disk
-        let diks_tt
-        for (var ii = 1; ii <= 3; ii++) {
-          let ti = 'disk' + ii
-          let disk_i = 0
-          for (diks_tt in arr) {
-            if (ti == arr[diks_tt]) {
-              disk_i = 0
-              break
-            } else {
-              disk_i = 1
-            }
-          }
-          if (disk_i == 1) {
-            host_diskss.push(ti)
-            if (arr.length == 1) {
-              disk_mm.pop()
-              disk_mm.push(0)
-
-            } else {
-              disk_mm.push(0)
-            }
-            arr.push(ti)
-            break
-          }
-        }
-        disk_counters = disk_counters + 1
-        this.setState({
-          disk_list: arr,
-          disk_number: disk_numbers,
-          disk_counter: disk_counters
-
-        });
-        this.props.disks_m.setState({
-          host_disk: disk_mm,
-          host_disks: host_diskss
-        })
-
+  add_disk(){
+    let host_disk=this.props.disks_m.state.host_disk
+    let formData = this.props.disks_m.state.formData
+    let disk_number =this.state.disk_number
+    for (let i=0; i<this.state.number;i++){
+      let disk_name='disk'+i
+      if (!host_disk.hasOwnProperty(disk_name)){
+        host_disk[disk_name]='--'
+        disk_number=disk_number-1
+        break
       }
-    } else {
-      let arr = this.state.disk_list;
-      let disk_arr = this.state.host_disk
-      let disk_mm = this.props.disks_m.state.host_disk
-      let host_diskss = this.props.disks_m.state.host_disks
-      if (this.state.disk_list.length > 1) {
-        let disk_numbers = this.state.disk_number + 1
-        arr.splice(number_s['i'], 1)
-        host_diskss.splice(number_s['i'] - 1, 1)
-        //delete this.refs[number['item']].context.form.props.data[number['item']]
-        let formdata=this.props.disks_m.state.formData
-        console.log(formdata,number['item'])
-        delete formdata[number['item']]
-        this.props.disks_m.setState({formData:formdata})
-        disk_arr.pop();
-        disk_mm.splice(number_s['i'] - 1, 1)
-        if (arr.length == 1) {
-          disk_mm.pop();
-          disk_mm.push('--')
-          disk_arr.pop();
-          disk_arr.push('--')
-        }
-        let disk_length = {'brand': disk_arr.length}
-        this.setState({
-          formData: disk_length,
-          disk_list: arr,
-          disk_number: disk_numbers
-        });
-        this.props.disks_m.setState({
-          host_disk: disk_mm,
-          host_disks: host_diskss
-        })
-
-      }
-      this.props.disks_m.setState({
-        host_disk: disk_mm
-      })
     }
-
+    this.props.disks_m.setState({host_disk})
+    this.setState({disk_number})
+ //   this.props.disk_list()
   },
+
+  delete_disk(item){
+    let disk_number =this.state.disk_number
+    let host_disk=this.props.disks_m.state.host_disk
+    let formData = this.props.disks_m.state.formData
+    disk_number=disk_number+1
+    delete host_disk[item]
+    delete formData[item]
+    this.props.disks_m.setState({host_disk,formData})
+    this.setState({disk_number})
+  },
+
   render(){
-    let nav = this.state.disk_list.map((item, i) => {
-      let disk = 'disk' + i
-      if (i == 0) {
-        return (
-          <h1 key={i}></h1>
+    let nav = this.props.disks_m.state.host_disk ? Object.keys(this.props.disks_m.state.host_disk).map((item,str)=>{
+      return (
+        <div key={item}>
+          <FormItem label="云硬盘" name={item} className="disk_create">
+            <FormInput placeholder="10GB~1TB" ></FormInput><Icon type=" fa-times"
+                                                                  onClick={this.delete_disk.bind(this,item)}/>
+          </FormItem>
+        </div>
         )
-      } else {
-        return (
-          <div key={ i }>
-            <FormItem label="云硬盘" name={item} className="disk_create">
-              <FormInput placeholder="10GB~1TB" ></FormInput><Icon type=" fa-times"
-                                                                  onClick={this.create_disk.bind(this, 2, {item}, {i})}/>
-            </FormItem>
-          </div>
-        )
-      }
-    });
+    }):<span></span>
 
     return (
       <div>
         <div>{nav}</div>
-        <Icon type="plus-square" onClick={this.create_disk.bind(this, 1)}/><span>您还可选配</span><span
+        <Icon type="plus-square" onClick={this.add_disk}/><span>您还可选配</span><span
         className="disk_span">{this.state.disk_number}</span><span>块</span>
       </div>
     )
@@ -179,7 +110,7 @@ const Create_model = React.createClass({
   handleOpen() {
     this.refs.modal.open()
     this.setState({
-      host_disk: ['--'],
+    //  host_disk: ['--'],
       host_disks: []
 
     })
@@ -192,63 +123,40 @@ const Create_model = React.createClass({
         if (!v) {
           return '名称不能为空'
         } else {
-          //console.log(v)
           self.setState({
             host_name: v
           })
+        }
+      },
+      disk0(v){
+        if (!v) {
+          return '不能为空'
+        } else {
+          v = v + "GB"
+          let host_disk=self.state.host_disk
+          host_disk['disk0']=v
+          self.setState({host_disk})
         }
       },
       disk1(v){
         if (!v) {
           return '不能为空'
         } else {
-          v = v + "GB"
-          let disk_arr = self.state.host_disk
-          for (var i = 0; i < self.state.host_disks.length; i++) {
-            if (self.state.host_disks[i] == "disk1") {
-              disk_arr.splice(i, 1, v)
-            }
-          }
-          self.setState({
-            host_disk: disk_arr
-          })
+          let host_disk=self.state.host_disk
+          host_disk['disk1']=v+'GB'
+          self.setState({host_disk})
         }
       },
       disk2(v){
         if (!v) {
           return '不能为空'
         } else {
-          v = v + "GB"
-          let disk_arr = self.state.host_disk
-          for (var i = 0; i < self.state.host_disks.length; i++) {
-            if (self.state.host_disks[i] == "disk2") {
-              disk_arr.splice(i, 1, v)
-            }
-          }
-          self.setState({
-            host_disk: disk_arr
-          })
-        }
-      },
-      disk3(v){
-        if (!v) {
-          return '不能为空'
-        } else {
-          v = v + "GB"
-          let disk_arr = self.state.host_disk
-          for (var i = 0; i < self.state.host_disks.length; i++) {
-            if (self.state.host_disks[i] == "disk3") {
-              disk_arr.splice(i, 1, v)
-            }
-          }
-          console.log(v,'fff')
-          self.setState({
-            host_disk: disk_arr
-          })
+          let host_disk=self.state.host_disk
+          host_disk['disk2']=v+"GB"
+          self.setState({host_disk})
         }
       },
       images(v){
-        //  console.log(v)
         self.setState({
           host_image: self.state.host_images[v]
         })
@@ -278,19 +186,12 @@ const Create_model = React.createClass({
             self.setState({
               host_cpu: cpu + "核",
               host_men: men + "MB",
-              host_host: host + "台",
               host_flavor_name: data['name']
             });
           }
-
         })
-
       },
-      date(v) {
-        if (!v) return '日期不能为空'
-      }
     }
-
     return {
       formData: {
         brand: 0,
@@ -298,8 +199,6 @@ const Create_model = React.createClass({
       },
       host_cpu: '--',
       host_men: '--',
-      host_host: '--',
-      host_disk: ['--'],
       host_images: [],
       host_flavors: [],
       host_name: '--',
@@ -307,7 +206,8 @@ const Create_model = React.createClass({
       host_image: '--',
       host_count: '--',
       host_disks: [],
-      loading: true
+      loading: true,
+      host_disk: {}
     }
   },
   componentWillMount: function () {
@@ -322,24 +222,32 @@ const Create_model = React.createClass({
         )
       }
     }),
-      xhr({
-        type: 'GET',
-        url: 'openstack/flavors/',
-        success(data) {
-          self.setState({
-            host_flavors: data['name'],
-            loading: false
-          })
-        }
-      })
-
+    xhr({
+      type: 'GET',
+      url: 'openstack/flavors/',
+      success(data) {
+        self.setState({
+          host_flavors: data['name'],
+          loading: false
+        })
+      }
+    })
   },
+
   handleDateSelect(date) {
     const formData = this.state.formData
     formData.date = date
     this.setState({formData})
   },
 
+  disk_list(){
+    let self=this
+    let rules=this.rules
+    let bb= this.state.host_disk ? Object.keys(this.state.host_disk).map((item,i)=>{
+      rules[item] = function item(v){ if (!v) {return '不能为空'} else {let host_disk=self.state.host_disk;host_disk[item]=v+"GB";self.setState({host_disk})}}
+    }):null
+   this.setState({rules})
+  },
 
   handleSave() {
     this.refs.form.save()
@@ -365,9 +273,9 @@ const Create_model = React.createClass({
     let images = this.state.host_images;
     let flavor = this.state.host_flavors;
 
-    let disk = this.state.host_disk.map((item, i) => {
+    let disk=Object.keys(this.state.host_disk).map((item,i)=>{
       return (
-        <div key={i}>{item}</div>
+        <div key={i}>{this.state.host_disk[item]}</div>
       )
     })
 
@@ -375,7 +283,7 @@ const Create_model = React.createClass({
 
     return (
       <div style={{float: "left", margin: '0px 10px 0px 0px'}}>
-        <button className="btn btn-primary" onClick={this.handleOpen}>创建</button>
+        <Button className="" onClick={this.handleOpen}>创建</Button>
         <Modal ref="modal">
           <ModalHeader>
             <h2>虚拟机创建</h2>
@@ -454,7 +362,7 @@ const Create_model = React.createClass({
                       </FormSelect>
                     </FormItem>
                     <FormItem label="磁盘" name="name1">
-                      <Create_model_disk disks_m={this}/>
+                      <Create_model_disk disks_m={this} disk_list={this.disk_list}/>
                     </FormItem>
                     <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary"
                             onClick={this.handleSave}>创建
@@ -464,7 +372,7 @@ const Create_model = React.createClass({
                     </button>
                   </Form>
                 </div>
-              </Spin>
+             </Spin>
             </div>
           </ModalBody>
         </Modal>
@@ -496,13 +404,7 @@ const Progress_model = React.createClass({
             clearTimeout(interval)
         }
     }
-  })   
-  /* if ( _this.state.percent > 99){
-      clearTimeout(interval)
-    }
-    else{
-     _this.increase()
-    }*/
+    })
     },5000)
 
   },

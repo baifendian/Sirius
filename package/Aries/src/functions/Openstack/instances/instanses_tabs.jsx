@@ -3,7 +3,6 @@ import {Menu, Dropdown as Dropdown1, Icon} from 'antd'
 import Button from 'bfd-ui/lib/Button'
 import {Modal, ModalHeader, ModalBody} from 'bfd-ui/lib/Modal'
 import {Spin} from 'antd'
-import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
 import OPEN from '../data_request/request.js'
 import {Tabs, TabList, Tab, TabPanel} from 'bfd/Tabs'
@@ -16,6 +15,10 @@ import { Form, FormItem, FormSubmit, FormInput, FormSelect, Option, FormTextarea
 import {Component} from 'react'
 import Input from 'bfd/Input'
 import ReactDOM from 'react-dom'
+import FixedTable from 'bfd/FixedTable'
+import ButtonGroup from 'bfd/ButtonGroup'
+import xhr from 'bfd/xhr'
+import DataTable from 'bfd/DataTable'
 
 class Show_log extends Component {
   constructor(props) {
@@ -33,8 +36,8 @@ class Show_log extends Component {
   }
 
   shouldComponentUpdate(nextProps,nextState){
-    /*注释部分代码暂时保存以后可能会用到*/
-   /* if (nextProps.host_desc === this.props.host_desc){
+    /*注释部分代码暂时保存以后可能会用到
+    if (nextProps.host_desc === this.props.host_desc){
     }else{
       this.get_count(nextProps.host_desc['id'],30)
     }*/
@@ -114,41 +117,99 @@ class Show_log extends Component {
 }
 
 
-const Host_Timeline = React.createClass({
-  getInitialState: function () {
-    return {
-      name: '11'
+class Host_Timeline extends Component {
+  constructor(props) {
+    super()
+    this.state = {
+      loading: false,
+      column: [{
+        title: '序号',
+        key: 'sequence'
+      },{
+        primary: false,
+        title: 'ID',
+        key: 'id',
+        width: '300px'
+      }, {
+        title: '名称',
+        order: false,
+        width: '100px',
+        render: (text, item) => {
+          return <a href="javascript:void(0);" onClick={this.handleClick.bind(this, item)}>{text}</a>
+        },
+        key: 'name'
+      }, {
+        title: '描述',
+        key: 'desc',
+        order: false
+      },{
+        title: '创建时间',
+        key: 'time',
+        order: false
+      },{
+        title: '操作',
+        render: (item, component) => {
+          return <a href = "javascript:void(0);" onClick = {this.handleClick.bind(this, item)}>删除</a>
+        },
+        key: 'operation'
+      }]
     }
-  },
-  data(){
+  }
 
-  },
-  render(){
-
+  render() {
+    let data = {
+      totalList: this.props.instance_backup,
+      totalPageNum: 1
+    }
     return (
-      <div>
-        <Timeline>
-          <Timeline.Item>test 2016-09-21</Timeline.Item>
-          <Timeline.Item>test1 2016-09-22</Timeline.Item>
-          <Timeline.Item>test2 2016-09-23</Timeline.Item>
-          <Timeline.Item>test3 2016-09-24</Timeline.Item>
-        </Timeline>
-      </div>
+      <Spin spinning={this.state.loading}>
+      <DataTable 
+        //url={this.state.url}
+        data={data}
+        //onPageChange={::this.onPageChange} 
+        showPage="false"
+        column={this.state.column} 
+        howRow={10}
+        //onRowClick={::this.handleRowClick}
+        //onOrder={::this.handleOrder}
+      /> 
+      </Spin>
     )
   }
-})
+
+  xhrCallback(_this, executedData) {
+    let data = executedData['data']
+    _this.props._self.setState({instance_backup:data})
+    _this.setState({loading:false})
+  }
+
+  handleClick(item, event) {
+    event = event ? event : window.event;
+    event.stopPropagation();
+    this.setState({loading:true})
+    let url=OPEN.UrlList()['instances_post']+'?name=instances_backup_delete'+'&backup_name='+item['name']+'&id='+item['vm_id']
+    OPEN.xhrGetData(this,url,this.xhrCallback)  
+    console.log(item)
+  }
+}
+
+
+
+
 
 
 const Echarts_s = React.createClass({
-  getInitialState: function () {
-    return {
-      cpu_data:{},
-      mem:{},
-      dom_id:['echarts_cpu','echarts_mem','echarts_disk'],
+  componentWillUpdate(nextProps){
+    this.initData()
+   /* if (nextProps.host_desc !== this.props.host_desc){
+      this.initData()
     }
+    //this.initchart()
+    console.log(nextProps,'nextProps')*/
   },
 
   dataManage(_this,data) {
+    console.log(data)
     let legend=[]
     let xaxis=[]
     let option={}
@@ -166,8 +227,8 @@ const Echarts_s = React.createClass({
     })
 
     let dom_id=echarts.init(document.getElementById(keys_d))
-    dom_id.setOption(
-    { tooltip : { trigger: 'axis' },
+    dom_id.setOption({ 
+      tooltip : { trigger: 'axis' },
       legend: { data: legend },
       calculable : true,
       xAxis : [
@@ -179,16 +240,17 @@ const Echarts_s = React.createClass({
       ],
       yAxis : [
         {
-          type : 'value',
+         // type : 'value',
+         show: true,
           axisLabel : {
-            formatter: '{value} k'
+            formatter: this.initchart_y()[keys_d]
           }
         }
       ],
       series : series})
   },
 
-  series_t(lineName,dataArr ){
+  series_t(lineName,dataArr){
     let obj = {
       type: 'line',
       itemStyle: {normal: {areaStyle: {type: 'default'}}},    
@@ -199,44 +261,116 @@ const Echarts_s = React.createClass({
   },
 
   initData(){
-    Object.keys(this.dom_id()).map((key,item)=>{
-      OPEN.Get_instances_cpu(this,this.dom_id()[key],this.dataManage)
-    })
+    let id=this.props.host_desc['id']
+    return {
+      'cpu_monitor': OPEN.Get_instances_cpu(this,'cpu_monitor',id,'59_minutes',this.dataManage),
+      'mem_monitor': OPEN.Get_instances_cpu(this,'mem_monitor',id,'59_minutes',this.dataManage),
+      'disk_iops_monitor': OPEN.Get_instances_cpu(this,'disk_iops_monitor',id,'59_minutes',this.dataManage),
+      'disk_bps_monitor': OPEN.Get_instances_cpu(this,'disk_bps_monitor',id,'59_minutes',this.dataManage),
+      'network_monitor_packets': OPEN.Get_instances_cpu(this,'network_monitor_packets',id,'59_minutes',this.dataManage),
+      'network_monitor': OPEN.Get_instances_cpu(this,'network_monitor',id,'59_minutes',this.dataManage)
+    }
+  },
+
+  initchart(){
+    let legend=[]
+    let xaxis=[]
+    let option={}
+    let series=[]
+    let keys_d=''
+    for (let i in this.dom_id()){
+    let dom_id=echarts.init(document.getElementById(this.dom_id()[i]))
+    dom_id.setOption(
+    {  title: {
+        text: '堆叠区域图'
+    },tooltip : { trigger: 'axis' },
+      legend: { data: legend },
+      calculable : true,
+      xAxis : [
+        {
+          type : 'category',
+          boundaryGap : false,
+          data : []
+        }
+      ],
+      yAxis : [
+        {
+          type : 'value',
+          boundaryGap: [0, '100%'],
+            splitLine: {
+              show: false
+          },
+          axisLabel:{
+            formatter: this.initchart_y()[this.dom_id()[i]]
+          }
+        },
+      ],
+      series : series})
+    }
+  },
+
+  initchart_y(){
+    return{
+      'cpu_monitor': (val)=>{return val+'%'},
+      'mem_monitor': (val)=>{return val+'M'},
+      'disk_iops_monitor':(val)=>{return val},
+      'disk_bps_monitor':(val)=>{return val+'b'},
+      'network_monitor':(val)=>{return val+'b'},
+      'network_monitor_packets': (val)=>{return val+'b'}
+    }
   },
 
   dom_id(){
     return {
       'CPU':'cpu_monitor',
-      'MEM':'mem_monitor'
+      'Memory':'mem_monitor',
+      'Disk_iops':'disk_iops_monitor',
+      'Disk_bps':'disk_bps_monitor',
+      'Network_bytes':'network_monitor',
+      'Network_packets':'network_monitor_packets'
     }
   },
 
   componentDidMount(){
     this.initData()
+    this.initchart()
+  },
+
+  handleChange(value,text) {
+    let id=this.props.host_desc['id']
+    OPEN.Get_instances_cpu(this,this.dom_id()[text],id,value,this.dataManage)
   },
 
   render(){
     let monitor_list = [
-      [{ 'name':'cpu','id':'cpu_monitor'},{ 'name':'内存','str':'mem_monitor'}]
+      [{ 'name':'CPU','id':'cpu_monitor'},{ 'name':'Memory','id':'mem_monitor'}],
+      [{ 'name':'Disk_iops','id':'disk_iops_monitor'},{ 'name':'Disk_bps','id':'disk_bps_monitor'}],
+      [{ 'name':'Network_bytes','id':'network_monitor'},{ 'name':'Network_packets','id':'network_monitor_packets'}]
     ]
 
     let return_monitor = monitor_list.map((keys,item)=>{
+      return (
+        <Row key={item}>
+          {keys.map((keyss,items)=>{
+            return (
+              <Col col="md-6" key={items}>
+                <span style={{fontSize:"23px"}}>{keyss['name']}</span>
+                <ButtonGroup defaultValue="1" onChange={(value)=>this.handleChange(value,keyss['name'])} >
+                  <Button value="59_minutes" style={{width:'101px',height:'20px'}}>最近一小时</Button>
+                  <Button value="1_days" style={{width:'101px',height:'20px'}}>最近一天</Button>
+                  <Button value="15_days" style={{width:'101px',height:'20px'}}>最近15天</Button>
+                </ButtonGroup>
+                <div id={keyss['id']} style={{height: '300px'}}>
+                </div>
+              </Col>
+              )
+          })}
+        </Row>)
+      })
 
-    })
     return (
       <div>
-        <Row>
-          <Col col="md-6">
-            <h4>CPU</h4>
-            <div id="cpu_monitor" style={{height: '400px'}}>
-            </div>
-          </Col>
-          <Col col="md-6">
-            <h4>内存</h4>
-            <div id="mem_monitor" style={{height: '400px'}}>
-            </div>
-          </Col>
-        </Row>
+        {return_monitor}
       </div>
     )
   }
@@ -257,8 +391,17 @@ const Host_details = React.createClass({
     let host_desd = this.props.host_desc[0]
     return host_desd
   },
+
+  date(){
+    let time=this.props.host_desc['created']
+    let nowtime=new Date()
+    let difftime = nowtime.getTime() - new Date(time).getTime()
+    let days=Math.floor(difftime/(24*3600*1000))
+    var hours=Math.floor((difftime%(24*3600*1000))/(3600*1000)) 
+    var minutes=Math.floor(((difftime%(24*3600*1000))%(3600*1000))/(60*1000)) 
+    return days+'天'+hours+'小时'+minutes+'分'
+  },
   render(){
-    //console.log(this.props.host_desc,'.........aaaa')
     const list=[1]
     const nav = this.props.host_desc['disk_list'] && this.props.host_desc['disk_list'].map((item,i)=>{
       return (
@@ -296,7 +439,7 @@ const Host_details = React.createClass({
           <Col col="md-2" style={{}}>创建时间:</Col>
           <Col col="md-2" style={{}}>{this.props.host_desc['created']}</Col>
           <Col col="md-2" style={{}}>已创建:</Col>
-          <Col col="md-4" style={{}}>3小时</Col>
+          <Col col="md-4" style={{}}>{this.date()}</Col>
         </Row>
         <Row>
           <span>磁盘:</span>
@@ -310,13 +453,6 @@ const Host_details = React.createClass({
 })
 
 const Tabs_List = React.createClass({
-  getInitialState: function () {
-    return {
-      id:'',
-      logs:'',
-    }
-  },
-
   render() {
     return (
       <Tabs >
@@ -331,18 +467,16 @@ const Tabs_List = React.createClass({
           <Host_details host_desc={this.props.host_desc}/>
         </TabPanel>
         <TabPanel>
-          <Host_Timeline/>
+          <Host_Timeline host_desc={this.props.host_desc} instance_backup={this.props.instance_backup} _self={this.props._this}/>
+        </TabPanel>
+        <TabPanel >
+          <Echarts_s host_desc={this.props.host_desc}/>
         </TabPanel>
         <TabPanel>
-          <Echarts_s/>
-        </TabPanel>
-        <TabPanel>
-          <Show_log host_desc={this.props.host_desc} height_log={this.props.height_log} logs={this.props.logs} ref="show_logs" _self={this.props._this}/>
+          <Show_log host_desc={this.props.host_desc} height_log={this.props.height_log} logs={this.props.logs} ref="show_logs" _self={this.props._this} />
         </TabPanel>
         </div>
-      </Tabs>
-
-      )
+      </Tabs>)
   }
 })
 

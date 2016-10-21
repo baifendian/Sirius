@@ -33,6 +33,7 @@ export default React.createClass({
       host_post: '',
       loading: false,
       select_all: [],
+      instance_backup:'',
       select_host: '',
       host_desc: '',
       button_status: true,
@@ -223,8 +224,21 @@ export default React.createClass({
      }else{
       this.setState({host_desc: row})
       this.count_height()
+      this.getDataConsole(row)
+      this.getbackup(row)
     }
-    this.getDataConsole(row)
+  },
+
+  getbackup(row){
+    let url=OPEN.UrlList()['instances_post']+'?name=instances_backup_show'+'&id='+row['id']
+    OPEN.xhrGetData(this,url,this.xhrCallback_backup)
+  },
+
+  xhrCallback_backup(_this,executedData){
+    let data=executedData['data']
+    _this.setState({
+      instance_backup:data
+    })
   },
 
   getDataConsole(row){
@@ -317,13 +331,7 @@ export default React.createClass({
       OPEN.posthoststop(this, 'instances', this.state.select_all, this.state.host_post)
     }
   },
-  handleOpen_re() {
-    this.refs.modal.open()
-    this.setState({test: "重启"})
-  },
-  disk_model_open(){
-    this.refs.model_disk.open()
-  },
+
   componentDidMount(){
     window.onresize = ()=> {
       if (this.state.host_desc) {
@@ -412,7 +420,7 @@ export default React.createClass({
                 </div>
               </SubSplitPanel>
               <SubSplitPanel ref="SubSplitPanel_t">
-                <Tabs_List host_desc={this.state.host_desc} height_log={this.state.height_log} logs={this.state.logs} _this={this} ref="Tabs_list"/>
+                <Tabs_List host_desc={this.state.host_desc} height_log={this.state.height_log} logs={this.state.logs} _this={this} ref="Tabs_list" instance_backup={this.state.instance_backup}/>
               </SubSplitPanel>
             </SplitPanel>
           </div>
