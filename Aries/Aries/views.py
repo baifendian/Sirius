@@ -181,7 +181,15 @@ def permission_check(request):
         ip =  request.META['HTTP_X_FORWARDED_FOR']
     else:
         ip = request.META['REMOTE_ADDR']
-    if not ip.startswith(settings.PERMISSION_IP_1) and not ip.startswith(settings.PERMISSION_IP_2):
-        return HttpResponse('<h2>Outer Net Is Not Allowed</h2>')
+    whitelist = settings.WHITELIST_IP
+    temp = False
+    for i in whitelist:
+        #ac_logger.error('\n\n\n ip is :\n %s \n\n\n'%ip)
+        #ac_logger.error('\n\n\n whitelist ip is :\n %s \n\n\n'%i)
+        if ip.startswith(i):
+            temp = True
+            break
+    if temp:
+        urls.urlpatterns[0] = url(r'^admin/', include(admin.site.urls))
     else:
-        urls.urlpatterns[0] =  url(r'^admin/', include(admin.site.urls))
+        return HttpResponse('<h2>Permission Forbidden!</h2>')
