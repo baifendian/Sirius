@@ -11,6 +11,7 @@ import json
 import logging
 import traceback
 import time
+import md5
 
 openstack_log = logging.getLogger("openstack_log")
 
@@ -41,8 +42,8 @@ def packageResponse(result):
     return response
 
 
-def login():
-    login = Login("openstack", "baifendian2016")
+def login(request):
+    login = Login(request.user.username, md5.md5("baifendian").hexdigest())
     login.user_token_login()
     login.proid_login()
     login.token_login()
@@ -56,7 +57,7 @@ def user_login():
                 return retu_obj
             except:
                 try:
-                    login()
+                    login(request)
                     openstack_log.info('login success')
                     retu_obj = func(request, *args, **kwargs)
                     openstack_log.info('execute func %s success' % func)

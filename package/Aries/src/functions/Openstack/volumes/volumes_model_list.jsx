@@ -661,7 +661,7 @@ const Model_list = React.createClass({
     )
     return (
       <div>
-        <DropdownButton onClick={this.handleButtonClick} overlay={menu} type="primary" trigger={['click']}>
+        <DropdownButton onClick={this.handleButtonClick} overlay={menu} type="primary" trigger={['click']} className="antd_class">
           更多操作
         </DropdownButton>
         <div>
