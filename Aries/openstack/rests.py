@@ -56,6 +56,13 @@ class search(APIView):
         ret = Methods.get('GET').get(name)(request)
         return packageResponse(ret)
 
+class monitor(APIView):
+    def get(self,request,format=None):
+        name = request.GET.get('name')
+        vm_name=request.GET.get('id')
+        ret = Methods.get('GET').get(name)(request,vm_name)
+        return  packageResponse(ret)
+
 
 class overview(APIView):
     def get(self, request, format=None):

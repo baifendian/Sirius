@@ -109,12 +109,29 @@ const Create_model_disk = React.createClass({
 const Create_model = React.createClass({
   handleOpen() {
     this.refs.modal.open()
-    this.setState({
-    //  host_disk: ['--'],
-      host_disks: []
-
+    const self = this;
+    xhr({
+      type: 'GET',
+      url: 'openstack/images/',
+      success(data) {
+        // console.log(data)
+        self.setState(
+          {host_images: data['name']}
+        )
+      }
+    }),
+    xhr({
+      type: 'GET',
+      url: 'openstack/flavors/',
+      success(data) {
+        self.setState({
+          host_flavors: data['name'],
+          loading: false
+        })
+      }
     })
   },
+  
   getInitialState() {
     const self = this;
     this.update = update.bind(this)
@@ -210,7 +227,7 @@ const Create_model = React.createClass({
       host_disk: {}
     }
   },
-  componentWillMount: function () {
+/*  componentWillMount: function () {
     const self = this;
     xhr({
       type: 'GET',
@@ -232,7 +249,7 @@ const Create_model = React.createClass({
         })
       }
     })
-  },
+  },*/
 
   handleDateSelect(date) {
     const formData = this.state.formData

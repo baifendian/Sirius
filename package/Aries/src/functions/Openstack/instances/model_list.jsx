@@ -24,8 +24,8 @@ const Disk_list = React.createClass({
       data:[],
       select_disk: '',
       host_id: '',
-      disk_list: this.props.disk_list,
-      disk_object: this.props.disk_object,
+      disk_list: [],
+      disk_object: {},
       loading: false,
       column: [{ title: '云硬盘名', order: false, key: 'disk_name'},
               {  title: '盘符',   order: false , key: 'device',},
@@ -40,12 +40,31 @@ const Disk_list = React.createClass({
   handleChange(values) {
     this.setState({select_disk: values})
   },
+
   componentWillMount: function () {
     let host_name = this.props.vm_list[0]['name']
     let host_id = this.props.vm_list[0]['id']
     //let data=this.props.vm_list[0]['disk_list']
     this.setState({host_name, host_id})
     this.Disk_list()
+
+    let _this=this
+    let url_v=OPEN.UrlList()['volumes']
+    xhr({
+      type: 'GET',
+      url: url_v,
+      success(data) {
+        let disk_list = []
+        let disk_object = {}
+        for (var i in data['totalList']) {
+          if (!data['totalList'][i]['device']) {
+            disk_list.push(data['totalList'][i]['name'])
+            disk_object[data['totalList'][i]['name']] = data['totalList'][i]['id']
+          }
+        }
+        _this.setState({disk_list, disk_object})
+      }
+    })
   },
 
   Disk_list(){
@@ -76,7 +95,7 @@ const Disk_list = React.createClass({
     }else{
       message.danger('卸载失败')
     }
-    console.log('xiez',executedData)
+
     _this.setState({
       data: executedData['disk_list'],
     })
@@ -197,7 +216,9 @@ const Vm_Type = React.createClass({
         host_id: this.props.vm_list[0]['id'],
         host_name: this.props.vm_list[0]['name'],
         loading: false,
-        type_vm: 'flavor'
+        type_vm: 'flavor',
+        flavor_object:{},
+        flavor_list:[]
       },
       type: ''
     }
@@ -206,6 +227,22 @@ const Vm_Type = React.createClass({
     let type = this.props.vm_list[0]['flavor']
     let host_id = this.props.vm_list[0]['name']
     this.setState({type})
+
+    let url_f=OPEN.UrlList()['flavors']
+    let _this=this
+    xhr({
+      type: 'GET',
+      url: url_f,
+      success(data) {
+        let flavor_list = []
+        let flavor_object = {}
+        for (var i in data['name']) {
+          flavor_list.push(data['name'][i])
+          flavor_object[data['name'][i]] = i
+        }
+        _this.setState({flavor_object, flavor_list})
+      }
+    })
   },
   handleDateSelect(date) {
     const formData = this.state.formData
@@ -238,9 +275,9 @@ const Vm_Type = React.createClass({
   render() {
     const {formData} = this.state
     let _this = this
-    let type_display = this.props.flavor_list.map((item, i)=> {
-      return (<Options value={_this.props.flavor_object[item]} key={i}>{item}</Options>)
-    })
+    let type_display = this.state.flavor_list?this.state.flavor_list.map((item, i)=> {
+      return (<Options value={_this.state.flavor_object[item]} key={i}>{item}</Options>)
+    }):null
     return (
       <Form
         ref="form"
@@ -564,7 +601,7 @@ const Disk_model = React.createClass({
     _this.setState({data_list, data_object, loading: false})
   },
 
-  componentWillMount: function() {
+ /* componentWillMount: function() {
     const _this = this
     let url_v=OPEN.UrlList()['volumes']
     let url_f=OPEN.UrlList()['flavors']
@@ -596,7 +633,8 @@ const Disk_model = React.createClass({
         _this.setState({flavor_object, flavor_list})
       }
     })
-  },
+  },*/
+
   handleMenuClick(e) {
     if (parseInt(e['key'])*1){
       this.props._this.callback_status(parseInt(e['key']))
@@ -608,7 +646,7 @@ const Disk_model = React.createClass({
     let module = this.modulevalue()[e["key"]]
     this.setState({title: this.values()[e['key']], module})
     this.refs.model_disk.open()
-  }
+    }
   },
   render() {
     const DropdownButton = Dropdown1.Button;
