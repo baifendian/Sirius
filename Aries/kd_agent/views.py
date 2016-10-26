@@ -104,10 +104,10 @@ def get_pod_list(request,namespace):
         retu_data.append(record)
         record['Name'] = item['metadata']['name']
         record['CreationTime'] = trans_time_str(item['metadata']['creationTimestamp'])
-        record['Node'] = item['spec']['nodeName']
+        record['Node'] = item['spec'].get('nodeName','<None>')
         record['DetailInfo'] = trans_obj_to_easy_dis(item)
 
-        containerStatuses = item['status']['containerStatuses']
+        containerStatuses = item['status'].get('containerStatuses',[])
         total = len(containerStatuses)
         running = 0
         for cItem in containerStatuses:
