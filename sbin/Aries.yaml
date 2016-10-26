@@ -1,79 +1,72 @@
-SHARE_PROXY_BASE_URI: "http://172.24.3.64:10012"
-REST_BASE_URI: "172.24.3.64:10012"
+SHARE_PROXY_BASE_URI: k8s_SHARE_PROXY_BASE_URI
+REST_BASE_URI: k8s_REST_BASE_URI
 
 DATABASES:
   default:
-    ENGINE: django.db.backends.mysql
-    NAME: aries
-    HOST: 172.24.3.64
-    PORT: 3306
-    USER: root
-    PASSWORD: baifendian
+    ENGINE: k8s_DATABASES_DEFAULT_ENGINE
+    NAME: k8s_DATABASES_DEFAULT_NAME
+    HOST: k8s_DATABASES_DEFAULT_HOST
+    PORT: k8s_DATABASES_DEFAULT_PORT
+    USER: k8s_DATABASES_DEFAULT_USER
+    PASSWORD: k8s_DATABASES_DEFAULT_PASSWORD
   kd_agent_bdms:
-    ENGINE: django.db.backends.mysql # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-    NAME: bdms_web10010        # Or path to database file if using sqlite3.
-    USER: bdms                       # Not used with sqlite3.
-    PASSWORD: bdms                  # Not used with sqlite3.
-    HOST: 172.24.100.40             # Set to empty string for localhost. Not used with sqlite3.
-    PORT: 3306                       # Set to empty string for default. Not used with sqlite3.
+    ENGINE: k8s_DATABASES_BDMS_ENGINE # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+    NAME: k8s_DATABASES_BDMS_NAME        # Or path to database file if using sqlite3.
+    USER: k8s_DATABASES_BDMS_USER    # Not used with sqlite3.
+    PASSWORD: k8s_DATABASES_BDMS_PASSWORD                  # Not used with sqlite3.
+    HOST: k8s_DATABASES_BDMS_HOST             # Set to empty string for localhost. Not used with sqlite3.
+    PORT: k8s_DATABASES_BDMS_PORT                       # Set to empty string for default. Not used with sqlite3.
 
 AUTH_LDAP:
-  SERVER_URI: 'ldap://192.168.49.241:389'
-  USER_DN_TEMPLATE: 'uid=%(user)s,ou=mrbs,dc=baifendian,dc=com'
-  BIND_AS_AUTHENTICATING_USER: True
-  CACHE_GROUPS: True
-  GROUP_CACHE_TIMEOUT: 3600
+  SERVER_URI: k8s_LDAP_SERVER_URI
+  USER_DN_TEMPLATE: k8s_LDAP_DN 
+  BIND_AS_AUTHENTICATING_USER: k8s_LDAP_BIND
+  CACHE_GROUPS: k8s_LDAP_CACHE_GROUPS
+  GROUP_CACHE_TIMEOUT: k8s_LDAP_GROUP_CACHE_TIMEOUT
   USER_ATTR_MAP: 
-    username: "givenName"
-    password: "password"
+    username: k8s_LDAP_USER_ATTR_MAP_USERNAME
+    password: k8s_LDAP_USER_ATTR_MAP_PASSWORD
 
 AMBARI:
-  AMBARI_URL: "http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/"
-  HDFS_URL: "http://172.24.3.156:50070/webhdfs/v1/"
-  HADOOP_CLIENT: "hlg3p64-lupan"
-  AMBARI_USER: "admin"
-  AMBARI_PASSWORD: "admin"
+  AMBARI_URL: k8s_AMBARI_URL
+  HDFS_URL: k8s_AMBARI_HDFS_URL
+  HADOOP_CLIENT: k8s_AMBARI_HADOOP_CLIENT
+  AMBARI_PASSWORD: k8s_AMBARI_PASSWORD
+  AMBARI_USER: k8s_AMBARI_USER  
 
 
 K8S:
-  K8S_IP: '172.24.3.150'
-  K8S_PORT: 8080
-  INFLUXDB_IP: 'k8sinfluxapi.bfdcloud.com'
-  INFLUXDB_PORT: 80
-  INFLUXDB_DATABASE: 'k8s'
+  K8S_IP: k8s_K8S_IP
+  K8S_PORT: k8s_K8S_PORT
+  INFLUXDB_IP: k8s_K8S_INFLUXDB_IP
+  INFLUXDB_PORT: k8s_K8S_INFLUXDB_PORT
+  INFLUXDB_DATABASE: k8s_K8S_INFLUXDB_DATABASE
 
 BDMS:
-  IP: '172.24.100.40'
-  PORT: '10001'
-  USERNAME: 'aiping.liang'
-  PASSWORD: 'aiping.liang'
+  IP: k8s_BDMS_IP 
+  PORT: k8s_BDMS_PORT
+  USERNAME: k8s_BDMS_USERNAME
+  PASSWORD: k8s_BDMS_PASSWORD
 
 
 WEBHDFS:
-  HOSTS:
-    - 172.24.3.155:50070 
-    - 172.24.3.156:50070
-  PORT: 50070
-  PATH: "/webhdfs/v1"
-  USER: "hadoop"
-  TIMEOUT: 10
-  MAX_TRIES: 2
-  RETRY_DELAY: 3
+  HOSTS: k8s_WEBHDFS_HOSTS
+  PORT: k8s_WEBHDFS_PORT
+  PATH: k8s_WEBHDFS_PATH
+  USER: k8s_WEBHDFS_USER
+  TIMEOUT: k8s_WEBHDFS_TIMEOUT
+  MAX_TRIES: k8s_WEBHDFS_MAX_TRIES
+  RETRY_DELAY: k8s_WEBHDFS_RETRY_DELAY
 
 CODIS:
-  CODIS_REST_URL: 'http://192.168.49.127:8888'
-  OPENTSDB_URL: 'http://192.168.40.140:9999'
+  CODIS_REST_URL: k8s_CODIS_REST_URL
+  OPENTSDB_URL: k8s_CODIS_OPENTSDB_URL
   
 OPENSTACK:
-  IP_KEYSTONE: "192.168.190.11"
-  PORT_KEYSTONE: 5000
-  IP_NOVA: "192.168.190.11"
-  PORT_NOVA: 8774
-  IP_CINDER:  "192.168.190.11"
-  PORT_CINDER: 8776
-  MONITOR_URL: 'http://172.24.4.33:4242/api/query'
+  IP_KEYSTONE: k8s_OPENSTACK_IP_KEYSTONE
+  PORT_KEYSTONE: k8s_OPENSTACK_PORT_KEYSTONE
+  IP_NOVA: k8s_OPENSTACK_IP_NOVA
+  PORT_NOVA: k8s_OPENSTACK_PORT_NOVA
+  IP_CINDER: k8s_OPENSTACK_IP_CINDER
+  PORT_CINDER: k8s_OPENSTACK_PORT_CINDER
 
-WHITELIST:
-  WHITELIST_IP:
-    - "192."
-    - "10."

@@ -4,13 +4,21 @@ MAINTAINER jingxia.sun <jingxia.sun@baifendian.com>
 ENV SIRIUS_PATH /opt/Sirius
 RUN mkdir -p /opt/Sirius
 ADD . /opt/Sirius
-#更新hadoop客户端
-RUN rm -rf /opt/hadoop && \
-    tar -xzvf $SIRIUS_PATH/docker-k8s/hadoop-2.6.0.tar.gz &&\
-    ls && pwd && \
-    mv hadoop-2.6.0 /opt/hadoop
 
-#编译代码
+RUN rm -rf /opt/hadoop/etc/hadoop
+ADD ./hadoop /opt/hadoop/etc/
+
+RUN mkdir -p /opt/bfdhadoop/tmp/data && \
+    mkdir /opt/bfdhadoop/dfs.namenode.dir && \
+    mkdir /opt/bfdhadoop/dfs.datanode.dir && \
+    mkdir /opt/bfdhadoop/journal && \
+    mkdir -p /opt/bfdhadoop/yarn_dir/local-dirs && \
+    mkdir -p /opt/bfdhadoop/yarn_dir/log-dirs && \
+    mkdir -p /opt/bfdhadoop/yarn_dir/log-aggregation && \
+    mkdir -p /tmp/mr_history/tmp /tmp/mr_history/done && \
+    cd /root && \
+    source /etc/profile
+
 RUN cd $SIRIUS_PATH/package/Aries && \
     rm -rf node_modules && \
     npm install && \
@@ -24,7 +32,6 @@ RUN cd $SIRIUS_PATH/package/Aries && \
 RUN mkdir -p $SIRIUS_PATH/log &&\
     mkdir -p $SIRIUS_PATH/download  
 
-#添加用户
 RUN adduser hadoop && \
     adduser bre && \
     adduser bae

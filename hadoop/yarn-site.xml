@@ -1,0 +1,179 @@
+<configuration>
+   <property>
+      <name>yarn.acl.enable</name>
+      <value>false</value>
+      <description>Enable ACLs? Defaults to false.</description>
+  </property>
+  <property>
+      <name>yarn.admin.acl</name>
+      <value>*</value>
+      <description>
+      ACL to set admins on the cluster. ACLs are of for comma-separated-usersspace comma-separated-groups. 
+      Defaults to special value of * which means anyone. Special value of just space means no one has access.
+      </description>
+  </property>
+  <property>
+      <name>yarn.log-aggregation-enable</name>
+      <value>false</value>
+      <description>Configuration to enable or disable log aggregation是否启用日志聚集功能</description>
+  </property>
+ <property>
+  <name>yarn.resourcemanager.connect.retry-interval.ms</name>
+  <value>2000</value>
+  <description>rm连接失败的重试间隔</description>
+</property>
+ <property>
+  <name>yarn.resourcemanager.ha.enabled</name>
+  <value>true</value>
+    <description>  是否采用HA</description>
+</property>
+<property>
+  <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
+  <value>true</value>
+  <description>  启动自动故障转移,默认为false</description>
+</property>
+<property>
+  <name>yarn.resourcemanager.ha.automatic-failover.embedded</name>
+  <value>true</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.cluster-id</name>
+  <value>YARN_YARN_RESOURCEMANAGER_CLUSTER_ID</value>
+ <description> 集群名称，确保HA选举时对应的集群</description>
+</property>
+<property>
+  <name>yarn.resourcemanager.ha.rm-ids</name>
+  <value>rm1,rm2</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.ha.id</name>
+  <value>rm1</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.recovery.enabled</name>
+  <value>true</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.store.class</name>
+<value>org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore</value>
+</property>
+<property>
+<name>yarn.resourcemanager.zk-address</name>
+<value>YARN_YARN_RESOURCEMANAGER_ZK_ADDRESS</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.address.rm1</name>
+  <value>YARN_YARN_RESOURCEMANAGER_ADDRESS_RM1</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.scheduler.address.rm1</name>
+  <value>YARN_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS_RM1</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.webapp.https.address.rm1</name>
+  <value>YARN_YARN_RESOURCEMANAGER_WEBAPP_HTTPS_ADDRESS_RM1</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.webapp.address.rm1</name>
+  <value>YARN_YARN_RESOURCEMANAGER_WEBAPP_ADDRESS_RM1</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.resource-tracker.address.rm1</name>
+  <value>YARN_YARN_RESOURCEMANAGER_RESOURCE_TRACKER_ADDRESS_RM1</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.admin.address.rm1</name>
+  <value>YARN_YARN_RESOURCEMANAGER_ADMIN_ADDRESS_RM1</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.address.rm2</name>
+  <value>YARN_YARN_RESOURCEMANAGER_ADDRESS_RM2</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.scheduler.address.rm2</name>
+  <value>YARN_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS_RM2</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.webapp.https.address.rm2</name>
+  <value>YARN_YARN_RESOURCEMANAGER_WEBAPP_HTTPS_ADDRESS_RM2</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.webapp.address.rm2</name>
+  <value>YARN_YARN_RESOURCEMANAGER_WEBAPP_ADDRESS_RM2</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.resource-tracker.address.rm2</name>
+  <value>YARN_YARN_RESOURCEMANAGER_RESOURCE_TRACKER_ADDRESS_RM2</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.admin.address.rm2</name>
+  <value>YARN_YARN_RESOURCEMANAGER_ADMIN_ADDRESS_RM2</value>
+</property>
+  <property>
+      <name>yarn.nodemanager.local-dirs</name>
+      <value>YARN_YARN_NODEMANAGER_LOCAL_DIRS</value>
+      <description>中间结果存放位置，类似于1.0中的mapred.local.dir。注意，这个参数通常会配置多个目录，已分摊磁盘IO负载。
+      Comma-separated list of paths on the local filesystem where intermediate data is written.
+      Multiple paths help spread disk i/o.
+      </description>
+  </property>    
+  <property>
+      <name>yarn.nodemanager.log-dirs</name>
+      <value>YARN_YARN_NODEMANAGER_LOG_DIRS</value>
+      <description>日志存放地址（可配置多个目录）
+      Comma-separated list of paths on the local filesystem where logs are written.    
+      Multiple paths help spread disk i/o.
+      </description>
+  </property>
+  <property>
+      <name>yarn.nodemanager.log.retain-seconds</name>
+      <value>10800</value>
+      <description>NodeManager上日志最多存放时间（不启用日志聚集功能时有效）
+      Default time (in seconds) to retain log files on the NodeManager.
+      ***Only applicable if log-aggregation is disabled.
+      </description>
+  </property>
+  <property>
+      <name>yarn.nodemanager.remote-app-log-dir</name>
+      <value>YARN_YARN_NODEMANAGER_REMOTE_APP_LOG_DIR</value>
+      <description>当应用程序运行结束后，日志被转移到的HDFS目录（启用日志聚集功能时有效）
+      HDFS directory where the application logs are moved on application completion. 
+      Need to set appropriate permissions. 
+      ***Only applicable if log-aggregation is enabled.
+      </description>
+  </property>
+  <property>
+      <name>yarn.nodemanager.remote-app-log-dir-suffix</name>
+      <value>logs</value>
+      <description>
+      Suffix appended to the remote log dir. 
+      Logs will be aggregated to ${yarn.nodemanager.remote-app-log-dir}/${user}/${thisParam}. 
+      ***Only applicable if log-aggregation is enabled.
+      </description>
+  </property>
+  <property>
+      <name>yarn.nodemanager.aux-services</name>
+      <value>mapreduce_shuffle</value>
+      <description>Shuffle service that needs to be set for Map Reduce applications.</description>
+  </property>
+ <property>
+ <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+ <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+ </property>
+  <property>
+      <name>yarn.log-aggregation.retain-seconds</name>
+      <value>-1</value>
+      <description> 在HDFS上聚集的日志最多保存多长时间
+      How long to keep aggregation logs before deleting them. -1 disables. Be careful, set this too small and you will spam the name node.
+      </description>
+  </property>
+  <property>
+      <name>yarn.log-aggregation.retain-check-interval-seconds</name>
+      <value>-1</value>
+      <description>多长时间检查一次日志，并将满足条件的删除，如果是0或者负数，则为上一个值的1/10;默认值：-1
+      Time between checks for aggregated log retention. 
+      If set to 0 or a negative value then the value is computed as one-tenth of the aggregated log retention time. 
+      Be careful, set this too small and you will spam the name node.
+      </description>
+  </property>
+  </configuration>

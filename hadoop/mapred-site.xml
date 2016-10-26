@@ -1,0 +1,29 @@
+<configuration>
+   <property>
+       <name>mapreduce.framework.name</name>
+       <value>yarn</value>
+       <description>Execution framework set to Hadoop YARN.</description>
+   </property>
+   <property>
+       <name>mapreduce.jobhistory.address</name>
+       <value>MAPRED_MAPREDUCE_JOBHISTORY_ADDRESS</value>
+       <description>配置 MapReduce JobHistory Server 地址 ，默认端口10020
+       MapReduce JobHistory Server host:port.    Default port is 10020.</description>
+   </property>
+   <property>
+       <name>mapreduce.jobhistory.webapp.address</name>
+       <value>MAPRED_MAPREDUCE_JOBHISTORY_WEBAPP_ADDRESS</value>
+       <description>配置 MapReduce JobHistory Server web ui 地址， 默认端口19888
+   MapReduce JobHistory Server Web UI host:port. Default port is 19888.</description>
+   </property>
+   <property>
+       <name>mapreduce.jobhistory.intermediate-done-dir</name>
+       <value>MAPRED_MAPREDUCE_JOBHISTORY_INTERMEDIATE_DONE_DIR</value>
+       <description>MapReduce作业产生的日志存放位置  Directory where history files are written by MapReduce jobs.</description>
+   </property>
+   <property>
+       <name>mapreduce.jobhistory.done-dir</name>
+       <value>MAPRED_MAPREDUCE_JOBHISTORY_DONE_DIR</value>
+       <description>MR JobHistory Server管理的日志的存放位置 Directory where history files are managed by the MR JobHistory Server.</description>
+   </property>
+ </configuration>
