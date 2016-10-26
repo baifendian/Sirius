@@ -28,28 +28,12 @@ componentWillMount(){
 
     # 生成 ID 与高度策略对应关系：
     this.userData['layoutInfoArr'] = [
-        layoutInfoGenerator( 
-            id:this.userData['idList']['idRoot'],
-            isRoot:true
-        ),
-        layoutInfoGenerator( 
-            id:this.userData['idList']['id1'],
-            isRoot:false,
-            heightProp:'Const_0' 
-        ),
-        layoutInfoGenerator( 
-            id:this.userData['idList']['id2'],
-            isRoot:false,
-            heightProp:'Const'
-        ),
-        layoutInfoGenerator( 
-            id:this.userData['idList']['id3'],
-            isRoot:false,
-            heightProp:'Var',
-            heightChangedCallback:( newHeight )=>{
-                this.onHeightChanged( newHeight )
-            }
-        )
+        layoutInfoGenerator( this.userData['idList']['idRoot'],true ),
+        layoutInfoGenerator( this.userData['idList']['id1'],false,'Const_0' ),
+        layoutInfoGenerator( this.userData['idList']['id2'],false,'Const' ),
+        layoutInfoGenerator( this.userData['idList']['id3'],false,'Var',( newHeight )=>{
+            this.onHeightChanged( newHeight )
+        })
     ]
 }
 
