@@ -116,6 +116,8 @@ spec:
             value: "192.168.190.11"
           - name: OPENSTACK_PORT_CINDER
             value: "8776"
+          - name: OPENSTACK_MONITOR_URL
+            value: "http://172.24.4.33:4242/api/query"
           - name: CORE_FS_DEFAULTFS
             value: "hdfs://bfdhadoop26"
           - name: CORE_HADOOP_TMP_DIR
