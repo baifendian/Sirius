@@ -37,7 +37,7 @@ def get_overview_k8s_pod_info(namespace):
         count = 0
         total = 0
         for item in pod_detail_info['data']['items']:
-            containerStatuses = item['status']['containerStatuses']
+            containerStatuses = item['status'].get('containerStatuses',[])
             total += len(containerStatuses)
             for cItem in containerStatuses:
                 if cItem['state'].get( 'running' ) != None:
