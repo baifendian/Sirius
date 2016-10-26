@@ -7,7 +7,8 @@ from django.contrib import admin
 admin.autodiscover()
 import views
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    #url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', views.permission_check),
     url(r'^v1/user_auth/', include('user_auth.urls')),
     url(r'^v1/hdfs/', include('hdfs.urls')),
     url(r'^v1/codis/', include('codis.urls')),

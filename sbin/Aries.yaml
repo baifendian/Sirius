@@ -73,3 +73,7 @@ OPENSTACK:
   PORT_CINDER: 8776
   MONITOR_URL: 'http://172.24.4.33:4242/api/query'
 
+WHITELIST:
+  WHITELIST_IP:
+    - "192."
+    - "10."
