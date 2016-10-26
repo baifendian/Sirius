@@ -257,4 +257,3 @@ def cache(cache = {}):
             return cache[fun]
         return _exec_fun
     return _cache
-
