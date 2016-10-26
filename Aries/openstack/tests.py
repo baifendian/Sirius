@@ -445,7 +445,6 @@ class Openstack_test(TestCase):
         ret = CommonApi.get_role_id()
         prints(ret)
 
-
     def auto_test(self):
         global VM_ID
         global VOLUME_ID

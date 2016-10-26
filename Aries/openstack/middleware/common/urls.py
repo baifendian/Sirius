@@ -63,11 +63,3 @@ url_project_member = "/%s/role_assignments"%version_token
 url_project_user_action = "/%s/projects/{project_id}/users/{user_id}/roles/{role_id}"%version_token
 url_project_user_del = "/%s/projects/{project_id}/users/{user_id}/roles/{role_id}"%version_token
 url_project_list = "/%s/projects"%version_token
-
-
-
-
-
-
-
-
