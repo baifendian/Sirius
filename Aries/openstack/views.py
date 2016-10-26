@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from openstack.middleware.login.login import Login, get_token
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
-from common import json_data,volumes_deal,time_handle,size_handle
+from common import json_data,volumes_deal,time_handle,size_handle,ReturnImages,ReturnFlavor,ReturnVm
 from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach
 import time
@@ -22,55 +22,6 @@ from decimal import *
 import json
 import logging
 openstack_log = logging.getLogger("openstack_log")
-
-
-def login(request):
-    ret = {}
-    if request.method == "POST":
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        login = Login("openstack", "baifendian2016")
-        longin_token = login.user_token_login()
-        proid_token = login.proid_login()
-        login_proid_token = login.token_login()
-        if longin_token != 1 and proid_token != 1 and login_proid_token != 1:
-            ret = {"name": username, "type": 2}
-    json_status = json_data(ret)
-    response = HttpResponse(json_status)
-    response['Access-Control-Allow-Origin'] = '*'
-    response['Content-Type'] = 'application/json'
-    return response
-
-
-def logout(request):
-    aa = {'aa': 'bb'}
-    json_status = json_data(aa)
-    response = HttpResponse(json_status)
-    response['Access-Control-Allow-Origin'] = '*'
-    response['Content-Type'] = 'application/json'
-    return response
-
-
-def create_host(request):
-    ret = {}
-    if request.method == 'POST':
-        type_name = request.POST.get('name')
-        if type_name == 'T1':
-            ret = {'cpu': "1", "mem": "2", "count": '0.14'}
-            ret = json.dumps(ret)
-            return HttpResponse(ret)
-        elif type_name == "T2":
-            ret = {'cpu': "2", "mem": "4", "count": "0.24"}
-            ret = json.dumps(ret)
-            return HttpResponse(ret)
-        elif type_name == "T3":
-            ret = {"cpu": "4", "mem": "8", "count": "0.35"}
-            ret = json.dumps(ret)
-            return HttpResponse(ret)
-
-        return HttpResponseRedirect("/bfddashboard/instances/")
-    return render_to_response('manage_host.html')
-
 
 @csrf_exempt
 @user_login()
@@ -104,45 +55,29 @@ def instances(request):
             minpageSizes = 0
             maxpageSizes = 0
         ret['totalList'] = []
-        test_list = []
+        #test_list = []
+        returnimages = ReturnImages(imagess.list()['images'])
+        returnflavor = ReturnFlavor(flavorss.list()['flavors'])
         for host in host_list['servers']:
             sys = {}
             sys['id'] = host['id']
             sys['name'] = host['name']
+            sys['instance_name']=host['OS-EXT-SRV-ATTR:instance_name']
             try:
-                sys['image'] = imagess.show_detail(host['image']['id'])['image']['name']
+                sys['image'] = returnimages.images_name(host['image']['id'])
             except:
                 sys['image'] = '-'
-            sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
+           # sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
+            sys['flavor'] = returnflavor.images_name(host['flavor']['id'])
             sys['created'] = time_handle(host['created'])
             sys['status'] = host['status']
-            try:
-                volumes_list=host['os-extended-volumes:volumes_attached']
-                volumes_name_list=[]
-                for volmes_dict in volumes_list:
-                    volumes_name={}
-                    volumes_details=volume_s.show_detail(volmes_dict['id'])
-                    if not volumes_details['volume']['displayName']:
-                        volumes_name['disk_name']=volumes_details['volume']['id']
-                    else:
-                        volumes_name['disk_name']=volumes_details['volume']['displayName']
-                    volumes_name['disk_id']=volumes_details['volume']['id']
-                    volumes_name['size'] = volumes_details['volume']['size']
-                    volumes_name['voumetype'] = 'ceph'
-                    volumes_name['device']=volumes_details['volume']['attachments'][0]['device']
-                    volumes_name_list.append(volumes_name)
-                sys['disk_list']=volumes_name_list
-                openstack_log.info("虚拟机磁盘:{0}..{1}".format(host['name'],volumes_name_list))
-            except Exception,e:
-                sys['disk_list']=[]
-                openstack_log.error("虚拟机磁盘:{0}".format(e))
             for key, value in host['addresses'].items():
                 for ip in value:
                     for keys, values in ip.items():
                         if keys == "addr":
                             sys['ip'] = values
             ret['totalList'].append(sys)
-            test_list.append(sys)
+           # test_list.append(sys)
         ret['currentPage'] = 1
         ret['totalPageNum'] = len(host_list['servers'])
 
@@ -374,6 +309,7 @@ def volumes(request):
             return response
         ret['totalList'] = []
         volumes_list = volume_s.list_detail()
+        returnvm = ReturnVm(vm_manage.list()['servers'])
         for disk in volumes_list['volumes']:
             sys = {}
             if not disk['displayName']:
@@ -393,7 +329,8 @@ def volumes(request):
                 for disk_host in disk['attachments']:
                     sys['device'] = disk_host['device']
                     try:
-                        sys['servername'] = vm_manage.show_detail(disk_host['serverId'])['server']['name']
+                        #sys['servername'] = vm_manage.show_detail(disk_host['serverId'])['server']['name']
+                        sys['servername'] = returnvm.vm_name(disk_host['serverId'])
                     except:
                         sys['servername'] = None
                     sys['server_id'] = disk_host['serverId']

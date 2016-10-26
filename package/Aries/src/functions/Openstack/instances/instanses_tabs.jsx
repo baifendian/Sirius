@@ -261,7 +261,7 @@ const Echarts_s = React.createClass({
   },
 
   initData(){
-    let id=this.props.host_desc['id']
+    let id=this.props.host_desc['instance_name']
     return {
       'cpu_monitor': OPEN.Get_instances_cpu(this,'cpu_monitor',id,'59_minutes',this.dataManage),
       'mem_monitor': OPEN.Get_instances_cpu(this,'mem_monitor',id,'59_minutes',this.dataManage),
@@ -403,7 +403,7 @@ const Host_details = React.createClass({
   },
   render(){
     const list=[1]
-    const nav = this.props.host_desc['disk_list'] && this.props.host_desc['disk_list'].map((item,i)=>{
+    const nav = this.props._self.state.vmdisk['disk_list'] && this.props._self.state.vmdisk['disk_list'].map((item,i)=>{
       return (
         <Row key={i}>
           <Col col="md-2" style={{}}>
@@ -445,7 +445,7 @@ const Host_details = React.createClass({
           <span>磁盘:</span>
         </Row>
         <div>
-          {this.props.host_desc['disk_list'] ? nav : <span></span>}
+          {this.props._self.state.vmdisk['disk_list'] ? nav : <span></span>}
         </div>
       </div>
     )
@@ -464,7 +464,7 @@ const Tabs_List = React.createClass({
         </TabList>
         <div style={{overflow:'auto'}}>
         <TabPanel>
-          <Host_details host_desc={this.props.host_desc}/>
+          <Host_details host_desc={this.props.host_desc} _self={this.props._this}/>
         </TabPanel>
         <TabPanel>
           <Host_Timeline host_desc={this.props.host_desc} instance_backup={this.props.instance_backup} _self={this.props._this}/>

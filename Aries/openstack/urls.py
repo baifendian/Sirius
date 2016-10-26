@@ -15,16 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from openstack.views import instances,create_host,volumes,login,logout,images,flavors,instances_log
+from openstack.views import instances,volumes,images,flavors,instances_log
 import rests
 
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^login',login,name='login'),
-    url(r'^logout',logout,name='logout'),
     url(r'^bfddashboard/instances/$',instances,name='instances'),
-    url(r'^bfddashboard/instances/vm/$',create_host,name='create_host'),
     url(r'^volumes/$', volumes, name='volumes'),
     url(r'^flavors/$', flavors, name='flavors'),
     url(r'^images/$', images, name='images'),
@@ -34,4 +31,5 @@ urlpatterns = [
     url(r'home/overview/$',rests.overview.as_view(),name="home"),
     url(r'^instances_post/$',rests.instances.as_view(),name='instances_post'),
     url(r'^instances_log/(?P<id>\S*)/(?P<line>\d*)/$',instances_log,name="instances_log"),
+    url(r'^monitor/$',rests.monitor.as_view(),name="monitor"),
 ]

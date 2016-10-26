@@ -89,17 +89,21 @@ def time_handle(time):
 
 def sendhttp(url,data):
     header = {"Content-Type": "application/json"}
-    request = urllib2.Request(url, data)
-    for key in header:
-        request.add_header(key, header[key])
     try:
-        result = urllib2.urlopen(request)
-        result_t=json.loads(result.read())
+        request = urllib2.Request(url, data)
+        for key in header:
+            request.add_header(key, header[key])
+        try:
+            result = urllib2.urlopen(request)
+            result_t=json.loads(result.read())
+        except:
+            result_t = traceback.format_exc()
+        else:
+            result.close()
+        return result_t
     except:
-        result_t = traceback.format_exc()
-    else:
-        result.close()
-    return result_t
+        s = traceback.format_exc()
+        openstack_log.error('execute func %s failure : %s' % (sendhttp, s))
 
 def sendhttpdata(start,metric,aggregator='sum',compute='*',instance='*',name=None):
     if name == None:
@@ -114,3 +118,54 @@ def sendhttpdate(type,interval):
     'days': (datetime.datetime.now() - datetime.timedelta(days=interval)).strftime("%Y-%m-%d %H:%M:%S")
     }
     return int(str(time.mktime(time.strptime(data[type], "%Y-%m-%d %H:%M:%S"))).split('.')[0])
+
+class Share_m(object):
+    _state = {}
+    def __new__(cls, *args, **kw):
+        ob = super(Share_m, cls).__new__(cls, *args, **kw)
+        ob.__dict__  = cls._state
+        return ob
+
+class ReturnImages(Share_m):
+    def __init__(self,images):
+        self.images=self.fun_deal(images)
+    def images_name(self,id):
+        return self.images[id]
+    def fun_deal(self,images):
+        sys={}
+        for image in images:
+            sys[image['id']]=image['name']
+        return sys
+
+class ReturnFlavor(Share_m):
+    def __init__(self,flavorss):
+        self.flavors=self.fun_deal(flavorss)
+    def images_name(self,id):
+        return self.flavors[id]
+    def fun_deal(self,flavors):
+        ret={}
+        for flavor in flavors:
+            ret[flavor['id']]=flavor['name']
+        return ret
+
+class ReturnVm(Share_m):
+    def __init__(self,vm):
+        self.vms=self.fun_deal(vm)
+    def vm_name(self,id):
+        return self.vms[id]
+    def fun_deal(self,vms):
+        ret={}
+        for vm in vms:
+            ret[vm['id']]=vm['name']
+        return ret
+
+class ReturnVolume(Share_m):
+    def __init__(self,Volumes):
+        self.Volume=self.fun_deal(Volumes)
+    def Volume_name(self,id):
+        return self.Volume[id]
+    def fun_deal(self,Volumes):
+        ret={}
+        for Volume in Volumes:
+            ret[Volume['id']]=Volume['displayName']
+        return ret
