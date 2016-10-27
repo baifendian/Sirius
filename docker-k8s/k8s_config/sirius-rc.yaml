@@ -202,5 +202,5 @@ spec:
           name: siriusdownload
       imagePullSecrets:
         - name: docker-registry-sys
-      nodeSelector:
-        kubernetes.io/hostname: 172.24.2.208
+      #nodeSelector:
+      #  kubernetes.io/hostname: 172.24.2.208

@@ -277,7 +277,7 @@ def trans_obj_to_easy_dis(obj_info):
 @trans_return_json
 def get_mytask_graph(request):
     kd_logger.info( 'call get_mytask_graph' )
-    url = 'http://' + settings.BDMS_IP + ':' + settings.BDMS_PORT + '/k8s/api/v1/namespaces/mytaskgraph'  #任务运行网络图 rest api
+    url = 'http://' + str(settings.BDMS_IP) + ':' + str(settings.BDMS_PORT) + '/k8s/api/v1/namespaces/mytaskgraph'  #任务运行网络图 rest api
     try:
         req = requests.Session()
         r = req.get(url)

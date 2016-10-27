@@ -5,8 +5,8 @@ ENV SIRIUS_PATH /opt/Sirius
 RUN mkdir -p /opt/Sirius
 ADD . /opt/Sirius
 
-RUN rm -rf /opt/hadoop/etc/hadoop
-ADD ./hadoop /opt/hadoop/etc/
+RUN rm -rf /opt/hadoop/etc/hadoop/*
+ADD ./hadoop /opt/hadoop/etc/hadoop
 
 RUN mkdir -p /opt/bfdhadoop/tmp/data && \
     mkdir /opt/bfdhadoop/dfs.namenode.dir && \
