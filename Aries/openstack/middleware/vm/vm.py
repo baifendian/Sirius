@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from openstack.middleware.common.common import send_request, IP_nova, PORT_nova, plog, run_in_thread, WorkPool, \
     get_time, dlog, TIMEOUT,OPENSTACK_KEY_PATH
 from openstack.middleware.image.image import Image
-from openstack.middleware.login.login import get_token, get_proid
+from openstack.middleware.login.login import get_token, get_proid,get_admin_token
 from openstack.middleware.volume.volume import Volume, Volume_attach
 from openstack.models import DbVmSnap
 from openstack.middleware.common.urls import url_vm_action,url_vm_control_action,url_vm_create,url_vm_list,url_vm_list_detail

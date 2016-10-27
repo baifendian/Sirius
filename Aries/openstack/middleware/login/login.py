@@ -122,7 +122,7 @@ def get_token():
     return token
 
 @plog("admin_login")
-def admin_login():
+def admin_login(project_id_now=""):
     global admin_token
     global user_token
     global project_id
@@ -133,11 +133,13 @@ def admin_login():
     token_tmp = token
     project_id_tmp = project_id
     admin_username = "admin"
-    admin_password = "baifendianadmin2016"
-    admin_login = Login(admin_username,admin_password)
-    admin_login.user_token_login()
-    admin_login.proid_login()
-    admin_login.token_login()
+    admin_password = "mbk3HwlMx8e"
+    admin_handle = Login(admin_username,admin_password)
+    admin_handle.user_token_login()
+    admin_handle.proid_login()
+    if project_id_now:
+        admin_handle.project_id = project_id_now
+    admin_handle.token_login()
     admin_user_token = user_token
     admin_token = token
     admin_project_id = project_id
@@ -146,9 +148,9 @@ def admin_login():
     token = token_tmp
 
 @plog("get_admin_token")
-def get_admin_token():
+def get_admin_token(project_id=""):
     if admin_token == "":
-        admin_login()
+        admin_login(project_id)
     return admin_token
 
 def get_admin_project_id():

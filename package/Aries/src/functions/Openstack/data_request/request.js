@@ -14,6 +14,7 @@ var Datarequest = {
       'search': 'openstack/search/',
       'instances_post': 'openstack/instances_post/',
       'instances_log': 'openstack/instances_log/',
+      'monitor': 'openstack/monitor/',
     }
   },
   open_vnc(_this, select_host, fun){
@@ -31,7 +32,7 @@ var Datarequest = {
   },
 
   Get_instances_cpu(_this,name,id,date,fun){
-    let url = this.UrlList()['instances_post']+"?name="+name+"&id="+id+'&date='+date
+    let url = this.UrlList()['monitor']+"?name="+name+"&id="+id+'&date='+date
     this.xhrGetData(_this,url,fun)
   },
 

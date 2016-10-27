@@ -2,7 +2,7 @@
 from openstack.middleware.login.login import Login, get_token, get_project
 from openstack.middleware.image.image import Image
 from openstack.middleware.flavor.flavor import Flavor
-from common import json_data,volumes_deal,time_handle,size_handle,sendhttp,sendhttpdata,sendhttpdate
+from common import json_data,volumes_deal,time_handle,size_handle,sendhttp,sendhttpdata,sendhttpdate,ReturnVolume
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
 from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps,Volume_backup
 from django.http import HttpResponse
@@ -235,6 +235,7 @@ def volumes_backup_get(request):
     volume_snaps = Volume_snaps()
     volume = Volume()
     ret['totalList'] = []
+    returnvolume=ReturnVolume(volume.list()['volumes'])
     for i in volume_snaps.list_detail()['snapshots']:
         sys = {}
         sys['id']=i['id']
@@ -242,7 +243,8 @@ def volumes_backup_get(request):
         sys['displayDescription'] = i['displayDescription']
         sys['size'] = i['size']
         sys['status'] = i['status']
-        sys['volume_name'] = volume.show_detail(i['volumeId'])['volume']['displayName']
+        #sys['volume_name'] = volume.show_detail(i['volumeId'])['volume']['displayName']
+        sys['volume_name'] = returnvolume.Volume_name(i['volumeId'])
         ret['totalList'].append(sys)
     ret = json_data(ret)
     return ret
@@ -263,6 +265,7 @@ def volumes_backup_t(request):
     else:
         ret['totalList'] = []
         return_data = volume_backup.list_detail()
+        returnvolume = ReturnVolume(volume.list()['volumes'])
         for i in return_data['backups']:
             sys={}
             sys['name']=i['name']
@@ -270,7 +273,8 @@ def volumes_backup_t(request):
             sys['size']=i['size']
             sys['status']=i['status']
             try:
-                sys['volume_name'] = volume.show_detail(i['volume_id'])['volume']['displayName']
+               # sys['volume_name'] = volume.show_detail(i['volume_id'])['volume']['displayName']
+                sys['volume_name'] = returnvolume.Volume_name(i['volume_id'])
                 sys['volume_id'] = i['volume_id']
             except:
                 sys['volume_name'] = '-'
@@ -333,7 +337,6 @@ def instances_backup(request):
     openstack_log.info(request.POST)
     vm_snap = Vm_snap(instances_id)
     return_data = vm_snap.create(instances_name_b)
-    print return_data
     if return_data == 2:
         ret['name'] = instances_name
         ret['status'] = False
@@ -488,13 +491,13 @@ def snapshot_redact(request):
     ret = json_data(ret)
     return ret
 
-def cpu_monitor(request):
+def cpu_monitor(request,vm_name):
     ret={}
     ret['date'] = []
     ret['cpu_monitor'] = []
     date=request.GET.get('date').split('_')
     time_stamp=sendhttpdate(date[1],int(date[0]))
-    data=sendhttpdata(time_stamp,metric='sys.cpu.util',aggregator='sum',compute='*',instance='instance-00000437')
+    data=sendhttpdata(time_stamp,metric='sys.cpu.util',aggregator='sum',compute='*',instance=vm_name)
     return_data=sendhttp(MONITOR_URL,data)
     for i in return_data:
         sys={}
@@ -507,7 +510,7 @@ def cpu_monitor(request):
     ret = json_data(ret)
     return ret
 
-def mem_monitor(request):
+def mem_monitor(request,vm_name):
     ret = {}
     ret['mem_monitor'] = []
     date=request.GET.get('date').split('_')
@@ -515,7 +518,7 @@ def mem_monitor(request):
     metrics=['sys.mem.free_mem','sys.mem.total_mem','sys.mem.util']
     for i in metrics:
         ret['date'] = []
-        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437')
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance=vm_name)
         return_data = sendhttp(MONITOR_URL, data)
         for i in return_data:
             sys = {}
@@ -529,7 +532,7 @@ def mem_monitor(request):
     ret = json_data(ret)
     return ret
 
-def disk_iops_monitor(request):
+def disk_iops_monitor(request,vm_name):
     ret = {}
     ret['disk_iops_monitor'] = []
     date=request.GET.get('date').split('_')
@@ -537,7 +540,7 @@ def disk_iops_monitor(request):
     metrics=['sys.disk.read_ops','sys.disk.write_ops']
     for i in metrics:
         ret['date'] = []
-        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437',name='*')
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance=vm_name,name='*')
         return_data = sendhttp(MONITOR_URL, data)
         for i in return_data:
             sys = {}
@@ -551,7 +554,7 @@ def disk_iops_monitor(request):
     ret = json_data(ret)
     return ret
 
-def disk_bps_monitor(request):
+def disk_bps_monitor(request,vm_name):
     ret = {}
     ret['disk_bps_monitor'] = []
     date=request.GET.get('date').split('_')
@@ -559,7 +562,7 @@ def disk_bps_monitor(request):
     metrics=['sys.disk.read_bps','sys.disk.write_bps']
     for i in metrics:
         ret['date'] = []
-        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-00000437',name='*')
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance=vm_name,name='*')
         return_data = sendhttp(MONITOR_URL, data)
         for i in return_data:
             sys = {}
@@ -573,7 +576,7 @@ def disk_bps_monitor(request):
     ret = json_data(ret)
     return ret
 
-def network_monitor(request):
+def network_monitor(request,vm_name):
     ret = {}
     ret['network_monitor'] = []
     date=request.GET.get('date').split('_')
@@ -581,7 +584,7 @@ def network_monitor(request):
     metrics=['sys.nic.tx_bytes_second','sys.nic.rx_bytes_second']
     for i in metrics:
         ret['date'] = []
-        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-000004cc',name='*')
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance=vm_name,name='*')
         return_data = sendhttp(MONITOR_URL, data)
         for i in return_data:
             sys = {}
@@ -595,7 +598,7 @@ def network_monitor(request):
     ret = json_data(ret)
     return ret
 
-def network_monitor_packets(request):
+def network_monitor_packets(request,vm_name):
     ret = {}
     ret['network_monitor_packets'] = []
     date=request.GET.get('date').split('_')
@@ -603,7 +606,7 @@ def network_monitor_packets(request):
     metrics=['sys.nic.tx_packets_second','sys.nic.rx_packets_second']
     for i in metrics:
         ret['date'] = []
-        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance='instance-000004cc',name='*')
+        data = sendhttpdata(time_stamp, metric=i, aggregator='sum', compute='*', instance=vm_name,name='*')
         return_data = sendhttp(MONITOR_URL, data)
         for i in return_data:
             sys = {}
@@ -687,6 +690,48 @@ def instances_backup_delete(request):
         ret['status'] = False
     ret=json_data(ret)
     return ret
+
+class CommonMethod():
+    def __init__(self):
+        pass
+
+    @classmethod
+    @user_login()
+    def num_get_vm(cls):
+        try:
+            vm = Vm_manage()
+            tmp_list= vm.list_detail().get("servers",[])
+            num_vm_total = len(tmp_list)
+            num_vm_running = len([i for i in tmp_list if i["status"] == "ACTIVE"])
+        except Exception,err:
+            openstack_log.error("get num of vm err:%s"%err)
+            num_vm_total = 0
+            num_vm_running = 0
+        return (num_vm_total,num_vm_running)
+
+    @classmethod
+    @user_login()
+    def num_get_volume(cls):
+        try:
+            volume = Volume()
+            tmp_list = volume.list().get("volumes",[])
+            num_volume = len(tmp_list)
+        except Exception,err:
+            openstack_log.error("get num of volume err:%s"%err)
+            num_volume = 0
+        return num_volume
+
+    @classmethod
+    @user_login()
+    def num_get_image(cls):
+        try:
+            image = Image()
+            tmp_list = image.list_detail().get("images",[])
+            num_image = len([i for i in tmp_list if i["metadata"].get("image_type","") != "snapshot"])
+        except Exception,err:
+            openstack_log.error("get num of image err:%s"%err)
+            num_image = 0
+        return num_image
 
 
 Methods = {

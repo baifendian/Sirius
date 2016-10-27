@@ -5,6 +5,7 @@ from openstack.middleware.login.login import get_token, get_proid,get_admin_proj
 from common import send_request, plog,IP_nova,PORT_nova,IP_keystone,PORT_keystone
 from urls import url_keypairs,url_az_info,url_hv_info,url_domain_info,url_role_info
 
+
 class CommonApi:
     def __init__(self):
         pass

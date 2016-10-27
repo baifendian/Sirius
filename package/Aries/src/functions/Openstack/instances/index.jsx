@@ -42,6 +42,7 @@ export default React.createClass({
       button_statuss: true,
       logs:'',
       logs_loading:'',
+      vmdisk:'',
       url: "openstack/bfddashboard/instances/",
       column: [{
         title: '名称',
@@ -94,15 +95,21 @@ export default React.createClass({
     }
   },
   handleClick(item, event) {
-    //event = event ? event : window.event;
-    //event.stopPropagation();
+    event = event ? event : window.event;
+    event.stopPropagation();
     //this.refs.modal.open()
-   /* if (this.state.host_desc){
-      this.count_initialization()
+    console.log(item,event)
+    if (item == this.state.host_desc){
       this.setState({host_desc: ''})
-    }else{
+      this.count_initialization()
+     }else{
+      this.setState({host_desc: item})
       this.count_height()
-    }*/
+      this.getDataConsole(item)
+      this.getbackup(item)
+      OPEN.Get_vmdisk(this,item['id'],this.getvmdisk)
+    }
+
   },
   onPageChange(page) {
   },
@@ -218,7 +225,7 @@ export default React.createClass({
     }
   },
   handleRowClick(row) {
-    if (row == this.state.host_desc){
+   /* if (row == this.state.host_desc){
       this.setState({host_desc: ''})
       this.count_initialization()
      }else{
@@ -226,7 +233,12 @@ export default React.createClass({
       this.count_height()
       this.getDataConsole(row)
       this.getbackup(row)
-    }
+      OPEN.Get_vmdisk(this,row['id'],this.getvmdisk)
+    }*/
+  },
+
+  getvmdisk(_this,executedData){
+    this.setState({vmdisk:executedData})
   },
 
   getbackup(row){
@@ -420,7 +432,7 @@ export default React.createClass({
                 </div>
               </SubSplitPanel>
               <SubSplitPanel ref="SubSplitPanel_t">
-                <Tabs_List host_desc={this.state.host_desc} height_log={this.state.height_log} logs={this.state.logs} _this={this} ref="Tabs_list" instance_backup={this.state.instance_backup}/>
+                <Tabs_List host_desc={this.state.host_desc} height_log={this.state.height_log} logs={this.state.logs} _this={this} ref="Tabs_list" instance_backup={this.state.instance_backup} />
               </SubSplitPanel>
             </SplitPanel>
           </div>

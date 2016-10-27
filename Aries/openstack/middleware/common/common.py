@@ -239,3 +239,21 @@ def times(method_name):
             return ret
         return catch_time
     return get_time
+
+def cache(cache = {}):
+    '''
+    函数缓存装饰器，限制缓存长度，暂时不用大小来限制，现在只用于不带参数或固定参数的函数
+    设置每个的缓存的饥饿时间，默认60s
+    :param cache:
+    :return:
+    '''
+    def _cache(fun):
+        def _exec_fun(*args,**kwargs):
+            time_now = time.time()
+            if len(cache) >= 100:
+                cache.clear()
+            if fun not in cache or (time_now - cache[fun][1]) > 60:
+                cache[fun] = [fun(*args,**kwargs),time_now]
+            return cache[fun]
+        return _exec_fun
+    return _cache

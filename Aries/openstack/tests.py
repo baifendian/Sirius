@@ -265,7 +265,7 @@ class Openstack_test(TestCase):
         disk = [{"name": "disk_test2", "size": "10", "dev_name": "/dev/sdb"},
                 {"name": "disk_test3", "size": "10", "dev_name": "/dev/sdc"}]
         tmp_str = base64.b64encode("test")
-        msg = vm.create_multiple("test_zd3", FLAVOR_ID, IMAGE_ID, "123456",tmp_str, 3, 10, disk)
+        msg = vm.create_multiple("test_zd3", FLAVOR_ID, IMAGE_ID, "123456",tmp_str, 3, 10, disk=disk)
         prints(msg)
 
     # def test_create_image(self):
@@ -445,11 +445,11 @@ class Openstack_test(TestCase):
         ret = CommonApi.get_role_id()
         prints(ret)
 
-
     def auto_test(self):
         global VM_ID
         global VOLUME_ID
         global SNAPSHOT_ID
+        global VOLUME_SNAP_ID
         global ATTACH_ID
         print "_____________________start test___________________________________"
         #list
@@ -475,7 +475,7 @@ class Openstack_test(TestCase):
         self.test_extend_volume()
         tmp_ret = self.test_create_volume_snap()
         try:
-            SNAPSHOT_ID = tmp_ret["snapshot"]["id"]
+            VOLUME_SNAP_ID = tmp_ret["snapshot"]["id"]
         except:
             pass
         time.sleep(10)
