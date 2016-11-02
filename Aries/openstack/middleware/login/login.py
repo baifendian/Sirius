@@ -1,10 +1,10 @@
 # coding:utf-8
-from openstack.middleware.common.common import send_request, IP_keystone, PORT_keystone, plog
+from openstack.middleware.common.common import send_request, IP_keystone, PORT_keystone, plog,cache
 from openstack.middleware.common.urls import url_get_token,url_project_id
 
-token = ""
-project_id = ""
-user_token = ""
+token_dict = {}
+project_id_dict = {}
+user_token_dict = {}
 admin_token = ""
 admin_project_id = ""
 admin_user_token = ""
@@ -12,12 +12,9 @@ admin_user_token = ""
 
 class Login:
     def __init__(self, name, password):
-        global token
-        global project_id
-        global user_token
-        self.token = token
-        self.project_id = project_id
-        self.user_token = user_token
+        self.token = ""
+        self.project_id = ""
+        self.user_token = ""
         self.name = name
         self.password = password
 
@@ -27,7 +24,7 @@ class Login:
         得到一个用户的token，但是没有对项目相关操作的权限
         :return:
         '''
-        global user_token
+        global user_token_dict
         method = "POST"
         path = url_get_token
         params = {
@@ -53,10 +50,11 @@ class Login:
                         }
                 }
         }
+        cache(del_cache="*")   #切换用户时清除缓存
         head = {"Content-Type": "application/json"}
         ret = send_request(method, IP_keystone, PORT_keystone, path, params, head, flag=1)
         self.user_token = ret["token_id"]
-        user_token = self.user_token
+        user_token_dict[self.name] = self.user_token
 
     @plog("Login.get_proid")
     def proid_login(self):
@@ -64,14 +62,14 @@ class Login:
         得到project_id,为下面获取token作准备
         :return:
         '''
-        global project_id
+        global project_id_dict
         method = "GET"
         path = url_project_id
         params = ''
         head = {"X-Auth-Token": self.user_token}
         ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
         self.project_id = ret["projects"][0].get("id", "")
-        project_id = self.project_id
+        project_id_dict[self.name] = self.project_id
 
     @plog("Login.get_token")
     def token_login(self):
@@ -79,7 +77,7 @@ class Login:
         得到能对项目操作的token
         :return:
         '''
-        global token
+        global token_dict
         assert self.project_id != "", "proejct_id is none"
         method = "POST"
         path = url_get_token
@@ -115,23 +113,20 @@ class Login:
         head = {"Content-Type": "application/json"}
         ret = send_request(method, IP_keystone, PORT_keystone, path, params, head, flag=1)
         self.token = ret["token_id"]
-        token = self.token
+        token_dict[self.name] = self.token
 
 
 def get_token():
-    return token
+    return token_dict
 
 @plog("admin_login")
 def admin_login(project_id_now=""):
     global admin_token
-    global user_token
-    global project_id
-    global token
+    global user_token_dict
+    global project_id_dict
+    global token_dict
     global admin_project_id
     global admin_user_token
-    user_token_tmp = user_token
-    token_tmp = token
-    project_id_tmp = project_id
     admin_username = "admin"
     admin_password = "mbk3HwlMx8e"
     admin_handle = Login(admin_username,admin_password)
@@ -140,12 +135,9 @@ def admin_login(project_id_now=""):
     if project_id_now:
         admin_handle.project_id = project_id_now
     admin_handle.token_login()
-    admin_user_token = user_token
-    admin_token = token
-    admin_project_id = project_id
-    user_token = user_token_tmp
-    project_id = project_id_tmp
-    token = token_tmp
+    admin_user_token = user_token_dict[admin_username]
+    admin_token = token_dict[admin_username]
+    admin_project_id = project_id_dict[admin_username]
 
 @plog("get_admin_token")
 def get_admin_token(project_id=""):
@@ -159,14 +151,15 @@ def get_admin_project_id():
     return admin_project_id
 
 def get_proid():
-    return project_id
+    return project_id_dict
 
 def get_user_token():
-    return user_token
+    return user_token_dict
 
 @plog("get_project")
-def get_project():
-    global user_token
+def get_project(user_name):
+    global user_token_dict
+    user_token = user_token_dict[user_name]
     assert user_token != "", "not login"
     method = "GET"
     path = url_project_id
@@ -175,10 +168,10 @@ def get_project():
     ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
     return ret
 
-def login_out():
-    global token
-    global project_id
-    token = ""
-    project_id = ""
+def login_out(username):
+    global token_dict
+    global project_id_dict
+    token_dict[username] = ""
+    project_id_dict[username] = ""
 
 

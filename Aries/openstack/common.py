@@ -26,14 +26,14 @@ def json_data(json_status):
     return json_status
 
 
-def volumes_deal(host,disk_list,volumes_id):
+def volumes_deal(host,disk_list,volumes_id,username):
     try:
         volume_s = Volume()
         volumes_list = disk_list['os-extended-volumes:volumes_attached']
         volumes_name_list = []
         for volmes_dict in volumes_list:
             volumes_name = {}
-            volumes_details = volume_s.show_detail(volmes_dict['id'])
+            volumes_details = volume_s.show_detail(volmes_dict['id'],username=username)
             if volumes_id != volumes_details['volume']['id']:
                 if not volumes_details['volume']['displayName']:
                     volumes_name['disk_name'] = volumes_details['volume']['id']
@@ -59,9 +59,9 @@ class OpenAPI(object):
         login.proid_login()
         login.token_login()
 
-    def instances(self):
+    def instances(self,username):
         ret = {}
-        host_list = Vm_manage().list_detail({})
+        host_list = Vm_manage().list_detail({},username=username)
         ret['totalList'] = []
         test_list = []
         for host in host_list['servers']:
