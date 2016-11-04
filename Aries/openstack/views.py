@@ -129,7 +129,7 @@ def instances(request):
                         ret[values] = False
                     else:
                         while True:
-                            if vm_manage.show_detail(keys)['server']['OS-EXT-STS:vm_state'] == "stopped":
+                            if vm_manage.show_detail(keys,username=username)['server']['OS-EXT-STS:vm_state'] == "stopped":
                                 ret[values] = True
                                 break
                 else:
@@ -380,13 +380,13 @@ def volumes(request):
 
 @user_login()
 def instances_log(request,id,line):
-    global vm_control
+    global host_vm_start
     username = request.user.username
     return_data=''
     if line=='000':
-        return_data=vm_control.get_console_log(id,username=username)
+        return_data=host_vm_start.get_console_log(id,username=username)
     else:
-        return_data=vm_control.get_console_log(id,line,username=username)
+        return_data=host_vm_start.get_console_log(id,line,username=username)
     json_status = json_data(return_data)
     response = HttpResponse(json_status)
     response['Access-Control-Allow-Origin'] = '*'

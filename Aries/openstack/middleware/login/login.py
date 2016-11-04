@@ -25,6 +25,7 @@ class Login:
         :return:
         '''
         global user_token_dict
+        cache(username=self.name)
         method = "POST"
         path = url_get_token
         params = {

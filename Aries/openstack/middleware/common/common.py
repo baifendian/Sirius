@@ -8,6 +8,7 @@ import httplib
 import os
 import errno
 import time
+import copy
 import ConfigParser
 from Aries.settings import BASE_DIR, IP_CINDER, PORT_CINDER, IP_KEYSTONE, PORT_KEYSTONE, IP_NOVA, PORT_NOVA, DATABASES, \
     OPENSTACK_KEY_PATH
@@ -248,15 +249,16 @@ def times(method_name):
     return get_time
 
 
-def cache(cache_dict={}, del_cache=""):
+def cache(cache_dict={}, del_cache="",username="",func_str=""):
     '''
     函数缓存装饰器，限制缓存长度，限制缓存大小，只用来作为获取信息方法的缓存
     设置每个的缓存的最大生存时间，默认120s(根据实际情况来调整)
     cache_dict:{
                     func:{
-                        tuple_tmp:(fun(*args,**kwargs),time)
+                        tuple_tmp:(fun(*args,**kwargs),time,username)
                     }
                 }
+    在用户登入时先清空用户的缓存
     :param cache:
     :return:
     '''
@@ -267,19 +269,27 @@ def cache(cache_dict={}, del_cache=""):
             tuple_tmp = args + tuple(kwargs.itervalues())
             if len(cache_dict) >= 100:
                 cache_dict.clear()
-            if fun not in cache_dict or tuple_tmp not in cache_dict[fun] or (
-                time_now - cache_dict[fun][tuple_tmp][1]) > 120:
+            username = kwargs.get("username","")
+            if fun not in cache_dict or tuple_tmp not in cache_dict[fun][username] or (
+                time_now - cache_dict[fun][username][tuple_tmp][1]) > 120:
                 if not cache_dict.has_key(fun):
-                    cache_dict[fun] = {}
-                cache_dict[fun][tuple_tmp] = (fun(*args, **kwargs), time_now)
-            return cache_dict[fun][tuple_tmp][0]
+                    cache_dict[fun] = {username:{}}
+                cache_dict[fun][username][tuple_tmp] = (fun(*args, **kwargs), time_now)
+            return cache_dict[fun][username][tuple_tmp][0]
         return _exec_fun
     if del_cache == "*":  # 切换用户或项目时调用，由于现在一个用户只有一个项目，所以只在切换用户时调用了，后面如果可以对应多个项目，需要加上这个调用
         cache_dict.clear()
-    elif del_cache and del_cache in cache_dict:
+    if del_cache and del_cache in cache_dict: #删除对应对象的缓存
         cache_dict.pop(del_cache)
+    if func_str:  #删除对应方法的缓存
+        for func_object in cache_dict.iterkeys():
+            if func_object.__str__().find(func_str) != -1:
+                cache_dict.pop(func_object)
+    if username:  #清空对应用户缓存
+        for func in cache_dict.itervalues():
+            if func.has_key(username):
+                func.pop(username)
     return _cache
-
 
 def get_origin_addr(func):
     '''

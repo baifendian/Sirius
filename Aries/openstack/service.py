@@ -19,6 +19,7 @@ volume_snaps = Volume_snaps()
 volume_backup=Volume_backup()
 vm_manage = Vm_manage()
 volume_attach = Volume_attach()
+last_login_time = 0
 
 
 def json_data(json_status):
@@ -56,13 +57,16 @@ def login(request):
 def user_login():
     def ensure_login(func):
         def ensure_login_wrapper(request,*args, **kwargs):
+            global last_login_time
             try:
+                assert last_login_time == int(time.mktime(request.user.last_login.timetuple()))
                 retu_obj = func(request,*args,**kwargs)
                 openstack_log.info('execute func %s success' % func)
                 return retu_obj
             except:
                 try:
                     login(request)
+                    last_login_time = int(time.mktime(request.user.last_login.timetuple()))
                     openstack_log.info('login success')
                     retu_obj = func(request, *args, **kwargs)
                     openstack_log.info('execute func %s success' % func)

@@ -77,7 +77,6 @@ class Vm_manage:
         return ret
 
     # @plog("Vm_mange.list_detail")
-    @cache()
     def list_detail(self, query_dict=None,username=""):
         '''
         列出虚拟机详细信息
@@ -147,7 +146,6 @@ class Vm_manage:
         token = self.token_dict[username]
         project_id = self.project_id_dict[username]
         cache(del_cache=get_origin_addr(self.list))
-        cache(del_cache=get_origin_addr(self.list_detail))
         if disk is None:
             disk = []
         self.result.update({name: {"name": name, "id": "", "status_vm": 0,
@@ -183,7 +181,7 @@ class Vm_manage:
                 metadata = tmp_dict.get("metadata", "")
                 volume_type = tmp_dict.get("volume_type", "")
                 snapshot_id = tmp_dict.get("snapshot_id", "")
-                tmpret = volume.create(size, availability_zone, name_disk, des, metadata, volume_type, snapshot_id,username)
+                tmpret = volume.create(size, availability_zone, name_disk, des, metadata, volume_type, snapshot_id,username=username)
                 dev_name = tmp_dict.get("dev_name", "")
                 volume_id = tmpret["volume"]["id"]
                 if not vm_compele_flag:
@@ -225,7 +223,6 @@ class Vm_manage:
         '''
         ret = 0
         token = self.token_dict[username]
-        project_id = self.project_id_dict[username]
         if disk is None:
             disk = []
         assert token != "", "not login"
@@ -260,7 +257,6 @@ class Vm_manage:
         token = self.token_dict[username]
         project_id = self.project_id_dict[username]
         cache(del_cache=get_origin_addr(self.list))
-        cache(del_cache=get_origin_addr(self.list_detail))
         assert token != "", "not login"
         path = url_vm_action.format(project_id=project_id,vm_id=vm_id)
         method = "DELETE"

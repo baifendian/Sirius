@@ -10,7 +10,6 @@ class Image:
         self.token_dict = get_token()
         self.project_id_dict = get_proid()
 
-    @cache()
     def list(self, query_dict={},username=""):
         ret = 0
         try:
