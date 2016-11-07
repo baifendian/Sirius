@@ -297,10 +297,11 @@ class CodisOverview(APIView):
             data = {"memory_used_count": memory_used_count, "memory_total_count": memory_total_count, \
                     "all_codis_count": allcodis_count, "nice_codis_count": allcodis_count - badcodis_count}
             result = {
-                "msg": "OK",
+                "msg": "Error, error request from opentsdb",
                 "code": 200,
                 "data": data
             }
+            ac_logger.error("Error, error request from opentsdb %s" % e)
         return packageResponse(result)
     
 
