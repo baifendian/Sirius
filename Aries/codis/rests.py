@@ -281,17 +281,27 @@ class CodisOverview(APIView):
             memory_total_count += host.memory_total
         badcodis_query_args = {"start":"6h-ago","end":"","queries":[{"metric":"codis.badcluster","aggregator": "sum",\
                                "tags":{"bad":"true"}}]}
-        badcodis = requests.post(query_url,data=json.dumps(badcodis_query_args),timeout=10)
-        for k,v in json.loads(badcodis.text)[0]['dps'].items():
-            badcodis_count = v
-            break
-        data = {"memory_used_count":memory_used_count,"memory_total_count":memory_total_count,\
-                "all_codis_count":allcodis_count,"nice_codis_count":allcodis_count-badcodis_count}        
-        result={
-            "msg":"OK",
-            "code":200,
-            "data":data
-        }
+        try:
+            badcodis = requests.post(query_url,data=json.dumps(badcodis_query_args),timeout=10)
+            for k,v in json.loads(badcodis.text)[0]['dps'].items():
+                badcodis_count = v
+                break
+            data = {"memory_used_count":memory_used_count,"memory_total_count":memory_total_count,\
+                    "all_codis_count":allcodis_count,"nice_codis_count":allcodis_count-badcodis_count}
+            result={
+                "msg":"OK",
+                "code":200,
+                "data":data
+            }
+        except Exception, e:
+            data = {"memory_used_count": memory_used_count, "memory_total_count": memory_total_count, \
+                    "all_codis_count": allcodis_count, "nice_codis_count": allcodis_count - badcodis_count}
+            result = {
+                "msg": "Error, error request from opentsdb",
+                "code": 200,
+                "data": data
+            }
+            ac_logger.error("Error, error request from opentsdb %s" % e)
         return packageResponse(result)
     
 
