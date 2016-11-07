@@ -15,7 +15,7 @@ from tools import *
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-hdfs_logger = logging.getLogger("access_log")
+hdfs_logger = logging.getLogger("hdfs_file")
 StatusCode = {
     "SUCCESS": 200,
     "FAILED": 500,
