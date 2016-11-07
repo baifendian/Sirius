@@ -583,7 +583,7 @@ def getOverview(request):
         used = capacity["used"]
         total = capacity["total"]
         try:
-            hdfs_disk_used = float(used)/float(total)
+            hdfs_disk_used = round(float(used)/float(total),2)
         except Exception,e:
             ac_logger.error(e)
             hdfs_disk_used = 0
