@@ -24,7 +24,6 @@ const MyTable = React.createClass({
     });
   },
   deleteSuccess(data){
-    debugger;
     message.success(data,2);
     let dataTable = this.props.data;
     let totalList = this.props.data.totalList;
