@@ -267,7 +267,7 @@ def cache(cache_dict={}, del_cache="",username="",func_str=""):
         def _exec_fun(*args, **kwargs):
             time_now = int(time.time())
             tuple_tmp = args + tuple(kwargs.itervalues())
-            if len(cache_dict) >= 100:
+            if len(cache_dict) >= 100 or cache_dict.__sizeof__() >= (10<<20):   #限制cache长度小于100，容量小于100M
                 cache_dict.clear()
             username = kwargs.get("username","")
             if fun not in cache_dict or tuple_tmp not in cache_dict[fun][username] or (
