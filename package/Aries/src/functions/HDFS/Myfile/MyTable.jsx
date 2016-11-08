@@ -27,13 +27,14 @@ const MyTable = React.createClass({
     message.success(data,2);
     let dataTable = this.props.data;
     let totalList = this.props.data.totalList;
-    let index = totalList.indexOf(component);
+    let index = totalList.indexOf(this.component);
     totalList.splice(index,1);
     dataTable.totalList = totalList;
     this.props.updateTableData(dataTable,-1);
     console.log("-----trash-------");
   },
   trash(path,component){
+    this.component = component;
     path = `${this.props.cur_path}/${path}`;
     let deleteUrl = this.props.getUrlData({ type : "DELETE",
                                             spaceName : this.props.cur_space,

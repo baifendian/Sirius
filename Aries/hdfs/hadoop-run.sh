@@ -1,6 +1,10 @@
 #/usr/bin/bash
-HADOOP_HOME=/opt/hadoop
-NAMENODE_PATH="hdfs://172.24.100.44:8020"
+#HADOOP_HOME=/opt/hadoop/hadoop
+#NAMENODE_PATH="hdfs://172.24.100.44:8020"
+HADOOP_HOME=$1
+shift
+NAMENODE_PATH=$1
+shift
 BASE_PATH=$(pwd)
 operator=$1
 shift
