@@ -202,8 +202,8 @@ class Volume:
         '''
         token = self.token_dict[username]
         project_id = self.project_id_dict[username]
-        cache(del_cache=get_origin_addr(self.list))
-        cache(del_cache=get_origin_addr(self.list_detail))
+        cache(func_str="list")
+        cache(func_str="list_detail")
         assert token != "", "not login"
         path = url_volume_extend.format(project_id=project_id,volume_id=volume_id)
         method = "POST"
@@ -402,6 +402,8 @@ class Volume_attach():
         :return:
         '''
         ret = 0
+        cache(func_str="list")
+        cache(func_str="list_detail")
         token = self.token_dict[username]
         project_id = self.project_id_dict[username]
         assert token != "", "not login"
@@ -431,6 +433,8 @@ class Volume_attach():
     @plog("Volume_attach.update")
     def update(self, vm_id, attach_id, volume_id,username):
         ret = 0
+        cache(func_str="list")
+        cache(func_str="list_detail")
         token = self.token_dict[username]
         project_id = self.project_id_dict[username]
         assert token != "", "not login"
@@ -445,16 +449,35 @@ class Volume_attach():
     @plog("Volume_attach.delete")
     def delete(self, vm_id, attach_id,username):
         ret = 0
+        cache(func_str="list")
+        cache(func_str="list_detail")
         token = self.token_dict[username]
         project_id = self.project_id_dict[username]
         assert token != "", "not login"
-        cache(del_cache=get_origin_addr(self.list))
         path = url_volume_attach_action.format(project_id=project_id,vm_id=vm_id,attach_id=attach_id)
         method = "DELETE"
         head = {"Content-Type": "application/json", "X-Auth-Token": token}
         params = ""
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
+        t = run_in_thread(self.wait_complete,attach_id,"detaching",username,timeout=TIMEOUT)
+        assert t == 0
         return ret
+
+    @plog("Volume_attach.wait_complete")
+    def wait_complete(self, volume_id,status,username):
+        '''
+        等待指定虚拟机创建完成,status为指定的状态
+        :return:
+        '''
+        flag = True
+        volume = Volume()
+        while flag:
+            tmp_ret = volume.show_detail(volume_id,username)
+            if tmp_ret.get("volume", {}).get("status", "") != status:
+                flag = False
+            else:
+                time.sleep(1)
+        return 0
 
 
 class Volume_backup():

@@ -282,7 +282,7 @@ def cache(cache_dict={}, del_cache="",username="",func_str=""):
     if del_cache and del_cache in cache_dict: #删除对应对象的缓存
         cache_dict.pop(del_cache)
     if func_str:  #删除对应方法的缓存
-        for func_object in cache_dict.iterkeys():
+        for func_object in list(cache_dict.iterkeys()):
             if func_object.__str__().find(func_str) != -1:
                 cache_dict.pop(func_object)
     if username:  #清空对应用户缓存

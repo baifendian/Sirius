@@ -112,12 +112,22 @@ def sendhttpdata(start,metric,aggregator='sum',compute='*',instance='*',name=Non
         return json.dumps({"start": start, "queries": [{"metric": metric, "aggregator": aggregator, "tags": {"compute": compute, "instance": instance,'name':name}}]})
 
 def sendhttpdate(type,interval):
-    data={
-    'minutes': (datetime.datetime.now() - datetime.timedelta(minutes=interval)).strftime("%Y-%m-%d %H:%M:%S"),
-    'hours': (datetime.datetime.now() - datetime.timedelta(hours=interval)).strftime("%Y-%m-%d %H:%M:%S"),
-    'days': (datetime.datetime.now() - datetime.timedelta(days=interval)).strftime("%Y-%m-%d %H:%M:%S")
-    }
-    return int(str(time.mktime(time.strptime(data[type], "%Y-%m-%d %H:%M:%S"))).split('.')[0])
+    # data={
+    # 'minutes': (datetime.datetime.now() - datetime.timedelta(minutes=interval)).strftime("%Y-%m-%d %H:%M:%S"),
+    # 'hours': (datetime.datetime.now() - datetime.timedelta(hours=interval)).strftime("%Y-%m-%d %H:%M:%S"),
+    # 'days': (datetime.datetime.now() - datetime.timedelta(days=interval)).strftime("%Y-%m-%d %H:%M:%S")
+    # }
+    # return int(str(time.mktime(time.strptime(data[type], "%Y-%m-%d %H:%M:%S"))).split('.')[0])
+    unit = "m"
+    if type == "minutes":
+        unit = "m"
+    elif type == "hours":
+        unit = "h"
+    elif type == "days":
+        unit = "d"
+    date = "%s%s-ago"%(interval,unit)
+    return date
+
 
 class Share_m(object):
     _state = {}

@@ -123,7 +123,7 @@ def volumes_amend(request):
     volumes_size = eval(request.POST.get('data'))['size']
     volumes_id = eval(request.POST.get('data'))['id']
     volumes_name = eval(request.POST.get('data'))['name']
-    if volume.show_detail(volumes_id)['volume']['status'] == 'available':
+    if volume.show_detail(volumes_id,username=username)['volume']['status'] == 'available':
         return_data = volume.extend(volumes_id, size,username = username)
         if return_data != 1:
             ret['name'] = volumes_name
@@ -357,7 +357,7 @@ def instances_backup(request):
     instances_name = request.POST.get('name')
     instances_name_b = request.POST.get('name_bakup')
     openstack_log.info(request.POST)
-    vm_snap = Vm_snap(instances_id,username=username)
+    vm_snap = Vm_snap(instances_id)
     return_data = vm_snap.create(instances_name_b,username=username)
     if return_data == 2:
         ret['name'] = instances_name
@@ -446,7 +446,7 @@ def vm_uninstall(request):
     volumes_name = data['disk_name']
     return_data = volume_attach.delete(host_id, volumes_id,username=username)
     if return_data != 1:
-        vm_details = vm_manage.show_detail(host_id)['server']
+        vm_details = vm_manage.show_detail(host_id,username=username)['server']
         ret['disk_list'] = volumes_deal(host_name, vm_details, volumes_id,username)
         ret['host_name'] = host_name
         ret['status'] = True

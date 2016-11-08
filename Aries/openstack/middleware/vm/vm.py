@@ -235,13 +235,16 @@ class Vm_manage:
                 userdata = base64.b64encode(tmp_str)
         else:
             userdata = ""
-        workpool = WorkPool()
-        workpool.work_add()
-        for i in range(max_count):
-            name_new = "%s-%s" % (name, i)
-            workpool.task_add(self.create, (name_new, flavor, image, password, userdata, key_name,disk,username))
-        workpool.work_start()
-        workpool.work_wait()  # 改成非阻塞的模式,通过self.result来判断是否做完
+        if max_count == 1:
+            self.create(name,flavor,image,password,userdata,key_name,disk,username)
+        else:
+            workpool = WorkPool()
+            workpool.work_add()
+            for i in range(max_count):
+                name_new = "%s-%s" % (name, i)
+                workpool.task_add(self.create, (name_new, flavor, image, password, userdata, key_name,disk,username))
+            workpool.work_start()
+            workpool.work_wait()  # 改成非阻塞的模式,通过self.result来判断是否做完
         # else:  下面的方法是调用原生的api去创建多台虚拟机，但是无法展示每台创建的进度，现在是循序调用创建单台的api
         #     path = "/v2.1/%s/servers" % self.project_id
         #     method = "POST"
@@ -288,7 +291,10 @@ class Vm_manage:
                 total_mem += host_info["memory_mb"]
                 total_mem_free += host_info["free_ram_mb"]
             total_mem_used = total_mem - total_mem_free
-            util = round(float(total_vcpu_used)/float(total_vcpu),2) + round(float(total_mem_used)/float(total_mem),2)
+            if total_vcpu == 0 or  total_mem == 0:
+                util = 2
+            else:
+                util = round(float(total_vcpu_used)/float(total_vcpu),2) + round(float(total_mem_used)/float(total_mem),2)
             return util
         av_zone = reduce(lambda x,y:x if _util_az(x) <= _util_az(y) else y,list_az_info)["availability_zone"]
         return av_zone
@@ -465,12 +471,12 @@ class Vm_control:
         params = {"resize": {"flavorRef": flavor_id, "OS-DCF:diskConfig": "AUTO"}}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
-        t1 = run_in_thread(self.wait_complete, vm_id, ["VERIFY_RESIZE"], timeout=TIMEOUT)
+        t1 = run_in_thread(self.wait_complete, vm_id, ["VERIFY_RESIZE"],username,timeout=TIMEOUT)
         assert t1 == 0
         params = {"confirmResize": ""}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
-        t2 = run_in_thread(self.wait_complete, vm_id, ["ACTIVE", "SHUTOFF"], timeout=TIMEOUT)
+        t2 = run_in_thread(self.wait_complete, vm_id, ["ACTIVE", "SHUTOFF"],username,timeout=TIMEOUT)
         assert t2 == 0
         return ret
 
@@ -616,7 +622,7 @@ class Vm_control:
 class Vm_snap:
     def __init__(self, vm_id=""):
         self.token_dict = get_token()
-        self.vm_id_dict = vm_id
+        self.vm_id = vm_id
 
     @plog("Vm_snap.find_parent")
     def find_parent(self):
@@ -735,13 +741,13 @@ class Vm_snap:
             assert ret != 1
             # 更新快照树数据
             time_now = get_time()
-            image_id = self.get_id(image_name)
+            image_id = self.get_id(image_name,username=username)
             assert image_id != 1
             parent_name = self.find_parent()
             assert parent_name != 1
             if parent_name == 2:
                 vm = Vm_manage()
-                vm_image_id = vm.show_detail(self.vm_id)["server"]["image"].get("id","")
+                vm_image_id = vm.show_detail(self.vm_id,username=username)["server"]["image"].get("id","")
                 assert vm_image_id != "","can not get image_id"
                 tmp_ret = self.create_root_snap(vm_image_id)
                 assert tmp_ret != 1
