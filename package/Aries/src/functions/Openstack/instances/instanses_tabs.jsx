@@ -337,11 +337,12 @@ const Echarts_s = React.createClass({
   },
 
   handleChange(value,text) {
-    let id=this.props.host_desc['id']
-    OPEN.Get_instances_cpu(this,this.dom_id()[text],id,value,this.dataManage)
+    let instance_name=this.props.host_desc['instance_name']
+    OPEN.Get_instances_cpu(this,this.dom_id()[text],instance_name,value,this.dataManage)
   },
 
   render(){
+    
     let monitor_list = [
       [{ 'name':'CPU','id':'cpu_monitor'},{ 'name':'Memory','id':'mem_monitor'}],
       [{ 'name':'Disk_iops','id':'disk_iops_monitor'},{ 'name':'Disk_bps','id':'disk_bps_monitor'}],
@@ -355,7 +356,7 @@ const Echarts_s = React.createClass({
             return (
               <Col col="md-6" key={items}>
                 <span style={{fontSize:"23px"}}>{keyss['name']}</span>
-                <ButtonGroup defaultValue="1" onChange={(value)=>this.handleChange(value,keyss['name'])} >
+                <ButtonGroup defaultValue="1" onChange={(value)=>this.handleChange(value,keyss['name'])}>
                   <Button value="59_minutes" style={{width:'101px',height:'20px'}}>最近一小时</Button>
                   <Button value="1_days" style={{width:'101px',height:'20px'}}>最近一天</Button>
                   <Button value="15_days" style={{width:'101px',height:'20px'}}>最近15天</Button>
