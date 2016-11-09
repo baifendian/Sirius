@@ -1,0 +1,23 @@
+<configuration>
+   <property>
+       <name>fs.defaultFS</name>
+       <value>CORE_FS_DEFAULTFS</value>
+   </property>
+   <property>
+       <name>hadoop.tmp.dir</name>
+       <value>CORE_HADOOP_TMP_DIR</value>
+   </property>
+   <property>
+       <name>ha.zookeeper.quorum</name>
+       <value>CORE_HA_ZOOKEEPER_QUORUM</value>
+   </property>
+   <property>
+       <name>io.file.buffer.size</name>
+       <value>131072</value>
+      
+   </property>
+   <property>
+       <name>fs.trash.interval</name>
+       <value>1440</value>
+   </property>
+</configuration>

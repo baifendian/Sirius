@@ -1,24 +1,197 @@
 apiVersion: v1
 kind: ReplicationController
 metadata:
-  name: sirius
+  name: sirius1
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        name: sirius
-        service: sirius
+        name: sirius1
+        service: sirius1
     spec:
       containers:
-        - name: sirius
-          image: docker.baifendian.com/lupan/sirius_lugu:1.0
+        - name: sirius1
+          image: docker.baifendian.com/sjx/sirius:25
           ports:
             - containerPort: 10086
+          env:
+          - name: SHARE_PROXY_BASE_URI
+            value: "http://172.24.3.150:10086"
+          - name: REST_BASE_URI
+            value: "172.24.3.150:10086"
+          - name: DATABASES_DEFAULT_ENGINE
+            value: "django.db.backends.mysql"
+          - name: DATABASES_DEFAULT_NAME
+            value: aries
+          - name: DATABASES_DEFAULT_HOST
+            value: "172.24.100.40"
+          - name: DATABASES_DEFAULT_PORT
+            value: "3306"
+          - name: DATABASES_DEFAULT_USER
+            value: sirius
+          - name: DATABASES_DEFAULT_PASSWORD
+            value: sirius
+          - name: DATABASES_BDMS_ENGINE
+            value: "django.db.backends.mysql"
+          - name: DATABASES_BDMS_NAME
+            value: bdms_web10010
+          - name: DATABASES_BDMS_USER
+            value: bdms
+          - name: DATABASES_BDMS_PASSWORD
+            value: bdms
+          - name: DATABASES_BDMS_HOST
+            value: "172.24.100.40"
+          - name: DATABASES_BDMS_PORT
+            value: "3306"
+          - name: LDAP_SERVER_URI
+            value: "ldap://192.168.49.241:389"
+          - name: LDAP_DN
+            value: "uid=%(user)s,ou=mrbs,dc=baifendian,dc=com"
+          - name: LDAP_BIND
+            value: "True"
+          - name: LDAP_CACHE_GROUPS
+            value: "True"
+          - name: LDAP_GROUP_CACHE_TIMEOUT 
+            value: "3600"
+          - name: LDAP_USER_ATTR_MAP_USERNAME
+            value: "givenName"
+          - name: LDAP_USER_ATTR_MAP_PASSWORD
+            value: "password"
+          - name: AMBARI_URL
+            value: "http://172.24.3.64:8080/api/v1/clusters/hlg_ambari/"
+          - name: AMBARI_HDFS_URL
+            value: "http://172.24.3.156:50070/webhdfs/v1/"
+          - name: AMBARI_HADOOP_CLIENT
+            value: "hlg3p64-lupan"
+          - name: AMBARI_PASSWORD
+            value: admin
+          - name: AMBARI_USER
+            value: admin
+          - name: K8S_IP
+            value: "172.24.3.150"
+          - name: K8S_PORT
+            value: "8080"
+          - name: K8S_INFLUXDB_IP
+            value: "k8sinfluxapi.bfdcloud.com"
+          - name: K8S_INFLUXDB_PORT
+            value: "80"
+          - name: K8S_INFLUXDB_DATABASE
+            value: k8s
+          - name: BDMS_IP
+            value: "172.24.100.40"
+          - name: BDMS_PORT
+            value: "10001"
+          - name: BDMS_USERNAME
+            value: "aiping.liang"
+          - name: BDMS_PASSWORD
+            value: "aiping.liang"
+          - name: WEBHDFS_HOSTS
+            value: '["172.24.3.155:50070", "172.24.3.156:50070"]'
+          - name: WEBHDFS_PORT
+            value: "50070"
+          - name: WEBHDFS_PATH
+            value: "/webhdfs/v1"
+          - name: WEBHDFS_USER
+            value: "hadoop"
+          - name: WEBHDFS_TIMEOUT
+            value: "10"
+          - name: WEBHDFS_MAX_TRIES
+            value: "2"
+          - name: WEBHDFS_RETRY_DELAY
+            value: "3"
+          - name: CODIS_REST_URL
+            value: "http://192.168.49.127:8888"
+          - name: CODIS_OPENTSDB_URL
+            value: "http://192.168.40.140:9999"
+          - name: OPENSTACK_IP_KEYSTONE
+            value: "192.168.190.11"
+          - name: OPENSTACK_PORT_KEYSTONE
+            value: "5000"
+          - name: OPENSTACK_IP_NOVA
+            value: "192.168.190.11"
+          - name: OPENSTACK_PORT_NOVA
+            value: "8774"
+          - name: OPENSTACK_IP_CINDER
+            value: "192.168.190.11"
+          - name: OPENSTACK_PORT_CINDER
+            value: "8776"
+          - name: OPENSTACK_MONITOR_URL
+            value: "http://172.24.4.33:4242/api/query"
+          - name: CORE_FS_DEFAULTFS
+            value: "hdfs://bfdhadoop26"
+          - name: CORE_HADOOP_TMP_DIR
+            value: "/opt/bfdhadoop/tmp/data"
+          - name: CORE_HA_ZOOKEEPER_QUORUM
+            value: "172.24.3.64:2181,172.24.3.65:2181,172.24.3.66:2181/bfdhadoop"
+          - name: HDFS_DFS_NAMENODE_NAME_DIR
+            value: "/opt/bfdhadoop/dfs.namenode.dir"
+          - name: HDFS_DATANODE_DATA_DIR
+            value: "/opt/bfdhadoop/dfs.datanode.dir"
+          - name: HDFS_DFS_NAMESERVICES
+            value: "bfdhadoop26"
+          - name: HDFS_DFS_NAMENODE_RPC_ADDRESS_NN1
+            value: "hlg3p65-lupan:8020"
+          - name: HDFS_DFS_NAMENODE_RPC_ADDRESS_NN2
+            value: "hlg3p66-lupan:8020"
+          - name: HDFS_DFS_NAMENODE_HTTP_ADDRESS_NN1
+            value: "hlg3p65-lupan:50070"
+          - name: HDFS_DFS_NAMENODE_HTTP_ADDRESS_NN2
+            value: "hlg3p66-lupan:50070"
+          - name: HDFS_DFS_NAMENODE_SERVICERPC_ADDRESS_N1
+            value: "hlg3p65-lupan:53310"
+          - name: HDFS_DFS_NAMENODE_SERVICERPC_ADDRESS_N2
+            value: "hlg3p66-lupan:53310"
+          - name: HDFS_JOURNALNODE_EDITS_DIR
+            value: "/opt/bfdhadoop/journal/"
+          - name: HDFS_DFS_NAMENODE_SHARED_EDITS_DIR
+            value: "qjournal://hlg3p64-lupan:8485;hlg3p65-lupan:8485;hlg3p66-lupan:8485/bfd-journal"
+          - name: YARN_YARN_RESOURCEMANAGER_CLUSTER_ID
+            value: "rm-cluster"
+          - name: YARN_YARN_RESOURCEMANAGER_ZK_ADDRESS
+            value: "hlg3p64-lupan:2181,hlg3p65-lupan:2181,hlg3p66-lupan:2181"
+          - name: YARN_YARN_RESOURCEMANAGER_ADDRESS_RM1
+            value: "hlg3p65-lupan:8032"
+          - name: YARN_YARN_RESOURCEMANAGER_ADDRESS_RM2
+            value: "hlg3p66-lupan:8032"
+          - name: YARN_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS_RM1
+            value: "hlg3p65-lupan:8030"
+          - name: YARN_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS_RM2
+            value: "hlg3p66-lupan:8030"
+          - name: YARN_YARN_RESOURCEMANAGER_WEBAPP_HTTPS_ADDRESS_RM1
+            value: "hlg3p65-lupan:8090"
+          - name: YARN_YARN_RESOURCEMANAGER_WEBAPP_HTTPS_ADDRESS_RM2
+            value: "hlg3p66-lupan:8090"
+          - name: YARN_YARN_RESOURCEMANAGER_WEBAPP_ADDRESS_RM1
+            value: "hlg3p65-lupan:8088"
+          - name: YARN_YARN_RESOURCEMANAGER_WEBAPP_ADDRESS_RM2
+            value: "hlg3p66-lupan:8088"
+          - name: YARN_YARN_RESOURCEMANAGER_RESOURCE_TRACKER_ADDRESS_RM1
+            value: "hlg3p65-lupan:8031"
+          - name: YARN_YARN_RESOURCEMANAGER_RESOURCE_TRACKER_ADDRESS_RM2
+            value: "hlg3p66-lupan:8031"
+          - name: YARN_YARN_RESOURCEMANAGER_ADMIN_ADDRESS_RM1
+            value: "hlg3p65-lupan:8033"
+          - name: YARN_YARN_RESOURCEMANAGER_ADMIN_ADDRESS_RM2
+            value: "hlg3p66-lupan:8033"
+          - name: YARN_YARN_NODEMANAGER_LOCAL_DIRS
+            value: "/opt/bfdhadoop/yarn_dir/local-dirs"
+          - name: YARN_YARN_NODEMANAGER_LOG_DIRS
+            value: "/opt/bfdhadoop/yarn_dir/log-dirs"
+          - name: YARN_YARN_NODEMANAGER_REMOTE_APP_LOG_DIR
+            value: "/opt/bfdhadoop/yarn_dir/log-aggregation"
+          - name: MAPRED_MAPREDUCE_JOBHISTORY_ADDRESS
+            value: "hlg3p65-lupan:10020"
+          - name: MAPRED_MAPREDUCE_JOBHISTORY_WEBAPP_ADDRESS
+            value: "hlg3p65-lupan:19888"
+          - name: MAPRED_MAPREDUCE_JOBHISTORY_INTERMEDIATE_DONE_DIR
+            value: "/tmp/mr_history/tmp"
+          - name: MAPRED_MAPREDUCE_JOBHISTORY_DONE_DIR
+            value: "/tmp/mr_history/done"
           volumeMounts:
             - mountPath: /opt/Sirius/log
               name: siriuslog
-            - mountPath: /opt/Siurs/download
+            - mountPath: /opt/Sirius/download
               name: siriusdownload
       imagePullSecrets:
         - name: docker-registry-sys
@@ -30,4 +203,4 @@ spec:
       imagePullSecrets:
         - name: docker-registry-sys
       #nodeSelector:
-      #  kubernetes.io/hostname: 192.168.49.46
+      #  kubernetes.io/hostname: 172.24.2.208

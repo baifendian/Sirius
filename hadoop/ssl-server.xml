@@ -1,0 +1,44 @@
+<!--Fri Aug 19 14:57:07 2016-->
+    <configuration>
+    
+    <property>
+      <name>ssl.server.keystore.keypassword</name>
+      <value>bigdata</value>
+    </property>
+    
+    <property>
+      <name>ssl.server.keystore.location</name>
+      <value>/etc/security/serverKeys/keystore.jks</value>
+    </property>
+    
+    <property>
+      <name>ssl.server.keystore.password</name>
+      <value>bigdata</value>
+    </property>
+    
+    <property>
+      <name>ssl.server.keystore.type</name>
+      <value>jks</value>
+    </property>
+    
+    <property>
+      <name>ssl.server.truststore.location</name>
+      <value>/etc/security/serverKeys/all.jks</value>
+    </property>
+    
+    <property>
+      <name>ssl.server.truststore.password</name>
+      <value>bigdata</value>
+    </property>
+    
+    <property>
+      <name>ssl.server.truststore.reload.interval</name>
+      <value>10000</value>
+    </property>
+    
+    <property>
+      <name>ssl.server.truststore.type</name>
+      <value>jks</value>
+    </property>
+    
+  </configuration>

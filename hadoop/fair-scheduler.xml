@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+
+<allocations>
+ <queue name="root">
+   <aclSubmitApps> </aclSubmitApps>
+   <queue name="default">
+       <minResources>17408mb,11vcores</minResources>
+       <maxResources>348160mb,220vcores</maxResources>
+       <maxRunningApps>20</maxRunningApps>
+       <aclSubmitApps>hadoop</aclSubmitApps>
+       <aclAdministerApps>hadoop</aclAdministerApps>
+       <schedulingPolicy>fair</schedulingPolicy>
+   </queue>
+   <queue name="bme">
+       <minResources>17408mb,11vcores</minResources>
+       <maxResources>174080mb,110vcores</maxResources>
+       <maxRunningApps>10</maxRunningApps>
+       <!--
+                   <weight>2.0</weight>-->
+       <aclSubmitApps>hadoop</aclSubmitApps>
+       <aclAdministerApps>hadoop</aclAdministerApps>
+       <schedulingPolicy>fair</schedulingPolicy>
+   </queue>
+
+   <queue name="advert">
+       <minResources>17408mb,11vcores</minResources>
+       <maxResources>174080mb,110vcores</maxResources>
+       <maxRunningApps>10</maxRunningApps>
+       <!--
+                   <weight>2.0</weight>-->
+       <aclSubmitApps>hadoop</aclSubmitApps>
+       <aclAdministerApps>hadoop</aclAdministerApps>
+       <schedulingPolicy>fair</schedulingPolicy>
+   </queue>
+
+   <queue name="bre">
+       <minResources>17408mb,11vcores</minResources>
+       <maxResources>348160mb,200vcores</maxResources>
+       <maxRunningApps>200</maxRunningApps>
+       <!--
+                   <weight>2.0</weight>-->
+       <aclSubmitApps>hadoop</aclSubmitApps>
+       <aclAdministerApps>hadoop</aclAdministerApps>
+       <schedulingPolicy>fair</schedulingPolicy>
+   </queue>
+
+   <queueMaxAMShareDefault>0.5</queueMaxAMShareDefault>
+
+   <!-- Queue 'secondary_group_queue' is a parent queue and may have
+                             user queues under it    type="parent"   -->
+   <queue name="schedule">
+       <minResources>26624mb,62vcores</minResources>
+       <maxResources>26624mb,62vcores</maxResources>
+       <maxRunningApps>5</maxRunningApps>
+     <!--
+                 <weight>2.0</weight>-->
+       <aclSubmitApps>hadoop</aclSubmitApps>
+       <aclAdministerApps>hadoop</aclAdministerApps>
+       <schedulingPolicy>fair</schedulingPolicy>
+   </queue>
+
+   <queue name="bae">
+       <minResources>87040mb,55vcores</minResources>
+       <maxResources>348160mb,200vcores</maxResources>
+       <maxRunningApps>50</maxRunningApps>
+       <!--
+                   <weight>2.0</weight>-->
+       <aclSubmitApps>hadoop</aclSubmitApps>
+       <aclAdministerApps>hadoop</aclAdministerApps>
+       <schedulingPolicy>fair</schedulingPolicy>
+   </queue>
+
+   <queue name="bdi">
+       <minResources>87040mb,55vcores</minResources>
+       <maxResources>174080mb,110vcores</maxResources>
+       <maxRunningApps>50</maxRunningApps>
+       <!--
+                   <weight>2.0</weight>-->
+       <aclSubmitApps>hadoop</aclSubmitApps>
+       <aclAdministerApps>hadoop</aclAdministerApps>
+       <schedulingPolicy>fair</schedulingPolicy>
+   </queue>
+
+   <queue name="hadoop">
+       <minResources>102400mb,100vcores</minResources>
+      <!-- <maxResources>84992mb,70vcores</maxResources> -->
+      <maxResources>174080mb,110vcores</maxResources>
+      <!-- <maxRunningApps>500</maxRunningApps> -->
+      <maxRunningApps>6</maxRunningApps>
+
+       <!--<weight>2.0</weight> -->
+       <aclSubmitApps>hadoop</aclSubmitApps>
+       <aclAdministerApps>hadoop</aclAdministerApps>
+       <schedulingPolicy>fair</schedulingPolicy>
+   </queue>
+
+   <queue name="raw">
+       <minResources>3072mb,3vcores</minResources>
+       <maxResources>3072mb,3vcores</maxResources>
+       <maxRunningApps>5</maxRunningApps>
+       <!--<weight>2.0</weight> -->
+       <aclSubmitApps>hadooop</aclSubmitApps>
+       <aclAdministerApps>hadoop</aclAdministerApps>
+       <schedulingPolicy>fair</schedulingPolicy>
+   </queue>
+   <userMaxAppsDefault>100</userMaxAppsDefault>
+ </queue>
+
+   <queuePlacementPolicy>
+        <rule name="specified"/>
+        <rule name="user" create="false"/>
+        <rule name="default"/>
+   </queuePlacementPolicy>
+</allocations>
