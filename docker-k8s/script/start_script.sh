@@ -51,6 +51,9 @@ sed -i "s#k8s_WEBHDFS_TIMEOUT#$WEBHDFS_TIMEOUT#g"  /opt/Sirius/sbin/Aries.yaml
 sed -i "s#k8s_WEBHDFS_MAX_TRIES#$WEBHDFS_MAX_TRIES#g"  /opt/Sirius/sbin/Aries.yaml
 sed -i "s#k8s_WEBHDFS_RETRY_DELAY#$WEBHDFS_RETRY_DELAY#g"  /opt/Sirius/sbin/Aries.yaml
 
+sed -i "s#k8s_HADOOP_HOME#$CLIENTHDFS_HADOOP_HOME#g"  /opt/Sirius/sbin/Aries.yaml
+sed -i "s#k8s_NAMENODE_PATH#$CLIENTHDFS_NAMENODE_PATH#g"  /opt/Sirius/sbin/Aries.yaml
+
 
 sed -i "s#k8s_CODIS_REST_URL#$CODIS_REST_URL#g"  /opt/Sirius/sbin/Aries.yaml
 sed -i "s#k8s_CODIS_OPENTSDB_URL#$CODIS_OPENTSDB_URL#g"  /opt/Sirius/sbin/Aries.yaml
