@@ -14,6 +14,12 @@ import time
 import md5
 
 openstack_log = logging.getLogger("openstack_log")
+volume = Volume()
+volume_snaps = Volume_snaps()
+volume_backup=Volume_backup()
+vm_manage = Vm_manage()
+volume_attach = Volume_attach()
+last_login_time = 0
 
 
 def json_data(json_status):
@@ -51,13 +57,16 @@ def login(request):
 def user_login():
     def ensure_login(func):
         def ensure_login_wrapper(request,*args, **kwargs):
+            global last_login_time
             try:
+                assert last_login_time == int(time.mktime(request.user.last_login.timetuple()))
                 retu_obj = func(request,*args,**kwargs)
                 openstack_log.info('execute func %s success' % func)
                 return retu_obj
             except:
                 try:
                     login(request)
+                    last_login_time = int(time.mktime(request.user.last_login.timetuple()))
                     openstack_log.info('login success')
                     retu_obj = func(request, *args, **kwargs)
                     openstack_log.info('execute func %s success' % func)
@@ -70,15 +79,16 @@ def user_login():
 
 @user_login()
 def volumes_create(request):
+    global volume
 #    login()
     ret = {}
+    username = request.user.username
     volumes_name = request.POST.get('name')
     volumes_count = int(request.POST.get('count'))
     volumes_type = request.POST.get('type')
     volumes_size = request.POST.get('size')
     volumes_des = request.POST.get('desc')
-    volume = Volume()
-    return_data = volume.create_multiple(volumes_name, volumes_count, volumes_size, 'nova', volumes_des)
+    return_data = volume.create_multiple(volumes_name, volumes_count, volumes_size, 'nova', volumes_des,username=username)
     if return_data != 1:
         ret[volumes_name] = True
     else:
@@ -88,13 +98,14 @@ def volumes_create(request):
 
 @user_login()
 def volumes_delete(request):
+    global volume
    # login()
     ret = {}
     sys = {}
-    volume = Volume()
+    username = request.user.username
     volumes_dic = eval(request.POST.get('volumes_object'))
     for key, value in volumes_dic.iteritems():
-        return_data = volume.delete(key)
+        return_data = volume.delete(key,username=username)
         if return_data != 1:
             ret[value] = True
         else:
@@ -104,15 +115,16 @@ def volumes_delete(request):
 
 @user_login()
 def volumes_amend(request):
+    global volume
   #  login()
     ret = {}
+    username = request.user.username
     size = request.POST.get('count')
     volumes_size = eval(request.POST.get('data'))['size']
     volumes_id = eval(request.POST.get('data'))['id']
     volumes_name = eval(request.POST.get('data'))['name']
-    volume = Volume()
-    if volume.show_detail(volumes_id)['volume']['status'] == 'available':
-        return_data = volume.extend(volumes_id, size)
+    if volume.show_detail(volumes_id,username=username)['volume']['status'] == 'available':
+        return_data = volume.extend(volumes_id, size,username = username)
         if return_data != 1:
             ret['name'] = volumes_name
             ret['status'] = True
@@ -132,29 +144,31 @@ def volumes_amend(request):
 
 @user_login()
 def instances(request):
+    global vm_manage
     ret = {}
+    username = request.user.username
   #  login()
-    vm_manage = Vm_manage()
-    for i in vm_manage.list()['servers']:
+    for i in vm_manage.list(username=username)['servers']:
         ret[i['name']] = i['id']
     ret = json_data(ret)
     return ret
 
 @user_login()
 def volumes_host(request):
+    global volume
+    global volume_attach
     ret = {}
+    username = request.user.username
     host_id = request.POST.get('host_id')
     host_name = request.POST.get('host_name')
     data = request.POST.get('data')
     volumes_id = eval(data)['id']
     volumes_name = eval(data)['name']
-    volume_attach = Volume_attach()
-    volume=Volume()
-    return_data = volume_attach.attach(host_id, volumes_id)
+    return_data = volume_attach.attach(host_id, volumes_id,username=username)
     if return_data != 1:
         while True:
             time.sleep(1)
-            return_show = volume.show_detail(volumes_id)['volume']['status']
+            return_show = volume.show_detail(volumes_id,username=username)['volume']['status']
             if return_show != 'attaching':
                 ret['vm'] = host_name
                 ret['status'] = True
@@ -170,14 +184,15 @@ def volumes_host(request):
 @user_login()
 def volumes_uninstall(request):
   #  login()
+    global volume_attach
     ret = {}
+    username = request.user.username
     data = eval(request.POST.get('data'))
     host_id = data['host_id']
     host_name = data['host_name']
     volumes_id = data['id']
     volumes_name = data['name']
-    volume_attach = Volume_attach()
-    return_data = volume_attach.delete(host_id, volumes_id)
+    return_data = volume_attach.delete(host_id, volumes_id,username=username)
     if return_data != 1:
         ret['host_name'] = host_name
         ret['status'] = True
@@ -191,14 +206,15 @@ def volumes_uninstall(request):
 
 @user_login()
 def volumes_snapshot(request):
+    global volume_snaps
     ret = {}
  #   login()
+    username = request.user.username
     name = request.POST.get('name')
     volumes_id = eval(request.POST.get('data'))['id']
     volumes_name = eval(request.POST.get('data'))['name']
     desc = request.POST.get('desc')
-    volume_snaps = Volume_snaps()
-    return_data = volume_snaps.create(volumes_id, name, desc)
+    return_data = volume_snaps.create(volumes_id, name, desc,username=username)
     openstack_log.info(return_data)
     if return_data != 1:
         ret['volumes_name'] = volumes_name
@@ -213,14 +229,15 @@ def volumes_snapshot(request):
 
 @user_login()
 def volumes_backup_p(request):
+    global volume_backup
     ret = {}
+    username = request.user.username
  #   login()
     name = request.POST.get('name')
     volumes_id = eval(request.POST.get('data'))['id']
     volumes_name = eval(request.POST.get('data'))['name']
     desc = request.POST.get('desc')
-    volume_backup=Volume_backup()
-    return_data=volume_backup.create(volumes_id,name)
+    return_data=volume_backup.create(volumes_id,name,username=username)
     if return_data != 1:
         ret['status'] = True
     else:
@@ -230,13 +247,14 @@ def volumes_backup_p(request):
 
 @user_login()
 def volumes_backup_get(request):
+    global volume_snaps
+    global volume
     ret = {}
+    username = request.user.username
 #    login()
-    volume_snaps = Volume_snaps()
-    volume = Volume()
     ret['totalList'] = []
-    returnvolume=ReturnVolume(volume.list()['volumes'])
-    for i in volume_snaps.list_detail()['snapshots']:
+    returnvolume=ReturnVolume(volume.list(username=username)['volumes'])
+    for i in volume_snaps.list_detail(username=username)['snapshots']:
         sys = {}
         sys['id']=i['id']
         sys['displayName'] = i['displayName']
@@ -251,12 +269,13 @@ def volumes_backup_get(request):
 
 @user_login()
 def volumes_backup_t(request):
+    global volume
+    global volume_backup
     ret={}
-    volume = Volume()
-    volume_backup=Volume_backup()
+    username = request.user.username
     host_id=request.GET.get('id')
     if host_id:
-        return_data = volume_backup.show_detail(host_id)['backup']
+        return_data = volume_backup.show_detail(host_id,username=username)['backup']
         ret['status'] = return_data['status']
         ret['id'] = return_data['id']
         ret['name'] = return_data['name']
@@ -264,8 +283,8 @@ def volumes_backup_t(request):
         return ret
     else:
         ret['totalList'] = []
-        return_data = volume_backup.list_detail()
-        returnvolume = ReturnVolume(volume.list()['volumes'])
+        return_data = volume_backup.list_detail(username=username)
+        returnvolume = ReturnVolume(volume.list(username=username)['volumes'])
         for i in return_data['backups']:
             sys={}
             sys['name']=i['name']
@@ -288,9 +307,10 @@ def volumes_backup_t(request):
 @user_login()
 def openstack_project(request):
     ret = {}
+    username = request.user.username
    # login()
     try:
-        return_data = get_project()
+        return_data = get_project(user_name=username)
         ret['totalList'] = []
         for i in return_data['projects']:
             sys = {}
@@ -309,14 +329,15 @@ def openstack_project(request):
 
 @user_login()
 def volumes_Redact(request):
+    global volume
     ret = {}
+    username = request.user.username
   #  login()
     openstack_log.info(request.POST)
     volumes_id = request.POST.get('id')
     volumes_name = request.POST.get('name')
     volumes_desc = request.POST.get('desc')
-    volume = Volume()
-    return_data = volume.change(volumes_id, name=volumes_name, description=volumes_desc)
+    return_data = volume.change(volumes_id, name=volumes_name, description=volumes_desc,username=username)
     openstack_log.info(return_data)
     if return_data != 1:
         ret['name'] = volumes_name
@@ -330,13 +351,14 @@ def volumes_Redact(request):
 @user_login()
 def instances_backup(request):
     ret = {}
+    username = request.user.username
 #    login()
     instances_id = request.POST.get('id')
     instances_name = request.POST.get('name')
     instances_name_b = request.POST.get('name_bakup')
     openstack_log.info(request.POST)
     vm_snap = Vm_snap(instances_id)
-    return_data = vm_snap.create(instances_name_b)
+    return_data = vm_snap.create(instances_name_b,username=username)
     if return_data == 2:
         ret['name'] = instances_name
         ret['status'] = False
@@ -354,23 +376,24 @@ def instances_backup(request):
 @user_login()
 def instances_search(request):
 #    login()
+    global imagess
+    global flavorss
+    global vm_manage
     ret = {}
-    imagess = Image()
-    flavorss = Flavor()
-    vm_manage = Vm_manage()
+    username = request.user.username
     key = request.GET.get('keys')
     value = request.GET.get('value')
     if not value:
         key = "name"
         pass
     if key == 'image':
-        image_list = imagess.list()
+        image_list = imagess.list(username=username)
         for i in image_list['images']:
             if i['name'] == value:
                 value = i['id']
                 break
     elif key == "flavor":
-        flavor_list = flavorss.list()
+        flavor_list = flavorss.list(username=username)
         for i in flavor_list['flavors']:
             if i['name'] == value:
                 value = i['id']
@@ -386,17 +409,17 @@ def instances_search(request):
     else:
         minpageSizes = 0
         maxpageSizes = 0
-    host_list = vm_manage.list_detail(dict_d)
+    host_list = vm_manage.list_detail(dict_d,username=username)
     ret['totalList'] = []
     for host in host_list['servers'][minpageSizes:maxpageSizes]:
         sys = {}
         sys['id'] = host['id']
         sys['name'] = host['name']
         try:
-            sys['image'] = imagess.show_detail(host['image']['id'])['image']['name']
+            sys['image'] = imagess.show_detail(host['image']['id'],username=username)['image']['name']
         except:
             sys['image'] = '-'
-        sys['flavor'] = flavorss.show_detail(host['flavor']['id'])['flavor']['name']
+        sys['flavor'] = flavorss.show_detail(host['flavor']['id'],username=username)['flavor']['name']
         sys['created'] = time_handle(host['created'])
         sys['status'] = host['status']
         for key, value in host['addresses'].items():
@@ -412,18 +435,19 @@ def instances_search(request):
 
 @user_login()
 def vm_uninstall(request):
+    global volume_attach
+    global vm_manage
     ret = {}
+    username = request.user.username
     data = eval(request.POST.get('data'))
     host_id = data['host_id']
     volumes_id = data['disk_id']
     host_name = data['host_name']
     volumes_name = data['disk_name']
-    volume_attach = Volume_attach()
-    return_data = volume_attach.delete(host_id, volumes_id)
-    vm_manage = Vm_manage()
+    return_data = volume_attach.delete(host_id, volumes_id,username=username)
     if return_data != 1:
-        vm_details = vm_manage.show_detail(host_id)['server']
-        ret['disk_list'] = volumes_deal(host_name, vm_details, volumes_id)
+        vm_details = vm_manage.show_detail(host_id,username=username)['server']
+        ret['disk_list'] = volumes_deal(host_name, vm_details, volumes_id,username)
         ret['host_name'] = host_name
         ret['status'] = True
         ret['volumes_name'] = volumes_name
@@ -436,26 +460,28 @@ def vm_uninstall(request):
 
 @user_login()
 def vmdisk_show(request):
+    global vm_manage
     ret = {}
+    username = request.user.username
     vm_id = request.GET.get('id')
-    vm_manage = Vm_manage()
-    vm_details = vm_manage.show_detail(vm_id)['server']
-    ret['disk_list'] = volumes_deal(vm_details['name'], vm_details, vm_id)
+    vm_details = vm_manage.show_detail(vm_id,username=username)['server']
+    ret['disk_list'] = volumes_deal(vm_details['name'], vm_details, vm_id,username)
     ret = json_data(ret)
     return ret
 
 
 @user_login()
 def snapshot_create(request):
+    global volume
     ret={}
+    username = request.user.username
     name=request.POST.get('name')
     snapshot=request.POST.get('snapshot')
     desc=request.POST.get('desc')
     type=request.POST.get('type')
     size=request.POST.get('size')
     snapshot_id=request.POST.get('id')
-    volume=Volume()
-    return_data=volume.create(size=size,name=name,des=desc,snapshot_id=snapshot_id,)
+    return_data=volume.create(size=size,name=name,des=desc,snapshot_id=snapshot_id,username=username)
     if return_data != 1:
         ret['status']=True
     else:
@@ -465,10 +491,11 @@ def snapshot_create(request):
 
 @user_login()
 def snapshot_delete(request):
+    global volume_snaps
     ret={}
+    username = request.user.username
     snapshot_id=request.POST.get('id')
-    volume_snaps=Volume_snaps()
-    return_data=volume_snaps.delete(snapshot_id)
+    return_data=volume_snaps.delete(snapshot_id,username=username)
     if return_data != 1:
         ret['status'] = True
     else:
@@ -478,12 +505,13 @@ def snapshot_delete(request):
 
 @user_login()
 def snapshot_redact(request):
+    global volume_snaps
     ret={}
+    username = request.user.username
     snapshot_id=request.POST.get('id')
     snapshot_name=request.POST.get('name')
     snapshot_desc=request.POST.get('desc')
-    volume_snaps = Volume_snaps()
-    return_data=volume_snaps.change(snapshot_id,des=snapshot_desc,name=snapshot_name)
+    return_data=volume_snaps.change(snapshot_id,des=snapshot_desc,name=snapshot_name,username=username)
     if return_data != 1:
         ret['status']=True
     else:
@@ -623,12 +651,13 @@ def network_monitor_packets(request,vm_name):
 
 @user_login()
 def  backup_restore(request):
+    global volume_backup
     ret={}
+    username = request.user.username
     name=request.POST.get('name')
     disk=request.POST.get('disk')
     backup_id=request.POST.get('id')
-    volume_backup=Volume_backup()
-    return_data=volume_backup.restore(backup_id=backup_id,volume_id=disk,volume_name=name)
+    return_data=volume_backup.restore(backup_id=backup_id,volume_id=disk,volume_name=name,username=username)
     if return_data != 1:
         ret['status'] = True
     else:
@@ -657,9 +686,10 @@ def instances_backup_show(request):
 
 def backup_delete(request):
     ret={}
+    username = request.user.username
+    global volume_backup
     backup_id=request.POST.get('id')
-    volume_backup = Volume_backup()
-    request_data=volume_backup.delete(backup_id=backup_id)
+    request_data=volume_backup.delete(backup_id=backup_id,username=username)
     if request_data != 1:
         ret['status'] = True
     else:
@@ -669,10 +699,11 @@ def backup_delete(request):
 
 def instances_backup_delete(request):
     ret={}
+    username = request.user.username
     vm_id = request.GET.get('id')
     backup_name=str(vm_id)+str(request.GET.get('backup_name'))
     vm_snap=Vm_snap(vm_id)
-    return_data=vm_snap.delete_node(backup_name)
+    return_data=vm_snap.delete_node(backup_name,username=username)
     if return_data != 1:
         #ret['status'] = True
         return_data = vm_snap.list_snap()
@@ -697,10 +728,10 @@ class CommonMethod():
 
     @classmethod
     @user_login()
-    def num_get_vm(cls):
+    def num_get_vm(cls,username):
+        global vm_manage
         try:
-            vm = Vm_manage()
-            tmp_list= vm.list_detail().get("servers",[])
+            tmp_list= vm_manage.list_detail(username=username).get("servers",[])
             num_vm_total = len(tmp_list)
             num_vm_running = len([i for i in tmp_list if i["status"] == "ACTIVE"])
         except Exception,err:
@@ -711,10 +742,10 @@ class CommonMethod():
 
     @classmethod
     @user_login()
-    def num_get_volume(cls):
+    def num_get_volume(cls,username):
+        global volume
         try:
-            volume = Volume()
-            tmp_list = volume.list().get("volumes",[])
+            tmp_list = volume.list(username=username).get("volumes",[])
             num_volume = len(tmp_list)
         except Exception,err:
             openstack_log.error("get num of volume err:%s"%err)
@@ -723,10 +754,10 @@ class CommonMethod():
 
     @classmethod
     @user_login()
-    def num_get_image(cls):
+    def num_get_image(cls,username):
+        global image
         try:
-            image = Image()
-            tmp_list = image.list_detail().get("images",[])
+            tmp_list = image.list_detail(username=username).get("images",[])
             num_image = len([i for i in tmp_list if i["metadata"].get("image_type","") != "snapshot"])
         except Exception,err:
             openstack_log.error("get num of image err:%s"%err)

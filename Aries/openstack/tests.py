@@ -31,6 +31,7 @@ SNAPSHOT_ID = ""
 ATTACH_ID = ""
 PROJECT_ID = ""
 USER_NAME = ""
+USER_LOGIN = ""
 
 class Openstack_test(TestCase):
     def test_login(self):
@@ -100,7 +101,7 @@ class Openstack_test(TestCase):
     def test_list_image(self):
         self.test_login()
         image = Image()
-        msg = image.list()
+        msg = image.list(username=USER_LOGIN)
         prints(msg)
 
     def test_create_volume(self):
@@ -110,7 +111,7 @@ class Openstack_test(TestCase):
         '''
         self.test_login()
         volume = Volume()
-        ret = volume.create(10, name="test_a")
+        ret = volume.create(10, name="test_a",username=USER_LOGIN)
         prints(ret)
         return ret
 
@@ -121,7 +122,7 @@ class Openstack_test(TestCase):
         '''
         self.test_login()
         volume = Volume()
-        volume.create_multiple("test_disk",3,10)
+        volume.create_multiple("test_disk",3,10,username=USER_LOGIN)
 
     def test_list_volume(self):
         '''
@@ -129,7 +130,7 @@ class Openstack_test(TestCase):
         '''
         self.test_login()
         volume = Volume()
-        msg = volume.list()
+        msg = volume.list(username=USER_LOGIN)
         prints(msg)
 
     def test_show_volume(self):
@@ -139,7 +140,7 @@ class Openstack_test(TestCase):
         self.test_login()
         volume_id = VOLUME_ID
         volume = Volume()
-        msg = volume.show_detail(volume_id)
+        msg = volume.show_detail(volume_id,username=USER_LOGIN)
         prints(msg)
 
     def test_delete_volume(self):
@@ -149,7 +150,7 @@ class Openstack_test(TestCase):
         self.test_login()
         volume_id = VOLUME_ID
         volume = Volume()
-        msg = volume.delete(volume_id)
+        msg = volume.delete(volume_id,username=USER_LOGIN)
         prints(msg)
 
     def test_extend_volume(self):
@@ -160,7 +161,7 @@ class Openstack_test(TestCase):
         volume_id = VOLUME_ID
         size = 11
         volume = Volume()
-        msg = volume.extend(volume_id,size)
+        msg = volume.extend(volume_id,size,username=USER_LOGIN)
         prints(msg)
 
     def test_create_volume_snap(self):
@@ -172,7 +173,7 @@ class Openstack_test(TestCase):
         volume_id = VOLUME_ID
         name = "test_snap"
         volume_snap = Volume_snaps()
-        ret = volume_snap.create(volume_id,name)
+        ret = volume_snap.create(volume_id,name,username=USER_LOGIN)
         prints(ret)
         return ret
 
@@ -184,7 +185,7 @@ class Openstack_test(TestCase):
         self.test_login()
         volume_snap_id = VOLUME_SNAP_ID
         volume_snap = Volume_snaps()
-        ret = volume_snap.change(volume_snap_id,name="asd",des="111111")
+        ret = volume_snap.change(volume_snap_id,name="asd",des="111111",username=USER_LOGIN)
         prints(ret)
         return ret
 
@@ -196,7 +197,7 @@ class Openstack_test(TestCase):
         self.test_login()
         snapshot_id = SNAPSHOT_ID
         volume_snap = Volume_snaps()
-        ret = volume_snap.delete(snapshot_id)
+        ret = volume_snap.delete(snapshot_id,username=USER_LOGIN)
         prints(ret)
 
     def test_create_flavor(self):
@@ -208,33 +209,33 @@ class Openstack_test(TestCase):
     def test_list_flavor(self):
         self.test_login()
         flavor = Flavor()
-        msg = flavor.list()
+        msg = flavor.list(username=USER_LOGIN)
         prints(msg)
 
     def test_list_flavor_detail(self):
         self.test_login()
         flavor = Flavor()
-        msg = flavor.list_detail()
+        msg = flavor.list_detail(username=USER_LOGIN)
         prints(msg)
 
     def test_list_vm(self):
         self.test_login()
         vm = Vm_manage()
-        msg = vm.list()
+        msg = vm.list(username=USER_LOGIN)
         prints(msg)
 
     def test_show_vm(self):
         self.test_login()
         vm_id = VM_ID
         vm = Vm_manage()
-        msg = vm.show_detail(vm_id)
+        msg = vm.show_detail(vm_id,username=USER_LOGIN)
         prints(msg)
 
     def test_list_vm_detail(self):
         self.test_login()
         vm = Vm_manage()
         query = {"name": "ddd"}
-        msg = vm.list_detail(query)
+        msg = vm.list_detail(query,username=USER_LOGIN)
         prints(msg)
 
     def test_get_vm_avzone(self):
@@ -252,7 +253,7 @@ class Openstack_test(TestCase):
         disk = [{"name": "disk_test2", "size": "10", "dev_name": "/dev/sdb"},
                 {"name": "disk_test3", "size": "10", "dev_name": "/dev/sdc"}]
         tmp_str = base64.b64encode("test")
-        msg = vm.create("test_zd3", FLAVOR_ID, IMAGE_ID, "123456",tmp_str)
+        msg = vm.create("test_zd3", FLAVOR_ID, IMAGE_ID, "123456",tmp_str,username=USER_LOGIN)
         prints(msg)
         return msg
 
@@ -265,7 +266,7 @@ class Openstack_test(TestCase):
         disk = [{"name": "disk_test2", "size": "10", "dev_name": "/dev/sdb"},
                 {"name": "disk_test3", "size": "10", "dev_name": "/dev/sdc"}]
         tmp_str = base64.b64encode("test")
-        msg = vm.create_multiple("test_zd3", FLAVOR_ID, IMAGE_ID, "123456",tmp_str, 3, 10, disk=disk)
+        msg = vm.create_multiple("test_zd3", FLAVOR_ID, IMAGE_ID, "123456",tmp_str, 3, 10, disk=disk,username=USER_LOGIN)
         prints(msg)
 
     # def test_create_image(self):
@@ -280,7 +281,7 @@ class Openstack_test(TestCase):
         vm_id = VM_ID
         vm = Vm_snap(vm_id)
         image_name = "test_snap_1"
-        ret = vm.create(image_name)
+        ret = vm.create(image_name,username=USER_LOGIN)
         prints(ret)
 
     def test_rebuild(self):
@@ -288,7 +289,7 @@ class Openstack_test(TestCase):
         vm_id = VM_ID
         vm = Vm_snap(vm_id)
         image_name = ""
-        ret = vm.rebuild(image_name)
+        ret = vm.rebuild(image_name,username=USER_LOGIN)
 
     def test_getinfo_snap(self):
         self.test_login()
@@ -312,7 +313,7 @@ class Openstack_test(TestCase):
         vm_id = VM_ID
         vm = Vm_snap(vm_id)
         image_name = ""
-        ret = vm.delete_node(image_name)
+        ret = vm.delete_node(image_name,username=USER_LOGIN)
         prints(ret)
 
     def test_vm_resize(self):
@@ -320,13 +321,13 @@ class Openstack_test(TestCase):
         vm_id = VM_ID
         vm = Vm_control()
         flavor = ""
-        vm.resize(vm_id,flavor)
+        vm.resize(vm_id,flavor,username=USER_LOGIN)
 
     def test_vm_console(self):
         self.test_login()
         vm_id = VM_ID
         vm = Vm_control()
-        ret = vm.get_console(vm_id)
+        ret = vm.get_console(vm_id,username=USER_LOGIN)
         prints(ret)
 
     def test_vm_attach_create(self):
@@ -334,7 +335,7 @@ class Openstack_test(TestCase):
         vm_id = VM_ID
         volume_id = VOLUME_ID
         volume_attach = Volume_attach()
-        ret = volume_attach.attach(vm_id,volume_id)
+        ret = volume_attach.attach(vm_id,volume_id,username=USER_LOGIN)
         prints(ret)
         return ret
 
@@ -342,7 +343,7 @@ class Openstack_test(TestCase):
         self.test_login()
         volume_attach = Volume_attach()
         vm_id = VM_ID
-        ret = volume_attach.list(vm_id)
+        ret = volume_attach.list(vm_id,username=USER_LOGIN)
         prints(ret)
 
     def test_vm_attach_show_detail(self):
@@ -350,7 +351,7 @@ class Openstack_test(TestCase):
         volume_attach = Volume_attach()
         vm_id = VM_ID
         attach_id = ATTACH_ID
-        ret = volume_attach.show_detail(vm_id,attach_id)
+        ret = volume_attach.show_detail(vm_id,attach_id,username=USER_LOGIN)
         prints(ret)
 
     def test_vm_attach_delete(self):
@@ -358,7 +359,7 @@ class Openstack_test(TestCase):
         volume_attach = Volume_attach()
         vm_id = VM_ID
         attach_id = ATTACH_ID
-        ret = volume_attach.delete(vm_id,attach_id)
+        ret = volume_attach.delete(vm_id,attach_id,username=USER_LOGIN)
         prints(ret)
 
     def test_thread(self):
@@ -373,20 +374,20 @@ class Openstack_test(TestCase):
     def test_vbackup_list(self):
         self.test_login()
         volume_backup = Volume_backup()
-        ret = volume_backup.list()
+        ret = volume_backup.list(username=USER_LOGIN)
         prints(ret)
 
     def test_vbackup_list_detail(self):
         self.test_login()
         volume_backup = Volume_backup()
-        ret = volume_backup.list_detail()
+        ret = volume_backup.list_detail(username=USER_LOGIN)
         prints(ret)
 
     def test_vbackup_show_detail(self):
         self.test_login()
         volume_backup = Volume_backup()
         volume_backup_id = ""
-        ret = volume_backup.show_detail(volume_backup_id)
+        ret = volume_backup.show_detail(volume_backup_id,username=USER_LOGIN)
         prints(ret)
 
     def test_vbackup_create(self):
@@ -394,7 +395,7 @@ class Openstack_test(TestCase):
         volume_backup = Volume_backup()
         volume_id = VM_ID
         volume_backup_name = "test_volume_backup"
-        ret = volume_backup.create(volume_id,volume_backup_name)
+        ret = volume_backup.create(volume_id,volume_backup_name,username=USER_LOGIN)
         prints(ret)
 
     def test_vbackup_restore(self):
@@ -403,21 +404,21 @@ class Openstack_test(TestCase):
         volume_backup_id = ""
         volume_name = ""
         volume_id = VM_ID
-        ret = volume_backup.restore(volume_backup_id,volume_id,volume_name)
+        ret = volume_backup.restore(volume_backup_id,volume_id,volume_name,username=USER_LOGIN)
         prints(ret)
 
     def test_vbackup_delete(self):
         self.test_login()
         volume_backup = Volume_backup()
         volume_backup_id = ""
-        ret = volume_backup.delete(volume_backup_id)
+        ret = volume_backup.delete(volume_backup_id,username=USER_LOGIN)
         prints(ret)
 
     def test_console_log(self):
         self.test_login()
         vm_control = Vm_control()
         vm_id = VM_ID
-        ret = vm_control.get_console_log(vm_id)
+        ret = vm_control.get_console_log(vm_id,username=USER_LOGIN)
         prints(ret)
 
     def test_get_keypairs(self):
@@ -444,6 +445,34 @@ class Openstack_test(TestCase):
         self.test_login()
         ret = CommonApi.get_role_id()
         prints(ret)
+
+    def test_cache_vm(self):
+        self.test_login()
+        vm = Vm_manage()
+        time_old = int(time.time())
+        ret1 = vm.list(username=USER_LOGIN)
+        time_now_1 = int(time.time())
+        t1 = time_now_1 - time_old
+        ret2 = vm.list(username=USER_LOGIN)
+        time_now_2 = time.time()
+        t2 = time_now_2 - time_now_1
+        print "frist=%s,second=%s"%(t1,t2)
+        prints(ret1)
+        prints(ret2)
+
+    def test_cache_volume(self):
+        self.test_login()
+        volume = Volume
+        time_old = int(time.time())
+        ret1 = volume.list(username=USER_LOGIN)
+        time_now_1 = int(time.time())
+        t1 = time_now_1 - time_old
+        ret2 = volume.list(username=USER_LOGIN)
+        time_now_2 = time.time()
+        t2 = time_now_2 - time_now_1
+        print "frist=%s,second=%s"%(t1,t2)
+        prints(ret1)
+        prints(ret2)
 
     def auto_test(self):
         global VM_ID

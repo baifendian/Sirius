@@ -68,10 +68,11 @@ class overview(APIView):
     def get(self, request, format=None):
         ret = {'vm':'0/0','image':0,'volume':0}
         login(request)
-        total,running = CommonMethod.num_get_vm()
+        username = request.user.username
+        total,running = CommonMethod.num_get_vm(username)
         ret['vm'] = "%s/%s"%(running,total)
-        ret['image'] = CommonMethod.num_get_image()
-        ret['volume'] = CommonMethod.num_get_volume()
+        ret['image'] = CommonMethod.num_get_image(username)
+        ret['volume'] = CommonMethod.num_get_volume(username)
         ret = json_data(ret)
         return packageResponse(ret)
 
