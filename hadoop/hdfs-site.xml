@@ -1,32 +1,9 @@
 <configuration>
-  <property>
-      <name>dfs.support.append</name>
-      <value>true</value>
-  </property>
  <property>
-      <name>dfs.replication</name>
-      <value>2</value>
-      <description></description>
-  </property>
-  <property>
       <name>dfs.namenode.name.dir</name>
       <value>HDFS_DFS_NAMENODE_NAME_DIR</value>
   </property>
-  <property>
-      <name>dfs.blocksize</name>
-      <value>134217728</value>
-      <description>
-      HDFS blocksize of 128MB for large file-systems.
-      Minimum block size is 1048576.
-      </description>
-  </property>
-  <property>
-      <name>dfs.namenode.handler.count</name>
-      <value>10</value>
-      <description>More NameNode server threads to handle RPCs from large
-          number of DataNodes.</description>
-  </property>
-  <property>
+ <property>
       <name>dfs.datanode.data.dir</name>
       <value>HDFS_DATANODE_DATA_DIR</value>
   </property>
@@ -78,71 +55,4 @@
       <name>dfs.namenode.servicerpc-address.HDFS_DFS_NAMESERVICES.n2</name>
       <value>HDFS_DFS_NAMENODE_SERVICERPC_ADDRESS_N2</value>
   </property>
-  <property>
-      <name>dfs.ha.automatic-failover.enabled.HDFS_DFS_NAMESERVICES</name>
-      <value>true</value>
-      <description>开启基于Zookeeper及ZKFC进程的自动备援设置,监视进程是否死掉
-          Whether automatic failover is enabled. See the HDFS High
-          Availability documentation for details on automatic HA
-          configuration.
-      </description>
-  </property>
-  <property>
-      <name>dfs.client.failover.proxy.provider.HDFS_DFS_NAMESERVICES</name>
-      <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider
-      </value>
-      <description>DataNode,Client连接Namenode识别选择Active NameNode策略
-          Configure the name of the Java class which will be used
-          by the DFS Client to determine which NameNode is the current Active,
-          and therefore which NameNode is currently serving client requests.
-          这个类是Client的访问代理，是HA特性对于Client透明的关键！
-      </description>
- </property>
-  <property>
-      <name>dfs.ha.fencing.methods</name>
-      <value>sshfence</value>
-      <description>how to communicate in the switch processFailover后防止停掉的Namenode启动，造成两个服务</description>
-  </property>
-  <property>
-      <name>dfs.ha.fencing.ssh.private-key-files</name>
-      <value>/home/hadoop/.ssh/id_rsa</value>
-      <description>the location stored ssh key</description>
-  </property>
-  <property>
-      <name>dfs.ha.fencing.ssh.connect-timeout</name>
-      <value>1000</value>
-        <description>多少milliseconds 认为fencing失败</description>
-  </property>
-  <property>
-      <name>dfs.journalnode.edits.dir</name>
-      <value>HDFS_JOURNALNODE_EDITS_DIR</value>
-       <description>JournalNode存放数据地址</description>
-  </property>
-  <property>
-      <name>dfs.namenode.shared.edits.dir</name>
-      <value>HDFS_DFS_NAMENODE_SHARED_EDITS_DIR
-      </value>
-      <description>A directory on shared storage between the multiple
-          namenodes
-          in an HA cluster. This directory will be written by the active and read
-          by the standby in order to keep the namespaces synchronized. This
-          directory
-          does not need to be listed in dfs.namenode.edits.dir above. It should be
-          left empty in a non-HA cluster.设置JournalNode服务器地址，QuorumJournalManager 用于存储editlog
-      </description>
-  </property>
-<!--
--->
-<property>
-   <name>dfs.client.read.shortcircuit</name>
-   <value>true</value>
-</property>
-<property>
-   <name>dfs.domain.socket.path</name>
-   <value>/opt/hadoop/sockets/dn_socket</value>
-</property>
-<property>
-   <name>dfs.datanode.max.transfer.threads</name>
-   <value>8192</value>
-</property>
-  </configuration>
+ </configuration>
