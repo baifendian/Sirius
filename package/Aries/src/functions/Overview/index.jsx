@@ -144,6 +144,9 @@ export default React.createClass({
     let user_url = this.getUrlData({ type: "USER_AUTH_OVERVIEW",
                                      spaceName: spaceName
                   });
+    let openstack_url = this.getUrlData({ type: "OPENSTACK_OVERVIEW",
+                                      spaceName: spaceName
+                  });
 
     //根据space获取对应的指标信息
     let conent = this.index();

@@ -13,6 +13,7 @@ spec:
       containers:
         - name: sirius
           image: docker.baifendian.com/lupan/sirius_lugu:0.4
+          imagePullPolicy: Always
           ports:
             - containerPort: 10086
           env:
@@ -23,7 +24,7 @@ spec:
           - name: DATABASES_DEFAULT_ENGINE
             value: "django.db.backends.mysql"
           - name: DATABASES_DEFAULT_NAME
-            value: aries
+            value: sirius
           - name: DATABASES_DEFAULT_HOST
             value: "192.168.44.189"
           - name: DATABASES_DEFAULT_PORT
