@@ -12,5 +12,3 @@ spec:
      # nodePort: 31041
   selector:
     name: sirius
-  selectnode:
-    role: worker

@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - name: sirius
-          image: docker.baifendian.com/sjx/sirius:25
+          image: docker.baifendian.com/lupan/sirius_lugu:0.4
           ports:
             - containerPort: 10086
           env:
@@ -100,6 +100,10 @@ spec:
             value: "2"
           - name: WEBHDFS_RETRY_DELAY
             value: "3"
+          - name: CLIENTHDFS_HADOOP_HOME
+            value: "/opt/hadoop"
+          - name: CLIENTHDFS_NAMENODE_PATH
+            value: ""
           - name: CODIS_REST_URL
             value: "http://192.168.49.127:8888"
           - name: CODIS_OPENTSDB_URL
@@ -178,5 +182,7 @@ spec:
           name: siriusdownload
       imagePullSecrets:
         - name: docker-registry-sys
+      nodeSelector:
+        role: worker
       #nodeSelector:
       #  kubernetes.io/hostname: 172.24.2.208
