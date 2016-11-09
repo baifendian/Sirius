@@ -155,9 +155,7 @@ export default React.createClass({
           <Fetch defaultHeight={0} url={`${codis_url}`} onSuccess={this.getCodisData} />
           <Fetch defaultHeight={0} url={`${user_url}`} onSuccess={this.getUserAuthData} />
           <Fetch defaultHeight={0} url={`${k8sp_url}`} onSuccess={this.getK8spData} />
-          {/*
-          <Fetch defaultHeight={0} url={`${openstack_url}?random=${this.state.random}`} onSuccess={this.getOpenstackData} />
-          */}
+          <Fetch defaultHeight={0} url={`${openstack_url}`} onSuccess={this.getOpenstackData} />
         </div>
       )
   }
