@@ -722,47 +722,41 @@ def instances_backup_delete(request):
     ret=json_data(ret)
     return ret
 
-class CommonMethod():
-    def __init__(self):
-        pass
 
-    @classmethod
-    @user_login()
-    def num_get_vm(cls,username):
-        global vm_manage
-        try:
-            tmp_list= vm_manage.list_detail(username=username).get("servers",[])
-            num_vm_total = len(tmp_list)
-            num_vm_running = len([i for i in tmp_list if i["status"] == "ACTIVE"])
-        except Exception,err:
-            openstack_log.error("get num of vm err:%s"%err)
-            num_vm_total = 0
-            num_vm_running = 0
-        return (num_vm_total,num_vm_running)
+@user_login()
+def num_get_vm(request,username):
+    global vm_manage
+    try:
+        tmp_list= vm_manage.list_detail(username=username).get("servers",[])
+        num_vm_total = len(tmp_list)
+        num_vm_running = len([i for i in tmp_list if i["status"] == "ACTIVE"])
+    except Exception,err:
+        openstack_log.error("get num of vm err:%s"%err)
+        num_vm_total = 0
+        num_vm_running = 0
+    return (num_vm_total,num_vm_running)
 
-    @classmethod
-    @user_login()
-    def num_get_volume(cls,username):
-        global volume
-        try:
-            tmp_list = volume.list(username=username).get("volumes",[])
-            num_volume = len(tmp_list)
-        except Exception,err:
-            openstack_log.error("get num of volume err:%s"%err)
-            num_volume = 0
-        return num_volume
+@user_login()
+def num_get_volume(request,username):
+    global volume
+    try:
+        tmp_list = volume.list(username=username).get("volumes",[])
+        num_volume = len(tmp_list)
+    except Exception,err:
+        openstack_log.error("get num of volume err:%s"%err)
+        num_volume = 0
+    return num_volume
 
-    @classmethod
-    @user_login()
-    def num_get_image(cls,username):
-        global image
-        try:
-            tmp_list = image.list_detail(username=username).get("images",[])
-            num_image = len([i for i in tmp_list if i["metadata"].get("image_type","") != "snapshot"])
-        except Exception,err:
-            openstack_log.error("get num of image err:%s"%err)
-            num_image = 0
-        return num_image
+@user_login()
+def num_get_image(request,username):
+    global image
+    try:
+        tmp_list = image.list_detail(username=username).get("images",[])
+        num_image = len([i for i in tmp_list if i["metadata"].get("image_type","") != "snapshot"])
+    except Exception,err:
+        openstack_log.error("get num of image err:%s"%err)
+        num_image = 0
+    return num_image
 
 
 Methods = {

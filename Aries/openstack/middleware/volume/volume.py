@@ -211,6 +211,8 @@ class Volume:
         params = {"os-extend": {"new_size": size}}
         ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
         assert ret != 1, "send_request error"
+        t = run_in_thread(self.wait_complete, volume_id, ["available"],username,timeout=TIMEOUT)
+        assert t == 0
         return ret
 
     @plog("Volume.change")
@@ -232,6 +234,8 @@ class Volume:
             params["volume"].update({"name": name})
         ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
         assert ret != 1, "send_request error"
+        t = run_in_thread(self.wait_complete, volume_id, ["available"],username,timeout=TIMEOUT)
+        assert t == 0
         return ret
 
 
