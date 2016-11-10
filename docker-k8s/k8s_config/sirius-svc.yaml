@@ -1,14 +1,15 @@
-apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
   name: sirius
-  labels:
-    service: sirius
 spec:
-  type: NodePort
-  ports:
-    - port: 10086
-      targetPort: 10086
-     # nodePort: 31041
   selector:
     name: sirius
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8888
+    targetPort: 10086
+  externalIPs:
+  - 192.168.48.21
+  - 192.168.48.22
