@@ -17,6 +17,7 @@ const TabMonitor = React.createClass({
          console.log(err);
          percen = 0;
       }
+      console.log(`percen: ${percen}`);
       return <div className="col-sm-6 col-md-4 col-lg-3">
               <div className="thumbnail text-border" style={{width:'100px'}}><a href="javascript:">{value.name}</a></div>
               <div className="caption"><Percentage percent={percen} style={{width: '150px'}}></Percentage></div>

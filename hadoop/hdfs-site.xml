@@ -1,11 +1,8 @@
 <configuration>
  <property>
-      <name>dfs.namenode.name.dir</name>
-      <value>HDFS_DFS_NAMENODE_NAME_DIR</value>
-  </property>
- <property>
-      <name>dfs.datanode.data.dir</name>
-      <value>HDFS_DATANODE_DATA_DIR</value>
+       <name>dfs.client.failover.proxy.provider.bfdhadoopcool</name>
+       <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider
+       </value>
   </property>
   <property>
       <name>dfs.nameservices</name>
@@ -22,7 +19,7 @@
   <property>
       <name>dfs.namenode.rpc-address.HDFS_DFS_NAMESERVICES.nn1</name>
       <value>HDFS_DFS_NAMENODE_RPC_ADDRESS_NN1</value>
-    
+
   </property>
   <property>
       <name>dfs.namenode.rpc-address.HDFS_DFS_NAMESERVICES.nn2</name>

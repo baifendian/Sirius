@@ -204,7 +204,7 @@ const MyTable = React.createClass({
                                          });
     xhr({ type: 'POST',url: mkdirsUrl,
         success:data1 =>  {
-          message.success(data,2);
+          message.success(data1,2);
           let data = this.props.data;
           let totalList =data.totalList;
           console.log(data);
