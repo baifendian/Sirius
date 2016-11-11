@@ -15,6 +15,7 @@ from rest_framework.reverse import reverse
 from rest_framework import generics
 from django.conf import settings
 import redis
+import time
 from hdfs.tools import *
 import logging
 import json,re,requests
