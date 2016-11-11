@@ -11,7 +11,7 @@ class UserSessionMiddleware(object):
             #static file type or /login
             return None
         if not request.user.is_authenticated():
-            if path.startswith('/api/'):
+            if path.startswith('/v1/') or path.startswith('/openstack') or path.startswith('/k8s'):
                 #api type
                 res = {}
                 res["code"] = 401
