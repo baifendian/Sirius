@@ -26,6 +26,7 @@ import os,sys
 import yaml
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(BASE_DIR,"middleware"))
 LOG_BASE_DIR=os.path.join(BASE_DIR.rstrip("Aries"), "log")
 FTP_LOCAL_DIR=os.path.join(BASE_DIR.rstrip("Aries"), "download/")
 
@@ -74,6 +75,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'middleware.UserSessionMiddleware',
 )
 
 ROOT_URLCONF = 'Aries.urls'

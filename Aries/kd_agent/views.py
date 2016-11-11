@@ -277,7 +277,7 @@ def trans_obj_to_easy_dis(obj_info):
 @trans_return_json
 def get_mytask_graph(request):
     kd_logger.info( 'call get_mytask_graph' )
-    url = 'http://' + str(settings.BDMS_IP) + ':' + str(settings.BDMS_PORT) + '/k8s/api/v1/namespaces/mytaskgraph'  #任务运行网络图 rest api
+    url = 'http:/%s:%s/k8s/api/v1/namespaces/mytaskgraph'%(settings.BDMS_IP, settings.BDMS_PORT)  #任务运行网络图 rest api
     try:
         req = requests.Session()
         r = req.get(url)
@@ -357,7 +357,7 @@ def mytask_get_old_records(request):
     keywords = json.loads(request.POST.get('keywords'))
     
     kd_logger.info('\n\n\nkeywords & type:%s\n%s\n\n'%( keywords, type(keywords) ))
-    url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/namespaces/mytasklist/getoldrecords/?oldestrecordid=%s&requestnumber=%s&keywords=%s" %( oldestrecordid, requestnumber, keywords )
+    url = "http://%s:%s/k8s/api/v1/namespaces/mytasklist/getoldrecords/?oldestrecordid=%s&requestnumber=%s&keywords=%s" %( settings.BDMS_IP, settings.BDMS_PORT, oldestrecordid, requestnumber, keywords )
     r = requests.Session()
     req = r.get(url)
     return req.json()
@@ -371,7 +371,7 @@ def mytask_check_has_new_records(request):
 
     kd_logger.info('\n\n\nnewestrecordid & type: %s\n %s\n\n'%(newestrecordid, type(newestrecordid)))
     kd_logger.info('\n\n\nkeywords & type:%s\n%s\n\n'%( keywords, type(keywords) ))
-    url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/namespaces/mytasklist/checkhasnewrecords/?newestrecordid=%s&keywords=%s" %( newestrecordid, keywords )
+    url = "http://%s:%s/k8s/api/v1/namespaces/mytasklist/checkhasnewrecords/?newestrecordid=%s&keywords=%s" %( settings.BDMS_IP, settings.BDMS_PORT, newestrecordid, keywords )
     r = requests.Session()
     req = r.get(url)
     return req.json()
@@ -383,7 +383,7 @@ def mytask_get_new_records(request):
     newestrecordid = int(request.POST.get('newestrecordid'))
     keywords = json.loads(request.POST.get('keywords'))
 
-    url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/namespaces/mytasklist/getnewrecords/?newestrecordid=%s&keywords=%s" %( newestrecordid, keywords )
+    url = "http://%s:%s/k8s/api/v1/namespaces/mytasklist/getnewrecords/?newestrecordid=%s&keywords=%s" %( settings.BDMS_IP, settings.BDMS_PORT, newestrecordid, keywords )
     r = requests.Session()
     req = r.get(url)
     return req.json()
@@ -392,7 +392,7 @@ def mytask_get_new_records(request):
 @return_http_json
 @trans_return_json
 def dashboard_taskinfo(request):
-    url = "http://" + settings.BDMS_IP + ":" + settings.BDMS_PORT + "/k8s/api/v1/dashboard/taskinfo"
+    url = "http://%s:%s/k8s/api/v1/dashboard/taskinfo" %( settings.BDMS_IP, settings.BDMS_PORT )
     r = requests.Session()
     req = r.get(url)
     return req.json()

@@ -69,10 +69,10 @@ class overview(APIView):
         ret = {'vm':'0/0','image':0,'volume':0}
         login(request)
         username = request.user.username
-        total,running = CommonMethod.num_get_vm(username)
+        total,running = num_get_vm(request,username)
         ret['vm'] = "%s/%s"%(running,total)
-        ret['image'] = CommonMethod.num_get_image(username)
-        ret['volume'] = CommonMethod.num_get_volume(username)
+        ret['image'] = num_get_image(request,username)
+        ret['volume'] = num_get_volume(request,username)
         ret = json_data(ret)
         return packageResponse(ret)
 

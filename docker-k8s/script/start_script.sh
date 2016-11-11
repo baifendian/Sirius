@@ -66,7 +66,7 @@ sed -i "s#k8s_OPENSTACK_IP_CINDER#$OPENSTACK_IP_CINDER#g"  /opt/Sirius/sbin/Arie
 sed -i "s#k8s_OPENSTACK_PORT_CINDER#$OPENSTACK_PORT_CINDER#g"  /opt/Sirius/sbin/Aries.yaml
 sed -i "s#k8s_OPENSTACK_MONITOR_URL#$OPENSTACK_MONITOR_URL#g"  /opt/Sirius/sbin/Aries.yaml
 
-sed -i "s#CORE_FS_DEFAULTFS#$CORE_FS_DEFAULTFS#g" /opt/hadoop/etc/hadoop/core-site.xml
+sed -i "s#HDFS_DFS_NAMESERVICES#$HDFS_DFS_NAMESERVICES#g" /opt/hadoop/etc/hadoop/core-site.xml
 sed -i "s#CORE_HADOOP_TMP_DIR#$CORE_HADOOP_TMP_DIR#g" /opt/hadoop/etc/hadoop/core-site.xml
 sed -i "s#CORE_HA_ZOOKEEPER_QUORUM#$CORE_HA_ZOOKEEPER_QUORUM#g" /opt/hadoop/etc/hadoop/core-site.xml
 

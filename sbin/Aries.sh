@@ -1,4 +1,6 @@
 #!/bin/bash
+source $HOME/sbin/Aries-env.sh
+
 HOME=`dirname $(cd "$(dirname "$0")"; pwd)`
 HDFS_DOWNLOAD_DIR="$HOME/download/"
 mkdir -p $HDFS_DOWNLOAD_DIR
