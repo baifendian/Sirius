@@ -1,7 +1,7 @@
 <configuration>
    <property>
        <name>fs.defaultFS</name>
-       <value>HDFS_DFS_NAMESERVICES</value>
+       <value>HDFS://HDFS_DFS_NAMESERVICES</value>
    </property>
    <property>
        <name>hadoop.tmp.dir</name>
