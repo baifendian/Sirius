@@ -1,0 +1,14 @@
+<configuration>
+   <property>
+       <name>fs.defaultFS</name>
+       <value>hdfs://HDFS_DFS_NAMESERVICES</value>
+   </property>
+   <property>
+       <name>hadoop.tmp.dir</name>
+       <value>CORE_HADOOP_TMP_DIR</value>
+   </property>
+   <property>
+       <name>ha.zookeeper.quorum</name>
+       <value>CORE_HA_ZOOKEEPER_QUORUM</value>
+   </property>
+</configuration>

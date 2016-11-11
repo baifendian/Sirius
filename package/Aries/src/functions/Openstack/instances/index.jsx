@@ -24,6 +24,8 @@ import {Tabs_List} from './instanses_tabs'
 export default React.createClass({
   getInitialState: function () {
     return {
+      title_status:'内容加载中',
+      height_log:'',
       text_text: "",
       host_list: [],
       host_list_id: [],
@@ -31,22 +33,25 @@ export default React.createClass({
       host_post: '',
       loading: false,
       select_all: [],
+      instance_backup:'',
       select_host: '',
       host_desc: '',
-      button_status: "disabled",
+      button_status: true,
       url_vnc: "",
       height_h: "",
       button_statuss: true,
+      logs:'',
+      logs_loading:'',
+      vmdisk:'',
       url: "openstack/bfddashboard/instances/",
       column: [{
         title: '名称',
         order: false,
         render: (text, item) => {
-          let path = "/openstack/" + item['id'] + '/'
           return (
             <div>
               <div>
-                <a href="#">
+                <a  href = "javascript:void(0);" onClick = {this.handleClick.bind(this, item)} >
                   <TextOverflow>
                     <p style={{width: '110px'}}>{text} </p>
                   </TextOverflow>
@@ -65,11 +70,11 @@ export default React.createClass({
         key: 'flavor',
         order: false
       }, {
-        title: '镜像名',
+        title: '镜像',
         key: 'image',
         order: false
       }, {
-        title: 'IP地址',
+        title: '内网IP',
         key: 'ip',
       }, {
         title: '状态',
@@ -77,9 +82,9 @@ export default React.createClass({
         order: false,
         render: (text, item)=> {
           // console.log('text_text',text)
-          /* if (text=="active" || text == "error" || text=="stopped"){return (<span>{text}</span>)}else{
-           return (<div><Progress_model/></div>)}*/
-          return (<span>{text}</span>)
+           if (text=="ACTIVE" || text == "ERROR" || text=="SHUTOFF"){return (<span>{text}</span>)}else{
+           return (<div><Progress_model text={item} title_status={this.state.title_status}/></div>)}
+          //return (<span>{text}</span>)
         }
       }, {
         title: '创建时间',
@@ -92,7 +97,19 @@ export default React.createClass({
   handleClick(item, event) {
     event = event ? event : window.event;
     event.stopPropagation();
-    this.refs.modal.open()
+    //this.refs.modal.open()
+    console.log(item,event)
+    if (item == this.state.host_desc){
+      this.setState({host_desc: ''})
+      this.count_initialization()
+     }else{
+      this.setState({host_desc: item})
+      this.count_height()
+      this.getDataConsole(item)
+      this.getbackup(item)
+      OPEN.Get_vmdisk(this,item['id'],this.getvmdisk)
+    }
+
   },
   onPageChange(page) {
   },
@@ -102,7 +119,7 @@ export default React.createClass({
       OPEN.open_vnc(this, return_data, this.requestvnc);
     } else {
       if (return_data['console']['url'] == false) {
-        message.danger('vnc故障请联系管理员')
+        message.danger('VNC故障请联系管理员')
         id.setState({loading: false})
       } else {
         this.refs.model_disk.open()
@@ -160,9 +177,8 @@ export default React.createClass({
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top = totalHeight2 + "px"
     ReactDOM.findDOMNode(this.refs.Table_t).childNodes[0].style.width = totalwidth_t + 'px'
     ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].style.height = totalHeight + 'px'
-
+    ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes[1].style.height=(totalHeight1-totalHeight2-35)+'px'
     if (totalHeight <= height_table) {
-
       for (let i = 0; i < ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length; i++) {
         if (i == (table_trlengt - 1)) {
           totalwidth = totalwidth + 17
@@ -209,62 +225,106 @@ export default React.createClass({
     }
   },
   handleRowClick(row) {
-    // console.log('rowclick', row)
-     if (row == this.state.host_desc){
+   /* if (row == this.state.host_desc){
       this.setState({host_desc: ''})
       this.count_initialization()
      }else{
       this.setState({host_desc: row})
       this.count_height()
-     }
+      this.getDataConsole(row)
+      this.getbackup(row)
+      OPEN.Get_vmdisk(this,row['id'],this.getvmdisk)
+    }*/
   },
+
+  getvmdisk(_this,executedData){
+    this.setState({vmdisk:executedData})
+  },
+
+  getbackup(row){
+    let url=OPEN.UrlList()['instances_post']+'?name=instances_backup_show'+'&id='+row['id']
+    OPEN.xhrGetData(this,url,this.xhrCallback_backup)
+  },
+
+  xhrCallback_backup(_this,executedData){
+    let data=executedData['data']
+    _this.setState({
+      instance_backup:data
+    })
+  },
+
+  getDataConsole(row){
+    this.setState({logs_loading:true})
+    let host_id = row['id']
+    let url = OPEN.UrlList()['instances_log']+'/'+host_id+'/30/'
+    OPEN.xhrGetData(this,url,this.xhrCallback)
+  },
+
+  xhrCallback(_this,executedData) {
+    _this.setState({
+      logs: executedData,
+      logs_loading:false
+    })
+  },
+
   handleOrder(name, sort) {
-    // console.log(name, sort)
   },
   callback_status(name){
-    console.log(name,'hahahahuidiao')
     this.handleOpen(name)
   },
   handleOpen(name) {
-    let text = '您已选择'
+    let text = ''
     switch (name) {
       case 1:
         OPEN.posthoststop(this, 'instances', this.state.select_all, "start")
         break;
       case 2:
+         text = '确定要重启虚拟机'
         this.refs.modal.open()
         for (var i = 0; i < this.state.host_list.length; i++) {
-          text = text + '"' + this.state.host_list[i] + '"' + ','
+          if (i==this.state.host_list.length-1){
+          text = text + '"' + this.state.host_list[i] + '"' +'？'}else{
+           text = text + '"' + this.state.host_list[i] + '"'+'、'
+          }
         }
-        text = text + "请确认您的选择。云主机将会被重启"
         this.setState({
           text_text: text,
           host_status: "重启虚拟机",
-          host_post: 'restart'
+          host_post: 'restart',
+          title_status: "正在重启"
         })
         break;
       case 3:
+       text = '确定要关闭虚拟机'
         this.refs.modal.open()
         for (var i = 0; i < this.state.host_list.length; i++) {
-          text = text + '"' + this.state.host_list[i] + '"' + ','
+          if (i==this.state.host_list.length-1){
+          text = text + '"' + this.state.host_list[i] + '"'+'?'}else{
+           text = text + '"' + this.state.host_list[i] + '"'+'、'
+          }
         }
-        text = text + "请确认您的选择。云主机将会被关闭"
+
         this.setState({
           text_text: text,
           host_status: "关闭虚拟机",
-          host_post: 'stop'
+          host_post: 'stop',
+          title_status: "正在关闭"
         })
         break;
       case 4:
+        text = '确定要删除虚拟机'
         this.refs.modal.open()
         for (var i = 0; i < this.state.host_list.length; i++) {
-          text = text + '"' + this.state.host_list[i] + '"' + ','
+          if (i==this.state.host_list.length-1){
+          text = text + '"' + this.state.host_list[i] + '"' +'?'}else{
+           text = text + '"' + this.state.host_list[i] + '"'+'、'
+          }
         }
-        text = text + "请确认您的选择。云主机将会被删除"
         this.setState({
           text_text: text,
           host_status: "删除虚拟机",
-          host_post: 'delete'
+          host_post: 'delete',
+          title_status: "正在删除"
         })
         break;
       case 5:
@@ -283,13 +343,7 @@ export default React.createClass({
       OPEN.posthoststop(this, 'instances', this.state.select_all, this.state.host_post)
     }
   },
-  handleOpen_re() {
-    this.refs.modal.open()
-    this.setState({test: "重启"})
-  },
-  disk_model_open(){
-    this.refs.model_disk.open()
-  },
+
   componentDidMount(){
     window.onresize = ()=> {
       if (this.state.host_desc) {
@@ -299,14 +353,18 @@ export default React.createClass({
       }
     }
     this.count_initialization()
-
+  },
+  handleSplit(){
+    let hand_height=ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[2].style.height
+    hand_height=hand_height.split('p')[0]-35
+    ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes[1].style.height=hand_height+'px'
+    this.setState({height_log:hand_height})
   },
   requestArgs: {
     pageName: "instances",
   },
   render() {
     let spaceName = Openstackconf.getCurSpace(this)
-    //  console.log('111',this.state.height_h)
     let height_ht = this.state.height_h
     return (
       <div className="function-data-moduleA">
@@ -326,26 +384,18 @@ export default React.createClass({
             <Button onClick={this.handleOpen.bind(this, 5)}
                     style={{float: "left", margin: '0px 10px 0px 0px'}}>刷新</Button>
             <Create_model _this={this}/>
-            {/*<Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 1)} style={{float: "left"}}>启动</Button>
-            <Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 2)} style={{float: "left"}}>重启</Button>
-            <Button disabled={this.state.button_status} onClick={this.handleOpen.bind(this, 3)} style={{float: "left"}}>停止</Button>
-            <Button disabled={this.state.button_status} type="danger" onClick={this.handleOpen.bind(this, 4)}
-                    style={{float: "left"}}>删除</Button>*/}
             <Disk_model vm_list={this.state.select_all} ref="model_model" handleOpen={this.handleOpen} _this={this} button_status={this.state.button_status} button_statuss={this.state.button_statuss}/>
-            {/*<div style={{float: 'right'}}>
-             <Extend _this={this}/>
-             </div>*/}
             <Modal ref="modal">
               <ModalHeader>
                 <h4>{this.state.host_status}</h4>
               </ModalHeader>
               <ModalBody>
                 <div>
-                  <h4>{this.state.text_text}</h4>
+                  <span>{this.state.text_text}</span>
                 </div>
-                <div className="create_host">
-                  <Button onClick={this.handleclean.bind(this, this.state.host_post)}>确定</Button>
-                  <Button onClick={this.handleclean.bind(this, 'clean')}>关闭</Button>
+                <div className="openstack_button_si" >
+                  <Button onClick={this.handleclean.bind(this, this.state.host_post)} >确定</Button>
+                  <Button onClick={this.handleclean.bind(this, 'clean')} style={{margin:"0px 0px 0px 100px"}}>取消</Button>
                 </div>
               </ModalBody>
             </Modal>
@@ -381,8 +431,8 @@ export default React.createClass({
                   </DataTable>
                 </div>
               </SubSplitPanel>
-              <SubSplitPanel ref="SubSplitPanel">
-                <Tabs_List host_desc={this.state.host_desc}/>
+              <SubSplitPanel ref="SubSplitPanel_t">
+                <Tabs_List host_desc={this.state.host_desc} height_log={this.state.height_log} logs={this.state.logs} _this={this} ref="Tabs_list" instance_backup={this.state.instance_backup} />
               </SubSplitPanel>
             </SplitPanel>
           </div>

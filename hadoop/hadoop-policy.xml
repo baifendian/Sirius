@@ -1,0 +1,119 @@
+<!--Fri Aug 19 14:57:07 2016-->
+    <configuration>
+    
+    <property>
+      <name>security.admin.operations.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.applicationclient.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.applicationhistory.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.applicationmaster.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.client.datanode.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.client.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.containermanagement.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.datanode.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.ha.service.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.inter.datanode.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.inter.tracker.protocol.acl</name>
+      <value>security.inter.tracker.protocol.acl</value>
+    </property>
+    
+    <property>
+      <name>security.job.client.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.job.task.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.mrhs.client.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.namenode.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.qjournal.service.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.refresh.policy.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.refresh.user.mappings.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.refresh.usertogroups.mappings.protocol.acl</name>
+      <value>security.refresh.usertogroups.mappings.protocol.acl</value>
+    </property>
+    
+    <property>
+      <name>security.resourcelocalizer.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.resourcemanager-administration.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.resourcetracker.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>security.zkfc.protocol.acl</name>
+      <value>*</value>
+    </property>
+    
+  </configuration>

@@ -1,0 +1,187 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: sirius
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: sirius
+        service: sirius
+    spec:
+      containers:
+        - name: sirius
+          image: docker.baifendian.com/lupan/sirius_lugu:0.4.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 10086
+          env:
+          - name: SHARE_PROXY_BASE_URI
+            value: "sirius.bfdcloud.com"
+          - name: REST_BASE_URI
+            value: "sirius.bfdcloud.com"
+          - name: DATABASES_DEFAULT_ENGINE
+            value: "django.db.backends.mysql"
+          - name: DATABASES_DEFAULT_NAME
+            value: sirius
+          - name: DATABASES_DEFAULT_HOST
+            value: "192.168.44.189"
+          - name: DATABASES_DEFAULT_PORT
+            value: "3306"
+          - name: DATABASES_DEFAULT_USER
+            value: sirius
+          - name: DATABASES_DEFAULT_PASSWORD
+            value: GyqzZon7BE
+          - name: DATABASES_BDMS_ENGINE
+            value: "django.db.backends.mysql"
+          - name: DATABASES_BDMS_NAME
+            value: bdms_web
+          - name: DATABASES_BDMS_USER
+            value: bdms
+          - name: DATABASES_BDMS_PASSWORD
+            value: bdms
+          - name: DATABASES_BDMS_HOST
+            value: "192.168.44.189"
+          - name: DATABASES_BDMS_PORT
+            value: "3306"
+          - name: LDAP_SERVER_URI
+            value: "ldap://192.168.49.241:389"
+          - name: LDAP_DN
+            value: "uid=%(user)s,ou=mrbs,dc=baifendian,dc=com"
+          - name: LDAP_BIND
+            value: "True"
+          - name: LDAP_CACHE_GROUPS
+            value: "True"
+          - name: LDAP_GROUP_CACHE_TIMEOUT
+            value: "3600"
+          - name: LDAP_USER_ATTR_MAP_USERNAME
+            value: "givenName"
+          - name: LDAP_USER_ATTR_MAP_PASSWORD
+            value: "password"
+          - name: AMBARI_URL
+            value: "http://192.168.49.60:8080/api/v1/clusters/bfdhadoopcold/"
+          - name: AMBARI_HDFS_URL
+            value: "http://192.168.44.10:50070/webhdfs/v1/"
+          - name: AMBARI_HADOOP_CLIENT
+            value: "bjlg-44p40-hadoop27"
+          - name: AMBARI_PASSWORD
+            value: nimda
+          - name: AMBARI_USER
+            value: admin
+          - name: K8S_IP
+            value: "192.168.48.23"
+          - name: K8S_PORT
+            value: "8080"
+          - name: K8S_INFLUXDB_IP
+            value: "k8sinfluxapi.k8s.baifendian.com"
+          - name: K8S_INFLUXDB_PORT
+            value: "80"
+          - name: K8S_INFLUXDB_DATABASE
+            value: k8s
+          - name: BDMS_IP
+            value: "192.168.44.40"
+          - name: BDMS_PORT
+            value: "10086"
+          - name: BDMS_USERNAME
+            value: "aiping.liang"
+          - name: BDMS_PASSWORD
+            value: "aiping.liang"
+          - name: WEBHDFS_HOSTS
+            value: '["192.168.44.10:50070", "192.168.44.11:50070"]'
+          - name: WEBHDFS_PORT
+            value: "50070"
+          - name: WEBHDFS_PATH
+            value: "/webhdfs/v1"
+          - name: WEBHDFS_USER
+            value: "hadoop"
+          - name: WEBHDFS_TIMEOUT
+            value: "10"
+          - name: WEBHDFS_MAX_TRIES
+            value: "2"
+          - name: WEBHDFS_RETRY_DELAY
+            value: "3"
+          - name: CLIENTHDFS_HADOOP_HOME
+            value: "/opt/hadoop"
+          - name: CLIENTHDFS_NAMENODE_PATH
+            value: "192.168.44.11:8020"
+          - name: CODIS_REST_URL
+            value: "http://192.168.49.127:8888"
+          - name: CODIS_OPENTSDB_URL
+            value: "http://192.168.40.140:9999"
+          - name: OPENSTACK_IP_KEYSTONE
+            value: "192.168.116.10"
+          - name: OPENSTACK_PORT_KEYSTONE
+            value: "5000"
+          - name: OPENSTACK_IP_NOVA
+            value: "192.168.116.10"
+          - name: OPENSTACK_PORT_NOVA
+            value: "8774"
+          - name: OPENSTACK_IP_CINDER
+            value: "192.168.116.10"
+          - name: OPENSTACK_PORT_CINDER
+            value: "8776"
+          - name: OPENSTACK_MONITOR_URL
+            value: "http://192.168.40.140:9999/api/query"
+          - name: CORE_HADOOP_TMP_DIR
+            value: "/opt/hadoop/bfdhadoop/tmp/data"
+          - name: CORE_HA_ZOOKEEPER_QUORUM
+            value: "192.168.49.203:2181,192.168.49.204:2181,192.168.49.205:2181/bfdoffline/bfdhadoopcool"
+          - name: HDFS_DFS_NAMESERVICES
+            value: "bfdhadoopcool"
+          - name: HDFS_DFS_NAMENODE_RPC_ADDRESS_NN1
+            value: "bjlg-44p10-namenode01:8020"
+          - name: HDFS_DFS_NAMENODE_RPC_ADDRESS_NN2
+            value: "bjlg-44p11-namenode02:8020"
+          - name: HDFS_DFS_NAMENODE_HTTP_ADDRESS_NN1
+            value: "bjlg-44p10-namenode01:50070"
+          - name: HDFS_DFS_NAMENODE_HTTP_ADDRESS_NN2
+            value: "bjlg-44p11-namenode02:50070"
+          - name: HDFS_DFS_NAMENODE_SERVICERPC_ADDRESS_N1
+            value: "bjlg-44p10-namenode01:53310"
+          - name: HDFS_DFS_NAMENODE_SERVICERPC_ADDRESS_N2
+            value: "bjlg-44p11-namenode02:53310"
+          - name: YARN_YARN_RESOURCEMANAGER_CLUSTER_ID
+            value: "rm-cluster"
+          - name: YARN_YARN_RESOURCEMANAGER_ADDRESS_RM1
+            value: "bjlg-44p12-rm01:8032"
+          - name: YARN_YARN_RESOURCEMANAGER_ADDRESS_RM2
+            value: "bjlg-44p13-rm02:8032"
+          - name: YARN_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS_RM1
+            value: "bjlg-44p12-rm01:8030"
+          - name: YARN_YARN_RESOURCEMANAGER_SCHEDULER_ADDRESS_RM2
+            value: "bjlg-44p13-rm02:8030"
+          - name: YARN_YARN_RESOURCEMANAGER_WEBAPP_HTTPS_ADDRESS_RM1
+            value: "bjlg-44p12-rm01:8090"
+          - name: YARN_YARN_RESOURCEMANAGER_WEBAPP_HTTPS_ADDRESS_RM2
+            value: "bjlg-44p13-rm02:8090"
+          - name: YARN_YARN_RESOURCEMANAGER_WEBAPP_ADDRESS_RM1
+            value: "bjlg-44p12-rm01:8088"
+          - name: YARN_YARN_RESOURCEMANAGER_WEBAPP_ADDRESS_RM2
+            value: "bjlg-44p13-rm02:8088"
+          - name: YARN_YARN_RESOURCEMANAGER_RESOURCE_TRACKER_ADDRESS_RM1
+            value: "bjlg-44p12-rm01:8031"
+          - name: YARN_YARN_RESOURCEMANAGER_RESOURCE_TRACKER_ADDRESS_RM2
+            value: "bjlg-44p13-rm02:8031"
+          - name: YARN_YARN_RESOURCEMANAGER_ADMIN_ADDRESS_RM1
+            value: "bjlg-44p12-rm01:8033"
+          - name: YARN_YARN_RESOURCEMANAGER_ADMIN_ADDRESS_RM2
+            value: "bjlg-44p13-rm02:8033"
+          volumeMounts:
+            - mountPath: /opt/Sirius/log
+              name: siriuslog
+            - mountPath: /opt/Sirius/download
+              name: siriusdownload
+      imagePullSecrets:
+        - name: docker-registry-sys
+      volumes:
+        - emptyDir: {}
+          name: siriuslog
+        - emptyDir: {}
+          name: siriusdownload
+      imagePullSecrets:
+        - name: docker-registry-sys
+      nodeSelector:
+        role: worker
+      #nodeSelector:
+      #  kubernetes.io/hostname: 172.24.2.208

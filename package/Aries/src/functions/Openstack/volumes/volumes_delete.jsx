@@ -42,14 +42,29 @@ const Delete_volumes = React.createClass({
     this.props._this.setState({button_statuss:true})
   },
   handleOpen() {
-    this.refs.modal_m.open()
     let volumes_object = {}
     let volumes_name = ''
+    let status_d=true
     for (var i in this.props.select_all) {
       volumes_object[this.props.select_all[i]['id']] = this.props.select_all[i]['name']
-      volumes_name = volumes_name + this.props.select_all[i]['name'] + '、'
+      if (this.props.select_all[i]['device'] && this.props.select_all[i]['servername']){
+         message.danger('请先卸载云硬盘')
+         status_d=false
+         break
+      }
+      if (i==this.props.select_all.length-1){
+        volumes_name = volumes_name +'"'+ this.props.select_all[i]['name']+'"'}else{
+        volumes_name = volumes_name + '"'+this.props.select_all[i]['name']+'"' + '、'
+      }
+    }
+    if (status_d){
+      this.refs.modal_m.open()
     }
     this.setState({volumes_name, formData: {volumes_object: volumes_object, method: 'delete'}})
+  },
+
+  handleclose() {
+    this.refs.modal_m.close()
   },
 
   render() {
@@ -57,10 +72,10 @@ const Delete_volumes = React.createClass({
     let url = OPEN.UrlList()['volumes_post']
     return (
       <div style={{float: "left", margin: "0px 10px 0px 0px"}}>
-        <Button type="danger" className="btn btn-primary" onClick={this.handleOpen} disabled={this.props.button_statuss}>删除</Button>
+        <Button type="danger"  onClick={this.handleOpen} disabled={this.props.button_statuss}>删除</Button>
         <Modal ref="modal_m">
           <ModalHeader>
-            <h4>确认 删除云磁盘</h4>
+            <h4>确认删除云硬盘</h4>
           </ModalHeader>
           <ModalBody>
             <Form
@@ -72,11 +87,12 @@ const Delete_volumes = React.createClass({
               onSuccess={this.handleSuccess}
             >
               <div style={{height: '100px'}}>
-                <h4>您已选择{this.state.volumes_name}。 请确认您的选择。这个动作不能撤消。</h4>
+                <span>确定要删除云硬盘{this.state.volumes_name}?</span>
               </div>
               <div>
                 <Button type="danger" style={{marginLeft: '100px'}} className="btn btn-primary"
-                        onClick={this.handleSave}>删除</Button>
+                        onClick={this.handleSave}>确认</Button>
+                <button type="button" style={{marginLeft: '100px'}} className="btn btn-primary" onClick={this.handleclose}>取消</button>
               </div>
             </Form>
           </ModalBody>

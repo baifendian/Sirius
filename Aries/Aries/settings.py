@@ -26,12 +26,14 @@ import os,sys
 import yaml
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(BASE_DIR,"middleware"))
 LOG_BASE_DIR=os.path.join(BASE_DIR.rstrip("Aries"), "log")
 FTP_LOCAL_DIR=os.path.join(BASE_DIR.rstrip("Aries"), "download/")
 
 FILE_PATH=os.path.join(BASE_DIR.rstrip("Aries"), "sbin")
 file_name='{0}/Aries.yaml'.format(FILE_PATH).replace('\\','/')
 yaml_file = open(file_name)
+OPENSTACK_KEY_PATH = os.path.join(BASE_DIR,"openstack/middleware/common/key.yaml")
 SETTINGS = yaml.load(yaml_file)
 print SETTINGS
 
@@ -42,9 +44,9 @@ print SETTINGS
 SECRET_KEY = '4q+z5arz(+!__dtzxpn*n7g@3w0s7x)xtr+v!ts9m!-vzp=^)4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 APPEND_SLASH=False
 # Application definition
 INSTALLED_APPS = (
@@ -73,6 +75,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'middleware.UserSessionMiddleware',
 )
 
 ROOT_URLCONF = 'Aries.urls'
@@ -281,7 +284,11 @@ WEBHDFS_USER = WEBHDFS_SETTINGS["USER"]
 WEBHDFS_TIMEOUT = WEBHDFS_SETTINGS["TIMEOUT"]
 WEBHDFS_MAX_TRIES = WEBHDFS_SETTINGS["MAX_TRIES"]
 WEBHDFS_RETRY_DELAY = WEBHDFS_SETTINGS["RETRY_DELAY"]
-# HADOOP_RUN_SCRIPT = os.path.join(BASE_DIR, os.path.pardir, 'sbin/hadoop-run.sh')
+
+CLIENTHDFS_SETTINGS = SETTINGS["CLIENTHDFS"]
+HADOOP_HOME = CLIENTHDFS_SETTINGS["HADOOP_HOME"]
+NAMENODE_PATH = CLIENTHDFS_SETTINGS["NAMENODE_PATH"]
+
 HADOOP_RUN_SCRIPT = "hadoop-run.sh"
 SESSION_COOKIE_AGE=60*30
 #kubectl_file
@@ -289,22 +296,9 @@ KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx_1_2_4')
 KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')
 
 #codis设置
-CODIS_LOCAL_DIR = os.path.join(BASE_DIR, "codis/redisconf/")
-CODIS_COMMOND_DIR = os.path.join(BASE_DIR, "codis/commandlog/")
-CODIS_DATADIR = os.path.join(BASE_DIR, "codis/serverconf/data/")
-CODIS_LOGFILE_DIR = os.path.join(BASE_DIR, "codis/serverconf/log/")
-CODIS_PIDFILE_DIR = os.path.join(BASE_DIR, "codis/serverconf/pid/")
-CODIS_SHOME = os.path.join(BASE_DIR, "codis/")
-
 CODIS_SETTINGS = SETTINGS["CODIS"]
-CODIS_INDEX_LINE = CODIS_SETTINGS["INDEX_LINE"]
-CODIS_ZK_ADDR = CODIS_SETTINGS["ZK_ADDR"]
-#CODIS_HOST_INFO = [0,'172.24.3.64','root','',0,'a',0]
-CODIS_HOST_INFO = CODIS_SETTINGS["HOST_INFO"]
-CODIS_MEMORY_MAX = CODIS_SETTINGS["MEMORY_MAX"]
-OPENTSDB_URL = CODIS_SETTINGS["PENTSDB_URL"]
-SSH_PKEY = CODIS_SETTINGS["SSH_PKEY"] 
-SSH_KNOWN_HOSTS =  CODIS_SETTINGS['SSH_KNOWN_HOSTS']
+CODIS_REST_URL =  CODIS_SETTINGS['CODIS_REST_URL']
+OPENTSDB_URL =  CODIS_SETTINGS['OPENTSDB_URL']
 
 #openstack设置：
 OPENSTACK_SETTINGS = SETTINGS["OPENSTACK"]
@@ -314,8 +308,13 @@ IP_NOVA = OPENSTACK_SETTINGS["IP_NOVA"]
 PORT_NOVA = OPENSTACK_SETTINGS["PORT_NOVA"]
 IP_CINDER = OPENSTACK_SETTINGS["IP_CINDER"]
 PORT_CINDER = OPENSTACK_SETTINGS["PORT_CINDER"]
+MONITOR_URL = OPENSTACK_SETTINGS['MONITOR_URL']
 
 #启动一个线程开始定时统计配额. default: 10m
 POLL_TIME = 600
 import sumSpace
 sumSpace.run(POLL_TIME)
+
+#admin页面白名单IP
+WHITELIST_SETTINGS = SETTINGS['WHITELIST']
+WHITELIST_IP = WHITELIST_SETTINGS['WHITELIST_IP']

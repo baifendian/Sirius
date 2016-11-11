@@ -9,13 +9,14 @@ import NavigationInPage from 'public/NavigationInPage'
 import Openstackconf from '../Conf/Openstackconf'
 import TextOverflow from 'bfd-ui/lib/TextOverflow'
 import ReactDOM from 'react-dom'
+import OPEN from '../data_request/request.js'
 
 
 export default React.createClass({
   getInitialState: function () {
     return {
       loading: false,
-      url: "openstack/flavors/",
+      url: OPEN.UrlList()['flavors'],
       column: [{
         title: '名称',
         order: false,
@@ -73,7 +74,7 @@ export default React.createClass({
     totalHeight = totalHeight - flavors_nav - flavors_bu - 110
     ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].style.height = totalHeight + 'px'
     if (totalHeight < height_table) {
-      for (let i in ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes) {
+      for (let i = 0; i < ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length; i++) {
         if (i == (table_trlengt - 1)) {
           totalwidth = totalwidth + 17
           ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width = totalwidth + 'px'

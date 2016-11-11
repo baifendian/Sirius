@@ -8,22 +8,25 @@ import httplib
 import os
 import errno
 import time
+import copy
 import ConfigParser
-from Aries.settings import BASE_DIR,IP_CINDER,PORT_CINDER,IP_KEYSTONE,PORT_KEYSTONE,IP_NOVA,PORT_NOVA,DATABASES
+from Aries.settings import BASE_DIR, IP_CINDER, PORT_CINDER, IP_KEYSTONE, PORT_KEYSTONE, IP_NOVA, PORT_NOVA, DATABASES, \
+    OPENSTACK_KEY_PATH
+
 # from openstack.views import openstack_log
 openstack_log = logging.getLogger("openstack_log")
-pro_path = os.path.join(BASE_DIR,"openstack/middleware/common")
+pro_path = os.path.join(BASE_DIR, "openstack/middleware/common")
 # pro_path = os.path.split(os.path.realpath(__file__))[0]    //模块测试时用这个
 LOG_PATH = os.path.join(pro_path, "log")  # 日志路径
 POLL_TIME_INCR = 0.5
-#opensatck配置
+# opensatck配置
 IP_keystone = IP_KEYSTONE
 PORT_keystone = PORT_KEYSTONE
 IP_nova = IP_NOVA
 PORT_nova = PORT_NOVA
 IP_cinder = IP_CINDER
 PORT_cinder = PORT_CINDER
-#数据库配置
+# 数据库配置
 DB_host = DATABASES["default"]["HOST"]
 DB_name = DATABASES["default"]["NAME"]
 DB_user = DATABASES["default"]["USER"]
@@ -107,8 +110,8 @@ def send_request(methods, ip, port, path, params, head={}, flag=0):
             conn.request(methods, path, params_str)
         res = conn.getresponse()
         # print res.status, res.reason
-        assert res.status in [200, 201, 202, 203, 204], "send_request status=%s,reason=%s,params=%s" % (
-        res.status, res.reason, params_str)
+        assert res.status in [200, 201, 202, 203, 204], "send_request status=%s,reason=%s,path=%s,params=%s" % (
+            res.status, res.reason, path, params_str)
         if flag:
             token_id = res.getheader("X-Subject-Token", "")
             res_json = json.loads(res.read())
@@ -224,18 +227,75 @@ def plog(method_name):
                 ret = 1
                 dlog("%s err:%s" % (method_name, err), lever="ERROR")
             return ret
+
         return catch_log
+
     return logs
 
-#测试时使用，计算执行时间，如果需要得到更具体的时间消耗，使用@profile
+
+# 测试时使用，计算执行时间，如果需要得到更具体的时间消耗，使用@profile
 def times(method_name):
     def get_time(func):
-        def catch_time(*args,**kwargs):
+        def catch_time(*args, **kwargs):
             time_start = time.time()
-            ret = func(*args,**kwargs)
+            ret = func(*args, **kwargs)
             time_end = time.time()
             time_cost = time_end - time_start
-            dlog("%s cost time:%s"%(method_name,time_cost))
+            dlog("%s cost time:%s" % (method_name, time_cost))
             return ret
+
         return catch_time
+
     return get_time
+
+
+def cache(cache_dict={}, del_cache="",username="",func_str=""):
+    '''
+    函数缓存装饰器，限制缓存长度，限制缓存大小，只用来作为获取信息方法的缓存
+    设置每个的缓存的最大生存时间，默认120s(根据实际情况来调整)
+    cache_dict:{
+                    func:{
+                        tuple_tmp:(fun(*args,**kwargs),time,username)
+                    }
+                }
+    在用户登入时先清空用户的缓存
+    :param cache:
+    :return:
+    '''
+
+    def _cache(fun):
+        def _exec_fun(*args, **kwargs):
+            time_now = int(time.time())
+            tuple_tmp = args + tuple(kwargs.itervalues())
+            if len(cache_dict) >= 100 or cache_dict.__sizeof__() >= (10<<20):   #限制cache长度小于100，容量小于100M
+                cache_dict.clear()
+            username = kwargs.get("username","")
+            if fun not in cache_dict or tuple_tmp not in cache_dict[fun][username] or (
+                time_now - cache_dict[fun][username][tuple_tmp][1]) > 120:
+                if not cache_dict.has_key(fun):
+                    cache_dict[fun] = {username:{}}
+                cache_dict[fun][username][tuple_tmp] = (fun(*args, **kwargs), time_now)
+            return cache_dict[fun][username][tuple_tmp][0]
+        return _exec_fun
+    if del_cache == "*":  # 切换用户或项目时调用，由于现在一个用户只有一个项目，所以只在切换用户时调用了，后面如果可以对应多个项目，需要加上这个调用
+        cache_dict.clear()
+    if del_cache and del_cache in cache_dict: #删除对应对象的缓存
+        cache_dict.pop(del_cache)
+    if func_str:  #删除对应方法的缓存
+        for func_object in list(cache_dict.iterkeys()):
+            if func_object.__str__().find(func_str) != -1:
+                cache_dict.pop(func_object)
+    if username:  #清空对应用户缓存
+        for func in cache_dict.itervalues():
+            if func.has_key(username):
+                func.pop(username)
+    return _cache
+
+def get_origin_addr(func):
+    '''
+    返回带有装饰器函数的原始地址
+    查找的函数只能带一个装饰器，如果有多个装饰器需要用别的方法
+    :param func:
+    :return:
+    '''
+    return func.__closure__[1].cell_contents

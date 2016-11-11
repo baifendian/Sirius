@@ -15,7 +15,7 @@ from tools import *
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-hdfs_logger = logging.getLogger("access_log")
+hdfs_logger = logging.getLogger("hdfs_file")
 StatusCode = {
     "SUCCESS": 200,
     "FAILED": 500,
@@ -157,7 +157,7 @@ class HDFS(object):
         if _type.lower() == 'http':
             return self.upload_file_by_http(path, request)
         else:
-            hdfs_logger.error("sorry! the type is not support now! type:{0}" %_type)   
+            hdfs_logger.error("sorry! the type is not support now! type:{0}" %_type)
 
     def download(self, path, request):
         _type = request.GET.get('type', 'http')
@@ -167,7 +167,7 @@ class HDFS(object):
             hdfs_logger.error("sorry! the type is not support now! type:{0}" %_type)
 
     def make_dir(self, path, request):
-        space_name = request.GET.get("spaceName", '') 
+        space_name = request.GET.get("spaceName", '')
         space_path = self.spaceNamePathMapping(space_name)
         path = os.path.realpath("/%s/%s/%s" %(os.path.sep,space_path,path))
         if self.hdfs.exists(path):
@@ -175,10 +175,11 @@ class HDFS(object):
 
         try:
             result = self.hdfs.mkdirs(path)
+            self.returned["data"] = "创建成功."
         except HdfsException, e:
             hdfs_logger.error("%s创建文件夹%s发生异常: %s" % (getUser(request).username, path, str(e)))
             self.returned['code'] = StatusCode["FAILED"]
-            self.returned['msg'] = str(e)
+            self.returned['data'] = str(e)
             return self.returned
 
         if result:
@@ -194,14 +195,14 @@ class HDFS(object):
             return self.returned
         else:
             self.returned['code'] = StatusCode["FAILED"]
-            self.returned['msg'] = "unknown error when MKDIRS"
+            self.returned['data'] = "unknown error when MKDIRS"
             return self.returned
-    
-    def spaceNamePathMapping(self,spaceName): 
+
+    def spaceNamePathMapping(self,spaceName):
         space = getObjByAttr(Space,"name",spaceName);
-        space_path = space[0].address 
-        return space_path   
-    
+        space_path = space[0].address
+        return space_path
+
     def list_status_share(self,request,path):
         space_name = ""
         self.returned['data'] = TableNoData
@@ -256,13 +257,13 @@ class HDFS(object):
         finally:
             self.returned['data']["space_name"] = space_name
             return self.returned
-        
+
     def list_status(self, path, request):
         space_name = request.GET.get("spaceName", '')
         if not space_name:
             self.returned['code'] = StatusCode["SUCCESS"]
             self.returned['data'] = {
-                                     "totalList": [], 
+                                     "totalList": [],
                                      "currentPage": 1,
                                      "totalPageNum": 500
                                    }

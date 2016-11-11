@@ -25,7 +25,7 @@ export default React.createClass({
         bdms_task_count: 0, //今日总任务
         openstack_vm_count: "0/0", //虚拟机(9/10)
         openstack_image_count: 0, //镜像个数
-        openstack_disk_count: 0, //云磁盘个数
+        openstack_disk_count: 0, //云硬盘个数
         userAuth_member_count: 0, //当前space成员个数
     };
   },
@@ -116,8 +116,10 @@ export default React.createClass({
     });
   },
   getHdfsData(data){
+    let hdfs_disk_used = data.hdfs_disk_used * 100;
+    hdfs_disk_used = hdfs_disk_used.toFixed(2);
     this.setState({
-      hdfs_disk_used: `${data.hdfs_disk_used.toFixed(2)*100} %`,
+      hdfs_disk_used: `${hdfs_disk_used} %`,
       hdfs_shares: data.hdfs_shares,
       hdfs_datanodes: data.hdfs_datanodes
     });
@@ -144,6 +146,9 @@ export default React.createClass({
     let user_url = this.getUrlData({ type: "USER_AUTH_OVERVIEW",
                                      spaceName: spaceName
                   });
+    let openstack_url = this.getUrlData({ type: "OPENSTACK_OVERVIEW",
+                                      spaceName: spaceName
+                  });
 
     //根据space获取对应的指标信息
     let conent = this.index();
@@ -155,9 +160,7 @@ export default React.createClass({
           <Fetch defaultHeight={0} url={`${codis_url}`} onSuccess={this.getCodisData} />
           <Fetch defaultHeight={0} url={`${user_url}`} onSuccess={this.getUserAuthData} />
           <Fetch defaultHeight={0} url={`${k8sp_url}`} onSuccess={this.getK8spData} />
-          {/*
-          <Fetch defaultHeight={0} url={`${openstack_url}?random=${this.state.random}`} onSuccess={this.getOpenstackData} />
-          */}
+          <Fetch defaultHeight={0} url={`${openstack_url}`} onSuccess={this.getOpenstackData} />
         </div>
       )
   }

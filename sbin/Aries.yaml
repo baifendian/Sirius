@@ -1,4 +1,4 @@
-SHARE_PROXY_BASE_URI: "http://172.24.3.64:10012"
+SHARE_PROXY_BASE_URI: "http://172.24.3.64:10086"
 REST_BASE_URI: "172.24.3.64:10012"
 
 DATABASES:
@@ -51,31 +51,22 @@ BDMS:
 
 WEBHDFS:
   HOSTS:
-    - 172.24.3.155:50070 
-    - 172.24.3.156:50070
+    - 172.24.3.65:50070 
+    - 172.24.3.66:50070
   PORT: 50070
   PATH: "/webhdfs/v1"
   USER: "hadoop"
   TIMEOUT: 10
   MAX_TRIES: 2
   RETRY_DELAY: 3
+CLIENTHDFS:
+  HADOOP_HOME: '/opt/hadoop/hadoop'
+  NAMENODE_PATH: 'hdfs://172.24.100.44:8020'
 
 CODIS:
-  INDEX_LINE: 1
-  ZK_ADDR: '172.24.3.64:2181'
-  HOST_INFO: 
-    - 0
-    - 172.24.3.64
-    - root
-    -
-    - 0
-    - a
-    - 0
-  MEMORY_MAX: 10
-  PENTSDB_URL: "http://172.24.4.33:4242"
-  SSH_PKEY: '/root/.ssh/id_rsa'
-  SSH_KNOWN_HOSTS: '/root/.ssh/known_hosts'
-
+  CODIS_REST_URL: 'http://192.168.49.127:8888'
+  OPENTSDB_URL: 'http://192.168.40.140:9999'
+  
 OPENSTACK:
   IP_KEYSTONE: "192.168.190.11"
   PORT_KEYSTONE: 5000
@@ -83,4 +74,9 @@ OPENSTACK:
   PORT_NOVA: 8774
   IP_CINDER:  "192.168.190.11"
   PORT_CINDER: 8776
+  MONITOR_URL: 'http://172.24.4.33:4242/api/query'
 
+WHITELIST:
+  WHITELIST_IP:
+    - "192."
+    - "10."

@@ -248,9 +248,9 @@ const conf = {
         }]
       },
       flavors: {
-        headText: "类型",
+        headText: "云类型",
         navigationTexts: [{
-          text: "类型",
+          text: "云类型",
           url: "/CloudHost/Calculation/Flavors?cur_space=${spaceName}"
         }]
       },
@@ -271,10 +271,17 @@ const conf = {
         }]
       },
       volumes: {
-        headText: "云磁盘",
+        headText: "云硬盘",
         navigationTexts: [{
-          text: "云磁盘",
+          text: "云硬盘",
           url: "/CloudHost/Storage/Volumes?cur_space=${spaceName}"
+        }]
+      },
+      snapshot: {
+        headText: "快照",
+        navigationTexts: [{
+          text: "快照",
+          url: "/CloudHost/Storage/Snapshot?cur_space=${spaceName}"
         }]
       },
       backup: {

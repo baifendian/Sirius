@@ -15,12 +15,14 @@ from rest_framework.reverse import reverse
 from rest_framework import generics
 from django.conf import settings
 import redis
+import time
 from hdfs.tools import *
 import logging
 import json,re,requests
 from models import *
-from service import *
 ac_logger = logging.getLogger("access_log")
+codis_rest_url = settings.CODIS_REST_URL
+opentsdb_url = settings.OPENTSDB_URL
 
 def is_super(user_name):
     # 1 yes 0 no 2 error
@@ -40,17 +42,8 @@ class HostInfo(APIView):
     '''
     def get(self, request, format=None):
         issuper = is_super(getUser(request).username)
-        host_list = Host.objects.all().order_by('host_id') 
-        host_ret = []
-        for host in host_list:
-            host_dict = {}
-            host_dict['host_id'] = host.host_id
-            host_dict['host_ip'] = host.host_ip
-            host_dict['host_user'] = host.host_user
-            host_dict['memory_total'] = host.memory_total
-            host_dict['memort_used'] = host.memory_used
-            host_dict['codis_home'] = host.codis_home
-            host_ret.append(host_dict)
+        request_data = requests.get(codis_rest_url+"/codis/hosts/")
+        host_ret =  request_data.json()['data'] 
         result = {
             "code":200,
             "msg":"OK",
@@ -67,27 +60,9 @@ class HostInfo(APIView):
         hostpasswd= request.POST.get("password","")
         memtotal=int(request.POST.get("memory",""))
         codishome=request.POST.get("codis_home","")
-        ac_logger.info("host_add====%s %s %s %s %s" %(hostip,hostuser,hostpasswd,memtotal,codishome))
-         
-        host_list = Host.objects.filter(host_ip=hostip)
-        if host_list:
-            result = {
-                "code":400,
-                "msg":"ERROR:the host already exists"
-            }
-            return packageResponse(result) 
-        if CheckHost(hostip, hostuser):
-            host=Host(host_ip=hostip, host_user=hostuser, host_pass=hostpasswd, memory_total=memtotal, codis_home=codishome, memory_used=0)
-            host.save()
-            result = {
-                "code":200,
-                "msg":"OK"
-            }
-        else:
-            result = {
-                "code":400,
-                "msg":"ERROR:check host error, please check ssh keys"
-            }
+        data = {"hostip":hostip,"hostuser":hostuser,"hostpasswd":hostpasswd,"memtotal":memtotal,"codishome":codishome}
+        request_data = requests.post(codis_rest_url+"/codis/hosts/",json=data)
+        result = request_data.json()
         return packageResponse(result) 
 
 class CodisInfo(APIView):
@@ -97,19 +72,9 @@ class CodisInfo(APIView):
     def post(self, request, format=None):
         product_id = request.POST.get('name')
         memory_size = int(request.POST.get('mem'))
-        cc = Codis.objects.filter(product_id=product_id)
-        if len(cc)>0:
-            result = {
-            "code":400,
-            "msg":"product_id重名，请重新尝试"
-            }
-            return packageResponse(result)
-        t1=NewApply(product_id, memory_size, settings.CODIS_ZK_ADDR,GetDashHost()[1:4])
-        t1.start()
-        result = {
-            "code":200,
-            "msg":"OK"
-        }
+        data = {"product_id":product_id,"memory_size":memory_size}
+        request_data = requests.post(codis_rest_url+"/codis/codis/",json=data)
+        result = request_data.json()
         return packageResponse(result) 
     
     '''
@@ -117,19 +82,8 @@ class CodisInfo(APIView):
     '''
     def get(self, request, format=None):
         issuper = is_super(getUser(request).username)
-        codis_list = Codis.objects.all().order_by('codis_id')
-        codis_ret = []
-        for one in codis_list:
-            codis_dict = {}
-            codis_dict['codis_id'] = one.codis_id
-            codis_dict['product_id'] = one.product_id
-            codis_dict['key_num'] = one.key_num
-            codis_dict['memory_total'] = one.memory_total
-            codis_dict['memory_used'] = one.memory_used
-            codis_dict['memory_used_to_total'] = str(one.memory_used) + "/" + str(one.memory_total)
-            codis_dict['dashboard_proxy_addr'] = one.dashboard_proxy_addr
-            codis_dict['dashboard'] = one.dashboard_ip + ":" + str(one.dashboard_port)
-            codis_ret.append(codis_dict)
+        request_data = requests.get(codis_rest_url+"/codis/codis/")
+        codis_ret = request_data.json()['data']
         result = {
             "code":200,
             "msg":"OK",
@@ -143,10 +97,9 @@ class CodisInfo(APIView):
     def delete(self,request,format=None):
         dict_1 = json.loads(request.data["data"])
         product_id = dict_1['product_id']
-        codisinfo = Codis.objects.get(product_id=product_id)
-        t1=DeleteCodisApply(codisinfo)
-        t1.start()
-        result ={"code":200,"msg":"删除请求已经提交！"}
+        data = {'product_id':product_id}
+        request_data = requests.delete(codis_rest_url+"/codis/codis/",json=data)
+        result = request_data.json()
         return packageResponse(result)
 
     '''
@@ -158,28 +111,20 @@ class CodisInfo(APIView):
         op = dict_1["op"]
         if op.upper() == "ADDPROXY":
             product_id = dict_1["product_id"]
-            cc = Codis.objects.get(product_id=product_id)
-            ac_logger.info("codis_addproxy============%s" %cc)
-            if cc:
-                ac_logger.info("codis_addproxy============%s" %cc)
-            else:
-                result ={"code":400,"msg":"无此codis集群！"}
-                return packageResponse(result)
-            t1 = AddCodisProxyApply(cc,settings.CODIS_ZK_ADDR)
-            t1.start()
+            data = {"op":op, "product_id":product_id}
+            requests.put(codis_rest_url+'/codis/codis/',json=data)
             result ={"code":200,"msg":"添加proxy申请已提交！"}
         elif op.upper() == "UPDATEPROXYADDR":
             product_id = dict_1["name"]
             new_addr = dict_1["new_addr"]
-            cc = Codis.objects.get(product_id=product_id)
-            cc.dashboard_proxy_addr = new_addr
-            cc.save()
+            data = {"op":op, "name":product_id, "new_addr":new_addr}
+            requests.put(codis_rest_url+'/codis/codis/',json=data)
             result ={"code":200,"msg":"更新成功！"}
         else:
             product_id = dict_1["product_id"]
             requiremem = int(dict_1["alertmem"])
-            t1 = AlterMem(product_id,requiremem)
-            t1.start()
+            data = {"op":op, "product_id":product_id, "requiremem":requiremem}
+            requests.put(codis_rest_url+'/codis/codis/',json=data)
             result ={"code":200,"msg":"扩容请求已发送！"}
         return packageResponse(result)
 
@@ -193,17 +138,10 @@ class CodisLog(APIView):
     '''
     def post(self, request, format=None):
         product_id = request.POST.get("product_id","")
-        try:
-            log=open(settings.CODIS_COMMOND_DIR+('command%s.log')%product_id,'a+')
-            codislog=[]
-            if log:
-                for line in log:
-                    codislog.append(line)
-            log.close()
-            result ={"code":200,"msg":"ok","data":codislog}
-        except Exception as e:
-            result ={"code":500,"msg":"error:无法获取log信息，请重新尝试！"}
-               
+        data = {"product_id":product_id}
+        request_data = requests.post(codis_rest_url+"/codis/codislog/",json=data)
+        codislog = request_data.json()['data']
+        result ={"code":200,"msg":"ok","data":codislog}
         return packageResponse(result)
 
 
@@ -303,7 +241,7 @@ class CodisOverview(APIView):
        获取概览信息
     '''
     def get(self, request, format=None):
-        query_url = settings.OPENTSDB_URL + "/api/query/"
+        query_url = opentsdb_url + "/api/query/"
         host_list = Host.objects.all()
         allcodis_count = Codis.objects.all().count()
         badcodis_count = 0
@@ -328,26 +266,67 @@ class CodisOverview(APIView):
         return packageResponse(result)			
 
 
+class CodisOverview(APIView):
+    '''
+       获取概览信息
+    '''
+    def get(self, request, format=None):
+        query_url = opentsdb_url + "/api/query/"
+        host_list = Host.objects.all()
+        allcodis_count = Codis.objects.all().count()
+        badcodis_count = 0
+        memory_used_count = 0
+        memory_total_count = 0
+        for host in host_list:
+            memory_used_count += host.memory_used
+            memory_total_count += host.memory_total
+        badcodis_query_args = {"start":"6h-ago","end":"","queries":[{"metric":"codis.badcluster","aggregator": "sum",\
+                               "tags":{"bad":"true"}}]}
+        try:
+            badcodis = requests.post(query_url,data=json.dumps(badcodis_query_args),timeout=10)
+            for k,v in json.loads(badcodis.text)[0]['dps'].items():
+                badcodis_count = v
+                break
+            data = {"memory_used_count":memory_used_count,"memory_total_count":memory_total_count,\
+                    "all_codis_count":allcodis_count,"nice_codis_count":allcodis_count-badcodis_count}
+            result={
+                "msg":"OK",
+                "code":200,
+                "data":data
+            }
+        except Exception, e:
+            data = {"memory_used_count": memory_used_count, "memory_total_count": memory_total_count, \
+                    "all_codis_count": allcodis_count, "nice_codis_count": allcodis_count - badcodis_count}
+            result = {
+                "msg": "Error, error request from opentsdb",
+                "code": 200,
+                "data": data
+            }
+            ac_logger.error("Error, error request from opentsdb %s" % e)
+        return packageResponse(result)
+    
+
+
 class GetAllCodisInfo(APIView):
     '''
        获取表信息 
     '''
     def post(self, request, format=None):
         codis_id = request.POST.get("codis_id")
-        query_url = settings.OPENTSDB_URL + "/api/query/"
+        query_url = opentsdb_url + "/api/query/"
         codis_info = Codis.objects.get(codis_id=int(codis_id))
         ops_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "sum","metric":"codis.pv.count","rate":"true",\
-                     "tags":{"db":codis_info.product_id}}]} 
+                     "downsample":"10m-avg","tags":{"db":codis_info.product_id}}]} 
         latency_query_args = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.proxy.command.spent",\
-                             "tags":{"db":codis_info.product_id,"cmd":"*"}}]}
+                             "downsample":"10m-avg","tags":{"db":codis_info.product_id,"cmd":"*"}}]}
         total_expired_keys = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_expired_keys",\
-                             "tags":{"db":codis_info.product_id}}]}
+                             "downsample":"10m-avg","tags":{"db":codis_info.product_id}}]}
         total_keys = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_keys",\
-                             "tags":{"db":codis_info.product_id}}]}
+                             "downsample":"10m-avg","tags":{"db":codis_info.product_id}}]}
         total_usedmemory = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.usedmemory",\
-                             "tags":{"db":codis_info.product_id}}]}
+                             "downsample":"10m-avg","tags":{"db":codis_info.product_id}}]}
         total_maxmemory = {"start":"6h-ago","end":"","queries":[{"aggregator": "avg","metric":"codis.cluster.total_maxmemory",\
-                             "tags":{"db":codis_info.product_id}}]}
+                             "downsample":"10m-avg","tags":{"db":codis_info.product_id}}]}
         latency_info = requests.post(query_url,data=json.dumps(latency_query_args),timeout=10)
         ops_info = requests.post(query_url,data=json.dumps(ops_query_args),timeout=10)
         expired_keys = requests.post(query_url,data=json.dumps(total_expired_keys),timeout=10)
@@ -393,10 +372,10 @@ class GetAllCodisInfo(APIView):
             allkeysdata = v
             break
         for k,v in json.loads(usedmemory.text)[0]['dps'].items():
-            usedmemorydata = v/(1024*1024*1024)
+            usedmemorydata = round(v/(1024*1024*1024),2)
             break
         for k,v in json.loads(maxmemory.text)[0]['dps'].items():
-            maxmemorydata = v/(1024*1024*1024)
+            maxmemorydata = round(v/(1024*1024*1024),2)
             break
         data={"ops":opsdata,"expiredkeysdata":expiredkeysdata,"allkeysdata":allkeysdata,"usedmemorydata":usedmemorydata,"maxmemorydata":maxmemorydata,"latency":latencydata}
         result={
@@ -406,3 +385,10 @@ class GetAllCodisInfo(APIView):
         } 
         return packageResponse(result) 
 
+## restapi start from here
+def packageResponse(result):
+    response = HttpResponse(content_type='application/json')
+    response.write(json.dumps(result))
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
+    return response

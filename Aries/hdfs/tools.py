@@ -10,6 +10,7 @@ import sys
 from django.conf import settings
 from user_auth.models import *
 from hdfs.models import *
+from django.contrib.auth.models import User
 ac_logger = logging.getLogger("cmd_log")
 
 def run_hadoop(user_name="hadoop",operator="ls",args=["/user/hadoop",]):
@@ -25,7 +26,9 @@ def run_hadoop(user_name="hadoop",operator="ls",args=["/user/hadoop",]):
     env[ 'USER'     ]  = user_name
     cur_dir = os.path.join(os.getcwd(),"Aries/hdfs")
     run_script = os.path.join(cur_dir,settings.HADOOP_RUN_SCRIPT)
-    cmd=["sh",run_script,operator]
+    hadoop_home = settings.HADOOP_HOME
+    namenode_path = settings.NAMENODE_PATH
+    cmd=["sh",run_script,hadoop_home,namenode_path,operator]
     cmd= cmd + args
     cmd = " ".join(cmd)
     ac_logger.info("cmd:{0}".format(cmd))

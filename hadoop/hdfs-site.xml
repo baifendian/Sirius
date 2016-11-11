@@ -1,0 +1,55 @@
+<configuration>
+ <property>
+       <name>dfs.client.failover.proxy.provider.HDFS_DFS_NAMESERVICES</name>
+       <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider
+       </value>
+  </property>
+  <property>
+      <name>dfs.nameservices</name>
+      <value>HDFS_DFS_NAMESERVICES</value>
+      <description>nameservices逻辑名
+          Comma-separated list of nameservices.
+          as same as fs.defaultFS in core-site.xml.
+      </description>
+  </property>
+  <property>
+      <name>dfs.ha.namenodes.HDFS_DFS_NAMESERVICES</name>
+      <value>nn1,nn2</value>
+  </property>
+  <property>
+      <name>dfs.namenode.rpc-address.HDFS_DFS_NAMESERVICES.nn1</name>
+      <value>HDFS_DFS_NAMENODE_RPC_ADDRESS_NN1</value>
+
+  </property>
+  <property>
+      <name>dfs.namenode.rpc-address.HDFS_DFS_NAMESERVICES.nn2</name>
+      <value>HDFS_DFS_NAMENODE_RPC_ADDRESS_NN2</value>
+      <description>
+          RPC address for nomenode2 of hadoop-test
+      </description>
+  </property>
+  <property>
+      <name>dfs.namenode.http-address.HDFS_DFS_NAMESERVICES.nn1</name>
+      <value>HDFS_DFS_NAMENODE_HTTP_ADDRESS_NN1</value>
+      <description>Hdfs HA: dfs.namenode.http-address.[nameservice ID] http 通信地址
+          The address and the base port where the dfs namenode1 web ui will listen
+          on.
+      </description>
+  </property>
+  <property>
+      <name>dfs.namenode.http-address.HDFS_DFS_NAMESERVICES.nn2</name>
+      <value>HDFS_DFS_NAMENODE_HTTP_ADDRESS_NN2</value>
+      <description>
+          The address and the base port where the dfs namenode2 web ui will listen
+          on.
+      </description>
+  </property>
+  <property>
+      <name>dfs.namenode.servicerpc-address.HDFS_DFS_NAMESERVICES.n1</name>
+      <value>HDFS_DFS_NAMENODE_SERVICERPC_ADDRESS_N1</value>
+  </property>
+  <property>
+      <name>dfs.namenode.servicerpc-address.HDFS_DFS_NAMESERVICES.n2</name>
+      <value>HDFS_DFS_NAMENODE_SERVICERPC_ADDRESS_N2</value>
+  </property>
+ </configuration>

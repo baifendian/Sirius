@@ -5,7 +5,6 @@ import { Modal, ModalHeader, ModalBody } from 'bfd-ui/lib/Modal'
 import TextOverflow from 'bfd-ui/lib/TextOverflow'
 import {Create_volumes} from './volumes_create'
 import {Delete_volumes} from './volumes_delete'
-
 import DataTable from 'bfd-ui/lib/DataTable'
 import NavigationInPage from 'public/NavigationInPage'
 import { SplitPanel, SubSplitPanel } from 'bfd/SplitPanel'
@@ -14,13 +13,14 @@ import ReactDOM from 'react-dom'
 import Model_list from './volumes_model_list'
 import Openstackconf from '../Conf/Openstackconf'
 import {Spin} from 'antd'
-
+import { Progress } from 'antd'
+import xhr from 'bfd-ui/lib/xhr'
 
 export default React.createClass({
 
    getInitialState: function () {
     return {      
-      url: "openstack/volumes/",
+      url: OPEN.UrlList()['volumes'],
       loading: false,
       select_all:'',
       button_status: true,
@@ -46,10 +46,14 @@ export default React.createClass({
         title: '状态',
         key: 'servername',
         render: (text, item) => {
-          if (text){
-            return (<span>已连接到<TextOverflow><p style={{width: '100px'}}>{text}</p></TextOverflow></span>)
+          if (item['status'] !='backing-up' && item['status'] != 'restoring-backup'){
+            if (text){
+              return (<span>已连接到<TextOverflow><p style={{width: '100px'}}>{text}</p></TextOverflow></span>)
+            }else{
+              return(<span>未连接</span>)
+            }
           }else{
-            return(<span>未连接</span>)
+            return (<div><Progress_model text={item}/></div>)
           }
         }
       }, {
@@ -97,6 +101,8 @@ export default React.createClass({
     }
     if (selectedRows.length > 0){
       this.setState({button_statuss:false})
+    }else{
+      this.setState({button_statuss:true})
     }
     this.setState({select_all:selectedRows})
   },
@@ -136,7 +142,7 @@ export default React.createClass({
       ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
     }else{
     ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-    for (let i in ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes){
+    for (let i=0;i < ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++){
       if (i==(table_trlengt-1)){
         totalwidth=totalwidth+17
         ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width=totalwidth+'px'
@@ -177,4 +183,62 @@ export default React.createClass({
       </div>
     )
   }
+})
+
+
+
+const Progress_model = React.createClass({
+  getInitialState() {
+    return {
+      percent: 0,
+      status: false,
+      status_s: this.props.text['status'],
+    };
+  },
+
+  componentWillMount(){
+  const _this=this
+  let url = OPEN.UrlList()['volumes']+"?name="+this.props.text['id']
+  let interval=setInterval(function(){
+  xhr({
+      type: 'GET',
+      url: url,
+      async:false,
+      success(data) {
+        if (data['status'] != 'backing-up' && data['status'] != 'restoring-backup') {
+            _this.setState({status:true,status_s:data['status']})
+            clearTimeout(interval)
+        }
+    }
+  })   
+  /* if ( _this.state.percent > 99){
+      clearTimeout(interval)
+    }
+    else{
+     _this.increase()
+    }*/
+    },10000)
+
+  },
+  render() {
+    if (this.state.status){
+    return (
+      <div>
+        <span>{this.state.status_s}</span>
+      </div>
+    )}else{
+      if (this.state.status_s != 'restoring-backup'){
+      return (
+      <div>
+        <Progress percent={100} showInfo={false} style={{width:'50%'}}/><div>创建备份</div>
+      </div>
+    )}else{
+      return (
+      <div>
+        <Progress percent={100} showInfo={false} style={{width:'50%'}}/><div>备份恢复中</div>
+      </div>
+      )
+      }
+    }
+  },
 })

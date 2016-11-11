@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
 from rest_framework import generics
 import logging
-ac_logger = logging.getLogger("access_log")
+ac_logger = logging.getLogger("hdfs_file")
 from django.http import StreamingHttpResponse
 from tools import *
 from service import *
