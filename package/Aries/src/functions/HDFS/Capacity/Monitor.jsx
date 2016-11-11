@@ -9,6 +9,7 @@ const TabMonitor = React.createClass({
       let percen = 0;
       try{
         percen = value.used_capacity/value.total_capacity*100;
+        percen = percen.toFixed(2);
         if(isNaN(percen)){
           percen = 0;
         }
