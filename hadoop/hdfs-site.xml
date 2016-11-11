@@ -1,6 +1,6 @@
 <configuration>
  <property>
-       <name>dfs.client.failover.proxy.provider.bfdhadoopcool</name>
+       <name>dfs.client.failover.proxy.provider.HDFS_DFS_NAMESERVICES</name>
        <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider
        </value>
   </property>
