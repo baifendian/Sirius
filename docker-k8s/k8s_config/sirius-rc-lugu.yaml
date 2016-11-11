@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
         - name: sirius
-          image: docker.baifendian.com/lupan/sirius_lugu:0.4
+          image: docker.baifendian.com/lupan/sirius_lugu:0.4.1
           imagePullPolicy: Always
           ports:
             - containerPort: 10086
@@ -128,7 +128,7 @@ spec:
           - name: CORE_HA_ZOOKEEPER_QUORUM
             value: "192.168.49.203:2181,192.168.49.204:2181,192.168.49.205:2181/bfdoffline/bfdhadoopcool"
           - name: HDFS_DFS_NAMESERVICES
-            value: "hdfs://bfdhadoopcool"
+            value: "bfdhadoopcool"
           - name: HDFS_DFS_NAMENODE_RPC_ADDRESS_NN1
             value: "bjlg-44p10-namenode01:8020"
           - name: HDFS_DFS_NAMENODE_RPC_ADDRESS_NN2
