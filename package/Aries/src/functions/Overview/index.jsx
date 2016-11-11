@@ -116,8 +116,10 @@ export default React.createClass({
     });
   },
   getHdfsData(data){
+    let hdfs_disk_used = data.hdfs_disk_used * 100;
+    hdfs_disk_used = hdfs_disk_used.toFixed(2);
     this.setState({
-      hdfs_disk_used: `${data.hdfs_disk_used.toFixed(2)*100} %`,
+      hdfs_disk_used: `${hdfs_disk_used} %`,
       hdfs_shares: data.hdfs_shares,
       hdfs_datanodes: data.hdfs_datanodes
     });
