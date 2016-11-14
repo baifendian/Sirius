@@ -112,7 +112,7 @@ const Create_model = React.createClass({
     const self = this;
     xhr({
       type: 'GET',
-      url: 'openstack/images/',
+      url: 'v1/openstack/images/',
       success(data) {
         // console.log(data)
         self.setState(
@@ -122,7 +122,7 @@ const Create_model = React.createClass({
     }),
     xhr({
       type: 'GET',
-      url: 'openstack/flavors/',
+      url: 'v1/openstack/flavors/',
       success(data) {
         self.setState({
           host_flavors: data['name'],
@@ -191,7 +191,7 @@ const Create_model = React.createClass({
         //console.log(v)
         xhr({
           type: 'POST',
-          url: 'openstack/flavors/',
+          url: 'v1/openstack/flavors/',
           data: {
             method: 'single',
             'id': v
@@ -277,7 +277,7 @@ const Create_model = React.createClass({
   },
 
   handleSuccess(res) {
-    this.props._this.setState({loading: false, url: "openstack/bfddashboard/instances/?" + Math.random()})
+    this.props._this.setState({loading: false, url: "v1/openstack/bfddashboard/instances/?" + Math.random()})
     if (res['status']){
       message.success('创建成功!')}else{
       message.danger('创建失败!')
@@ -347,7 +347,7 @@ const Create_model = React.createClass({
                 <div>
                   <Form
                     ref="form"
-                    action="openstack/bfddashboard/instances/"
+                    action="v1/openstack/bfddashboard/instances/"
                     data={formData}
                     rules={this.rules}
                     onChange={formData => this.update('set', { formData })}
