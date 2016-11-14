@@ -1,4 +1,6 @@
 # coding:utf-8
+import time
+
 from openstack.middleware.common.common import send_request, IP_keystone, PORT_keystone, plog,cache
 from openstack.middleware.common.urls import url_get_token,url_project_id
 from user_auth.models import Account
@@ -6,7 +8,7 @@ from user_auth.models import Account
 token_dict = {}
 project_id_dict = {}
 user_token_dict = {}
-admin_token = ""
+admin_token_dict = {"admin_token":"","time":0}
 admin_project_id = ""
 admin_user_token = ""
 
@@ -134,7 +136,7 @@ def get_token():
 
 @plog("admin_login")
 def admin_login(project_id_now=""):
-    global admin_token
+    global admin_token_dict
     global user_token_dict
     global project_id_dict
     global token_dict
@@ -149,14 +151,15 @@ def admin_login(project_id_now=""):
         admin_handle.project_id = project_id_now
     admin_handle.token_login()
     admin_user_token = user_token_dict[admin_username]
-    admin_token = token_dict[admin_username]
+    admin_token_dict["admin_token"] = token_dict[admin_username]
+    admin_token_dict["time"] = int(time.time())
     admin_project_id = project_id_dict[admin_username]
 
 @plog("get_admin_token")
 def get_admin_token(project_id=""):
-    if admin_token == "":
+    if admin_token_dict["admin_token"] == "" or int(time.time() - admin_token_dict["time"]) >= 1800:
         admin_login(project_id)
-    return admin_token
+    return admin_token_dict["admin_token"]
 
 def get_admin_project_id():
     if admin_project_id == "":
