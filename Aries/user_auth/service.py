@@ -9,6 +9,7 @@ from django.http import HttpResponse
 import json
 from hdfs.tools import *
 from openstack.middleware.user.user import User
+from openstack.service import set_space_change
 ac_logger = logging.getLogger("access_log")
 StatusCode={"GET_SUCCESS":200,
              "GET_FAILED":500,
@@ -273,7 +274,8 @@ def userListPut(request,space):
         account.cur_space = space
         account.save()
         space_id = getObjByAttr(Space,"name",space)[0].id
-        is_admin = isAdmin(account.name,space_id)  
+        is_admin = isAdmin(account.name,space_id)
+        set_space_change() #通知openstack切换了space，需要重新获取token
         result["code"] = 200
         result["data"] = is_admin
     except Exception,e:

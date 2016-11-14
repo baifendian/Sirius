@@ -339,6 +339,8 @@ class Vm_control:
         params = {"os-start": ""}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
+        t1 = run_in_thread(self.wait_complete, vm_id, ["ACTIVE"],username,timeout=TIMEOUT)
+        assert t1 == 0
         return ret
 
     @plog("vm_control.stop")
@@ -358,6 +360,8 @@ class Vm_control:
         params = {"os-stop": ""}
         ret = send_request(method, IP_nova, PORT_nova, path, params, head)
         assert ret != 1, "send_request error"
+        t1 = run_in_thread(self.wait_complete, vm_id, ["SHUTOFF"],username,timeout=TIMEOUT)
+        assert t1 == 0
         return ret
 
     @plog("vm_control.lock")
