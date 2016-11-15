@@ -5,16 +5,16 @@ import {notification} from 'antd';
 var Datarequest = {
   UrlList() {
     return {
-      'instances': 'openstack/bfddashboard/instances/',
-      'images': 'openstack/images/',
-      'volumes': 'openstack/volumes/',
-      'flavors': 'openstack/flavors/',
-      'volumes_post': 'openstack/volumes_post/',
-      'project': 'openstack/project/',
-      'search': 'openstack/search/',
-      'instances_post': 'openstack/instances_post/',
-      'instances_log': 'openstack/instances_log/',
-      'monitor': 'openstack/monitor/',
+      'instances': 'v1/openstack/bfddashboard/instances/',
+      'images': 'v1/openstack/images/',
+      'volumes': 'v1/openstack/volumes/',
+      'flavors': 'v1/openstack/flavors/',
+      'volumes_post': 'v1/openstack/volumes_post/',
+      'project': 'v1/openstack/project/',
+      'search': 'v1/openstack/search/',
+      'instances_post': 'v1/openstack/instances_post/',
+      'instances_log': 'v1/openstack/instances_log/',
+      'monitor': 'v1/openstack/monitor/',
     }
   },
   open_vnc(_this, select_host, fun){
@@ -123,7 +123,7 @@ var Datarequest = {
     }
   },
   Get_image(_this, fun){
-    this.xhrGetData(_this, "openstack/images/", fun)
+    this.xhrGetData(_this, "v1/openstack/images/", fun)
   },
   volumes_data(_this, url, data_select, method, fun){
     console.log(url, data_select, method, fun)

@@ -101,7 +101,7 @@ const Disk_list = React.createClass({
     })
     xhr({
       type: 'GET',
-      url: 'openstack/volumes/',
+      url: 'v1/openstack/volumes/',
       success(data) {
         let disk_list = []
         let disk_object = {}
@@ -281,7 +281,7 @@ const Vm_Type = React.createClass({
     return (
       <Form
         ref="form"
-        action="openstack/bfddashboard/instances/"
+        action="v1/openstack/bfddashboard/instances/"
         data={formData}
         rules={this.rules}
         onChange={formData => this.update('set', { formData })}
@@ -533,7 +533,7 @@ const Forced_vm = React.createClass({
     return (
       <Form
         ref="form"
-        action="openstack/bfddashboard/instances/"
+        action="v1/openstack/bfddashboard/instances/"
         data={formData}
         rules={this.rules}
         onChange={formData => this.update('set', { formData })}

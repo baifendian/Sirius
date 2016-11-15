@@ -8,7 +8,6 @@ from openstack.middleware.login.login import get_admin_project_id,get_admin_toke
 from openstack.middleware.common.common_api import CommonApi
 class User(object):
     def __init__(self):
-        self.admin_token = get_admin_token()
         self.password = md5.md5("baifendian").hexdigest()
         self.domain_id = ""
         self.role_id = ""
@@ -30,10 +29,11 @@ class User(object):
         :param query_dict:
         :return:
         '''
-        assert self.admin_token != "","can not login with admin user"
+        admin_token = get_admin_token()
+        assert admin_token != "","can not login with admin user"
         path = url_user_common
         method = "GET"
-        head = {"Content-Type": "application/json", "X-Auth-Token": self.admin_token}
+        head = {"Content-Type": "application/json", "X-Auth-Token": admin_token}
         params = ""
         if query_dict:
             query_str = urllib.urlencode(query_dict)
@@ -48,10 +48,11 @@ class User(object):
         :param query_dict:
         :return:
         '''
-        assert self.admin_token != "","can not login with admin user"
+        admin_token = get_admin_token()
+        assert admin_token != "","can not login with admin user"
         path = url_project_list
         method = "GET"
-        head = {"Content-Type": "application/json", "X-Auth-Token": self.admin_token}
+        head = {"Content-Type": "application/json", "X-Auth-Token": admin_token}
         params = ""
         if query_dict:
             query_str = urllib.urlencode(query_dict)
@@ -68,11 +69,12 @@ class User(object):
         :param passward:
         :return:
         '''
-        assert self.admin_token != "","can not login with admin user"
+        admin_token = get_admin_token()
+        assert admin_token != "","can not login with admin user"
         self._get_domian()
         path = url_user_common
         method = "POST"
-        head = {"Content-Type": "application/json", "X-Auth-Token": self.admin_token}
+        head = {"Content-Type": "application/json", "X-Auth-Token": admin_token}
         params = {"user":{"name":name,"domain_id":self.domain_id,"enabled":True}}
         if project_id:
             params["user"].update({"default_project_id":project_id})
@@ -121,12 +123,14 @@ class User(object):
         :param name:
         :return:
         '''
+        admin_token = get_admin_token()
+        assert admin_token != "","can not login with admin user"
         user_id = self.get_id_by_name(name)
         assert user_id != 1,"get user id faild"
         path = url_user_project.format(user_id=user_id)
         method = "GET"
         params = ""
-        head = {"Content-Type": "application/json", "X-Auth-Token": self.admin_token}
+        head = {"Content-Type": "application/json", "X-Auth-Token": admin_token}
         ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
         return ret
 
@@ -136,6 +140,8 @@ class User(object):
         获取指定project中的成员
         :return:返回结果中只有user的id，没有name
         '''
+        admin_token = get_admin_token()
+        assert admin_token != "","can not login with admin user"
         path = url_project_member
         self._get_role()
         query_dict = {"role.id":self.role_id,"scope.project.id":project_id,"include_subtree":True}
@@ -143,7 +149,7 @@ class User(object):
         path = "%s?%s" % (path, query_str)
         method = "GET"
         params = ""
-        head = {"Content-Type": "application/json", "X-Auth-Token": self.admin_token}
+        head = {"Content-Type": "application/json", "X-Auth-Token": admin_token}
         ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
         return ret
 
@@ -153,11 +159,13 @@ class User(object):
         将user加入project中
         :return:
         '''
+        admin_token = get_admin_token()
+        assert admin_token != "","can not login with admin user"
         self._get_role()
         path = url_project_user_action.format(project_id=project_id,user_id=user_id,role_id=self.role_id)
         method = "PUT"
         params = ""
-        head = {"Content-Type": "application/json", "X-Auth-Token": self.admin_token}
+        head = {"Content-Type": "application/json", "X-Auth-Token": admin_token}
         ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
         return ret
 
@@ -167,11 +175,13 @@ class User(object):
         将user从project中移除
         :return:
         '''
+        admin_token = get_admin_token()
+        assert admin_token != "","can not login with admin user"
         self._get_role()
         path = url_project_user_del.format(project_id=project_id,user_id=user_id,role_id=self.role_id)
         method = "DELETE"
         params = ""
-        head = {"Content-Type": "application/json", "X-Auth-Token": self.admin_token}
+        head = {"Content-Type": "application/json", "X-Auth-Token": admin_token}
         ret = send_request(method, IP_keystone, PORT_keystone, path, params, head)
         return ret
 

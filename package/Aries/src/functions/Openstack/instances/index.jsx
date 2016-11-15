@@ -43,7 +43,7 @@ export default React.createClass({
       logs:'',
       logs_loading:'',
       vmdisk:'',
-      url: "openstack/bfddashboard/instances/",
+      url: "v1/openstack/bfddashboard/instances/",
       column: [{
         title: '名称',
         order: false,
@@ -329,7 +329,7 @@ export default React.createClass({
         break;
       case 5:
         this.setState({
-          url: ("openstack/bfddashboard/instances/?" + Math.random()),
+          url: ("v1/openstack/bfddashboard/instances/?" + Math.random()),
           button_status: true
         })
     }
