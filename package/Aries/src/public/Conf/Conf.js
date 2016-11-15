@@ -24,7 +24,7 @@ const conf = {
         K8SP_OVERVIEW: "k8s/api/v1/namespaces/${spaceName}/k8soverview?random=${random}",
         CODIS_OVERVIEW: "v1/codis/codisoverview/?random=${random}",
         USER_AUTH_OVERVIEW:"v1/user_auth/overview/?spaceName=${spaceName}&random=${random}",
-        OPENSTACK_OVERVIEW:"openstack/home/overview/?random=${random}",
+        OPENSTACK_OVERVIEW:"v1/openstack/home/overview/?random=${random}",
       }
     },
     //用户管理模块url模版
@@ -63,7 +63,7 @@ const conf = {
         HOST_INFO: "v1/hdfs/hostinfo/${hostName}/", //获取某台机器的主机信息
       },
       Share: {
-        SHARE_GET: "v1/hdfs///?spaceName=${spaceName}&op=SHARE&filter=owner", //获取个人分享信息 
+        SHARE_GET: "v1/hdfs///?spaceName=${spaceName}&op=SHARE&filter=owner", //获取个人分享信息
         SHARE_DELETE: "v1/hdfs///?op=SHARE&share_id=${shareId}", //删除分享
       },
       ShareCenter: {
