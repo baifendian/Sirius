@@ -8,81 +8,81 @@ var CalcManageDataRequester = {
   },
   getUrlForm() {
     return {
-      'podlist': 'k8s/api/v1/namespaces/{nameSpace}/pods',
-      'servicelist': 'k8s/api/v1/namespaces/{nameSpace}/services',
-      'rclist': 'k8s/api/v1/namespaces/{nameSpace}/replicationcontrollers',
-      'ingresslist':'k8s/apis/extensions/v1beta1/namespaces/{nameSpace}/ingresses',
-      'mytasklist': 'k8s/api/v1/namespaces/mytasklist',
-      'mytaskgraph': 'k8s/api/v1/namespaces/mytaskgraph',
+      'podlist': 'v1/k8s/api/namespaces/{nameSpace}/pods',
+      'servicelist': 'v1/k8s/api/namespaces/{nameSpace}/services',
+      'rclist': 'v1/k8s/api/namespaces/{nameSpace}/replicationcontrollers',
+      'ingresslist': 'v1/k8s/apis/extensions/v1beta1/namespaces/{nameSpace}/ingresses',
+      'mytasklist': 'v1/k8s/api/namespaces/mytasklist',
+      'mytaskgraph': 'v1/k8s/api/namespaces/mytaskgraph',
 
-      'mytaskoldrecords':'k8s/api/v1/namespaces/mytasklist/getoldrecords',
-      'mytaskhasnewrecords':'k8s/api/v1/namespaces/mytasklist/checkhasnewrecords',
-      'mytasknewrecords':'k8s/api/v1/namespaces/mytasklist/getnewrecords',
+      'mytaskoldrecords': 'v1/k8s/api/namespaces/mytasklist/getoldrecords',
+      'mytaskhasnewrecords': 'v1/k8s/api/namespaces/mytasklist/checkhasnewrecords',
+      'mytasknewrecords': 'v1/k8s/api/namespaces/mytasklist/getnewrecords',
 
-      'clustercpuinfo':'k8s/api/v1/clusterinfo/cpu/{minutes}',
-      'clustermemoryinfo':'k8s/api/v1/clusterinfo/memory/{minutes}',
-      'clusternetworkinfo':'k8s/api/v1/clusterinfo/network/{minutes}',
-      'clusterfilesysteminfo':'k8s/api/v1/clusterinfo/filesystem/{minutes}',
+      'clustercpuinfo': 'v1/k8s/api/clusterinfo/cpu/{minutes}',
+      'clustermemoryinfo': 'v1/k8s/api/clusterinfo/memory/{minutes}',
+      'clusternetworkinfo': 'v1/k8s/api/clusterinfo/network/{minutes}',
+      'clusterfilesysteminfo': 'v1/k8s/api/clusterinfo/filesystem/{minutes}',
 
     }
   },
 
-  getClusterCPUInfo( minutes,callback ){
+  getClusterCPUInfo(minutes, callback) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustercpuinfo'], {
-      'minutes':minutes
+      'minutes': minutes
     })
     this.xhrGetDataEnhanced(url, callback)
   },
-  
-  getClusterMemoryInfo( minutes,callback ){
+
+  getClusterMemoryInfo(minutes, callback) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustermemoryinfo'], {
-      'minutes':minutes
+      'minutes': minutes
     })
     this.xhrGetDataEnhanced(url, callback)
   },
 
-  getClusterNetworkInfo( minutes,callback ){
+  getClusterNetworkInfo(minutes, callback) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusternetworkinfo'], {
-      'minutes':minutes
+      'minutes': minutes
     })
     this.xhrGetDataEnhanced(url, callback)
   },
 
-  getClusterFilesystemInfo( minutes,callback ){
+  getClusterFilesystemInfo(minutes, callback) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusterfilesysteminfo'], {
-      'minutes':minutes
+      'minutes': minutes
     })
     this.xhrGetDataEnhanced(url, callback)
   },
 
-  getMyTaskOldRecords( oldestrecordid,requestnumber,keywords,callback ) {
+  getMyTaskOldRecords(oldestrecordid, requestnumber, keywords, callback) {
     let url = this.getUrlForm()['mytaskoldrecords']
     let data = {
-      oldestrecordid:oldestrecordid,
-      requestnumber:requestnumber,
-      keywords:keywords
+      oldestrecordid: oldestrecordid,
+      requestnumber: requestnumber,
+      keywords: keywords
     }
     this.xhrPostData(url, data, callback)
   },
 
-  checkMyTaskHasNewRecords( newestrecordid,keywords,callback ) {
+  checkMyTaskHasNewRecords(newestrecordid, keywords, callback) {
     let url = this.getUrlForm()['mytaskhasnewrecords']
     let data = {
-      newestrecordid:newestrecordid,
-      keywords:keywords
+      newestrecordid: newestrecordid,
+      keywords: keywords
     }
     this.xhrPostData(url, data, callback)
   },
 
-  getMyTaskNewRecords( newestrecordid,keywords,callback ) {
+  getMyTaskNewRecords(newestrecordid, keywords, callback) {
     let url = this.getUrlForm()['mytasknewrecords']
     let data = {
-      newestrecordid:newestrecordid,
-      keywords:keywords
+      newestrecordid: newestrecordid,
+      keywords: keywords
     }
     this.xhrPostData(url, data, callback)
   },
-  
+
   getMytaskGraph(_this, callback) {
     let url = this.getUrlForm()['mytaskgraph']
     this.xhrGetData(url, _this, callback)
@@ -93,34 +93,34 @@ var CalcManageDataRequester = {
     this.xhrGetData(url, _this, callback)
   },
 
-  getPodList( nameSpace,callback ) {
+  getPodList(nameSpace, callback) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podlist'], {
       'nameSpace': nameSpace
     })
     this.xhrGetDataEnhanced(url, callback)
   },
 
-  getServiceList( nameSpace,callback ) {
+  getServiceList(nameSpace, callback) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['servicelist'], {
       'nameSpace': nameSpace
     })
-    this.xhrGetDataEnhanced(url,callback)
+    this.xhrGetDataEnhanced(url, callback)
   },
 
-  getRCList( nameSpace,callback ) {
+  getRCList(nameSpace, callback) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['rclist'], {
       'nameSpace': nameSpace
     })
     this.xhrGetDataEnhanced(url, callback)
   },
 
-  getIngressList( nameSpace ,callback ) {
+  getIngressList(nameSpace, callback) {
     let url = Toolkit.strFormatter.formatString(this.getUrlForm()['ingresslist'], {
       'nameSpace': nameSpace
     })
     this.xhrGetDataEnhanced(url, callback)
   },
-  
+
   xhrGetData(url, _this, callback) {
     xhr({
       url: url,
@@ -140,7 +140,7 @@ var CalcManageDataRequester = {
       url: url,
       type: 'GET',
       success: (retu_data) => {
-        callback( retu_data)
+        callback(retu_data)
       }
     })
   },
@@ -151,7 +151,7 @@ var CalcManageDataRequester = {
       type: 'POST',
       data: data,
       success: (retu_data) => {
-        callback( retu_data)
+        callback(retu_data)
       }
     })
   },
