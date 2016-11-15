@@ -5,8 +5,10 @@ from openstack.middleware.flavor.flavor import Flavor
 from common import json_data,volumes_deal,time_handle,size_handle,sendhttp,sendhttpdata,sendhttpdate,ReturnVolume
 from openstack.middleware.vm.vm import Vm_manage, Vm_control, Vm_snap
 from openstack.middleware.volume.volume import Volume, Volume_attach, Volume_snaps,Volume_backup
+from openstack.middleware.user.user import User
 from django.http import HttpResponse
 from Aries.settings import MONITOR_URL
+from user_auth.models import Account
 import json
 import logging
 import traceback
@@ -19,8 +21,14 @@ volume_snaps = Volume_snaps()
 volume_backup=Volume_backup()
 vm_manage = Vm_manage()
 volume_attach = Volume_attach()
+image = Image()
 last_login_time = 0
+space_change = False  #是否切换了space,如果切换了需要重新登入openstack获取token
 
+
+def set_space_change():
+    global space_change
+    space_change = True
 
 def json_data(json_status):
     if len(json_status) == 0:
@@ -39,6 +47,13 @@ def image_id():
 def flavor_id():
     pass
 
+def is_superadmin(username):
+    user_obj = Account.objects.get(name=username)
+    if user_obj.role.name.upper() == "SUPERADMIN":
+        ret = True
+    else:
+        ret = False
+    return ret
 
 def packageResponse(result):
     response = HttpResponse(content_type='application/json')
@@ -49,27 +64,81 @@ def packageResponse(result):
 
 
 def login(request):
-    login = Login(request.user.username, md5.md5("baifendian").hexdigest())
-    login.user_token_login()
-    login.proid_login()
-    login.token_login()
+    ret = 0
+    username = request.user.username
+    if is_superadmin(username):
+        user = User()
+        project_name = Account.objects.get(name=username).cur_space
+        tmpret = user.user_attach(project_name,[username])
+        if tmpret:
+            ret = 1
+            return ret
+    login = Login(username, md5.md5("baifendian").hexdigest())
+    tmpret = login.user_token_login()
+    tmpret1 = login.proid_login()
+    tmpret2 = login.token_login()
+    if tmpret|tmpret1|tmpret2:
+        ret = 1
+    return ret
 
 def user_login():
     def ensure_login(func):
         def ensure_login_wrapper(request,*args, **kwargs):
             global last_login_time
+            global space_change
             try:
+                assert not space_change
                 assert last_login_time == int(time.mktime(request.user.last_login.timetuple()))
                 retu_obj = func(request,*args,**kwargs)
                 openstack_log.info('execute func %s success' % func)
                 return retu_obj
             except:
                 try:
-                    login(request)
-                    last_login_time = int(time.mktime(request.user.last_login.timetuple()))
-                    openstack_log.info('login success')
-                    retu_obj = func(request, *args, **kwargs)
-                    openstack_log.info('execute func %s success' % func)
+                    tmp_ret = login(request)
+                    if not tmp_ret:
+                        space_change = False
+                        last_login_time = int(time.mktime(request.user.last_login.timetuple()))
+                        openstack_log.info('login success')
+                        retu_obj = func(request, *args, **kwargs)
+                        openstack_log.info('execute func %s success' % func)
+                    else:
+                        retu_obj = json.dumps({"code":403,"data":["该模块尚未开放"]})
+                    return retu_obj
+                except:
+                    s = traceback.format_exc()
+                    openstack_log.error('execute func %s failure : %s' % (func, s))
+        return ensure_login_wrapper
+    return ensure_login
+
+def user_login_tmp():
+    def ensure_login(func):
+        def ensure_login_wrapper(request,*args, **kwargs):
+            global last_login_time
+            global space_change
+            try:
+                assert not space_change
+                assert last_login_time == int(time.mktime(request.user.last_login.timetuple()))
+                retu_obj = func(request,*args,**kwargs)
+                openstack_log.info('execute func %s success' % func)
+                return retu_obj
+            except:
+                try:
+                    tmp_ret = login(request)
+                    if not tmp_ret:
+                        space_change = False
+                        last_login_time = int(time.mktime(request.user.last_login.timetuple()))
+                        openstack_log.info('login success')
+                        retu_obj = func(request, *args, **kwargs)
+                        openstack_log.info('execute func %s success' % func)
+                    else:
+                        dict_ret = {"code":403,"data":["该模块尚未开放"]}
+                        str_ret = json.dumps(dict_ret)
+                        response = HttpResponse(content_type='application/json')
+                        # response = HttpResponse()
+                        response.write(str_ret)
+                        response["Access-Control-Allow-Origin"] = "*"
+                        response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
+                        retu_obj = response
                     return retu_obj
                 except:
                     s = traceback.format_exc()

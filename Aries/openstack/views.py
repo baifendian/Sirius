@@ -15,7 +15,7 @@ from common import json_data,volumes_deal,time_handle,size_handle,ReturnImages,R
 from openstack.middleware.vm.vm import Vm_manage, Vm_control
 from openstack.middleware.volume.volume import Volume, Volume_attach
 import time
-from openstack.service import user_login
+from openstack.service import user_login,user_login_tmp
 from django.views.decorators.csrf import csrf_exempt
 import base64
 from decimal import *
@@ -31,7 +31,7 @@ host_vm_start = Vm_control()
 volume_attach = Volume_attach()
 
 @csrf_exempt
-@user_login()
+@user_login_tmp()
 def instances(request):
     global imagess
     global flavorss
@@ -202,7 +202,7 @@ def instances(request):
     response['Content-Type'] = 'application/json'
     return response
 
-@user_login()
+@user_login_tmp()
 def images(request):
     """ 获取images"""
     global imagess
@@ -248,7 +248,7 @@ def images(request):
 
 
 @csrf_exempt
-@user_login()
+@user_login_tmp()
 def flavors(request):
     global flavorss
     ret = {}
@@ -291,7 +291,7 @@ def flavors(request):
 
 
 @csrf_exempt
-@user_login()
+@user_login_tmp()
 def volumes(request):
     global volume_s
     global vm_manage
