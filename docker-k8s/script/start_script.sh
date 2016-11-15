@@ -1,5 +1,4 @@
 #!/bin/bash
-sed -i "s#k8s_SHARE_PROXY_BASE_URI#$SHARE_PROXY_BASE_URI#g"  /opt/Sirius/sbin/Aries.yaml
 sed -i "s#k8s_REST_BASE_URI#$REST_BASE_URI#g"  /opt/Sirius/sbin/Aries.yaml
 
 
