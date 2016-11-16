@@ -290,7 +290,8 @@ HADOOP_HOME = CLIENTHDFS_SETTINGS["HADOOP_HOME"]
 NAMENODE_PATH = CLIENTHDFS_SETTINGS["NAMENODE_PATH"]
 
 HADOOP_RUN_SCRIPT = "hadoop-run.sh"
-SESSION_COOKIE_AGE=60*30
+SESSION_COOKIE_AGE = 60*30
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 #kubectl_file
 KUBECTL_OSX = os.path.join(BASE_DIR, '../package', 'kubectl_osx_1_2_4')
 KUBECTL_LINUX = os.path.join(BASE_DIR, '../package', 'kubectl_linux_1_2_4')
@@ -311,9 +312,9 @@ PORT_CINDER = OPENSTACK_SETTINGS["PORT_CINDER"]
 MONITOR_URL = OPENSTACK_SETTINGS['MONITOR_URL']
 
 #启动一个线程开始定时统计配额. default: 10m
-POLL_TIME = 600
-import sumSpace
-sumSpace.run(POLL_TIME)
+#POLL_TIME = 600
+#import sumSpace
+#sumSpace.run(POLL_TIME)
 
 #admin页面白名单IP
 WHITELIST_SETTINGS = SETTINGS['WHITELIST']

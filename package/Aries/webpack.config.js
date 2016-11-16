@@ -12,6 +12,8 @@ var isProduction = option[0] === '-p'
 
 // 删除 build 目录，防止开发模式下读取以及线上模式中的文件累积
 rimraf.sync('./build')
+//删除index.html文件,防止开发模式下读取
+rimraf.sync('./index.html')
 
 var config = {
   entry: {
@@ -23,7 +25,8 @@ var config = {
     chunkFilename: '[id]' + (isProduction ? '.[hash]' : '') + '.js',
     //静态资源全路径
     //publicPath: ((isProduction ? env.basePath : '') + '/build/').replace(/\/\//, '/')
-    publicPath: ((isProduction ? env.basePath : '') + '/static/aries/').replace(/\/\//, '/')
+    //publicPath: ((isProduction ? env.basePath : '') + '/static/aries/').replace(/\/\//, '/')
+    publicPath: isProduction ? (env.basePath+'/static/aries/').replace(/\/\//, '/') : (env.basePath+'/build').replace(/\/\//, '/') 
   },
   module: {
     noParse: [],
@@ -92,7 +95,7 @@ config.plugins.push(function() {
       isProduction: isProduction,
       hash: isProduction ? stats.hash : ''
     })
-    fs.writeFileSync(path.join(__dirname, 'index.' + (isProduction ? 'jsp' : 'ejs')), template)
+    fs.writeFileSync(path.join(__dirname, 'index.' + (isProduction ? 'html' : 'ejs')), template)
   })
 })
 
