@@ -26,7 +26,7 @@ var config = {
     //静态资源全路径
     //publicPath: ((isProduction ? env.basePath : '') + '/build/').replace(/\/\//, '/')
     //publicPath: ((isProduction ? env.basePath : '') + '/static/aries/').replace(/\/\//, '/')
-    publicPath: isProduction ? (env.basePath+'/static/aries/').replace(/\/\//, '/') : (env.basePath+'/build').replace(/\/\//, '/') 
+    publicPath: isProduction ? (env.basePath+'/static/aries/').replace(/\/\//, '/') : (env.basePath+'/build/').replace(/\/\//, '/') 
   },
   module: {
     noParse: [],
