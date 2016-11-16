@@ -312,9 +312,9 @@ PORT_CINDER = OPENSTACK_SETTINGS["PORT_CINDER"]
 MONITOR_URL = OPENSTACK_SETTINGS['MONITOR_URL']
 
 #启动一个线程开始定时统计配额. default: 10m
-#POLL_TIME = 600
-#import sumSpace
-#sumSpace.run(POLL_TIME)
+POLL_TIME = 600
+import sumSpace
+sumSpace.run(POLL_TIME)
 
 #admin页面白名单IP
 WHITELIST_SETTINGS = SETTINGS['WHITELIST']
