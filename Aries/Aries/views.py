@@ -8,7 +8,7 @@ import json
 from django.http import HttpResponse
 from user_auth.models import *
 from ldap_client import ldap_get_vaild
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.conf import settings
 
 def is_admin(account, cur_space_in):
@@ -57,14 +57,17 @@ def is_admin(account, cur_space_in):
     else:
         return {"cur_space":"","type":0,"is_supper":is_supper}
 
-# @ensure_csrf_cookie
+@csrf_exempt
+@ensure_csrf_cookie
 def login(request):
+    print("login-----")
     if request.method == "POST":
         res = {}
         username = request.POST.get("username")
         password = request.POST.get("password")
         email = username + "@baifendian.com"
-        ldap_user = ldap_get_vaild(username=username, passwd=password)
+        # ldap_user = ldap_get_vaild(username=username, passwd=password)
+        ldap_user = True
         if ldap_user:
             user = authenticate(username=username, password=password)
             if not user:
@@ -96,8 +99,6 @@ def login(request):
                 res["data"] = "username or password is error"
             response = HttpResponse(content_type='application/json')
             response.write(json.dumps(res))
-            # response.set_cookie('csrftoken',request.COOKIES.get('csrftoken',"S6ouKsk1kRrp5qsHlmd5fupVJewYitW3"))
-            response.set_cookie('csrftoken', "S6ouKsk1kRrp5qsHlmd5fupVJewYitW3")
             response["Access-Control-Allow-Origin"] = "*"
             response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
             return response
@@ -117,11 +118,6 @@ def login(request):
             try:
                 account = Account.objects.get(name=username)
                 user = is_admin(account,account.cur_space)
-                # if not account.cur_space:
-                #    spaceUserRole = SpaceUserRole.objects.filter(user=account)
-                #    account.cur_space=spaceUserRole[0].space.name
-                #    account.save()
-                # user = {"name":username,"type":1,"cur_space":account.cur_space}
             except Exception,e:
                 ac_logger.error(e)
                 user = ""
@@ -130,12 +126,9 @@ def login(request):
         user = json.dumps(user)
         ac_logger.info("##########user:%s" %user)
         response = render_to_response('index/index.html', locals())
-        # set default cookie value
-        # response.set_cookie('csrftoken',request.COOKIES.get('csrftoken','S6ouKsk1kRrp5qsHlmd5fupVJewYitW3'))
-        response.set_cookie('csrftoken',"S6ouKsk1kRrp5qsHlmd5fupVJewYitW3")
         return response
 
-# @ensure_csrf_cookie
+@ensure_csrf_cookie
 def logout(request):
     result = {}
     try:
@@ -148,13 +141,13 @@ def logout(request):
         result["data"] = "logout failed."
     response = HttpResponse(content_type='application/json')
     response.write(json.dumps(result))
-    response.set_cookie('csrftoken',"S6ouKsk1kRrp5qsHlmd5fupVJewYitW3")
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Methods"] = "POST,GET,PUT, DELETE"
     return response
 
 @ensure_csrf_cookie
 def index(request):
+    print("index--------")
     ac_logger.info("######################cookie: {0}#######".format(request.COOKIES.get('csrftoken')))
     # save cur_space
     user = request.user
@@ -170,7 +163,8 @@ def index(request):
     else:
         user = ""
     user = json.dumps(user)
-    return render_to_response('index/index.html', locals())
+    response = render_to_response('index/index.html', locals())
+    return response
 
 def permission_check(request):
     from django.contrib import admin
@@ -178,7 +172,7 @@ def permission_check(request):
     import urls
     admin.autodiscover()
     if request.META.has_key('HTTP_X_FORWARDED_FOR'):
-        ip =  request.META['HTTP_X_FORWARDED_FOR']
+        ip = request.META['HTTP_X_FORWARDED_FOR']
     else:
         ip = request.META['REMOTE_ADDR']
     whitelist = settings.WHITELIST_IP
