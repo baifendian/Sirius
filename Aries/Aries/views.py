@@ -64,8 +64,7 @@ def login(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
         email = username + "@baifendian.com"
-        # ldap_user = ldap_get_vaild(username=username,passwd=password)
-        ldap_user = True
+        ldap_user = ldap_get_vaild(username=username, passwd=password)
         if ldap_user:
             user = authenticate(username=username, password=password)
             if not user:
