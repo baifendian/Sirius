@@ -60,14 +60,12 @@ def is_admin(account, cur_space_in):
 @csrf_exempt
 @ensure_csrf_cookie
 def login(request):
-    print("login-----")
     if request.method == "POST":
         res = {}
         username = request.POST.get("username")
         password = request.POST.get("password")
         email = username + "@baifendian.com"
-        # ldap_user = ldap_get_vaild(username=username, passwd=password)
-        ldap_user = True
+        ldap_user = ldap_get_vaild(username=username, passwd=password)
         if ldap_user:
             user = authenticate(username=username, password=password)
             if not user:
@@ -147,8 +145,6 @@ def logout(request):
 
 @ensure_csrf_cookie
 def index(request):
-    print("index--------")
-    ac_logger.info("######################cookie: {0}#######".format(request.COOKIES.get('csrftoken')))
     # save cur_space
     user = request.user
     cur_space = request.GET.get("cur_space", "")
