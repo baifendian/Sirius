@@ -65,13 +65,15 @@ class Volume:
         return ret
 
     @plog("Volume.wait_complete")
-    def wait_complete(self, volume_id, status,username):
+    def wait_complete(self, volume_id, status,username,event=None):
         '''
         等待指定虚拟机创建完成,status为指定的状态
         :return:
         '''
         flag = True
         while flag:
+            if event and event.is_set():
+                break
             tmp_ret = self.show_detail(volume_id,username)
             if tmp_ret.get("volume", {}).get("status", "") in status:
                 flag = False
@@ -234,7 +236,7 @@ class Volume:
             params["volume"].update({"name": name})
         ret = send_request(method, IP_cinder, PORT_cinder, path, params, head)
         assert ret != 1, "send_request error"
-        t = run_in_thread(self.wait_complete, volume_id, ["available"],username,timeout=TIMEOUT)
+        t = run_in_thread(self.wait_complete, volume_id, ["available","in-use"],username,timeout=TIMEOUT)
         assert t == 0
         return ret
 
@@ -468,7 +470,7 @@ class Volume_attach():
         return ret
 
     @plog("Volume_attach.wait_complete")
-    def wait_complete(self, volume_id,status,username):
+    def wait_complete(self, volume_id,status,username,event=None):
         '''
         等待指定虚拟机创建完成,status为指定的状态
         :return:
@@ -476,6 +478,8 @@ class Volume_attach():
         flag = True
         volume = Volume()
         while flag:
+            if event and event.is_set():
+                break
             tmp_ret = volume.show_detail(volume_id,username)
             if tmp_ret.get("volume", {}).get("status", "") != status:
                 flag = False

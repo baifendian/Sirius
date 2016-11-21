@@ -22,7 +22,7 @@ volume_backup=Volume_backup()
 vm_manage = Vm_manage()
 volume_attach = Volume_attach()
 image = Image()
-last_login_time = 0
+last_login_time = {}
 space_change = False  #是否切换了space,如果切换了需要重新登入openstack获取token
 
 
@@ -86,9 +86,10 @@ def user_login():
         def ensure_login_wrapper(request,*args, **kwargs):
             global last_login_time
             global space_change
+            username = request.user.username
             try:
                 assert not space_change
-                assert last_login_time == int(time.mktime(request.user.last_login.timetuple()))
+                assert last_login_time.get(username,0) == int(time.mktime(request.user.last_login.timetuple()))
                 retu_obj = func(request,*args,**kwargs)
                 openstack_log.info('execute func %s success' % func)
                 return retu_obj
@@ -97,7 +98,7 @@ def user_login():
                     tmp_ret = login(request)
                     if not tmp_ret:
                         space_change = False
-                        last_login_time = int(time.mktime(request.user.last_login.timetuple()))
+                        last_login_time[username] = int(time.mktime(request.user.last_login.timetuple()))
                         openstack_log.info('login success')
                         retu_obj = func(request, *args, **kwargs)
                         openstack_log.info('execute func %s success' % func)
@@ -115,9 +116,10 @@ def user_login_tmp():
         def ensure_login_wrapper(request,*args, **kwargs):
             global last_login_time
             global space_change
+            username = request.user.username
             try:
                 assert not space_change
-                assert last_login_time == int(time.mktime(request.user.last_login.timetuple()))
+                assert last_login_time.get(username,0) == int(time.mktime(request.user.last_login.timetuple()))
                 retu_obj = func(request,*args,**kwargs)
                 openstack_log.info('execute func %s success' % func)
                 return retu_obj
@@ -126,7 +128,7 @@ def user_login_tmp():
                     tmp_ret = login(request)
                     if not tmp_ret:
                         space_change = False
-                        last_login_time = int(time.mktime(request.user.last_login.timetuple()))
+                        last_login_time[username] = int(time.mktime(request.user.last_login.timetuple()))
                         openstack_log.info('login success')
                         retu_obj = func(request, *args, **kwargs)
                         openstack_log.info('execute func %s success' % func)
