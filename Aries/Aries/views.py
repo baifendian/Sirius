@@ -193,4 +193,4 @@ def permission_check(request):
     if temp:
         urls.urlpatterns[0] = url(r'^admin/', include(admin.site.urls))
     else:
-        return HttpResponse('<h2>Permission Forbidden!</h2>')
+        return HttpResponse('<h2>Permission denied!</h2>')

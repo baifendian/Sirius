@@ -25,16 +25,15 @@ RUN cd $SIRIUS_PATH/package/Aries && \
     npm run build && \
     cd $SIRIUS_PATH && \
     cp -r package/Aries/build/* Aries/static/aries/ && \
-    rm -rf package/Aries/build && \
-    chmod +x $SIRIUS_PATH/docker-k8s/script/changejs.sh &&\
-    sh $SIRIUS_PATH/docker-k8s/script/changejs.sh 
+    rm -rf package/Aries/build
 
 RUN mkdir -p $SIRIUS_PATH/log &&\
     mkdir -p $SIRIUS_PATH/download  
 
 RUN adduser hadoop && \
     adduser bre && \
-    adduser bae
+    adduser bae && \
+    adduser openstack 
 
 VOLUME  ["/opt/Sirius/log"]
 VOLUME  ["/opt/Sirius/download"]
