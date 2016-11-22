@@ -9,16 +9,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 import unittest
 USER_NAME = ""
 PASSWORD = ""
+SERVER = "http://172.24.3.64:9090"
 
 
 class Mytest(unittest.TestCase):
     def setUp(self):
+        global SERVER
         self.login_flag = 0
         self.elem_flag = 0
         self.checkbox_count = 1  #0表示勾选所有
         self.browser = webdriver.Chrome("C:\Program Files (x86)\Google\Chrome\Application\chromedriver",
                                         service_args=["--verbose", "--log-path=D:\\tmp\qc1.log"])
-        self.browser.get("http://172.24.3.64:9090")
+        self.browser.get(SERVER)
 
     def _randname(self):
         return random.sample('zyxwvutsrqponmlkjihgfedcba', 5)
@@ -577,7 +579,7 @@ class Mytest(unittest.TestCase):
 
     def volume_del(self):
         '''
-        创建虚拟卷备份
+        删除虚拟卷
         :return:
         '''
         self.into_volume()
