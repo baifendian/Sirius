@@ -23,9 +23,7 @@ RUN cd $SIRIUS_PATH/package/Aries && \
     rm -rf node_modules && \
     npm install && \
     npm run build && \
-    cd $SIRIUS_PATH && \
-    cp -r package/Aries/build/* Aries/static/aries/ && \
-    rm -rf package/Aries/build
+    sh build.sh    
 
 RUN mkdir -p $SIRIUS_PATH/log &&\
     mkdir -p $SIRIUS_PATH/download  
