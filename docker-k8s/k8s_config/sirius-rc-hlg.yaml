@@ -12,7 +12,8 @@ spec:
     spec:
       containers:
         - name: sirius1
-          image: docker.baifendian.com/lupan/sirius_lugu:0.4.6.1
+          image: docker.baifendian.com/lupan/sirius_lugu:0.4.6.2_noldap
+          imagePullPolicy: Always
           ports:
             - containerPort: 10086
           env:
