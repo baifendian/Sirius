@@ -37,5 +37,5 @@ Aries.xml
 env.js
 index.js
 webpack.config.js
-aries/
+Aries/static/aries/
 index.html
