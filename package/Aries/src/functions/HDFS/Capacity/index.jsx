@@ -10,16 +10,30 @@ import NavigationInPage from 'public/NavigationInPage'
 import auth from 'public/auth'
 
 export default React.createClass({
+  unit:["GB","TB","PB"],
+  converUnit(value,unitIndex){
+    //默认是GB. 如果满足TB则直接换算成TB.(plan, total)
+    if(value/1024.0 > 1){
+      //可以进行转换
+      return converUnit(value/1024.0,unitIndex+1);
+    }
+    return {value:value,index:unitIndex}
+  },
   sliderDataSccuess(data){
     let percentData = data;
     let slider_data=data.map((d,index)=>{
+      let finalUnit = this.converUnit(d.plan_capacity,0);
+      let unit = this.unit[finalUnit.index];
+      let total_capacity = d.plan_capacity/1024.0*(finalUnit.index+1);
+      let end = finalUnit.value;
       return {
               "name":d.name,
-              "value":d.total_capacity,
+              "value":total_capacity.toFixed(2), // 已经分配的空间
               "start":0,
-              "end":d.plan_capacity,
+              "end":end.toFixed(0), // 计划使用的空间
+              "unit":unit,
               }
-    });
+    },this);
     this.setState({sliderData:slider_data,percentData:percentData});
   },
   getInitialState: function() {

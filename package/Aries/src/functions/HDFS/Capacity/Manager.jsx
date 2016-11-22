@@ -6,8 +6,19 @@ import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd-ui/lib/message'
 
 const TabManager = React.createClass({
-  handleSlid(value,spaceName){
-    console.log(`slid:${value}, spaceName:${spaceName}`);
+  handleSlid(value,spaceName,unit){
+    console.log(`slid:${value}, unit:${unit} spaceName:${spaceName}`);
+    //根据单位换算成G保存到后端
+    switch (unit.toLocaleUpperCase()) {
+      case "TB":
+        value = value * 1024;
+        break;
+      case "PB":
+        value = value * 1024 * 1024;
+        break;
+      default:
+        break;
+    }
     let upsetUrl = this.props.getUrlData({ type : "UPSET",
                                            spaceName : spaceName
                                           });
@@ -23,8 +34,8 @@ const TabManager = React.createClass({
     let sliderData = this.props.sliderData.map((slider,i)=>{
       return  <div>
                   <div className="col-sm-5 col-md-5 col-lg-5">
-                  {slider.name}<Slider defaultValue={slider.value} tickValue={10} start={0} end={slider.end} suffix="G"
-                  onSlid={(value)=>{this.handleSlid(value,slider.name)}} />
+                  {slider.name}<Slider defaultValue={slider.value} tickValue={10} start={0} end={slider.end} suffix={slider.unit}
+                  onSlid={(value)=>{this.handleSlid(value,slider.name,slider.unit)}} />
                   </div>
               </div>
     });
