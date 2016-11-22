@@ -243,7 +243,7 @@ class Mytest(unittest.TestCase):
             checkbox_first.click()
             button_pull = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.2.1.0.2.0.1']")
             button_pull.click()
-            button_start = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[0]
+            button_start = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[0]
             button_start.click()
             try:
                 element = WebDriverWait(self.browser, 60).until_not(lambda i: i.find_element_by_xpath(
@@ -263,7 +263,7 @@ class Mytest(unittest.TestCase):
             checkbox_first.click()
             button_pull = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.2.1.0.2.0.1']")
             button_pull.click()
-            button_stop = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[2]
+            button_stop = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[2]
             button_stop.click()
             button_confirm = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.2.1.0.3.$=10.1.0.0.1.1.0']")
             button_confirm.click()
@@ -284,7 +284,7 @@ class Mytest(unittest.TestCase):
         checkbox_first.click()
         button_pull = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.2.1.0.2.0.1']")
         button_pull.click()
-        button_restart = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[1]
+        button_restart = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[1]
         button_restart.click()
         button_confirm = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.2.1.0.3.$=10.1.0.0.1.1.0']")
         button_confirm.click()
@@ -305,7 +305,7 @@ class Mytest(unittest.TestCase):
         checkbox_first.click()
         button_pull = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.2.1.0.2.0.1']")
         button_pull.click()
-        button_snap = self.browser.find_element_by_xpath("//li[@class='ant-dropdown-menu-item']")[3]
+        button_snap = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[3]
         button_snap.click()
         input_name = self.browser.find_element_by_xpath("//input[@data-reactid='.0.1.1.0.2.1.0.2.1.0.$=10.1.0.0.0.1.1.0.0.0.1.0.0']")
         input_name.send_keys(self._randname())
@@ -328,7 +328,12 @@ class Mytest(unittest.TestCase):
         checkbox_first.click()
         button_pull = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.2.1.0.2.0.1']")
         button_pull.click()
-        button_volume = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[4]
+        # button_volume_list = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item-selected ant-dropdown-menu-item']")
+        # if not button_volume_list:
+        #     button_volume = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[4]
+        # else:
+        #     button_volume = button_volume_list[0]
+        button_volume = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[4]
         button_volume.click()
         time.sleep(2)
         try:
@@ -361,7 +366,7 @@ class Mytest(unittest.TestCase):
         checkbox_first.click()
         button_pull = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.2.1.0.2.0.1']")
         button_pull.click()
-        button_reset = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[5]
+        button_reset = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[5]
         button_reset.click()
         flavor_select = self.browser.find_element_by_xpath("//div[@data-reactid='.0.1.1.0.2.1.0.2.1.0.$=10.1.0.0.0.1.1.0.1.1.0.0']")
         flavor_select.click()
@@ -390,7 +395,7 @@ class Mytest(unittest.TestCase):
         checkbox_first.click()
         button_pull = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.2.1.0.2.0.1']")
         button_pull.click()
-        button_delete = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[7]
+        button_delete = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[7]
         button_delete.click()
         button_confirm = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.2.1.0.3.$=10.1.0.0.1.1.0']")
         button_confirm.click()
@@ -434,7 +439,7 @@ class Mytest(unittest.TestCase):
         checkbox_first.click()
         button_enmu = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.0.1.1.3.0.1']")
         button_enmu.click()
-        button_change = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[0]
+        button_change = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[0]
         button_change.click()
         input_name = self.browser.find_element_by_xpath("//input[@data-reactid='.0.1.1.0.0.1.1.3.1.0.$=10.1.0.0.1.0.0.0.1.0.0']")
         input_name.send_keys(self._randname())
@@ -459,7 +464,7 @@ class Mytest(unittest.TestCase):
         checkbox_first.click()
         button_enmu = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.0.1.1.3.0.1']")
         button_enmu.click()
-        button_extend = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[1]
+        button_extend = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[1]
         button_extend.click()
         input_size = self.browser.find_element_by_xpath("//input[@data-reactid='.0.1.1.0.0.1.1.3.1.0.$=10.1.0.0.1.0.0.1.1.0.0']")
         input_size.send_keys(15)
@@ -482,7 +487,7 @@ class Mytest(unittest.TestCase):
         checkbox_first.click()
         button_enmu = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.0.1.1.3.0.1']")
         button_enmu.click()
-        button_attach = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[2]
+        button_attach = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[2]
         button_attach.click()
         time.sleep(2)
         select_vm_section = self.browser.find_element_by_xpath("//div[@data-reactid='.0.1.1.0.0.1.1.3.1.0.$=10.1.0.0.1.0.0.1.1.0.0']")
@@ -508,7 +513,7 @@ class Mytest(unittest.TestCase):
         checkbox_first.click()
         button_enmu = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.0.1.1.3.0.1']")
         button_enmu.click()
-        button_unattach = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[3]
+        button_unattach = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[3]
         button_unattach.click()
         time.sleep(2)
         button_confirm = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.0.1.1.3.1.0.$=10.1.0.0.1.0.0.2']")
@@ -530,7 +535,7 @@ class Mytest(unittest.TestCase):
         checkbox_first.click()
         button_enmu = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.0.1.1.3.0.1']")
         button_enmu.click()
-        button_snap = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[4]
+        button_snap = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[4]
         button_snap.click()
         input_name = self.browser.find_element_by_xpath("//input[@data-reactid='.0.1.1.0.0.1.1.3.1.0.$=10.1.0.0.1.0.0.3.1.0.0']")
         input_name.send_keys(self._randname())
@@ -553,11 +558,30 @@ class Mytest(unittest.TestCase):
         checkbox_first.click()
         button_enmu = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.0.1.1.3.0.1']")
         button_enmu.click()
-        button_backup = self.browser.find_elements_by_xpath("//li[@class='ant-dropdown-menu-item']")[5]
+        button_backup = self.browser.find_elements_by_xpath("//li[@role='menuitem']")[5]
         button_backup.click()
         input_name = self.browser.find_element_by_xpath("//input[@data-reactid='.0.1.1.0.0.1.1.3.1.0.$=10.1.0.0.1.0.0.3.1.0.0']")
         input_name.send_keys(self._randname())
         button_confirm = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.0.1.1.3.1.0.$=10.1.0.0.1.0.0.5']")
+        button_confirm.click()
+        try:
+            element = WebDriverWait(self.browser, 60).until_not(lambda i: i.find_element_by_xpath(
+                "//span[@data-reactid='.0.1.1.0.0.0.0']").is_displayed())
+        finally:
+            pass
+        self._refresh_volume()
+
+    def volume_del(self):
+        '''
+        创建虚拟卷备份
+        :return:
+        '''
+        self.into_volume()
+        checkbox_first = self.browser.find_elements_by_class_name("bfd-checkbox")[self.checkbox_count]
+        checkbox_first.click()
+        button_del = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.0.1.1.2.0']")
+        button_del.click()
+        button_confirm = self.browser.find_element_by_xpath("//button[@data-reactid='.0.1.1.0.0.1.1.2.1.$=10.1.0.0.1.0.1.0']")
         button_confirm.click()
         try:
             element = WebDriverWait(self.browser, 60).until_not(lambda i: i.find_element_by_xpath(
