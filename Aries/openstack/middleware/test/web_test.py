@@ -7,6 +7,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 import unittest
+USER_NAME = ""
+PASSWORD = ""
 
 
 class Mytest(unittest.TestCase):
@@ -43,12 +45,14 @@ class Mytest(unittest.TestCase):
         :return:
         '''
         if not self.login_flag:
+            global USER_NAME
+            global PASSWORD
             self.browser.refresh()  # 进入页面后一定要再刷新一次才能登入，原因不明
             elem_login = self.browser.find_elements_by_class_name("bfd-input")
             username = elem_login[0]
             password = elem_login[1]
-            username.send_keys("ding.zhang")
-            password.send_keys("pmwESC327&")
+            username.send_keys(USER_NAME)
+            password.send_keys(PASSWORD)
             button_submit = self.browser.find_element_by_xpath("//button[@type='submit']")
             button_submit.click()
             try:
@@ -254,7 +258,7 @@ class Mytest(unittest.TestCase):
 
     def instance_stop(self):
         '''
-        停止列表中的第一台虚拟机，若虚拟机以开启则直接返回
+        停止列表中的第一台虚拟机
         :return:
         '''
         self.into_instance()
@@ -276,7 +280,7 @@ class Mytest(unittest.TestCase):
 
     def instance_restart(self):
         '''
-        重启列表中的第一台虚拟机，若虚拟机以开启则直接返回
+        重启列表中的第一台虚拟机
         :return:
         '''
         self.into_instance()
