@@ -22,7 +22,6 @@ RUN mkdir -p /opt/bfdhadoop/tmp/data && \
 RUN cd $SIRIUS_PATH/package/Aries && \
     rm -rf node_modules && \
     npm install && \
-    npm run build && \
     sh build.sh    
 
 RUN mkdir -p $SIRIUS_PATH/log &&\
