@@ -121,7 +121,7 @@ var ClusterCommonInfo = React.createClass({
 
   findDataTableItemByRecordName( name ){
     let dataTableNode = ReactDOM.findDOMNode( this.refs.DataTable )
-    let tbody = dataTableNode.childNodes[1].childNodes[1]
+    let tbody = dataTableNode.childNodes[0].childNodes[1]
     for ( let i = 0 ; i < tbody.childNodes.length ; i ++ ){
       let tr = tbody.childNodes[i]
       if ( tr.childNodes[0].innerHTML === name ){        
@@ -133,7 +133,7 @@ var ClusterCommonInfo = React.createClass({
 
 	onSplitPanelHeightChange( oldTopHeight,oldBottomHeight,newTopHeight,newBottomHeight ){
     let dataTable = ReactDOM.findDOMNode( this.refs.DataTable )
-    dataTable.childNodes[1].childNodes[1].style.height = (newTopHeight-65) + 'px'
+    dataTable.childNodes[0].childNodes[1].style.height = (newTopHeight-65) + 'px'
 
     let dynamicTable = ReactDOM.findDOMNode( this.refs.DynamicTable )
     dynamicTable.style.height = (newBottomHeight-47) + 'px'

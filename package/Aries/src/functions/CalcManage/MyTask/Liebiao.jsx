@@ -80,8 +80,8 @@ const TabLiebiao = React.createClass({
 
   getRealTimeTheadAndTbodyObj:function(){
     let dataTableNode = ReactDOM.findDOMNode( this.refs.DataTable )
-    let thead = dataTableNode.childNodes[1].childNodes[0]
-    let tbody = dataTableNode.childNodes[1].childNodes[1]
+    let thead = dataTableNode.childNodes[0].childNodes[0]
+    let tbody = dataTableNode.childNodes[0].childNodes[1]
     return { 'thead':thead,'tbody':tbody }
   },
 
