@@ -38,7 +38,7 @@ AMBARI:
 K8S:
   K8S_IP: '172.24.3.150'
   K8S_PORT: 8080
-  INFLUXDB_IP: 'k8sinfluxapi.bfdcloud.com'
+  INFLUXDB_IP: 'k8sinfluxapi.k8s.baifendian.com'
   INFLUXDB_PORT: 80
   INFLUXDB_DATABASE: 'k8s'
 

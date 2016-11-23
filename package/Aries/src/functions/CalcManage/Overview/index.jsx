@@ -147,22 +147,22 @@ var mod = React.createClass({
     // 将url请求与回调都放到一起，便于管理
     this.userData['clusterInfoCallBackFunc'] = {
       'cpu':        ( value )=>{ 
-                      CMDR.getClusterCPUInfo( value,(executedData)=>{
+                      CMDR.getPodSummaryCPUInfo( CMDR.getCurNameSpace(this),value,(executedData)=>{
                         this.insertDataToChart( 'cpu',executedData )
                       })  
                     },
       'memory':     ( value )=>{ 
-                      CMDR.getClusterMemoryInfo( value,(executedData)=>{
+                      CMDR.getPodSummaryMemoryInfo( CMDR.getCurNameSpace(this),value,(executedData)=>{
                         this.insertDataToChart( 'memory',executedData )
                       })
                     },
       'network':    ( value )=>{ 
-                      CMDR.getClusterNetworkInfo( value,(executedData)=>{
+                      CMDR.getPodSummaryNetworkInfo( CMDR.getCurNameSpace(this),value,(executedData)=>{
                         this.insertDataToChart( 'network',executedData )
                       })  
                     },
       'filesystem': ( value )=>{ 
-                      CMDR.getClusterFilesystemInfo( value ,(executedData)=>{
+                      CMDR.getPodSummaryFilesystemInfo( CMDR.getCurNameSpace(this),value ,(executedData)=>{
                         this.insertDataToChart( 'filesystem',executedData )
                       })
                     },

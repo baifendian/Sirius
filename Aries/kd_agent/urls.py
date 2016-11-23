@@ -16,10 +16,10 @@ urlpatterns = patterns('',
     url(r'^api/namespaces/mytasklist/checkhasnewrecords', views.mytask_check_has_new_records),
     url(r'^api/namespaces/mytasklist/getnewrecords', views.mytask_get_new_records),
 
-    url(r'^api/clusterinfo/cpu/(?P<minutes>\d{1,5})',views.get_cluster_cpu_info ),
-    url(r'^api/clusterinfo/memory/(?P<minutes>\d{1,5})',views.get_cluster_memory_info ),
-    url(r'^api/clusterinfo/network/(?P<minutes>\d{1,5})',views.get_cluster_network_info ),
-    url(r'^api/clusterinfo/filesystem/(?P<minutes>\d{1,5})',views.get_cluster_filesystem_info ),
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/podsummary/cpu/(?P<minutes>\d{1,5})',views.get_namespace_cpu_info ),
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/podsummary/memory/(?P<minutes>\d{1,5})',views.get_namespace_memory_info ),
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/podsummary/network/(?P<minutes>\d{1,5})',views.get_namespace_network_info ),
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/podsummary/filesystem/(?P<minutes>\d{1,5})',views.get_namespace_filesystem_info ),
 
     url(r'^api/dashboard/taskinfo', views.dashboard_taskinfo ),
 
