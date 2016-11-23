@@ -14,52 +14,6 @@ import CalcManageConf from '../UrlConf'
 import './index.less'
 
 
-/**
- * 页面大改：
- * 饼图只保留 Pod的已创建个数和最大创建个数，其它的删掉
- * 页面可以参考：
- *    http://grafana.bfdcloud.com/          （Cluster显示集群的信息，Pods显示Pod的信息）
- *    http://k8sinflux.bfdcloud.com/
- * influxdb官方提供的dashboard
- *    http://k8sinflux.bfdcloud.com/
- *    http://k8sinfluxapi.bfdcloud.com/ , 80
- */
-
-  /** 以下代码是 pod 信息需要的部分函数，但是未来pod信息如何显示暂时还没确定，因此这里的代码暂时先注释保留
-  load_data(dataDict){
-    console.dir(dataDict)
-    this.setState({
-      pod_used:dataDict['pod_used'],
-      pod_total:dataDict['pod_total'],
-      task_used:dataDict['task_used'],
-      task_total:dataDict['task_total'],
-      memory_used:dataDict['memory_used'],
-      memory_total:dataDict['memory_total'],
-      load_data_points:dataDict['load_data_points'],
-      flowrate_data_points:dataDict['flowrate_data_points']
-    })
-    
-  },
-  formatPercent(used,total){
-    return (total == 0) ? 100 : parseInt( 100 * used / total)
-  },
-  selectColorByPercent(percent){
-    if (percent <= 33.33){
-      return '#1CB162'
-    }else if (percent <= 66.66){
-      return '#1BB8FA'
-    }else {
-      return '#FA7252'
-    }
-  }, 
-
-  getInitialState:function(){
-    //return CMDR.generateRandomData()
-  },
-  */
-
-
-
 var mod = React.createClass({
 
   componentDidMount(){
@@ -425,47 +379,6 @@ var mod = React.createClass({
                 })}
             </tbody>
           </table>
-
-            
-
-          {/** 具体pod信息该如何显示暂时不清除，因此这里的代码暂时保留，以后可能会用到
-          <table className="PercentageFatherDiv" style={{'display':'none'}}>
-            <tbody>
-              <tr className="PercentPic">
-                <td>
-                  <Percentage percent={pod_percent} 
-                              foreColor={this.selectColorByPercent(pod_percent)} 
-                              textColor={this.selectColorByPercent(pod_percent)} 
-                              style={{width: '150px'}} 
-                              ref="pod_percent" />
-                </td>
-                <td>
-                  <Percentage percent={task_percent} 
-                              foreColor={this.selectColorByPercent(task_percent)} 
-                              textColor={this.selectColorByPercent(task_percent)} 
-                              style={{width: '150px'}} 
-                              ref="task_percent" />
-                </td>
-                <td>
-                  <Percentage percent={memory_percent} 
-                              foreColor={this.selectColorByPercent(memory_percent)} 
-                              textColor={this.selectColorByPercent(memory_percent)} 
-                              style={{width: '150px'}} 
-                              ref="memory_percent" />
-                </td>
-              </tr>
-              <tr className="PercentText">
-                <td>Pod</td>
-                <td>计算任务</td>
-                <td>内存</td>
-              </tr>
-              <tr className="PercentDetail">
-                <td>{this.state.pod_used}&nbsp;/&nbsp;{this.state.pod_total}</td>
-                <td>{this.state.task_used}&nbsp;/&nbsp;{this.state.task_total}</td>
-                <td>{this.state.memory_used}&nbsp;/&nbsp;{this.state.memory_total}</td>
-              </tr>
-            </tbody>
-          </table>*/}
       </div>
     )
   }
