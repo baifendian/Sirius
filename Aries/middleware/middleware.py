@@ -7,18 +7,19 @@ class UserSessionMiddleware(object):
         path = request.path
         print path
         response = HttpResponse()
+        res = {}
         if path.startswith('/static/') or path == "/login":
-            #static file type or /login
+            # static file type or /login
             return None
         if not request.user.is_authenticated():
-            if path.startswith('/v1/') or path.startswith('/openstack') or path.startswith('/k8s'):
-                #api type
-                res = {}
+            if path.startswith('/v1/'):
+                # api type
                 res["code"] = 401
+                res["data"] = "sesson failure!"
                 response.write(json.dumps(res))
                 return response
             else:
-                 # other
-                 user = ""
-                 user = json.dumps(user)
-                 return render_to_response('index/index.html',locals())
+                # other
+                user = ""
+                user = json.dumps(user)
+                return render_to_response('index/index.html', locals())
