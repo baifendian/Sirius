@@ -415,7 +415,8 @@ def trans_struct_to_easy_dis( filter_data_dict,time_point_arr ):
             # 否则，什么都不做
             try:
                 index = time_point_arr.index( item[0] )
-                series_obj['data'][index] = item[1]
+                if item[1]:
+                    series_obj['data'][index] = item[1]
             except:
                 pass
         series_obj['hasvaliddata'] = (series_obj['data'].count(0) != len(series_obj['data']))
