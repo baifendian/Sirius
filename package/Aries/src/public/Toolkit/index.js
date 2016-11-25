@@ -5,22 +5,22 @@ var Toolkit = {
   /**
    * 对 oriValue 进行单位转换
    * oriValue(int)                原始数据值
-   * hex(int)                     进制（比如10、1024）
+   * base(int)                     进制（比如10、1024）
    * unitArr(Array)               单位字符串列表，如 ['B','KB','MB','GB','TB',]
    * significantFractionBit(int)  有效小数位位数
    */
-  unitConversion:function( oriValue,hex,unitArr,significantFractionBit ){
+  unitConversion:function( oriValue,base,unitArr,significantFractionBit ){
     let value = oriValue
     let unitIndex = 0
     while (1){
-      if ( value < hex ){     // 如果当前值小于hex，则说明无需再进行进制转换
+      if ( value < base ){     // 如果当前值小于base，则说明无需再进行进制转换
         break
       }
       if ( unitIndex >= unitArr.length-1 ){       // 如果发现提供的单位不够，则亦不会继续转换下去
         break
       }
       
-      value = value / hex
+      value = value / base
       unitIndex += 1
     }
     if (significantFractionBit){
