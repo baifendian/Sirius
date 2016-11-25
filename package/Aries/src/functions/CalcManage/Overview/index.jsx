@@ -23,18 +23,24 @@ var mod = React.createClass({
   },
 
   componentDidMount(){
+    this.adjustEchartSize()
+    window.addEventListener('resize',this.adjustEchartSize)
+  },
 
-    //this.calcDesiredSize()
-    //window.onresize = ()=>{ this.onWindowResize() }
+  componentDidUpdate(){
+    this.adjustEchartSize()
+  },
+
+  adjustEchartSize(){
+    for ( let i = 0 ; i < this.userData['resourceTypes'].length ; i ++ ){
+      this.refs[this.userData['resourceTypes'][i]+'Ref'].resizeEchart()
+    }
   },
 
   onHeightChanged(newHeight){
     let table = ReactDOM.findDOMNode(this.refs.EchartFatherDiv)
     table.childNodes[0].style.height = (newHeight + 'px')
-
-    for ( let i = 0 ; i < this.userData['resourceTypes'].length ; i ++ ){
-      this.refs[this.userData['resourceTypes'][i]].resizeEchart()
-    }
+    this.adjustEchartSize()
   },
 
   initUserData(){
@@ -173,45 +179,6 @@ var mod = React.createClass({
       </div>
     )
   }
-
-
-
-  /** 
-  componentDidMount(){
-    this.userData = {}
-    this.initUserData()
-
-    this.initCharts()
-    this.requestClusterInfoData()
-  },
-
-  // 当namespace切换的时候，将会导致页面重新render。而重新render之后echart图对应的对象将会被释放
-  // 因此在render之后，再重新初始化echart并请求数据
-  componentDidUpdate(){
-    this.initCharts()
-    this.requestClusterInfoData()    
-  },
-
-  calcDesiredSize(){
-    let rootSize = this.calcRootDivSize()
-    let rootDivHeight = rootSize['height']
-    let rootDivWidth = rootSize['width']
-
-    let rootDivObj = ReactDOM.findDOMNode(this.refs.MyCalcManagerOverviewChildRootDiv)
-    rootDivObj.style.height = (rootDivHeight+'px')
-
-
-  },
-
-
-  requestClusterInfoData(){
-    for ( let i = 0 ; i < this.userData['clusterInfoTypes'].length ; i ++ ){
-      this.onTimeRangeChanged( 60,this.userData['clusterInfoTypes'][i] )
-    }
-  },
-  */
-
-
 });
 
 
