@@ -105,7 +105,8 @@ def get_pod_list(request,namespace):
         record['Name'] = item['metadata']['name']
         record['CreationTime'] = trans_time_str(item['metadata']['creationTimestamp'])
         record['Node'] = item['spec'].get('nodeName','<None>')
-        record['DetailInfo'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoStrList'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoDict'] = item
 
         containerStatuses = item['status'].get('containerStatuses',[])
         total = len(containerStatuses)
@@ -152,7 +153,8 @@ def get_service_list(request,namespace):
         record['ClusterIP'] = item['spec']['clusterIP']
         record['ExternalIP'] = '<None-IP>'      #TODO:mini的测试暂时没有这个东西，这里暂时填充 <none-IP>
         record['CreationTime'] = trans_time_str( item['metadata']['creationTimestamp'] )
-        record['DetailInfo'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoStrList'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoDict'] = item
 
         ports_info_arr = []
         for cItem in item['spec']['ports']:
@@ -190,7 +192,8 @@ def get_rc_list(request,namespace):
         record['Desired'] = item['spec']['replicas']
         record['Current'] = item['status']['replicas']      #TODO:Current暂时这样取值
         record['CreationTime'] = trans_time_str( item['metadata']['creationTimestamp'] )
-        record['DetailInfo'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoStrList'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoDict'] = item
 
         container_arr = []
         image_arr = []
@@ -263,7 +266,8 @@ def get_ingress_list(request,namespace):
         except: record['Rules'] = []
          
         record['CreationTime'] = trans_time_str(item['metadata']['creationTimestamp'])
-        record['DetailInfo'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoStrList'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoDict'] = item
     
     kd_logger.debug( 'call get_ingress_list query k8s data : %s' % retu_data )
     kd_logger.info( 'call get_ingress_list query k8s data successful' )

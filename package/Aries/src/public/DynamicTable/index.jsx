@@ -78,9 +78,12 @@ var DynamicTable = React.createClass({
         maxTdNumberInOneline = l
       }
     }
-    
+
+    let styleDict = {}
+    this.props.dynamicTableHeight && (styleDict['height'] = this.props.dynamicTableHeight+'px')
+
     return (
-      <div className="DynamicTableClass">
+      <div className="DynamicTableClass" style={styleDict}>
 	      <table>
           <tbody>
             {this.props.dynamicTableTextArray.map((keysInOneLine) => {
