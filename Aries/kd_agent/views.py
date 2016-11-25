@@ -21,7 +21,6 @@ from kd_agent.toolsmanager import InfluxDBQueryStrManager as ISM
 
 
 kd_logger = logging.getLogger("kd_agent_log")
-kd_logger.setLevel( logging.DEBUG )
 
 
 # 去掉时间字符串 2016-07-15T14:38:02Z 中的T、Z
@@ -401,115 +400,135 @@ def dashboard_taskinfo(request):
     req = r.get(url)
     return req.json()
 
-def filter_valid_data( influxdb_data_dict ):
-    try:
-        columns = influxdb_data_dict['results'][0]['series'][0]['columns']
-        series_values = influxdb_data_dict['results'][0]['series'][0]['values']
-
-        retu_data = []
-        for item in series_values:
-            # item是一个list，item[0]为时间戳，item[1]为value
-            if item[1] != None:
-                retu_data.append( item )
-        return generate_success( data=retu_data )
-    except Exception as reason:
-        return generate_failure( traceback.format_exc() )
-
-def trans_struct_to_easy_dis( filter_data_dict ):
+def trans_struct_to_easy_dis( filter_data_dict,time_point_arr ):
     def map_timestamp_to_localtime( time_stamp ):
-        return time.strftime( '%Y-%m-%d %H:%M:%S',time.localtime( time_stamp ) )    
-    d = ISM.get_measurement_disname_dict()
-
+        return time.strftime( '%Y-%m-%d %H:%M:%S',time.localtime( time_stamp ) )
     retu_data = {
         'series':[],
         'xaxis':[]
     }
 
-    # 先把n条线数据的所有时间点都汇总起来，然后排序（避免出现某条线在某个时间点没有数据，被filter_valid_data筛掉的问题）
-    time_points = set()
-    for measurement,data_arr in filter_data_dict.items():
-        for item in data_arr:
-            time_points.add( item[0] )
-    time_points = list(time_points)
-    time_points.sort()
-
     for measurement,data_arr in filter_data_dict.items():
         series_obj = {
-            'legend':d[measurement],
-            'data':[None] * len(time_points)
+            'legend':ISM.get_measurement_disname_dict()[measurement],
+            'data':[0] * len(time_point_arr),        # 有可能出现该namespce下面没有pod，因此没有数据的情况。将默认值设为0，即标识指标用量为0
+            'hasvaliddata':True
         }
         for item in data_arr:
             # 如果某个数据点的time在time_point中，则将series['data']的相应位置置为数据点的值
             # 否则，什么都不做
             try:
-                index = time_points.index( item[0] )
-                series_obj['data'][index] = item[1]
+                index = time_point_arr.index( item[0] )
+                if item[1]:
+                    series_obj['data'][index] = item[1]
             except:
                 pass
+        series_obj['hasvaliddata'] = (series_obj['data'].count(0) != len(series_obj['data']))
+        
         retu_data['series'].append(series_obj)
-    
-    retu_data['xaxis'] = map( map_timestamp_to_localtime,time_points )
+
+    retu_data['xaxis'] = map( map_timestamp_to_localtime,time_point_arr )
     return retu_data
 
-def execute_clusterinfo_request( data_dict ):
+def execute_clusterinfo_request( data_dict,time_range ):
+    # 由于influxdb数据库中记录的时间戳都是整分钟的，因此这里按照整分钟地来生成
+    time_point_arr =[]
+    for cur_time in range( time_range['time_start'],time_range['time_end']+1 ):
+        if cur_time % 60 == 0:
+            time_point_arr.append( cur_time )
+
     retu_obj = {}
-    for m,data in data_dict.items():
+    for m,influxdb_data_dict in data_dict.items():
         # 对获取到的influx数据进行筛选，只保留有用的数据
-        retu_data = filter_valid_data(data)
-        if retu_data['code'] != RETU_INFO_SUCCESS:
-            return generate_failure( retu_data['msg'] )
-        retu_obj[m] = retu_data['data']
-    return generate_success( data=trans_struct_to_easy_dis(retu_obj) )
+        retu_data = []
+        if influxdb_data_dict['results'][0]:
+            for item in influxdb_data_dict['results'][0]['series'][0]['values']:                
+                retu_data.append( item )            # item是一个list，item[0]为时间戳，item[1]为value
+        retu_obj[m] = retu_data
+    return generate_success( data=trans_struct_to_easy_dis(retu_obj,time_point_arr) )
+
+def generate_time_range( minutes ):
+    time_end = int(time.time())
+    time_start = time_end - int(minutes)*60
+    return { 
+        'time_start':time_start,
+        'time_end':time_end,
+    }
+
 
 @csrf_exempt
 @return_http_json
 @trans_return_json
-def get_cluster_cpu_info(request,minutes):
+def get_namespace_cpu_info(request,namespace,minutes):
+    time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ]:
-        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        retu_data = ISM.get_cluster_info_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace 
+        )
         if retu_data['code'] == RETU_INFO_SUCCESS:
             data_dict[m] = retu_data['data']
         else:
             return retu_data
-    return execute_clusterinfo_request( data_dict )
+    return execute_clusterinfo_request( data_dict,time_range )
 
 @csrf_exempt
 @return_http_json
 @trans_return_json
-def get_cluster_memory_info(request,minutes):
+def get_namespace_memory_info(request,namespace,minutes):
+    time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_WORKINGSET,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]:
-        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        retu_data = ISM.get_cluster_info_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace 
+        )        
         if retu_data['code'] == RETU_INFO_SUCCESS:
             data_dict[m] = retu_data['data']
         else:
             return retu_data
-    return execute_clusterinfo_request( data_dict )
+    return execute_clusterinfo_request( data_dict,time_range )
 
 @csrf_exempt
 @return_http_json
 @trans_return_json
-def get_cluster_network_info(request,minutes):
+def get_namespace_network_info(request,namespace,minutes):
+    time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_NETWORK_TRANSMIT,ISM.M_NETWORK_RECEIVE ]:
-        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_POD )
+        retu_data = ISM.get_cluster_info_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace 
+        )
         if retu_data['code'] == RETU_INFO_SUCCESS:
             data_dict[m] = retu_data['data']
         else:
             return retu_data
-    return execute_clusterinfo_request( data_dict )
+    return execute_clusterinfo_request( data_dict,time_range )
 
 @csrf_exempt
 @return_http_json
 @trans_return_json
-def get_cluster_filesystem_info(request,minutes):
+def get_namespace_filesystem_info(request,namespace,minutes):
+    time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_FILESYSTEM_USAGE,ISM.M_FILESYSTEM_LIMIT ]:
-        retu_data = ISM.get_cluster_info_data( measurement=m,minutes = minutes,type_str=ISM.T_NODE )
+        retu_data = ISM.get_cluster_info_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace 
+        )        
         if retu_data['code'] == RETU_INFO_SUCCESS:
             data_dict[m] = retu_data['data']
         else:
             return retu_data
-    return execute_clusterinfo_request( data_dict )
+    return execute_clusterinfo_request( data_dict,time_range )
 

@@ -19,37 +19,41 @@ var CalcManageDataRequester = {
       'mytaskhasnewrecords': 'v1/k8s/api/namespaces/mytasklist/checkhasnewrecords',
       'mytasknewrecords': 'v1/k8s/api/namespaces/mytasklist/getnewrecords',
 
-      'clustercpuinfo': 'v1/k8s/api/clusterinfo/cpu/{minutes}',
-      'clustermemoryinfo': 'v1/k8s/api/clusterinfo/memory/{minutes}',
-      'clusternetworkinfo': 'v1/k8s/api/clusterinfo/network/{minutes}',
-      'clusterfilesysteminfo': 'v1/k8s/api/clusterinfo/filesystem/{minutes}',
+      'podsummarycpuinfo':        'v1/k8s/api/namespaces/{nameSpace}/podsummary/cpu/{minutes}',
+      'podsummarymemoryinfo':     'v1/k8s/api/namespaces/{nameSpace}/podsummary/memory/{minutes}',
+      'podsummarynetworkinfo':    'v1/k8s/api/namespaces/{nameSpace}/podsummary/network/{minutes}',
+      'podsummaryfilesysteminfo': 'v1/k8s/api/namespaces/{nameSpace}/podsummary/filesystem/{minutes}',
 
     }
   },
 
-  getClusterCPUInfo(minutes, callback) {
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustercpuinfo'], {
+  getPodSummaryCPUInfo(nameSpace, minutes, callback) {
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podsummarycpuinfo'], {
+      'nameSpace':nameSpace,
       'minutes': minutes
     })
     this.xhrGetDataEnhanced(url, callback)
   },
 
-  getClusterMemoryInfo(minutes, callback) {
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clustermemoryinfo'], {
+  getPodSummaryMemoryInfo(nameSpace, minutes, callback) {
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podsummarymemoryinfo'], {
+      'nameSpace':nameSpace,
       'minutes': minutes
     })
     this.xhrGetDataEnhanced(url, callback)
   },
 
-  getClusterNetworkInfo(minutes, callback) {
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusternetworkinfo'], {
+  getPodSummaryNetworkInfo(nameSpace, minutes, callback) {
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podsummarynetworkinfo'], {
+      'nameSpace':nameSpace,
       'minutes': minutes
     })
     this.xhrGetDataEnhanced(url, callback)
   },
 
-  getClusterFilesystemInfo(minutes, callback) {
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['clusterfilesysteminfo'], {
+  getPodSummaryFilesystemInfo(nameSpace, minutes, callback) {
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podsummaryfilesysteminfo'], {
+      'nameSpace':nameSpace,
       'minutes': minutes
     })
     this.xhrGetDataEnhanced(url, callback)
