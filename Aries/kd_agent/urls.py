@@ -21,6 +21,11 @@ urlpatterns = patterns('',
     url(r'^api/namespaces/(?P<namespace>\w{1,64})/podsummary/network/(?P<minutes>\d{1,5})',views.get_namespace_network_info ),
     url(r'^api/namespaces/(?P<namespace>\w{1,64})/podsummary/filesystem/(?P<minutes>\d{1,5})',views.get_namespace_filesystem_info ),
 
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/poddetail/cpu/(?P<minutes>\d{1,5})',views.get_poddetail_cpu_info ),
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/poddetail/memory/(?P<minutes>\d{1,5})',views.get_poddetail_memory_info ),
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/poddetail/network/(?P<minutes>\d{1,5})',views.get_poddetail_network_info ),
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/poddetail/filesystem/(?P<minutes>\d{1,5})',views.get_poddetail_filesystem_info ),
+
     url(r'^api/dashboard/taskinfo', views.dashboard_taskinfo ),
 
 )

@@ -170,13 +170,6 @@ var ClusterCommonInfo = React.createClass({
   // 在这里区分是pod的detail还是其他的detail
   setDetailElementHeight( elementHeight ){
     this.setState({ detailElementHeight:elementHeight })
-
-    /** 
-    if ( this.checkIsPodPage() ){
-      this.refs.PodDetailElement.onElementHeightChanged( elementHeight )
-    } else {      
-      //ReactDOM.findDOMNode( this.refs.DynamicTable ).style.height =  + 'px'
-    }*/
   },
 
   // 设置Pod或者非Pod的内容
@@ -249,7 +242,8 @@ var ClusterCommonInfo = React.createClass({
               <SubSplitPanel key={this.userData['DetailElementKey']}>
                 <PodDetailElement ref='PodDetailElement'
                       podDetailHeight={this.state.detailElementHeight}
-                      podDetailInfoDict={this.getDetailElementContent()} />
+                      podDetailInfoDict={this.getDetailElementContent()}
+                      spaceName={this.props.spaceName} />
               </SubSplitPanel>
             ]:[
               <SubSplitPanel key={this.userData['DetailElementKey']}>

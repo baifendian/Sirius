@@ -463,7 +463,7 @@ def get_namespace_cpu_info(request,namespace,minutes):
     time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ]:
-        retu_data = ISM.get_cluster_info_data( 
+        retu_data = ISM.get_namespace_podsummary_data( 
             measurement=m,
             time_start=time_range['time_start'],
             time_end=time_range['time_end'],
@@ -482,7 +482,7 @@ def get_namespace_memory_info(request,namespace,minutes):
     time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_WORKINGSET,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]:
-        retu_data = ISM.get_cluster_info_data( 
+        retu_data = ISM.get_namespace_podsummary_data( 
             measurement=m,
             time_start=time_range['time_start'],
             time_end=time_range['time_end'],
@@ -501,7 +501,7 @@ def get_namespace_network_info(request,namespace,minutes):
     time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_NETWORK_TRANSMIT,ISM.M_NETWORK_RECEIVE ]:
-        retu_data = ISM.get_cluster_info_data( 
+        retu_data = ISM.get_namespace_podsummary_data( 
             measurement=m,
             time_start=time_range['time_start'],
             time_end=time_range['time_end'],
@@ -520,7 +520,7 @@ def get_namespace_filesystem_info(request,namespace,minutes):
     time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_FILESYSTEM_USAGE,ISM.M_FILESYSTEM_LIMIT ]:
-        retu_data = ISM.get_cluster_info_data( 
+        retu_data = ISM.get_namespace_podsummary_data( 
             measurement=m,
             time_start=time_range['time_start'],
             time_end=time_range['time_end'],
@@ -531,4 +531,94 @@ def get_namespace_filesystem_info(request,namespace,minutes):
         else:
             return retu_data
     return execute_clusterinfo_request( data_dict,time_range )
+
+@csrf_exempt
+@return_http_json
+@trans_return_json
+def get_poddetail_cpu_info(requests,namespace,minutes):
+    pod_name = requests.GET.get('podname')
+    time_range = generate_time_range( minutes )
+    data_dict = {}
+    for m in [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ]:
+        retu_data = ISM.get_namespace_poddetail_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace,
+            pod_name=pod_name
+        )        
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict,time_range )
+
+
+@csrf_exempt
+@return_http_json
+@trans_return_json
+def get_poddetail_memory_info(requests,namespace,minutes):
+    pod_name = requests.GET.get('podname')
+    time_range = generate_time_range( minutes )
+    data_dict = {}
+    for m in [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_WORKINGSET,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]:
+        retu_data = ISM.get_namespace_poddetail_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace,
+            pod_name=pod_name
+        )        
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict,time_range )
+
+@csrf_exempt
+@return_http_json
+@trans_return_json
+def get_poddetail_network_info(requests,namespace,minutes):
+    pod_name = requests.GET.get('podname')
+    time_range = generate_time_range( minutes )
+    data_dict = {}
+    for m in [ ISM.M_NETWORK_TRANSMIT,ISM.M_NETWORK_RECEIVE ]:
+        retu_data = ISM.get_namespace_poddetail_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace,
+            pod_name=pod_name
+        )        
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict,time_range )
+
+@csrf_exempt
+@return_http_json
+@trans_return_json
+def get_poddetail_filesystem_info(requests,namespace,minutes):
+    pod_name = requests.GET.get('podname')
+    time_range = generate_time_range( minutes )
+    data_dict = {}
+    for m in [ ISM.M_FILESYSTEM_USAGE,ISM.M_FILESYSTEM_LIMIT ]:
+        retu_data = ISM.get_namespace_poddetail_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace,
+            pod_name=pod_name
+        )        
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict,time_range )
+
+
+
+
+
 

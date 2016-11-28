@@ -1,9 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import echarts from 'echarts'
-import Percentage from 'bfd-ui/lib/Percentage'
-import Button from 'bfd-ui/lib/Button'
-import ButtonGroup from 'bfd-ui/lib/ButtonGroup'
 
 import { AutoLayoutDiv , layoutInfoGenerator } from 'public/AutoLayout'
 import NavigationInPage from 'public/NavigationInPage'
@@ -18,6 +15,12 @@ import './index.less'
 
 var mod = React.createClass({
   
+  getInitialState(){
+    return {
+      echartFatherTbodyHeight:0,
+    }
+  },
+
   componentWillMount(){
     this.initUserData()
   },
@@ -38,8 +41,7 @@ var mod = React.createClass({
   },
 
   onHeightChanged(newHeight){
-    let table = ReactDOM.findDOMNode(this.refs.EchartFatherDiv)
-    table.childNodes[0].style.height = (newHeight + 'px')
+    this.setState( {echartFatherTbodyHeight:newHeight} )
     this.adjustEchartSize()
   },
 
@@ -63,14 +65,6 @@ var mod = React.createClass({
     ]
     
     this.userData['resourceTypes'] = ['cpu','memory','network','filesystem']
-
-    // 保存一些echart的状态数据，方便和其它组件交互
-    this.userData['echartState'] = {
-      'cpu':{'loading':false},
-      'memory':{'loading':false},
-      'network':{'loading':false},
-      'filesystem':{'loading':false}
-    }
     
     this.userData['echartDivID'] = {
       'cpu':'EchartCPUInfoDiv',
@@ -152,8 +146,8 @@ var mod = React.createClass({
                               spaceName:CalcManageConf.getCurSpace(this)
                             })} />
         </div>
-        <table className="EchartFatherDiv" ref="EchartFatherDiv" id={this.userData['idList']['monitorEchartTableID']}>
-          <tbody>
+        <table className="EchartFatherDiv" id={this.userData['idList']['monitorEchartTableID']}>
+          <tbody style={{height:this.state.echartFatherTbodyHeight+'px'}}>
             {layout.map( ( curLine )=>{
               return (
                 <tr>

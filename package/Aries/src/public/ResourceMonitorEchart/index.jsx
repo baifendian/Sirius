@@ -17,6 +17,10 @@ var ResourceMonitorEchart = React.createClass({
     this.initUserData()
     this.initCharts()
 
+    this.reloadEchartData()
+  },
+
+  reloadEchartData(){
     this.onTimeRangeChanged( this.props.dataRangeMinutes[0]['value'] )
   },
 
