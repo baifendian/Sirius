@@ -10,14 +10,14 @@ import common from 'public/Template/echarts/common'
 import update from 'react-update'
 
 export default React.createClass({
-  getInitialState:function(){
+  getInitialState: function(){
     return {
         random: 0,
         hdfs_disk: { //hdfs磁盘
-          used: 100,
-          nonUsed: 50,
+          used: 0,
+          nonUsed: 0,
           unit: "TB",
-          total: 150,
+          total: 0,
         },
         hdfs_shares: 0, //HDFS分享文件的个数
         hdfs_datanodes: { //hdfs datanode状态
@@ -30,7 +30,7 @@ export default React.createClass({
           dead: 0,
           total: 0,
         },
-        codis_memory:{
+        codis_memory: {
           used: 100,
           nonUsed: 50,
           unit: "GB",
@@ -59,7 +59,7 @@ export default React.createClass({
           failed: 0, //失败
           total: 0 //总数
         },
-        openstack_vm:{
+        openstack_vm: {
           lives: 0, //正常
           dead: 0, //异常
           total: 0, //总数
@@ -91,7 +91,7 @@ export default React.createClass({
                          </div>
         }
         //渲染描述
-        let echart_desc = <div className="chart-hover">{item.desc}</div>
+        let echart_desc = <div className="chart-hover" dangerouslySetInnerHTML={{__html: item.desc}}></div>
         return <div className="container-div" key={index}>
                  <div className="container-head">
                    {item.name}
@@ -109,10 +109,7 @@ export default React.createClass({
     let data = item.value;
     switch(type.toLocaleLowerCase()){
       case "pie":
-        break;
       case "piesubarea":
-        //组合需要单独处理
-        console.log(data);
         break;
       default:
         console.log(`该类型图表暂不支持! type:${type}`);
@@ -130,8 +127,6 @@ export default React.createClass({
       let content = item.content.map(function(item,index){
         let id = `echarts_${cid}_${index}`
         let type = item.type;
-        //根据不用的图表渲染不同的数据
-        //let data = {name: "", data: [{value: 50, name: item.name}]};
         if( type != undefined ){
           let data = this.echartsData(type,item);
           let option = EchartsUtil.renderOptionData(type,data);
@@ -154,21 +149,36 @@ export default React.createClass({
     return OverviewConf.getUrlData(this.requestArgs);
   },
   getBdmsData(data){
-
+    let total = data.running + data.waiting + data.failed + data.success;
+    data["total"] = total;
+    this.setState({ bdms_task: data});
   },
   getK8spData(data){
-
+    this.setState({ k8sp_rc: data.rc,
+                    k8sp_pod: data.pod,
+                    k8sp_nodes: data.node,
+                    k8sp_service: data.service
+                  });
   },
   getCodisData(data){
+    this.setState({ codis_cluster: data.codis_cluster,
+                    codis_memory: data.codis_memory
+    });
   },
   getOpenstackData(data){
-
+    this.setState({ openstack_disk: data.openstack_disk,
+                    openstack_image: data.openstack_image,
+                    openstack_vm: data.openstack_vm
+    });
   },
   getHdfsData(data){
-
+    this.setState({ hdfs_datanodes: data.hdfs_datanodes,
+                    hdfs_disk: data.hdfs_disk,
+                    hdfs_shares: data.hdfs_shares
+    });
   },
   getUserAuthData(data){
-    
+    this.setState({ userAuth_member: data.userAuth_member});
   },
   render() {
     let spaceName = OverviewConf.getCurSpace(this);

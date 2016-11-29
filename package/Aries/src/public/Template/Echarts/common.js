@@ -2,8 +2,8 @@ const common = {
   /*
    * 递归替换 json(or string) 对象的每个value中的模版变量.
    * 示例:
-   *   temp: {id:1,name:{ n1:"${args.t1}", n2:{nn2:"${args.date.month}",nn3:"${args.date.day}"}}}
-   *   args: {t1:1,date:{ month:2, day:3}}
+   *   temp: {id:1,name:{n1:"${t1}", n2:{nn2:"${date.month}",nn3:"${date.day}"}}}
+   *   args: {t1:1,date:{month:2, day:3}}
    * 返回: {id:1,name:{ n1:1, n2:{nn2:2,nn3:3}}
    *
    */
@@ -55,7 +55,7 @@ const common = {
     return jsonValue;
   },
   /*
-   * 取出 json 中 指定属性的值.允许嵌套
+   * 取出 json 中 指定属性的值
    * 示例
    *   arr:  ["date","month"]
    *   obj:  {"date":{"month":1}}
@@ -70,8 +70,7 @@ const common = {
       value = value[item];
     });
     return value;
-  }
-
+  },
 }
 
 export default common;
