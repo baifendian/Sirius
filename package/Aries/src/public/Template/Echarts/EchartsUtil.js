@@ -1,5 +1,3 @@
-import gauge from './gauge'
-import pieNumber from './pieNumber'
 import pieSubarea from './pieSubarea'
 import pie from './pie'
 /*
@@ -14,14 +12,6 @@ const EchartsUtil = {
   renderOptionData(type,data){
     let tempData = "";
     switch(type.toLocaleLowerCase()){
-      /*
-      case "gauge":
-        tempData = gauge.renderOption(data);
-        break;
-      case "pienumber":
-        tempData = pieNumber.renderOption(data);
-        break;
-      */
       case "pie":
         tempData = pie.renderOption(data);
         break;

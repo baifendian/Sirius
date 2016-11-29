@@ -7,72 +7,66 @@ import echarts from 'echarts'
 import OverviewConf from './OverviewConf'
 import EchartsUtil from 'public/Template/Echarts/EchartsUtil'
 import common from 'public/Template/echarts/common'
+import update from 'react-update'
 
 export default React.createClass({
   getInitialState:function(){
     return {
         random: 0,
-        //hdfs_disk_used: 0, //HDFS使用百分比
-        hdfs_disk_used: {
+        hdfs_disk: { //hdfs磁盘
           used: 100,
           nonUsed: 50,
           unit: "TB",
-          total: 0,
+          total: 150,
         },
         hdfs_shares: 0, //HDFS分享文件的个数
-        //hdfs_datanodes: "0/0", //HDFS datanode健康状态(99/100)
-        hdfs_datanodes: {
+        hdfs_datanodes: { //hdfs datanode状态
           lives: 0,
           dead: 0,
           total: 0
         },
-        //codis_count: "0/0", //Codis 集群总个数(10/11,正常集群／总集群)
-        codis_count: {
+        codis_cluster: {
           lives: 0,
           dead: 0,
           total: 0,
         },
-        //codis_memory_used: 0, //Codis 内存使用率50%
-        codis_memory_used:{
+        codis_memory:{
           used: 100,
           nonUsed: 50,
-          unit: "GB"
+          unit: "GB",
+          total: 150
         },
-        //k8sp_pod_count: "0/0", //Pod个数(9/10)
-        k8sp_pod_count: {
+        k8sp_pod: {
           lives: 0,
           dead: 0,
           total: 0
         },
-        //k8sp_rc_count: "0/0", //rc(9/10)
-        k8sp_rc_count: {
+        k8sp_rc: {
           lives: 0,
           dead: 0,
           total: 0
         },
-        k8sp_service_status_count: 0, //Service状态
-        //k8sp_nodes_count: 0, //Node个数
-        k8sp_nodes_count: {
+        k8sp_service: 0, //Service状态
+        k8sp_nodes: {
           lives: 0,
           dead: 0,
           total: 0
         },
-        bdms_task_count: {
+        bdms_task: {
           running: 0, //运行中
           waiting: 0, //等待中
           success: 0, //成功
           failed: 0, //失败
           total: 0 //总数
         },
-        //openstack_vm_count: "0/0", //虚拟机(9/10)
-        openstack_vm_count:{
+        openstack_vm:{
           lives: 0, //正常
           dead: 0, //异常
           total: 0, //总数
         },
-        openstack_image_count: 0, //镜像个数
-        openstack_disk_count: 0, //云硬盘个数
-        userAuth_member_count: 0, //当前space成员个数
+        openstack_image: 0, //镜像个数
+        openstack_disk: 0, //云硬盘个数
+        userAuth_member: 0, //当前space成员个数
     };
   },
   echartsMapping:{},
@@ -114,14 +108,6 @@ export default React.createClass({
     //获取echart数据
     let data = item.value;
     switch(type.toLocaleLowerCase()){
-      /*
-      case "gauge":
-        data = {name: "", data: [{value: this.state[value], name: ""}]};
-        break;
-      case "pienumber":
-        data = {name:value, text:this.state[value]};
-        break;
-      */
       case "pie":
         break;
       case "piesubarea":
@@ -168,54 +154,21 @@ export default React.createClass({
     return OverviewConf.getUrlData(this.requestArgs);
   },
   getBdmsData(data){
-    this.setState({
-      bdms_running_count: data.today_running_task,
-      bdms_success_count: data.today_succeed_task,
-      bdms_failed_count: data.today_failed_task,
-      bdms_task_count: data.today_total_task
-    });
+
   },
   getK8spData(data){
-    let k8sp_pod_count = `${data.pod.count}/${data.pod.total}`;
-    let k8sp_rc_count = `${data.rc.count}/${data.rc.total}`;
-    let k8sp_service_status_count = `${data.service.count}`;
-    let k8sp_nodes_count = data.node.count;
-    this.setState({
-      k8sp_pod_count: k8sp_pod_count,
-      k8sp_rc_count: k8sp_rc_count,
-      k8sp_service_status_count: k8sp_service_status_count,
-      k8sp_nodes_count: k8sp_nodes_count
-    });
+
   },
   getCodisData(data){
-    let codis_count = `${data.nice_codis_count}/${data.all_codis_count}`;
-    let codis_memory_used = data.memory_used_count.toFixed(2)/data.memory_total_count;
-    codis_memory_used = `${codis_memory_used.toFixed(2)*100} %`;
-    this.setState({
-      codis_count: codis_count,
-      codis_memory_used: codis_memory_used,
-    });
   },
   getOpenstackData(data){
-    this.setState({
-      openstack_vm_count:data.vm,
-      openstack_image_count:data.image,
-      openstack_disk_count:data.volume
-    });
+
   },
   getHdfsData(data){
-    let hdfs_disk_used = data.hdfs_disk_used * 100;
-    hdfs_disk_used = hdfs_disk_used.toFixed(2);
-    this.setState({
-      hdfs_disk_used: `${hdfs_disk_used} %`,
-      hdfs_shares: data.hdfs_shares,
-      hdfs_datanodes: data.hdfs_datanodes
-    });
+
   },
   getUserAuthData(data){
-    this.setState({
-      userAuth_member_count: data.count
-    });
+    
   },
   render() {
     let spaceName = OverviewConf.getCurSpace(this);

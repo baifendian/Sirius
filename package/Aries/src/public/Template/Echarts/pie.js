@@ -1,5 +1,6 @@
 import common from './common'
 import echarts from 'echarts'
+// echarts 百分比饼图模版数据
 const pie = {
   option: {
     legend: {
@@ -66,9 +67,6 @@ const pie = {
 },
   //渲染option的函数
   renderOption(data){
-    //let tempOption = {id:1,name:{ n1:"${args.t1}", n2:{nn2:"${args.date.month}",nn3:"${args.date.day}"}}};
-    //let args = {t1:1,date:{ month:2, day:3}}
-    //let option = common.tempPreHandler(tempOption,args);
     let option = common.tempPreHandler(this.option,data);
     console.log(option);
     return option;
