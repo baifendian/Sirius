@@ -1,46 +1,157 @@
 import conf from 'public/Conf/Conf'
 const OverviewConf={
-  //概览基础数据
+  //概览基础数据定义
   overviewData:[{
-    title:"HDFS",
+    title: "HDFS",
+    id: "hdfs",
     content: [
-              {label:"使用百分比:",value:"hdfs_disk_used"},
-              {label:"分享个数:",value:"hdfs_shares"},
-              {label:"datanode健康状态:",value:"hdfs_datanodes"}
+                {
+                  name: "hdfs使用率",
+                  stateName: "hdfs_disk_used",
+                  value: {
+                    used: "${used}",
+                    nonUsed: "${nonUsed}"
+                  },
+                  type: "pie",
+                  desc: "已使用: ${used} ${unit} \
+                         剩余: ${nonUsed} ${unit}"
+                },
+                {
+                  name: "hdfs分享个数",
+                  value: "${hdfs_shares}",
+                  stateName: "hdfs_shares",
+                  desc: "${hdfs_shares} 个目录被分享."
+                },
+                {
+                  name: "dn存活状态",
+                  stateName: "hdfs_datanodes",
+                  value: "${lives} / ${total}",
+                  desc: "健康: ${lives}. 异常: ${dead}"
+                }
              ]
     },{
-      title:"CODIS",
+      title: "CODIS",
+      id: "codis",
       content: [
-                {label:"codis集群总数:",value:"codis_count"},
-                {label:"codis内存使用率:",value:"codis_memory_used"},
+                {
+                  name: "codis集群总数",
+                  stateName: "codis_count",
+                  value: "${lives} / ${total}",
+                  desc: "正常: ${lives}. \
+                         异常: ${dead}"
+                },
+                {
+                  name: "Codis 内存使用率",
+                  stateName: "codis_memory_used",
+                  value: {
+                    used: "${used}",
+                    nonUsed: "${nonUsed}"
+                  },
+                  type: "pie",
+                  desc: "已使用: ${used} ${unit}, \
+                         剩余: ${nonUsed} ${unit}"
+                },
                ]
     },{
-      title:"K8SP",
+      title: "K8SP",
+      id: "k8s",
       content: [
-                {label:"pod个数:",value:"k8sp_pod_count"},
-                {label:"rc个数:",value:"k8sp_rc_count"},
-                {label:"service状态:",value:"k8sp_service_status_count"},
-                {label:"node个数:",value:"k8sp_nodes_count"}
+                {
+                  name: "pod个数",
+                  stateName: "k8sp_pod_count",
+                  value: "${lives} / ${total}",
+                  desc: "正常: ${lives}. 异常: ${dead}"
+                },
+                {
+                  name: "rc个数",
+                  stateName: "k8sp_rc_count",
+                  value: "${lives} / ${total}",
+                  desc: "正常: ${lives}. 异常: ${dead}"
+                },
+                {
+                  name: "service状态",
+                  stateName: "k8sp_service_status_count",
+                  value: "${k8sp_service_status_count}",
+                  desc: "${k8sp_service_status_count} 状态."
+                },
+                {
+                  name: "node个数",
+                  stateName: "k8sp_nodes_count",
+                  value: "${lives} / ${total}",
+                  desc: "正常: ${lives} 异常: ${dead}"
+                }
                ]
     },{
-      title:"BDMS",
+      title: "BDMS",
+      id: "bdms",
       content: [
-                {label:"今日正在运行的任务:",value:"bdms_running_count"},
-                {label:"今日执行成功的任务:",value:"bdms_success_count"},
-                {label:"今日运行失败的任务:",value:"bdms_failed_count"},
-                {label:"今日总任务:",value:"bdms_task_count"}
+                {
+                  type: "pieSubarea",
+                  name: "BDMS任务运行图:",
+                  stateName: "bdms_task_count",
+                  desc: " 待运行: ${waiting} 个,\n \
+                          运行中: ${running} 个,\n \
+                          运行成功: ${success} 个,\n \
+                          运行失败: ${failed} 个,\n \
+                          总任务: ${total} 个",
+                  value: [
+                    {
+                      name: "待运行",
+                      value: "${waiting}",
+                    },
+                    {
+                      name: "运行中",
+                      value: "${running}",
+                    },
+                    {
+                      name: "执行成功",
+                      value: "${success}",
+                    },
+                    {
+                      name: "运行失败",
+                      value: "${failed}",
+                    },
+                    /*{
+                      name: "今日总任务",
+                      value: "${total}",
+                    }*/
+                  ]
+
+                }
                ]
     },{
-      title:"OPENSTACK",
+      title: "OPENSTACK",
+      id: "openstack",
       content: [
-                {label:"虚拟机:",value:"openstack_vm_count"},
-                {label:"镜像个数:",value:"openstack_image_count"},
-                {label:"云硬盘个数:",value:"openstack_disk_count"}
+                {
+                  name: "虚拟机状态",
+                  stateName: "openstack_vm_count",
+                  value: "${total}",
+                  desc: "正常: ${lives} 异常: ${dead}.",
+                },
+                {
+                  name: "镜像个数",
+                  stateName: "openstack_image_count",
+                  value: "${openstack_image_count}",
+                  desc: "共保存了 ${openstack_image_count} 个镜像."
+                },
+                {
+                  name: "云硬盘个数",
+                  stateName: "openstack_disk_count",
+                  value: "${openstack_disk_count}",
+                  desc: "共分配了 ${openstack_disk_count} 个磁盘."
+                }
                ]
     },{
-      title:"用户",
+      title: "用户",
+      id: "user",
       content: [
-        {label:"当前space成员个数:",value:"userAuth_member_count"},
+        {
+          name: "成员个数",
+          stateName: "userAuth_member_count",
+          value: "${userAuth_member_count}",
+          desc: "当前空间共有 ${userAuth_member_count} 人."
+        },
       ]
     }],
   //从location中获取cur_space
