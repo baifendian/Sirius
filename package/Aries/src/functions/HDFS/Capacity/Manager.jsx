@@ -31,8 +31,8 @@ const TabManager = React.createClass({
     });
   },
   render:function(){
-    let sliderData = this.props.sliderData.map((slider,i)=>{
-      return  <div>
+    let sliderData = this.props.sliderData.map((slider,index)=>{
+      return  <div key={index}>
                   <div className="col-sm-5 col-md-5 col-lg-5">
                   {slider.name}<Slider defaultValue={slider.value} tickValue={10} start={0} end={slider.end} suffix={slider.unit}
                   onSlid={(value)=>{this.handleSlid(value,slider.name,slider.unit)}} />

@@ -134,7 +134,7 @@ const App = React.createClass({
           </div>
           <div id="body" className="row">
           {auth.user.cur_space != "" ? [
-            <div className="sidebar col-md-2 col-sm-3">
+            <div className="sidebar col-md-2 col-sm-3" key={0}>
               <Nav href={env.basePath}>
                 <NavItem icon="signal" href={`?${params}`} title="概览" />
                   <NavItem key={10} href="CloudService" icon="cloud" title="云服务">
@@ -143,9 +143,7 @@ const App = React.createClass({
                       <NavItem href={`CloudService/HDFS/Share?${params}`} title="我的分享" />
                       <NavItem href={`CloudService/HDFS/Trash?${params}`} title="我的回收站" />
                       {/* 增加管理员验证. 这里受到react的限制只能分开判断. */}
-                      {auth.user.type == 1 ?[
-                          <NavItem href={`CloudService/HDFS/Service?${params}`} title="服务管理" />
-                      ]:null}
+                      {auth.user.type == 1 && <NavItem href={`CloudService/HDFS/Service?${params}`} title="服务管理" />}
                       <NavItem href={`CloudService/HDFS/Capacity?${params}`} title="配额管理" />
                       <NavItem href={`CloudService/HDFS/ShareCenter?${params}`} title="共享中心" />
                     </NavItem>
@@ -192,7 +190,7 @@ const App = React.createClass({
                    <NavItem key={33} href="CloudHost/Manage" icon="credit-card-alt" title="管理">
                     <NavItem href={`CloudHost/Manage/Project?${params}`} title="项目管理" />
                   </NavItem>
-                </NavItem>              
+                </NavItem>
                 <NavItem key={40} href="UserAuth" icon="th-large" title="用户管理">
                   <NavItem href={`UserAuth/SpaceList?${params}`} title="space列表" />
                 </NavItem>

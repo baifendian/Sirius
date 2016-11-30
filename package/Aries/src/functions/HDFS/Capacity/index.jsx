@@ -15,7 +15,7 @@ export default React.createClass({
     //默认是GB. 如果满足TB则直接换算成TB.(plan, total)
     if(value/1024.0 > 1){
       //可以进行转换
-      return converUnit(value/1024.0,unitIndex+1);
+      return this.converUnit(value/1024.0,unitIndex+1);
     }
     return {value:value,index:unitIndex}
   },
@@ -69,14 +69,10 @@ export default React.createClass({
           <Tabs>
             <TabList>
               <Tab>配额监控</Tab>
-              {auth.user.is_supper == 1 ?[
-                <Tab>配额管理</Tab>
-              ]:null}
+              <Tab>配额管理</Tab>
             </TabList>
             <TabPanel><TabMonitor percentData={this.state.percentData} /></TabPanel>
-            {auth.user.is_supper == 1 ?[
-              <TabPanel><TabManager getUrlData={this.getUrlData} refreshCapacity={this.refreshCapacity} sliderData={this.state.sliderData} /></TabPanel>
-            ]:null}
+            <TabPanel><TabManager getUrlData={this.getUrlData} refreshCapacity={this.refreshCapacity} sliderData={this.state.sliderData} /></TabPanel>
           </Tabs>
         </div>
         <div className="div-Fetch">
