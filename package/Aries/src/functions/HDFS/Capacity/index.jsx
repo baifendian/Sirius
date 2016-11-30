@@ -24,13 +24,13 @@ export default React.createClass({
     let slider_data=data.map((d,index)=>{
       let finalUnit = this.converUnit(d.plan_capacity,0);
       let unit = this.unit[finalUnit.index];
-      let total_capacity = d.plan_capacity/1024.0*(finalUnit.index+1);
+      let total_capacity = d.total_capacity/Math.pow(1024.0,finalUnit.index);
       let end = finalUnit.value;
       return {
               "name":d.name,
-              "value":total_capacity.toFixed(2), // 已经分配的空间
+              "value":Number(total_capacity.toFixed(2)), // 已经分配的空间
               "start":0,
-              "end":end.toFixed(0), // 计划使用的空间
+              "end":Number(end.toFixed(0)), // 计划使用的空间
               "unit":unit,
               }
     },this);
@@ -62,6 +62,7 @@ export default React.createClass({
     let spaceName = HdfsConf.getCurSpace(this);
     let sumUrl = this.getUrlData({ type : "SUM",
                                  });
+    console.log(this.state.sliderData);
     return (
        <div>
        <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
