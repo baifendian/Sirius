@@ -6,7 +6,7 @@ import Fetch from 'bfd/Fetch'
 import echarts from 'echarts'
 import OverviewConf from './OverviewConf'
 import EchartsUtil from 'public/Template/Echarts/EchartsUtil'
-import common from 'public/Template/echarts/common'
+import common from 'public/Template/Echarts/common'
 
 export default React.createClass({
   getInitialState: function(){
