@@ -7,7 +7,6 @@ import echarts from 'echarts'
 import OverviewConf from './OverviewConf'
 import EchartsUtil from 'public/Template/Echarts/EchartsUtil'
 import common from 'public/Template/echarts/common'
-import update from 'react-update'
 
 export default React.createClass({
   getInitialState: function(){
