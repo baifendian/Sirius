@@ -7,9 +7,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 import unittest
-USER_NAME = ""
-PASSWORD = ""
-SERVER = "http://172.24.3.64:9090"
+USER_NAME = "ding.zhang"
+PASSWORD = "pmwESC327&"
+SERVER = "http://172.24.2.207:18888/"
 
 
 class Mytest(unittest.TestCase):
@@ -597,14 +597,6 @@ class Mytest(unittest.TestCase):
         self._refresh_volume()
 
     def auto_test(self):
-        #虚拟机
-        self.instance_create()
-        self.instance_stop()
-        self.instance_start()
-        self.instance_restart()
-        self.instance_attach()
-        self.instance_snap()
-        self.instance_del()
         #虚拟卷
         self.volume_create()
         self.volume_extend()
@@ -613,6 +605,15 @@ class Mytest(unittest.TestCase):
         self.volume_unattach()
         self.volume_snap_create()
         self.volume_backup_create()
+        #虚拟机
+        self.instance_create()
+        self.instance_stop()
+        self.instance_start()
+        self.instance_restart()
+        self.instance_attach()
+        self.instance_snap()
+        self.instance_del()
+
 
 if __name__ == "__main__":
     unittest.main()
