@@ -5,7 +5,6 @@ django-bootstrap-tags==1.2.0
 Django==1.8.6
 djangorestframework-jsonp==1.0.2
 requests==2.10.0
-uWSGI==0.8
 redis==2.10.3
 paramiko==1.7.7.1
 pycrypto==2.6

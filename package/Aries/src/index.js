@@ -41,9 +41,15 @@ xhr.header = {
 }
 //xhr.baseUrl = 'http://172.24.3.64:10086/v1'
 xhr.success = (res, option) => {
-  if (typeof res !== 'object') {
-    message.danger(option.url + ': response data should be JSON')
-    return
+  console.log(res);
+  if (typeof res !== 'object' ) {
+    try{
+      res = JSON.parse(res);
+    }catch(err){
+      console.log(err);
+      message.danger(option.url + ': response data should be JSON')
+      return
+    }
   }
   switch (res.code) {
     case 200:
