@@ -15,6 +15,7 @@ from django.conf import settings
 from hdfs.function import HDFS
 from django.http import HttpResponse
 from tools import *
+import math
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -575,37 +576,52 @@ def getOverview(request):
     result = {}
     result["code"] = StatusCode["SUCCESS"]
     data = {}
-    #使用百分比
-    space = getObjByAttr(Space,"name",spaceName)
+    unitList = ["GB", "TB", "PB"]
+    # 使用百分比
+    space = getObjByAttr(Space, "name", spaceName)
+    hdfs_disk = {
+        "used": 0,
+        "nonUsed": 0,
+        "unit": "GB"
+    }
     if space:
         capacity = space[0].capacity
         capacity = eval(capacity)
-        used = capacity["used"]
-        total = capacity["total"]
-        try:
-            hdfs_disk_used = round(float(used)/float(total),2)
-        except Exception,e:
-            ac_logger.error(e)
-            hdfs_disk_used = 0
-    else:
-        hdfs_disk_used = 0
-    #分享个数
+        used = float(capacity["used"])
+        total = float(capacity["total"])
+        total, index, unit = unitTransform(total, 0, unitList)
+        total = round(total, 2)
+        used = round(used/math.pow(1024, index), 2)
+        print total
+        print used
+        non_used = round(total - used, 2)
+        hdfs_disk["used"] = used
+        hdfs_disk["nonUsed"] = non_used
+        hdfs_disk["unit"] = unit
+
+    # 分享个数
     try:
-        hdfs_shares = DataShare.objects.filter(space_name = spaceName).count()
-    except Exception,e:
-        ac_logger.error("hdfs_shares is get failed. so set default 0.")
+        hdfs_shares = DataShare.objects.filter(space_name=spaceName).count()
+    except Exception, e:
+        ac_logger.error("hdfs_shares is get failed. so set default 0. %s" %e)
         hdfs_shares = 0
-    #datanode状态个数
+
+    # datanode状态个数
+    hdfs_datanodes = {
+        "lives": 0,
+        "dead": 0
+    }
     try:
-        extendUrl = "services/HDFS/components/DATANODE"
-        dic = requestEval(extendUrl)
+        extend_url = "services/HDFS/components/DATANODE"
+        dic = requestEval(extend_url)
         total_count = dic["ServiceComponentInfo"]["total_count"]
-        started_count = dic["ServiceComponentInfo"]["started_count"]
-        hdfs_datanodes = "{0}/{1}".format(started_count,total_count)
-    except Exception,e:
+        lives = dic["ServiceComponentInfo"]["started_count"]
+        dead = total_count - lives
+        hdfs_datanodes["lives"] = lives
+        hdfs_datanodes["dead"] = dead
+    except Exception, e:
         ac_logger.error(e)
-        hdfs_datanodes = "0/0"
-    data["hdfs_disk_used"] = hdfs_disk_used
+    data["hdfs_disk"] = hdfs_disk
     data["hdfs_shares"] = hdfs_shares
     data["hdfs_datanodes"] = hdfs_datanodes
     result["data"] = data

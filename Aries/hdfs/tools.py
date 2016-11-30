@@ -130,17 +130,19 @@ def sharePath(shareId,path):
     real_path = os.path.realpath("%s/%s/%s/%s" %(os.path.sep,space_path,source_path,path))
     return real_path,source_path
 
-def unitTransform(size,index,unit):
+def unitTransform(size, index, unit):
     if size/1024.0 > 1024:
         b = size/1024.0
         index = index+1
-        return unitTransform(b,index,unit)
+        return unitTransform(b, index, unit)
     elif size/1024.0 < 1:
-        return "{0} {1}".format(round(size,1),unit[index])
-    elif size/1024.0 >1 and size/1024.0 < 1024:
+        # return "{0} {1}".format(round(size,1),unit[index])
+        return round(size, 1), index, unit[index]
+    elif (size/1024.0 > 1) and (size/1024.0 < 1024):
         b = size/1024.0
-        index = index+1
-        return "{0} {1}".format(round(b,1),unit[index])
+        index = index + 1
+        return round(b, 1), index, unit[index]
+        # return "{0} {1}".format(round(b,1),unit[index])
 
 @print_request
 def test(a,b):
@@ -151,7 +153,7 @@ def test2(a,b):
   print a,b
 
 if __name__=="__main__":
-  unitTransform(1025,0,["KB","MB","GB","TB"])
+  print unitTransform(1025,0,["KB","MB","GB","TB"])
   #print "aaa"
   #test(3,4)
   #test2(3,4)
