@@ -37,7 +37,6 @@ const common = {
     //只替换字符串模版
     let tempVari = typeof(jsonValue) == "string" ? jsonValue.match(reg): null;
     tempVari != null && tempVari.forEach((tempVariName,index)=>{
-      debugger;
       //模版变量变量名
       let regStr = `/\\${tempVariName}/g`;
       let reg = eval(regStr);
@@ -50,7 +49,7 @@ const common = {
     try{
       jsonValue = JSON.parse(jsonValue);
     }catch(err){
-      console.log(`${jsonValue} is not object`);
+      //console.log(`${jsonValue} is not object`);
     }
     return jsonValue;
   },

@@ -15,9 +15,9 @@ export default React.createClass({
         random: 0,
         hdfs_disk: { //hdfs磁盘
           used: 0,
-          nonUsed: 0,
+          nonUsed: 1,
           unit: "TB",
-          total: 0,
+          total: 1,
         },
         hdfs_shares: 0, //HDFS分享文件的个数
         hdfs_datanodes: { //hdfs datanode状态
@@ -31,10 +31,10 @@ export default React.createClass({
           total: 0,
         },
         codis_memory: {
-          used: 100,
-          nonUsed: 50,
+          used: 1,
+          nonUsed: 1,
           unit: "GB",
-          total: 150
+          total: 2
         },
         k8sp_pod: {
           lives: 0,
@@ -71,6 +71,14 @@ export default React.createClass({
   },
   echartsMapping:{},
   index(){
+    let cur_space = auth.user.cur_space;
+    let type = auth.user.type;
+    if(cur_space== "" && type < 1){
+      return <div>您还不属于任何space.请联系space管理员进行添加.</div>
+    }
+    if(cur_space== "" && type >0){
+      return <div>您还没有创建任何space.请先创建space</div>
+    }
     let data = OverviewConf.overviewData;
     let overviewBody = data.map(function(item,index){
       //渲染图表div.
@@ -203,14 +211,14 @@ export default React.createClass({
     return (
         <div className="overview">
           {this.index()}
-          {/*
+          {/* */}
           <Fetch defaultHeight={0} url={`${bdms_url}`} onSuccess={this.getBdmsData} />
           <Fetch defaultHeight={0} url={`${hdfs_url}`} onSuccess={this.getHdfsData} />
           <Fetch defaultHeight={0} url={`${codis_url}`} onSuccess={this.getCodisData} />
           <Fetch defaultHeight={0} url={`${user_url}`} onSuccess={this.getUserAuthData} />
           <Fetch defaultHeight={0} url={`${k8sp_url}`} onSuccess={this.getK8spData} />
           <Fetch defaultHeight={0} url={`${openstack_url}`} onSuccess={this.getOpenstackData} />
-          */}
+
         </div>
       )
   }
