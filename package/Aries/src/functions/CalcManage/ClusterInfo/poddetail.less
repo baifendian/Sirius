@@ -4,7 +4,89 @@
   padding-top: 0px;
 }
 
-table.PodDetailEchartFatherDiv{
+// 由于很多时候这个icon会被用到 TextOverflow 中，而此时它的tooltip也会显示icon，因此在全局隐藏，在明确需要的地方显示
+i.ContainerIcon{
+  display: none;
+}
+
+div.PodDetailBaseInfo {
+  display: block;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  table.ContainerCardTable {
+    @TableWidth: 620px;
+    @TdPadding: 5px;
+    @CommonChild1Width: 0.20;
+    @CommonChild2Width: 0.80;
+    @VolumeChild1Width: 0.20;
+    @VolumeChild2Width: 0.30;
+    @VolumeChild3Width: 0.45;
+    @VolumeChild4Width: 0.05;
+    @TrBorderStyle:1px solid #ECECEC; 
+    
+    width: @TableWidth;
+    min-width: @TableWidth;
+    max-width: @TableWidth;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #FCFCFC;
+    > thead {
+      tr th{
+        font-size: 15px;
+      }
+    }
+    > tbody {
+      tr.ContainerCardTr td{
+        padding: @TdPadding;
+        p {
+          margin-bottom: 0px;  
+        }
+        i.ContainerIcon{
+          margin-right: 5px;
+          display: inline-block;
+        }
+      }
+
+      // 左右边框
+      tr.ContainerCardTr{
+        border-left: @TrBorderStyle;
+        border-right: @TrBorderStyle;
+      }
+      // 上下边框
+      tr.ContainerCardTr:first-child{  border-top: @TrBorderStyle;  }
+      tr.ContainerCardTr:nth-child(2){ border-bottom: @TrBorderStyle; }
+      tr.ContainerCardTr:last-child{   border-bottom: @TrBorderStyle; }
+
+      // 宽度
+      tr.ContainerCardCommonTr {
+        > td:nth-child(1){ width: percentage(@CommonChild1Width); }
+        > td:nth-child(2){ width: percentage(@CommonChild2Width); }
+      }
+      tr.ContainerCardVolumeTr {
+        > td:nth-child(1){ width: percentage(@VolumeChild1Width); }
+        > td:nth-child(2){ width: percentage(@VolumeChild2Width); }
+        > td:nth-child(3){ width: percentage(@VolumeChild3Width); }
+        > td:nth-child(4){ width: percentage(@VolumeChild4Width); }
+      }
+
+      // 为p标签设置相应宽度（超过该宽度的内容将会被隐藏）
+      tr.ContainerCardCommonTr {
+        > td:nth-child(2) p{ width: @TableWidth * @CommonChild2Width - @TdPadding * 2; }
+      }
+      tr.ContainerCardVolumeTr {
+        > td:nth-child(1) p{ width: @TableWidth * @VolumeChild1Width - @TdPadding * 2; }
+        > td:nth-child(2) p{ width: @TableWidth * @VolumeChild2Width - @TdPadding * 2; }
+        > td:nth-child(3) p{ width: @TableWidth * @VolumeChild3Width - @TdPadding * 2; }
+      }
+    }
+  }
+}
+
+
+
+table.PodDetailEchartTable{
   width: 100%;
   > tbody {
     display: block;
@@ -22,3 +104,22 @@ table.PodDetailEchartFatherDiv{
 
   }
 }
+
+table.PodDetailBaseInfoTable{
+  width: 100%;
+  > tbody {
+    margin: 10px;
+    display: block;
+    overflow-y: auto;
+    overflow-x: hidden;
+    > tr{
+      width: 100%;
+      display: block;
+      > td{
+        width: 50%;
+      }
+    }
+  }
+}
+
+

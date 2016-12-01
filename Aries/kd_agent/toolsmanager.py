@@ -189,7 +189,8 @@ class InfluxDBQueryStrManager:
     def get_influxdb_data(sql_str,db = settings.INFLUXDB_DATABASE,epoch='s',timeout = 600 ):
         params = { 'q':sql_str, 'db':db, 'epoch':epoch }
         url_str = '/query?%s' % urllib.urlencode( params ) 
-        kd_logger.info('get influxdb data with url : %s' % url_str )
+        kd_logger.info('get influxdb data with url : http://%s:%s%s' % 
+                            (settings.INFLUXDB_IP, settings.INFLUXDB_PORT,url_str) )
         resp = None
         try:
             con = httplib.HTTPConnection(settings.INFLUXDB_IP, settings.INFLUXDB_PORT, timeout=timeout)

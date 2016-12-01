@@ -2,6 +2,24 @@
 
 var Toolkit = {
 
+  // 传入开始时间字符串，计算出开始时间距离现在大约多长时间
+  calcAge(createTime){
+    if ( !createTime ){
+      return ''
+    }
+    let seconds = (new Date() - new Date(createTime))/1000
+    if ( seconds < 60 ){
+      return Math.round(seconds)+'秒'
+    } else if ( seconds < 60*60 ){
+      return Math.round(seconds/60)+'分钟'
+    } else if ( seconds < 24*60*60 ){
+      return Math.round(seconds/60/60)+'小时'
+    } else {
+      return Math.round(seconds/60/60/24)+'天'
+    }
+  },
+
+
   /**
    * 对 oriValue 进行单位转换
    * oriValue(int)                原始数据值

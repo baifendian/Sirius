@@ -1,6 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Tabs, TabList, Tab, TabPanel } from 'bfd/Tabs'
+import { Row, Col } from 'bfd/Layout'
+import TextOverflow from 'bfd/TextOverflow'
+import Icon from 'bfd/Icon'
 
 import Toolkit from 'public/Toolkit/index.js'
 import DynamicTable from 'public/DynamicTable'
@@ -28,23 +31,12 @@ var PodDetailElement = React.createClass({
 
   // 获取 Pod 的名字
   getPodName(){
-    //return Toolkit.generateGUID()
     return this.props.podDetailInfoDict && this.props.podDetailInfoDict['Name']
   },
 
   // 检查用户当前是否选中了某个 Pod
   checkUserSelectedPod(){
     return this.props.podDetailInfoDict != undefined
-  },
-
-  // 详情 TabPanel 中使用的数据
-  generateJsonDisList(){
-    let detail = this.props.podDetailInfoDict['DetailInfoStrList']
-    let detailInfoToShow = []
-    for ( let k = 0 ; k < detail.length ; k ++ ){
-      detailInfoToShow.push( [detail[k]] )
-    }
-    return detailInfoToShow
   },
 
   // 重新加载 监控 数据
@@ -138,70 +130,217 @@ var PodDetailElement = React.createClass({
     }
   },
 
+  // 基本信息需要的函数
+  analyseBaseInfo(){
+    if ( ! this.checkUserSelectedPod() ){
+      return ''
+    }
+
+    let podFullInfo = this.props.podDetailInfoDict
+    return {
+      'containersInfo':this.analyseContainerInfo( podFullInfo ),
+      'volumes':this.analyseVolumes( podFullInfo ),
+      'volumesMount':this.analyseVolumesMount( podFullInfo )
+    }
+  },
+
+  // 将所有的volume信息罗列出来
+  analyseVolumes( podFullInfo ){
+    // 下面几种 volume 格式会被关注，其它的将会被忽视
+    let allowedVolumesType = ['rbd','hostPath','emptyDir']
+    let podDetail = podFullInfo['DetailInfoDict']
+    let volumes = {}
+    if (! podDetail['spec']['volumes']){
+      return volumes
+    }
+    for ( let index = 0 ; index < podDetail['spec']['volumes'].length ; index ++ ){
+      let volumeInfo = podDetail['spec']['volumes'][index]
+      for ( let j = 0 ; j < allowedVolumesType.length ; j ++ ){
+        let tStr = allowedVolumesType[j]
+        if (volumeInfo[tStr]){
+          volumes[volumeInfo['name']] = [tStr,volumeInfo[tStr]]
+          break
+        }
+      }
+    }
+    return volumes
+  },
+
+  // 卷挂载信息
+  analyseVolumesMount( podFullInfo ){
+    let podDetail = podFullInfo['DetailInfoDict']
+    let volumesMount = {}
+    for ( let i = 0 ; i < podDetail['spec']['containers'].length ; i ++ ){
+      let mountInfo = podDetail['spec']['containers'][i]
+      let info = []
+      if (mountInfo['volumeMounts']){
+        for ( let j = 0 ; j < mountInfo['volumeMounts'].length ; j ++ ){
+          let vm = mountInfo['volumeMounts'][j]
+          info.push({
+            'name':vm['name'],          // 以此和卷信息一一对应
+            'path':vm['mountPath'],     // 卷挂载到container的路径
+            'readonly':vm['readOnly'] ? 'R' : 'RW'
+          })
+        }
+      }
+      volumesMount[ mountInfo['name'] ] = info
+    }
+    return volumesMount
+  },
+
+  // container的基础信息
+  analyseContainerInfo( podFullInfo ){
+    let containersInfo = []
+    let podDetail = podFullInfo['DetailInfoDict']
+    for ( let index = 0 ; index < podDetail['status']['containerStatuses'].length ; index ++ ){
+      let containerStatus = podDetail['status']['containerStatuses'][index]
+      // 最简单的信息
+      let info = {
+        'name':containerStatus['name'],
+        'image':containerStatus['image'],
+        'restartCount':containerStatus['restartCount'],
+      }
+      
+      // 运行时刻信息
+      if (containerStatus['state']['running']){
+        info['state'] = 'running'
+        info['age'] = Toolkit.calcAge( containerStatus['state']['running']['startedAt'] )
+        info['color'] = 'green'
+      } else {
+        info['color'] = 'red'
+      }
+      containersInfo.push(info)
+    }
+    return containersInfo
+  },
+
+  // 由于三个tab页比较复杂， 因此把它们拆出来，形成三个render函数
   render: function (){
     // 如果用户没有选择任何pod，则展示一些信息
     let userUnSelectedPodDetailInfo = [['请选择Pod']]
 
-    let podDetail = this.userData['podDetail']
-
     return(
       <Tabs ref='RootTab' className="PodDetailRootTab">
         <TabList>
-          <Tab>基本信息</Tab>
+          <Tab>容器基本信息</Tab>
           <Tab>监控</Tab>
           <Tab>详情</Tab>
         </TabList>
         <TabPanel>
-          {this.checkUserSelectedPod() ? [
-            '基本指标'
-          ]:[
+          {this.checkUserSelectedPod() ? this.renderBaseInfo() : [ 
+            <DynamicTable dynamicTableHeight={this.props.podDetailHeight-10}
+                          dynamicTableTextArray={userUnSelectedPodDetailInfo} /> 
+          ]}
+        </TabPanel>
+        <TabPanel>
+          {this.checkUserSelectedPod() ? this.renderEcahrtInfo() : [
             <DynamicTable dynamicTableHeight={this.props.podDetailHeight-10}
                         dynamicTableTextArray={userUnSelectedPodDetailInfo} />
           ]}
         </TabPanel>
         <TabPanel>
-          {this.checkUserSelectedPod() ? [
-            <table className="PodDetailEchartFatherDiv" >
-              <tbody style={{height:this.props.podDetailHeight+'px'}}>
-                {podDetail['layout'].map( ( curLine )=>{
-                  return (
-                    <tr>
-                      {curLine.map( (curIdentify)=>{
-                        return (
-                          <td>
-                            <ResourceMonitorEchart 
-                                      ref={curIdentify+'Ref'}
-                                      echartTitle={ podDetail['echartTitleText'][curIdentify] } 
-                                      echartDivID={ podDetail['echartDivID'][curIdentify] }
-                                      echartToolTipFormatterInfo={ podDetail['echartToolTipFormatterInfo'][curIdentify] }
-                                      requestMonitorDataCallBackFunc={ podDetail['requestMonitorDataCallBackFunc'][curIdentify] }
-                                      dataRangeMinutes={podDetail['dataRangeMinutes']} />
-                          </td>
-                        )
-                      } )}
-                    </tr>
-                  )
-                } )}
-              </tbody>
-            </table>
-          ]:[
-            <DynamicTable dynamicTableHeight={this.props.podDetailHeight-10}
-                        dynamicTableTextArray={userUnSelectedPodDetailInfo} />
-          ]}
-        </TabPanel>
-        <TabPanel>
-          {/** 这里之所以分开写是为了方便看代码 */}
-          {this.checkUserSelectedPod() ? [
-            <DynamicTable dynamicTableHeight={this.props.podDetailHeight-10}
-                        dynamicTableTextArray={this.generateJsonDisList()}/>
-          ]:[
+          {this.checkUserSelectedPod() ? this.renderDetailJsonInfo() : [
             <DynamicTable dynamicTableHeight={this.props.podDetailHeight-10}
                         dynamicTableTextArray={userUnSelectedPodDetailInfo} />
           ]}
         </TabPanel>
       </Tabs>
     )
-  }
+  },
+
+  renderBaseInfo(){
+    let baseInfo = this.analyseBaseInfo()
+
+    /**     
+    console.log(baseInfo['volumes'])
+    console.log(baseInfo['containersInfo'])
+    console.log(baseInfo['volumesMount'])
+    */
+
+    let containerInfoKeys = [
+      {  'key':'image','disStr':'Image' },
+      {  'key':'restartCount','disStr':'RestartCount' }
+    ]
+
+    return (
+      <div className="PodDetailBaseInfo" style={{'height':(this.props.podDetailHeight)+'px'}}>        
+        {baseInfo['containersInfo'].map( (container)=>{
+          return (
+            <table className="ContainerCardTable" border="1">
+              <thead>
+                <tr>
+                  <th colSpan="4">{container['name']}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {containerInfoKeys.map( (info)=>{
+                  return (
+                    <tr className="ContainerCardTr ContainerCardCommonTr" key={Toolkit.generateGUID()}>
+                      <td>{info['disStr']}</td>
+                      <td colSpan="3">
+                        <TextOverflow>
+                          <p>{container[info['key']]}</p>
+                        </TextOverflow>
+                      </td>
+                    </tr>
+                  )
+                } )}
+                {baseInfo['volumesMount'][container['name']].map( (vm)=>{
+                  let volumeDetailInfo = baseInfo['volumes'][vm['name']]
+                  volumeDetailInfo = volumeDetailInfo ? JSON.stringify(volumeDetailInfo) : '未知'
+                  return (
+                    <tr className="ContainerCardTr ContainerCardVolumeTr" key={Toolkit.generateGUID()}>
+                      <td><TextOverflow><p><Icon type="folder-o" className="ContainerIcon" />{vm['name']}</p></TextOverflow></td>
+                      <td><TextOverflow><p>{vm['path']}</p></TextOverflow></td>
+                      <td><TextOverflow><p>{volumeDetailInfo}</p></TextOverflow></td>
+                      <td>{vm['readonly']}</td>
+                    </tr>
+                  )
+                } )}   
+              </tbody>
+            </table>
+          )
+        } )}
+      </div>
+    )
+  },
+  renderEcahrtInfo(){
+    let podDetail = this.userData['podDetail']    
+    return (
+      <table className="PodDetailEchartTable" >
+        <tbody style={{'height':this.props.podDetailHeight+'px'}}>
+          {podDetail['layout'].map( ( curLine )=>{
+            return (
+              <tr>
+                {curLine.map( (curIdentify)=>{
+                  return (
+                    <td>
+                      <ResourceMonitorEchart 
+                                      ref={curIdentify+'Ref'}
+                                      echartTitle={ podDetail['echartTitleText'][curIdentify] } 
+                                      echartDivID={ podDetail['echartDivID'][curIdentify] }
+                                      echartToolTipFormatterInfo={ podDetail['echartToolTipFormatterInfo'][curIdentify] }
+                                      requestMonitorDataCallBackFunc={ podDetail['requestMonitorDataCallBackFunc'][curIdentify] }
+                                      dataRangeMinutes={podDetail['dataRangeMinutes']} />
+                    </td>
+                  )
+                } )}
+              </tr>
+            )
+          } )}
+        </tbody>
+      </table>      
+    )
+  },
+  renderDetailJsonInfo(){
+    let detail = this.props.podDetailInfoDict['DetailInfoStrList']
+    let detailInfoToShow = []
+    for ( let k = 0 ; k < detail.length ; k ++ ){
+      detailInfoToShow.push( [detail[k]] )
+    }
+    return <DynamicTable dynamicTableHeight={this.props.podDetailHeight-10}
+                    dynamicTableTextArray={detailInfoToShow}/>
+  }  
 })
 
 export default PodDetailElement

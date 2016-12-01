@@ -1,9 +1,28 @@
 
 
+// 默认情况下，splitpanel组件把用户选择给禁掉了。这里需要把它打开，允许用户选择文本
+td,th{
+  -webkit-user-select: initial;
+  -moz-user-select: initial;
+  -ms-user-select: initial;
+  user-select: initial;
+}
+
+
 // 私有的样式
 div.PodInfoChildRootDiv div.DataTableFatherDiv .DataTable {
-  thead tr th,tbody tr td { 
-    width: 16.66%;
+  thead > tr > th:nth-child(1),tbody > tr > td:nth-child(1) {
+    width: 20%;
+  }
+  thead > tr > th:nth-child(4),tbody > tr > td:nth-child(4),
+  thead > tr > th:nth-child(5),tbody > tr > td:nth-child(5),
+  thead > tr > th:nth-child(6),tbody > tr > td:nth-child(6),
+  thead > tr > th:nth-child(8),tbody > tr > td:nth-child(8){
+    width: 12%;
+  }
+
+  thead > tr > th,tbody > tr > td {
+    width: 8%;
   }
 }
 

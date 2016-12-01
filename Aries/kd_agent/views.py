@@ -102,6 +102,8 @@ def get_pod_list(request,namespace):
         record = {}
         retu_data.append(record)
         record['Name'] = item['metadata']['name']
+        record['PodIP'] = item['status'].get('podIP','<None>')
+        record['HostIP'] = item['status'].get('hostIP','<None>')
         record['CreationTime'] = trans_time_str(item['metadata']['creationTimestamp'])
         record['Node'] = item['spec'].get('nodeName','<None>')
         record['DetailInfoStrList'] = trans_obj_to_easy_dis(item)
