@@ -10,6 +10,7 @@ import common from 'public/Template/Echarts/common'
 
 export default React.createClass({
   getInitialState: function(){
+    this.echartsMapping = {};
     return {
         random: 0,
         hdfs_disk: { //hdfs磁盘
@@ -30,10 +31,10 @@ export default React.createClass({
           total: 0,
         },
         codis_memory: {
-          used: 1,
+          used: 0,
           nonUsed: 1,
           unit: "GB",
-          total: 2
+          total: 1
         },
         k8sp_pod: {
           lives: 0,
@@ -78,7 +79,7 @@ export default React.createClass({
     if(cur_space== "" && type >0){
       return <div>您还没有创建任何space.请先创建space</div>
     }
-    let data = OverviewConf.overviewData;
+    let data = OverviewConf.getOverviewData();
     let overviewBody = data.map(function(item,index){
       //渲染图表div.
       let cid = item.id;
@@ -125,8 +126,9 @@ export default React.createClass({
     return data;
   },
   componentDidMount: function () {
+    console.log(this);
     //从模版中取数据渲染
-    let data = OverviewConf.overviewData;
+    let data = OverviewConf.getOverviewData();
     data.map(function(item,index){
       //渲染图表div.
       let title = item.title;
@@ -137,7 +139,11 @@ export default React.createClass({
         if( type != undefined ){
           let data = this.echartsData(type,item);
           let option = EchartsUtil.renderOptionData(type,data);
-          this.echartsMapping[index] = echarts.init(document.getElementById(id)).setOption(option);
+          let stateName = item.stateName
+          //存储echarts对象和指标的映射关系.方便后面的实时数据更新
+          let echart =  echarts.init(document.getElementById(id));
+          echart.setOption(option);
+          this.echartsMapping[stateName] = echart;
         }
       },this);
       return content
@@ -155,10 +161,37 @@ export default React.createClass({
     this.requestArgs.random = this.state.random;
     return OverviewConf.getUrlData(this.requestArgs);
   },
+  getConfItem(stateName){
+    let itemData = null;
+    OverviewConf.getOverviewData().forEach(function(item,index){
+      let content = item.content;
+      content.forEach(function(arr,index){
+        if(arr.stateName == stateName){
+          itemData = arr;
+        }
+      });
+    })
+    return itemData;
+  },
+  /*
+   * 刷新 Echarts 图表数据
+   */
+  reloadEcharts(stateName,data){
+    let item = this.getConfItem(stateName);
+    if(item == null){
+      console.log(`未知的stateName:${stateName}`);
+      return ;
+    }
+    let type = item.type;
+    let value = common.tempPreHandler(item.value,data);
+    let echartsData = EchartsUtil.renderOptionData(type,value);
+    let echart = this.echartsMapping[stateName];
+    echart.setOption(echartsData);
+  },
   getBdmsData(data){
-    let total = data.running + data.waiting + data.failed + data.success;
-    data["total"] = total;
+    data["total"] = data.running + data.waiting + data.failed + data.success;
     this.setState({ bdms_task: data});
+    this.reloadEcharts("bdms_task",data);
   },
   getK8spData(data){
     this.setState({ k8sp_rc: data.rc,
@@ -168,21 +201,33 @@ export default React.createClass({
                   });
   },
   getCodisData(data){
-    this.setState({ codis_cluster: data.codis_cluster,
-                    codis_memory: data.codis_memory
+    let codis_memory = data.codis_memory;
+    let codis_cluster = data.codis_cluster;
+    codis_cluster["total"] = codis_cluster.lives + codis_cluster.dead;
+    codis_memory["total"] = codis_memory.used + codis_memory.nonUsed;
+    this.setState({ codis_cluster: codis_cluster,
+                    codis_memory: codis_memory
     });
+    this.reloadEcharts("codis_memory",codis_memory);
   },
   getOpenstackData(data){
+    let openstack_vm = data.openstack_vm;
+    openstack_vm["total"] = openstack_vm.lives + openstack_vm.dead;
     this.setState({ openstack_disk: data.openstack_disk,
                     openstack_image: data.openstack_image,
                     openstack_vm: data.openstack_vm
     });
   },
   getHdfsData(data){
-    this.setState({ hdfs_datanodes: data.hdfs_datanodes,
-                    hdfs_disk: data.hdfs_disk,
+    let hdfs_disk = data.hdfs_disk;
+    let hdfs_datanodes = data.hdfs_datanodes;
+    hdfs_datanodes["total"] = hdfs_datanodes.lives + hdfs_datanodes.dead;
+    hdfs_disk["total"] = hdfs_disk.used + hdfs_disk.nonUsed;
+    this.setState({ hdfs_datanodes: hdfs_datanodes,
+                    hdfs_disk: hdfs_disk,
                     hdfs_shares: data.hdfs_shares
     });
+    this.reloadEcharts("hdfs_disk",hdfs_disk);
   },
   getUserAuthData(data){
     this.setState({ userAuth_member: data.userAuth_member});
@@ -207,17 +252,18 @@ export default React.createClass({
     let openstack_url = this.getUrlData({ type: "OPENSTACK_OVERVIEW",
                                       spaceName: spaceName
                   });
+    let content = this.index();
     return (
         <div className="overview">
-          {this.index()}
-          {/* */}
-          <Fetch defaultHeight={0} url={`${bdms_url}`} onSuccess={this.getBdmsData} />
+          {content}
           <Fetch defaultHeight={0} url={`${hdfs_url}`} onSuccess={this.getHdfsData} />
-          <Fetch defaultHeight={0} url={`${codis_url}`} onSuccess={this.getCodisData} />
           <Fetch defaultHeight={0} url={`${user_url}`} onSuccess={this.getUserAuthData} />
+          {/*
+          <Fetch defaultHeight={0} url={`${bdms_url}`} onSuccess={this.getBdmsData} />
+          <Fetch defaultHeight={0} url={`${codis_url}`} onSuccess={this.getCodisData} />
           <Fetch defaultHeight={0} url={`${k8sp_url}`} onSuccess={this.getK8spData} />
           <Fetch defaultHeight={0} url={`${openstack_url}`} onSuccess={this.getOpenstackData} />
-
+          */}
         </div>
       )
   }
