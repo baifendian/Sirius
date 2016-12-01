@@ -37,7 +37,7 @@ def getOverview(request):
     except Exception,e:
         ac_logger.info(e)
         count = 0;
-    data["count"] = count
+    data["userAuth_member"] = count
     result["code"] = 200
     result["data"] = data
     return result
