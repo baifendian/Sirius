@@ -233,37 +233,7 @@ class AutoReblanceApi(APIView):
                 "msg":"Error"
             }
         finally:
-            return packageResponse(result) 
-			
-			
-class CodisOverview(APIView):
-    '''
-       获取概览信息
-    '''
-    def get(self, request, format=None):
-        query_url = opentsdb_url + "/api/query/"
-        host_list = Host.objects.all()
-        allcodis_count = Codis.objects.all().count()
-        badcodis_count = 0
-        memory_used_count = 0
-        memory_total_count = 0
-        for host in host_list:
-            memory_used_count += host.memory_used
-            memory_total_count += host.memory_total
-        badcodis_query_args = {"start":"6h-ago","end":"","queries":[{"metric":"codis.badcluster","aggregator": "sum",\
-                               "tags":{"bad":"true"}}]}
-        badcodis = requests.post(query_url,data=json.dumps(badcodis_query_args),timeout=10)
-        for k,v in json.loads(badcodis.text)[0]['dps'].items():
-            badcodis_count = v
-            break
-        data = {"memory_used_count":memory_used_count,"memory_total_count":memory_total_count,\
-                "all_codis_count":allcodis_count,"nice_codis_count":allcodis_count-badcodis_count}        
-        result={
-            "msg":"OK",
-            "code":200,
-            "data":data
-        }
-        return packageResponse(result)			
+            return packageResponse(result)
 
 
 class CodisOverview(APIView):
@@ -287,19 +257,37 @@ class CodisOverview(APIView):
             for k,v in json.loads(badcodis.text)[0]['dps'].items():
                 badcodis_count = v
                 break
-            data = {"memory_used_count":memory_used_count,"memory_total_count":memory_total_count,\
-                    "all_codis_count":allcodis_count,"nice_codis_count":allcodis_count-badcodis_count}
+            data = {
+                "codis_cluster": {
+                    "lives": allcodis_count - badcodis_count,
+                    "dead": badcodis_count,
+                },
+                "codis_memory": {
+                    "used": memory_used_count,
+                    "nonUsed": memory_total_count - memory_used_count,
+                    "unit": "GB",
+                }
+            }
             result={
                 "msg":"OK",
                 "code":200,
                 "data":data
             }
         except Exception, e:
-            data = {"memory_used_count": memory_used_count, "memory_total_count": memory_total_count, \
-                    "all_codis_count": allcodis_count, "nice_codis_count": allcodis_count - badcodis_count}
+            data = {
+                "codis_cluster": {
+                    "lives": allcodis_count - badcodis_count,
+                    "dead": badcodis_count,
+                },
+                "codis_memory": {
+                    "used": memory_used_count,
+                    "nonUsed": memory_total_count - memory_used_count,
+                    "unit": "GB",
+                }
+            }
             result = {
                 "msg": "Error, error request from opentsdb",
-                "code": 200,
+                "code": 201,
                 "data": data
             }
             ac_logger.error("Error, error request from opentsdb %s" % e)
