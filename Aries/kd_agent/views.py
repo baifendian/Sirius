@@ -311,7 +311,11 @@ def search_k8s_config_obj( key,func,namespace,name ):
     for item in detail_info['data']['items']:
         if item['metadata']['name'] == name:
             kd_logger.info( 'find %s with name : %s' % (key,name) )
-            return download_k8s_config_json( item,'%s_%s_%s.json' % (namespace,key,name) )
+            json_obj = {
+                'metadata':item['metadata'],
+                'spec':item['spec']
+            }
+            return download_k8s_config_json( json_obj,'%s_%s_%s.json' % (namespace,key,name) )
     
     s = 'cannot find %s with name : %s' % (key,name)
     kd_logger.error(s)
