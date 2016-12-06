@@ -2,6 +2,8 @@ import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd/message'
 import Toolkit from 'public/Toolkit/index.js'
 
+import env from '../../../env.js'
+
 var CalcManageDataRequester = {
   getCurNameSpace(_this) {
     return _this.props.location.query.cur_space
@@ -28,7 +30,44 @@ var CalcManageDataRequester = {
       'poddetailmemoryinfo':      'v1/k8s/api/namespaces/{nameSpace}/poddetail/memory/{minutes}?podname={podName}',
       'poddetailnetworkinfo':     'v1/k8s/api/namespaces/{nameSpace}/poddetail/network/{minutes}?podname={podName}',
       'poddetailfilesysteminfo':  'v1/k8s/api/namespaces/{nameSpace}/poddetail/filesystem/{minutes}?podname={podName}',
+
+      // 为 href 赋值时，需要加上前缀（因为它不是ajax请求）
+      'podjsondownload':        '{baseUrl}v1/k8s/api/namespaces/{nameSpace}/pods/downloadjson?podname={podName}',
+      'servicejsondownload':    '{baseUrl}v1/k8s/api/namespaces/{nameSpace}/services/downloadjson?servicename={serviceName}',
+      'rcjsondownload':         '{baseUrl}v1/k8s/api/namespaces/{nameSpace}/replicationcontrollers/downloadjson?rcname={rcName}',
+      'ingressjsondownload':    '{baseUrl}v1/k8s/apis/extensions/v1beta1/namespaces/{nameSpace}/ingresses/downloadjson?ingressname={ingressName}',
+
     }
+  },
+
+  // 下载文件必须使用 button + url 的方式，不能使用ajax请求，因此这里只返回 url
+  getPodJsonDownloadUrl(nameSpace, podName){
+    return Toolkit.strFormatter.formatString(this.getUrlForm()['podjsondownload'], {
+      'baseUrl':env.baseUrl,
+      'nameSpace':nameSpace,
+      'podName': podName
+    })
+  },
+  getServiceJsonDownloadUrl(nameSpace, serviceName){
+    return Toolkit.strFormatter.formatString(this.getUrlForm()['servicejsondownload'], {
+      'baseUrl':env.baseUrl,
+      'nameSpace':nameSpace,
+      'serviceName': serviceName
+    })
+  },
+  getRCJsonDownloadUrl(nameSpace, rcName){
+    return Toolkit.strFormatter.formatString(this.getUrlForm()['rcjsondownload'], {
+      'baseUrl':env.baseUrl,
+      'nameSpace':nameSpace,
+      'rcName': rcName
+    })
+  },
+  getIngressJsonDownloadUrl(nameSpace, ingressName){
+    return Toolkit.strFormatter.formatString(this.getUrlForm()['ingressjsondownload'], {
+      'baseUrl':env.baseUrl,
+      'nameSpace':nameSpace,
+      'ingressName': ingressName
+    })
   },
 
   getPodDetailCPUInfo(nameSpace, podName, minutes, callback){

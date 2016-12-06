@@ -8,7 +8,12 @@ urlpatterns = patterns('',
     url(r'^api/namespaces/(?P<namespace>\w{1,64})/pods$',views.get_pod_list),
     url(r'^api/namespaces/(?P<namespace>\w{1,64})/services$',views.get_service_list),
     url(r'^api/namespaces/(?P<namespace>\w{1,64})/replicationcontrollers$',views.get_rc_list),
-    url(r'^apis/extensions/v1beta1/namespaces/(?P<namespace>\w{1,64})/ingresses',views.get_ingress_list ),
+    url(r'^apis/extensions/v1beta1/namespaces/(?P<namespace>\w{1,64})/ingresses$',views.get_ingress_list ),
+
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/pods/downloadjson$',views.download_pod_json),
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/services/downloadjson$',views.download_service_json),
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/replicationcontrollers/downloadjson$',views.download_rc_json),
+    url(r'^apis/extensions/v1beta1/namespaces/(?P<namespace>\w{1,64})/ingresses/downloadjson$',views.download_ingress_json ),
 
     url(r'^api/namespaces/mytaskgraph$', views.get_mytask_graph),
     url(r'^download/$', views.download),

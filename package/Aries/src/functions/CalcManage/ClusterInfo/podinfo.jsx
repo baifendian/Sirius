@@ -1,5 +1,7 @@
 import React from 'react'
 
+import Button from 'bfd/Button'
+
 import Toolkit from 'public/Toolkit/index.js'
 
 import ClusterCommonInfo from './index.jsx'
@@ -41,9 +43,23 @@ export default React.createClass({
                 { title:'CreationTime',  key:'CreationTime',	order:false },
                 { 
                   title:'Age',
-                  key:'Age',
-                  render:(age,item) => {
+                  key:'',
+                  render:(varNotUse,item) => {
                     return Toolkit.calcAge( item['CreationTime'] )
+                  },
+                  order:false,
+                },{
+                  title:'',
+                  key:'',
+                  render:(varNotUse,item) => {
+                    let downloadUrl = CMDR.getPodJsonDownloadUrl( CMDR.getCurNameSpace(this),item['Name'] )
+                    let aLabelID = 'ALabel'+item['Name']
+                    return (
+                      <div>
+                        <Button onClick={()=>{ document.getElementById(aLabelID).click() }}>下载Json</Button> 
+                        <a id={aLabelID} href={downloadUrl} style={{'display':'none'}}></a>
+                      </div>
+                    )
                   },
                   order:false,
                 }],

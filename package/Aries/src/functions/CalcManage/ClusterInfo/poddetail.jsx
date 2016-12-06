@@ -257,11 +257,6 @@ var PodDetailElement = React.createClass({
     console.log(baseInfo['volumesMount'])
     */
 
-    let containerInfoKeys = [
-      {  'key':'image','disStr':'Image' },
-      {  'key':'restartCount','disStr':'RestartCount' }
-    ]
-
     return (
       <div className="PodDetailBaseInfo" style={{'height':(this.props.podDetailHeight)+'px'}}>        
         {baseInfo['containersInfo'].map( (container)=>{
@@ -273,24 +268,28 @@ var PodDetailElement = React.createClass({
                 </tr>
               </thead>
               <tbody>
-                {containerInfoKeys.map( (info)=>{
-                  return (
-                    <tr className="ContainerCardTr ContainerCardCommonTr" key={Toolkit.generateGUID()}>
-                      <td>{info['disStr']}</td>
-                      <td colSpan="3">
-                        <TextOverflow>
-                          <p>{container[info['key']]}</p>
-                        </TextOverflow>
-                      </td>
-                    </tr>
-                  )
-                } )}
+                <tr className="ContainerCardTr ContainerCardCommonTr" key={Toolkit.generateGUID()}>
+                  <td><Icon type="hdd-o" className="ContainerIcon" />Image</td>
+                  <td colSpan="3">
+                    <TextOverflow>
+                      <p>{container['image']}</p>
+                    </TextOverflow>
+                  </td>
+                </tr>
+                <tr className="ContainerCardTr ContainerCardCommonTr" key={Toolkit.generateGUID()}>
+                  <td><Icon type="refresh" className="ContainerIcon" />RestartCount</td>
+                  <td colSpan="3">
+                    <TextOverflow>
+                      <p>{container['restartCount']}</p>
+                    </TextOverflow>
+                  </td>
+                </tr>                    
                 {baseInfo['volumesMount'][container['name']].map( (vm)=>{
                   let volumeDetailInfo = baseInfo['volumes'][vm['name']]
                   volumeDetailInfo = volumeDetailInfo ? JSON.stringify(volumeDetailInfo) : '未知'
                   return (
                     <tr className="ContainerCardTr ContainerCardVolumeTr" key={Toolkit.generateGUID()}>
-                      <td><TextOverflow><p><Icon type="folder-o" className="ContainerIcon" />{vm['name']}</p></TextOverflow></td>
+                      <td><TextOverflow><p><Icon type="hdd-o" className="ContainerIcon" />{vm['name']}</p></TextOverflow></td>
                       <td><TextOverflow><p>{vm['path']}</p></TextOverflow></td>
                       <td><TextOverflow><p>{volumeDetailInfo}</p></TextOverflow></td>
                       <td>{vm['readonly']}</td>
@@ -338,8 +337,9 @@ var PodDetailElement = React.createClass({
     for ( let k = 0 ; k < detail.length ; k ++ ){
       detailInfoToShow.push( [detail[k]] )
     }
+
     return <DynamicTable dynamicTableHeight={this.props.podDetailHeight-10}
-                    dynamicTableTextArray={detailInfoToShow}/>
+                      dynamicTableTextArray={detailInfoToShow}/>
   }  
 })
 
