@@ -91,14 +91,14 @@ export default React.createClass({
         key:'CreationTime',
         order:true
       },{
-        title:'',
+        title:'Json',
         key:'',
         render:(varNotUse,item) => {
           let downloadUrl = CMDR.getIngressJsonDownloadUrl( CMDR.getCurNameSpace(this),item['Name'] )
           let aLabelID = 'ALabel'+item['Name']
           return (
             <div>
-              <Button onClick={()=>{ document.getElementById(aLabelID).click() }}>下载Json</Button> 
+              <Button size='sm' onClick={()=>{ document.getElementById(aLabelID).click() }}>下载</Button> 
               <a id={aLabelID} href={downloadUrl} style={{'display':'none'}}></a>
             </div>
           )

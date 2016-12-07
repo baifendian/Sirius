@@ -257,6 +257,34 @@ var PodDetailElement = React.createClass({
     console.log(baseInfo['volumesMount'])
     */
 
+    // 用来绘制image（镜像）字符串左侧的图标的函数
+    let imageIconFunc = ()=>{
+      let svgStyleObj = {
+        'width':'11px',
+        'height':'13px',
+        'marginRight':'5px',
+        'paddingTop':'2px',
+        'display':'inline-block',
+      }
+      let circleStyleObj1 = {
+        'fill':'#FFFFFF',
+        'stroke':'#55A8FD',
+        'strokeWidth':'18px',
+      }
+      let circleStyleObj2 = {
+        'fill':'#55A8FD',
+        'stroke':'#55A8FD',
+        'strokeWidth':'1px',
+      }
+      return (
+        <svg style={svgStyleObj} viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+          <circle style={circleStyleObj1} cx="90" cy="90" r="80"/>
+          <circle style={circleStyleObj2} cx="90" cy="90" r="27"/>
+        </svg>
+      )
+    }
+
+
     return (
       <div className="PodDetailBaseInfo" style={{'height':(this.props.podDetailHeight)+'px'}}>        
         {baseInfo['containersInfo'].map( (container)=>{
@@ -269,7 +297,7 @@ var PodDetailElement = React.createClass({
               </thead>
               <tbody>
                 <tr className="ContainerCardTr ContainerCardCommonTr" key={Toolkit.generateGUID()}>
-                  <td><Icon type="hdd-o" className="ContainerIcon" />Image</td>
+                  <td>{imageIconFunc()}Image</td>
                   <td colSpan="3">
                     <TextOverflow>
                       <p>{container['image']}</p>

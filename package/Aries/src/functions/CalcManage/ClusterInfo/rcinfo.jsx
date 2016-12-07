@@ -37,14 +37,14 @@ export default React.createClass({
                { title:'Images',	      key:'Images',	      order:true }, 
                { title:'Selector',	    key:'Selector',	    order:true },
                {
-                 title:'',
+                 title:'Json',
                  key:'',
                  render:(varNotUse,item) => {
                    let downloadUrl = CMDR.getRCJsonDownloadUrl( CMDR.getCurNameSpace(this),item['Name'] )
                    let aLabelID = 'ALabel'+item['Name']
                    return (
                      <div>
-                       <Button onClick={()=>{ document.getElementById(aLabelID).click() }}>下载Json</Button> 
+                       <Button size='sm' onClick={()=>{ document.getElementById(aLabelID).click() }}>下载</Button> 
                        <a id={aLabelID} href={downloadUrl} style={{'display':'none'}}></a>
                      </div>
                    )
