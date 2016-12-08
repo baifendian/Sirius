@@ -68,8 +68,8 @@ const OverviewConf={
                   {
                     name: "RC个数",
                     stateName: "k8sp_rc",
-                    value: "${lives} / ${total}",
-                    desc: "正常: ${lives}<br/>异常: ${dead}"
+                    value: "${current} / ${desired}",
+                    desc: "当前: ${current}<br/>预期: ${desired}"
                   },
                   {
                     name: "Service状态",
@@ -82,39 +82,6 @@ const OverviewConf={
                     stateName: "k8sp_nodes",
                     value: "${lives} / ${total}",
                     desc: "正常: ${lives}<br/>异常: ${dead}"
-                  }
-                 ]
-      },{
-        title: "BDMS",
-        id: "bdms",
-        content: [
-                  {
-                    type: "pieSubarea",
-                    name: "BDMS任务运行图:",
-                    stateName: "bdms_task",
-                    desc: " 待运行: ${waiting} 个 <br/> \
-                            运行中: ${running} 个 <br/> \
-                            运行成功: ${success} 个 <br/> \
-                            运行失败: ${failed} 个 <br/> \
-                            总任务: ${total} 个",
-                    value: [
-                      {
-                        name: "待运行",
-                        value: "${waiting}",
-                      },
-                      {
-                        name: "运行中",
-                        value: "${running}",
-                      },
-                      {
-                        name: "执行成功",
-                        value: "${success}",
-                      },
-                      {
-                        name: "运行失败",
-                        value: "${failed}",
-                      },
-                    ]
                   }
                  ]
       },{

@@ -42,9 +42,8 @@ export default React.createClass({
           total: 0
         },
         k8sp_rc: {
-          lives: 0,
-          dead: 0,
-          total: 0
+          current: 0,
+          desired: 0,
         },
         k8sp_service: 0, //Service状态
         k8sp_nodes: {
@@ -258,12 +257,9 @@ export default React.createClass({
           {content}
           <Fetch defaultHeight={0} url={`${hdfs_url}`} onSuccess={this.getHdfsData} />
           <Fetch defaultHeight={0} url={`${user_url}`} onSuccess={this.getUserAuthData} />
-          {/*
-          <Fetch defaultHeight={0} url={`${bdms_url}`} onSuccess={this.getBdmsData} />
           <Fetch defaultHeight={0} url={`${codis_url}`} onSuccess={this.getCodisData} />
           <Fetch defaultHeight={0} url={`${k8sp_url}`} onSuccess={this.getK8spData} />
           <Fetch defaultHeight={0} url={`${openstack_url}`} onSuccess={this.getOpenstackData} />
-          */}
         </div>
       )
   }
