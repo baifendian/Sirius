@@ -12,7 +12,6 @@ from django.http import HttpResponse
 
 
 kd_logger = logging.getLogger("kd_agent_log")
-kd_logger.setLevel( logging.DEBUG )
 
 
 # 用来包装从后端到前端的返回值
@@ -112,18 +111,12 @@ class K8sRequestManager:
 
 
 
-def generate_time_range( minutes ):
-    time_end = int(time.time())
-    time_start = time_end - int(minutes)*60
-    return { 
-        'time_start':'%ss' % time_start,
-        'time_end':'%ss' % time_end,
-    }
+
 
 class InfluxDBQueryStrManager:
     TEMPLATE_STR = '''SELECT sum("value") FROM "{measurement}" 
-                      WHERE "type" = '{type}' AND time > {time_start} and time < {time_end} 
-                      GROUP BY time(1s) fill(null)'''
+                      WHERE "type" = '{type}' AND "pod_namespace" = '{namespace}' AND time > {time_start} and time < {time_end} 
+                      GROUP BY time(1m) fill(null)'''
 
     M_CPU_USAGE = 'cpu/usage_rate'
     M_CPU_LIMIT = 'cpu/limit'
@@ -148,12 +141,13 @@ class InfluxDBQueryStrManager:
     T_POD = 'pod'
 
     @staticmethod
-    def format_query_str(measurement,time_start ,time_end ,type = T_NODE):
+    def format_query_str(measurement,time_start ,time_end ,namespace ):
         return InfluxDBQueryStrManager.TEMPLATE_STR.format( 
                 measurement=measurement,
                 time_start=time_start,
                 time_end=time_end,
-                type=type)
+                namespace=namespace,
+                type=InfluxDBQueryStrManager.T_POD)
 
     @staticmethod
     def get_measurement_disname_dict():
@@ -179,6 +173,7 @@ class InfluxDBQueryStrManager:
     def get_influxdb_data(sql_str,db = settings.INFLUXDB_DATABASE,epoch='s',timeout = 600 ):
         params = { 'q':sql_str, 'db':db, 'epoch':epoch }
         url_str = '/query?%s' % urllib.urlencode( params ) 
+        kd_logger.info('get influxdb data with url : %s' % url_str )
         resp = None
         try:
             con = httplib.HTTPConnection(settings.INFLUXDB_IP, settings.INFLUXDB_PORT, timeout=timeout)
@@ -209,15 +204,14 @@ class InfluxDBQueryStrManager:
             return generate_failure( s )
     
     @staticmethod
-    def get_cluster_info_data( measurement,minutes,type_str = T_NODE ):
-        kd_logger.info( 'call get_cluster_info_data with args : %s %s %s ' % (measurement,minutes,type_str) )
+    def get_cluster_info_data( measurement,time_start,time_end,namespace ):
+        kd_logger.info( 'call get_cluster_info_data with args : %s %s %s %s ' % (measurement,time_start,time_end,namespace) )
         try:
-            time_range = generate_time_range(minutes)
             sql_str = InfluxDBQueryStrManager.format_query_str(
                             measurement=measurement,
-                            time_start=time_range['time_start'],
-                            time_end=time_range['time_end'],
-                            type=type_str )
+                            time_start='%ss' % time_start ,
+                            time_end='%ss' % time_end,
+                            namespace=namespace )
             kd_logger.info( 'generate sql_str : %s' % (sql_str) )
 
             retu_data = InfluxDBQueryStrManager.get_influxdb_data(sql_str=sql_str) 
