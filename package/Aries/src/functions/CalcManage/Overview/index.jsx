@@ -32,6 +32,17 @@ var mod = React.createClass({
 
   componentDidUpdate(){
     this.adjustEchartSize()
+    this.reloadEchartData()
+  },
+
+  reloadEchartData(){
+    let curNameSpace = CMDR.getCurNameSpace(this)
+    if ( this.curNameSpace !== curNameSpace ){
+      for ( let i = 0 ; i < this.userData['resourceTypes'].length ; i ++ ){
+        this.refs[this.userData['resourceTypes'][i]+'Ref'].reloadEchartData()
+      }
+      this.curNameSpace = curNameSpace
+    }
   },
 
   adjustEchartSize(){
