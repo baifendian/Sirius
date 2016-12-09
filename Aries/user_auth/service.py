@@ -177,7 +177,7 @@ def spaceMemberPost(request,pk):
     #deleteSpaceUserRoles.delete()
     deleteUser = list((set(oldUser)) - set(newUser2))
     addUser = list((set(newUser2)) - set(oldUser))
-    if space.title == "openstack":
+    if space.space_type.name == "openstack":
         space_name = space.name
         try:
             user_obj = User()
@@ -190,6 +190,7 @@ def spaceMemberPost(request,pk):
             result["data"] = "%s" %e
     role_name = "spaceViewer"
     role = getObjByAttr(Role,"name",role_name)[0]
+
     for uid in addUser:
         try:
             user = getObjById(Account,uid)  
