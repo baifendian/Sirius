@@ -592,8 +592,6 @@ def getOverview(request):
         total, index, unit = unitTransform(total, 0, unitList)
         total = round(total, 2)
         used = round(used/math.pow(1024, index), 2)
-        print total
-        print used
         non_used = round(total - used, 2)
         hdfs_disk["used"] = used
         hdfs_disk["nonUsed"] = non_used
