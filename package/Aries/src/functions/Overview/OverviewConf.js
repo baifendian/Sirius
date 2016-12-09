@@ -74,8 +74,8 @@ const OverviewConf={
                   {
                     name: "Service状态",
                     stateName: "k8sp_service",
-                    value: "${k8sp_service}",
-                    desc: "${k8sp_service} 状态."
+                    value: "${count}",
+                    desc: "${count} 状态."
                   },
                   {
                     name: "Node个数",

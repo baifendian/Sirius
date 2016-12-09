@@ -45,7 +45,9 @@ export default React.createClass({
           current: 0,
           desired: 0,
         },
-        k8sp_service: 0, //Service状态
+        k8sp_service: {
+          count: 0
+        }, //Service状态
         k8sp_nodes: {
           lives: 0,
           dead: 0,
@@ -193,10 +195,14 @@ export default React.createClass({
     this.reloadEcharts("bdms_task",data);
   },
   getK8spData(data){
-    this.setState({ k8sp_rc: data.rc,
-                    k8sp_pod: data.pod,
-                    k8sp_nodes: data.node,
-                    k8sp_service: data.service
+    let k8sp_pod = data.k8sp_pod;
+    k8sp_pod["total"] = k8sp_pod.lives + k8sp_pod.dead;
+    let k8sp_nodes = data.k8sp_nodes;
+    k8sp_nodes["total"] = k8sp_nodes.lives + k8sp_nodes.dead;
+    this.setState({ k8sp_rc: data.k8sp_rc,
+                    k8sp_pod: k8sp_pod,
+                    k8sp_nodes: k8sp_nodes,
+                    k8sp_service: data.k8sp_service
                   });
   },
   getCodisData(data){
