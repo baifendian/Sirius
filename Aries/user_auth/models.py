@@ -17,6 +17,12 @@ class Account(models.Model):
     def __unicode__(self):
         return self.name
 
+class SpaceType(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(default='',max_length=100)
+    def __unicode__(self):
+        return self.name
+
 class Space(models.Model):
     name = models.CharField(default='',max_length=100)
     create_time = models.DateTimeField(auto_now_add=True)
@@ -29,11 +35,6 @@ class Space(models.Model):
     def __unicode__(self):
         return self.name
 
-class SpaceType(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(default='',max_length=100)
-    def __unicode__(self):
-        return self.name
 
 class SpaceUserRole(models.Model):
     user = models.ForeignKey(Account)
