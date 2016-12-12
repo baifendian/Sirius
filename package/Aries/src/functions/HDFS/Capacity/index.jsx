@@ -10,16 +10,30 @@ import NavigationInPage from 'public/NavigationInPage'
 import auth from 'public/auth'
 
 export default React.createClass({
+  unit:["GB","TB","PB"],
+  converUnit(value,unitIndex){
+    //默认是GB. 如果满足TB则直接换算成TB.(plan, total)
+    if(value/1024.0 > 1){
+      //可以进行转换
+      return this.converUnit(value/1024.0,unitIndex+1);
+    }
+    return {value:value,index:unitIndex}
+  },
   sliderDataSccuess(data){
     let percentData = data;
     let slider_data=data.map((d,index)=>{
+      let finalUnit = this.converUnit(d.plan_capacity,0);
+      let unit = this.unit[finalUnit.index];
+      let total_capacity = d.total_capacity/Math.pow(1024.0,finalUnit.index);
+      let end = finalUnit.value;
       return {
               "name":d.name,
-              "value":d.total_capacity,
+              "value":Number(total_capacity.toFixed(2)), // 已经分配的空间
               "start":0,
-              "end":d.plan_capacity,
+              "end":Number(end.toFixed(0)), // 计划使用的空间
+              "unit":unit,
               }
-    });
+    },this);
     this.setState({sliderData:slider_data,percentData:percentData});
   },
   getInitialState: function() {
@@ -48,6 +62,7 @@ export default React.createClass({
     let spaceName = HdfsConf.getCurSpace(this);
     let sumUrl = this.getUrlData({ type : "SUM",
                                  });
+    console.log(this.state.sliderData);
     return (
        <div>
        <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
@@ -55,14 +70,14 @@ export default React.createClass({
           <Tabs>
             <TabList>
               <Tab>配额监控</Tab>
-              {auth.user.is_supper == 1 ?[
-                <Tab>配额管理</Tab>
-              ]:null}
+                {auth.user.is_supper == 1 ?[
+                    <Tab key={0}>配额管理</Tab>
+                ]:null}
             </TabList>
             <TabPanel><TabMonitor percentData={this.state.percentData} /></TabPanel>
-            {auth.user.is_supper == 1 ?[
-              <TabPanel><TabManager getUrlData={this.getUrlData} refreshCapacity={this.refreshCapacity} sliderData={this.state.sliderData} /></TabPanel>
-            ]:null}
+              {auth.user.is_supper == 1 ?[
+                 <TabPanel key={1}><TabManager getUrlData={this.getUrlData} refreshCapacity={this.refreshCapacity} sliderData={this.state.sliderData} /></TabPanel>
+              ]:null}
           </Tabs>
         </div>
         <div className="div-Fetch">
