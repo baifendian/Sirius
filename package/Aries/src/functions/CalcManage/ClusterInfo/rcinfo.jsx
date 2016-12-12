@@ -1,5 +1,7 @@
 import React from 'react'
 
+import Button from 'bfd/Button'
+
 import ClusterCommonInfo from './index.jsx'
 import CMDR from '../CalcManageDataRequester/requester.js'
 import CalcManageConf from '../UrlConf'
@@ -33,7 +35,22 @@ export default React.createClass({
                { title:'CreationTime',  key:'CreationTime',	order:true }, 
                { title:'Containers',    key:'Containers',	  order:true }, 
                { title:'Images',	      key:'Images',	      order:true }, 
-               { title:'Selector',	    key:'Selector',	    order:true }],
+               { title:'Selector',	    key:'Selector',	    order:true },
+               {
+                 title:'Json',
+                 key:'',
+                 render:(varNotUse,item) => {
+                   let downloadUrl = CMDR.getRCJsonDownloadUrl( CMDR.getCurNameSpace(this),item['Name'] )
+                   let aLabelID = 'ALabel'+item['Name']
+                   return (
+                     <div>
+                       <Button size='sm' onClick={()=>{ document.getElementById(aLabelID).click() }}>下载</Button> 
+                       <a id={aLabelID} href={downloadUrl} style={{'display':'none'}}></a>
+                     </div>
+                   )
+                 },
+                 order:false,
+               }],
       showPage:'false'
     }
     let navigationKey = 'ReplicationControllerInfo'

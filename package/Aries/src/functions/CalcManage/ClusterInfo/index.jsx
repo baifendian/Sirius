@@ -11,16 +11,21 @@ import Toolkit from 'public/Toolkit/index.js'
 import { AutoLayoutDiv , layoutInfoGenerator } from 'public/AutoLayout'
 
 import CalcManageConf from '../UrlConf'
+import PodDetailElement from './poddetail'
+
 import './index.less'
 
-
-
 var ClusterCommonInfo = React.createClass({
-  getInitialState: function () {    
+  getInitialState: function () {
+    this.userData = {}
+    this.userData['SearchInputKey'] = Toolkit.generateGUID()
+    this.userData['DetailElementKey'] = Toolkit.generateGUID()
+    
     let state_dict = {
       searchInputKey:'',
       filteredData:undefined,
-      detailText:''
+      selectedRecordDict:undefined,
+      detailElementHeight:0,
     }
     return state_dict
   },
@@ -99,16 +104,11 @@ var ClusterCommonInfo = React.createClass({
     this.highlightTr( this.curSelectDataTableItem,false )
     this.curSelectDataTableItem = undefined
 
-    this.setState( {detailText:''} )
+    this.setState( {selectedRecordDict:undefined} )
   },
 
   hightlightNewClickedItemAndShowDetailInfo( record ){
-    let detail = record['DetailInfo']
-    let detailInfoToShow = []
-    for ( let k = 0 ; k < detail.length ; k ++ ){
-      detailInfoToShow.push( [detail[k]] )
-    }
-    this.setState({ detailText:detailInfoToShow })
+    this.setState({ selectedRecordDict:record })
     
     let curTr = this.findDataTableItemByRecordName( record['Name'] )
     this.highlightTr( curTr )
@@ -135,8 +135,7 @@ var ClusterCommonInfo = React.createClass({
     let dataTable = ReactDOM.findDOMNode( this.refs.DataTable )
     dataTable.childNodes[0].childNodes[1].style.height = (newTopHeight-65) + 'px'
 
-    let dynamicTable = ReactDOM.findDOMNode( this.refs.DynamicTable )
-    dynamicTable.style.height = (newBottomHeight-47) + 'px'
+    this.setDetailElementHeight( newBottomHeight-47 )
   },
 
   onHeightChanged( splitPanelHeight ){
@@ -153,28 +152,58 @@ var ClusterCommonInfo = React.createClass({
     this.onSplitPanelHeightChange( 0,0,topHeight,bottomHeight )
   },
 
-  render: function (){
-    if ( this.storeVarData.dataTableDataArr !== this.props.dataTableDataArr ){      
-      // 如果namespace发生切换，则会进入这个函数体内
-      this.storeVarData.dataTableDataArr = this.props.dataTableDataArr
-
-      this.state.detailText = ''
-      this.state.filteredData = undefined
-      this.state.searchInputKey = ''
-    }
-
-    let text = this.state.detailText ? this.state.detailText : this.storeConstData.defaultDetailText
-    
+  // 将 this.state.filteredData 转换成DataTable可用的结构
+  getFilteredTableElements(){
     let d = this.state.filteredData!==undefined ? this.state.filteredData : this.storeVarData.dataTableDataArr
     let data = {
       totalList: d,
       totalPageNum:d.length
     }
+    return data
+  },
 
-    return (      
+  // 由于Pod页面和非Pod页面的页面内容不同，因此这里专门添加一个函数用以区分
+  checkIsPodPage(){
+    return this.props.navigationKey === 'PodInfo'
+  },
+
+  // 在这里区分是pod的detail还是其他的detail
+  setDetailElementHeight( elementHeight ){
+    this.setState({ detailElementHeight:elementHeight })
+  },
+
+  // 设置Pod或者非Pod的内容
+  getDetailElementContent(){
+    if ( this.checkIsPodPage() ){
+      return this.state.selectedRecordDict
+    } else {
+      if ( this.state.selectedRecordDict ){
+        let detail = this.state.selectedRecordDict['DetailInfoStrList']
+        let detailInfoToShow = []
+        for ( let k = 0 ; k < detail.length ; k ++ ){
+          detailInfoToShow.push( [detail[k]] )
+        }
+        return detailInfoToShow
+      } else {
+        return this.storeConstData.defaultDetailText
+      }
+    }
+  },
+
+  render: function (){
+    if ( this.storeVarData.dataTableDataArr !== this.props.dataTableDataArr ){      
+      // 如果namespace发生切换，则会进入这个函数体内
+      this.storeVarData.dataTableDataArr = this.props.dataTableDataArr
+
+      this.state.selectedRecordDict = undefined
+      this.state.filteredData = undefined
+      this.state.searchInputKey = ''
+    }
+
+    return (
       <div id={this.storeConstData['divIDs']['rootDivID']} ref="RootDiv" className={this.storeConstData.rootDivClassName} >
         <div id={this.storeConstData['divIDs']['searchInputFatherDivID']}  className="SearchInputFatherDiv">
-          <SearchInput key={Toolkit.generateGUID()}
+          <SearchInput key={this.userData['SearchInputKey']}
                         ref="SearchInput"
                         placeholder="请输入查询关键字" 
                         onChange={function(){}} 
@@ -201,17 +230,29 @@ var ClusterCommonInfo = React.createClass({
                       direct="hor">
             <SubSplitPanel>
               <div className="DataTableFatherDiv">
-                <DataTable className="DataTable" ref="DataTable" data={data} 
+                <DataTable className="DataTable" ref="DataTable" 
+                          data={this.getFilteredTableElements()} 
                           onRowClick={this.onTableRowClick}
                           onOrder={this.onTableHeadOrder}
                           showPage={this.storeConstData.dataTableConfigDict.showPage} 
                           column={this.storeConstData.dataTableConfigDict.column } />
               </div>
             </SubSplitPanel>
-            <SubSplitPanel>
-              <div className="Text">详情</div>
-              <DynamicTable ref='DynamicTable' dynamicTableTextArray={text}/>
-            </SubSplitPanel>
+            {this.checkIsPodPage() ? [
+              <SubSplitPanel key={this.userData['DetailElementKey']}>
+                <PodDetailElement ref='PodDetailElement'
+                      podDetailHeight={this.state.detailElementHeight}
+                      podDetailInfoDict={this.getDetailElementContent()}
+                      spaceName={this.props.spaceName} />
+              </SubSplitPanel>
+            ]:[
+              <SubSplitPanel key={this.userData['DetailElementKey']}>
+                <div className="Text">详情</div>
+                <DynamicTable ref='DynamicTable' 
+                      dynamicTableHeight={this.state.detailElementHeight}
+                      dynamicTableTextArray={this.getDetailElementContent()}/>
+              </SubSplitPanel>  
+            ]}
           </SplitPanel>
         </div>
         <AutoLayoutDiv layoutInfos={this.storeConstData['autoLayoutInfos']} />

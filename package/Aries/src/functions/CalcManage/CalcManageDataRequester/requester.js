@@ -2,6 +2,8 @@ import xhr from 'bfd-ui/lib/xhr'
 import message from 'bfd/message'
 import Toolkit from 'public/Toolkit/index.js'
 
+import env from '../../../env.js'
+
 var CalcManageDataRequester = {
   getCurNameSpace(_this) {
     return _this.props.location.query.cur_space
@@ -24,35 +26,86 @@ var CalcManageDataRequester = {
       'podsummarynetworkinfo':    'v1/k8s/api/namespaces/{nameSpace}/podsummary/network/{minutes}',
       'podsummaryfilesysteminfo': 'v1/k8s/api/namespaces/{nameSpace}/podsummary/filesystem/{minutes}',
 
+      'poddetailcpuinfo':         'v1/k8s/api/namespaces/{nameSpace}/poddetail/cpu/{minutes}?podname={podName}',
+      'poddetailmemoryinfo':      'v1/k8s/api/namespaces/{nameSpace}/poddetail/memory/{minutes}?podname={podName}',
+      'poddetailnetworkinfo':     'v1/k8s/api/namespaces/{nameSpace}/poddetail/network/{minutes}?podname={podName}',
+      'poddetailfilesysteminfo':  'v1/k8s/api/namespaces/{nameSpace}/poddetail/filesystem/{minutes}?podname={podName}',
+
+      // 为 href 赋值时，需要加上前缀（因为它不是ajax请求）
+      'podjsondownload':        '{baseUrl}v1/k8s/api/namespaces/{nameSpace}/pods/downloadjson?podname={podName}',
+      'servicejsondownload':    '{baseUrl}v1/k8s/api/namespaces/{nameSpace}/services/downloadjson?servicename={serviceName}',
+      'rcjsondownload':         '{baseUrl}v1/k8s/api/namespaces/{nameSpace}/replicationcontrollers/downloadjson?rcname={rcName}',
+      'ingressjsondownload':    '{baseUrl}v1/k8s/apis/extensions/v1beta1/namespaces/{nameSpace}/ingresses/downloadjson?ingressname={ingressName}',
+
     }
   },
 
+  // 下载文件必须使用 button + url 的方式，不能使用ajax请求，因此这里只返回 url
+  getPodJsonDownloadUrl(nameSpace, podName){
+    return Toolkit.strFormatter.formatString(this.getUrlForm()['podjsondownload'], {
+      'baseUrl':env.baseUrl,
+      'nameSpace':nameSpace,
+      'podName': podName
+    })
+  },
+  getServiceJsonDownloadUrl(nameSpace, serviceName){
+    return Toolkit.strFormatter.formatString(this.getUrlForm()['servicejsondownload'], {
+      'baseUrl':env.baseUrl,
+      'nameSpace':nameSpace,
+      'serviceName': serviceName
+    })
+  },
+  getRCJsonDownloadUrl(nameSpace, rcName){
+    return Toolkit.strFormatter.formatString(this.getUrlForm()['rcjsondownload'], {
+      'baseUrl':env.baseUrl,
+      'nameSpace':nameSpace,
+      'rcName': rcName
+    })
+  },
+  getIngressJsonDownloadUrl(nameSpace, ingressName){
+    return Toolkit.strFormatter.formatString(this.getUrlForm()['ingressjsondownload'], {
+      'baseUrl':env.baseUrl,
+      'nameSpace':nameSpace,
+      'ingressName': ingressName
+    })
+  },
+
+  getPodDetailCPUInfo(nameSpace, podName, minutes, callback){
+    this.getPodDetailInfo('poddetailcpuinfo', nameSpace, podName, minutes, callback)
+  },
+  getPodDetailMemoryInfo(nameSpace, podName, minutes, callback){
+    this.getPodDetailInfo('poddetailmemoryinfo', nameSpace, podName, minutes, callback)
+  },
+  getPodDetailNetworkInfo(nameSpace, podName, minutes, callback){
+    this.getPodDetailInfo('poddetailnetworkinfo', nameSpace, podName, minutes, callback)
+  },
+  getPodDetailFilesystemInfo(nameSpace, podName, minutes, callback){
+    this.getPodDetailInfo('poddetailfilesysteminfo', nameSpace, podName, minutes, callback)
+  },
+  getPodDetailInfo(key, nameSpace, podName, minutes, callback){
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()[key],{
+      'nameSpace':nameSpace,
+      'minutes': minutes,
+      'podName': podName
+    })
+    this.xhrGetDataEnhanced(url, callback)
+  },
+
   getPodSummaryCPUInfo(nameSpace, minutes, callback) {
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podsummarycpuinfo'], {
-      'nameSpace':nameSpace,
-      'minutes': minutes
-    })
-    this.xhrGetDataEnhanced(url, callback)
+    this.getPodSummaryInfo( 'podsummarycpuinfo', nameSpace, minutes, callback )
   },
-
   getPodSummaryMemoryInfo(nameSpace, minutes, callback) {
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podsummarymemoryinfo'], {
-      'nameSpace':nameSpace,
-      'minutes': minutes
-    })
-    this.xhrGetDataEnhanced(url, callback)
+    this.getPodSummaryInfo( 'podsummarymemoryinfo', nameSpace, minutes, callback )
   },
-
   getPodSummaryNetworkInfo(nameSpace, minutes, callback) {
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podsummarynetworkinfo'], {
-      'nameSpace':nameSpace,
-      'minutes': minutes
-    })
-    this.xhrGetDataEnhanced(url, callback)
+    this.getPodSummaryInfo( 'podsummarynetworkinfo', nameSpace, minutes, callback )
+  },
+  getPodSummaryFilesystemInfo(nameSpace, minutes, callback) {
+    this.getPodSummaryInfo( 'podsummaryfilesysteminfo', nameSpace, minutes, callback )
   },
 
-  getPodSummaryFilesystemInfo(nameSpace, minutes, callback) {
-    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['podsummaryfilesysteminfo'], {
+  getPodSummaryInfo(key, nameSpace, minutes, callback){
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()[key], {
       'nameSpace':nameSpace,
       'minutes': minutes
     })
@@ -137,7 +190,7 @@ var CalcManageDataRequester = {
 
   /**
    * xhrGetData用起来太麻烦，但是并没有限制
-   * xhrGetDataEnhanced用起来简单，不需要传入url，但是在实现的时候需要用注意一些点
+   * xhrGetDataEnhanced用起来简单，不需要传入this，但是在实现的时候需要用注意一些点
    */
   xhrGetDataEnhanced(url, callback) {
     xhr({
