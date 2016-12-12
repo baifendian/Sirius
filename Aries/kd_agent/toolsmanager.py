@@ -82,6 +82,11 @@ class K8sRequestManager:
         url = '/apis/extensions/v1beta1/namespaces/%s/ingresses' % namespace
         return K8sRequestManager.get_k8s_data( url,params )
 
+    @staticmethod
+    def get_node_detail_info():
+        url = '/api/v1/nodes'
+        return K8sRequestManager.get_k8s_data( url,{} )
+
     # 根据原生的API获取k8s的数据
     @staticmethod
     def get_k8s_data(url,params = {},timeout = 10 ):

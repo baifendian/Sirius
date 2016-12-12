@@ -66,13 +66,14 @@ class monitor(APIView):
 
 class overview(APIView):
     def get(self, request, format=None):
-        ret = {'vm':'0/0','image':0,'volume':0}
+        ret = {'openstack_vm':{"lives":0,"dead":0},'openstack_image':0,'openstack_disk':0}
         login(request)
         username = request.user.username
         total,running = num_get_vm(request,username)
-        ret['vm'] = "%s/%s"%(running,total)
-        ret['image'] = num_get_image(request,username)
-        ret['volume'] = num_get_volume(request,username)
+        ret['openstack_vm']['lives'] = running
+        ret['openstack_vm']['dead'] = total - running
+        ret['openstack_image'] = num_get_image(request,username)
+        ret['openstack_disk'] = num_get_volume(request,username)
         ret = json_data(ret)
         return packageResponse(ret)
 

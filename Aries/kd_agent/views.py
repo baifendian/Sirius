@@ -33,14 +33,19 @@ def get_overview_k8s_pod_info(namespace):
     if pod_detail_info['code'] == RETU_INFO_ERROR:
         kd_logger.error( 'call get_overview_k8s_pod_info query k8s pod data error : %s' % pod_detail_info['msg'] )
     else:
+        total = len(pod_detail_info['data']['items'])
         count = 0
-        total = 0
         for item in pod_detail_info['data']['items']:
             containerStatuses = item['status'].get('containerStatuses',[])
-            total += len(containerStatuses)
+
+            is_all_container_running = True
             for cItem in containerStatuses:
-                if cItem['state'].get( 'running' ) != None:
-                    count += 1
+                if cItem['state'].get( 'running' ) == None:
+                    is_all_container_running = False
+                    break
+
+            count += 1 if is_all_container_running else 0
+
         retu_data['count'] = count
         retu_data['total'] = total
     return retu_data
@@ -70,19 +75,37 @@ def get_overview_k8s_rc_info(namespace):
     return retu_data
 
 # node要从influxdb中获取数量，但是当前无法获取，因此该函数的实现暂时先搁置。
-def get_overview_k8s_node_info(namespace):
-    retu_data = { 'count':0 }
+def get_overview_k8s_node_info():
+    retu_data = { 'total':0,'count':0 }
+    node_detail_data = KRM.get_node_detail_info()
+    if node_detail_data['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_overview_k8s_node_info query k8s node data error : %s' % node_detail_data['msg'] )
+    else:
+        total = len(node_detail_data['data']['items'])
+        count = 0
+        for item in node_detail_data['data']['items']:
+            for condition in item['status']['conditions']:
+                if condition['type'] == 'Ready' and condition['status'] == 'True':
+                    count += 1
+                    break
+        retu_data['count'] = count
+        retu_data['total'] = total
     return retu_data
 
 @csrf_exempt
 @return_http_json
 @trans_return_json
 def get_k8soverview_info(request,namespace):
+    pod = get_overview_k8s_pod_info(namespace) 
+    rc = get_overview_k8s_rc_info(namespace)
+    service = get_overview_k8s_service_info(namespace)
+    node = get_overview_k8s_node_info()
+
     retu_data = {
-        'pod': get_overview_k8s_pod_info(namespace) ,
-        'rc': get_overview_k8s_rc_info(namespace),
-        'service': get_overview_k8s_service_info(namespace),
-        'node': get_overview_k8s_node_info(namespace)
+        'k8sp_pod':{ 'lives':pod['count'],'dead':pod['total']-pod['count'] },
+        'k8sp_rc':{ 'current':rc['count'],'desired':rc['total'] },
+        'k8sp_service':{ 'count':service['count'] } ,
+        'k8sp_nodes': { 'lives':node['count'],'dead':node['total']-node['count'] }
     }
     kd_logger.info( 'call get_overview_k8s_rc_info query k8s overview info : %s' % retu_data )
     return generate_success( data=retu_data )

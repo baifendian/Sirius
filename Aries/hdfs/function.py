@@ -225,7 +225,7 @@ class HDFS(object):
                           'name': source_path.split("/")[-1],
                           'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
                           'is_dir': 0,
-                           'size' : unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-"
+                           'size' : self.getSize(item.get('length'),0,unit) if item.get('type') == "FILE" else "-"
                     }]
                 else:
                     #目录分享
@@ -242,7 +242,7 @@ class HDFS(object):
                                 'name': item.get('pathSuffix'),
                                 'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
                                 'is_dir': 0 if item.get('type') == "FILE" else 1,
-                                'size': unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
+                                'size': self.getSize(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
                             } for item in result if item.get('pathSuffix') != ".Trash"
                         ]
             else:
@@ -295,12 +295,16 @@ class HDFS(object):
                     'name': item.get('pathSuffix'),
                     'create_time': datetime.datetime.fromtimestamp(item.get('modificationTime')/1000).strftime("%Y-%m-%d %H:%M:%S"),
                     'is_dir': 0 if item.get('type') == "FILE" else 1,
-                    'size': unitTransform(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
+                    'size': self.getSize(item.get('length'),0,unit) if item.get('type') == "FILE" else "-",
                 } for item in result if item.get('pathSuffix') != ".Trash"
             ]
             self.returned['data'] = {"totalList":totalList,"totalPageNum":len(totalList),"currentPage":1}
             hdfs_logger.info("liststatus:%s" %self.returned['data'])
             return self.returned
+
+    def getSize(self, size, index, unit):
+        size, index, unit = unitTransform(size, index, unit)
+        return "%s %s" % (size, unit)
 
     def _copy_file(self, src_path, dest_path, username):
         o_type = FileOperatorType.objects.get(name='cp')

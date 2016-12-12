@@ -1,48 +1,125 @@
 import conf from 'public/Conf/Conf'
 const OverviewConf={
-  //概览基础数据
-  overviewData:[{
-    title:"HDFS",
-    content: [
-              {label:"使用百分比:",value:"hdfs_disk_used"},
-              {label:"分享个数:",value:"hdfs_shares"},
-              {label:"datanode健康状态:",value:"hdfs_datanodes"}
-             ]
-    },{
-      title:"CODIS",
+  //概览基础数据定义
+  getOverviewData(){
+    return [{
+      title: "HDFS",
+      id: "hdfs",
       content: [
-                {label:"codis集群总数:",value:"codis_count"},
-                {label:"codis内存使用率:",value:"codis_memory_used"},
+                  {
+                    name: "HDFS使用率",
+                    stateName: "hdfs_disk",
+                    value: {
+                      used: "${used}",
+                      nonUsed: "${nonUsed}"
+                    },
+                    type: "pie",
+                    desc: "已使用: ${used} ${unit}<br/>\
+                           剩余: ${nonUsed} ${unit}<br/>\
+                           总共: ${total} ${unit}"
+                  },
+                  {
+                    name: "HDFS分享个数",
+                    value: "${hdfs_shares}",
+                    stateName: "hdfs_shares",
+                    desc: "${hdfs_shares} 个目录被分享."
+                  },
+                  {
+                    name: "DN存活状态",
+                    stateName: "hdfs_datanodes",
+                    value: "${lives} / ${total}",
+                    desc: "健康: ${lives}<br/>异常: ${dead}"
+                  }
                ]
-    },{
-      title:"K8SP",
-      content: [
-                {label:"pod个数:",value:"k8sp_pod_count"},
-                {label:"rc个数:",value:"k8sp_rc_count"},
-                {label:"service状态:",value:"k8sp_service_status_count"},
-                {label:"node个数:",value:"k8sp_nodes_count"}
-               ]
-    },{
-      title:"BDMS",
-      content: [
-                {label:"今日正在运行的任务:",value:"bdms_running_count"},
-                {label:"今日执行成功的任务:",value:"bdms_success_count"},
-                {label:"今日运行失败的任务:",value:"bdms_failed_count"},
-                {label:"今日总任务:",value:"bdms_task_count"}
-               ]
-    },{
-      title:"OPENSTACK",
-      content: [
-                {label:"虚拟机:",value:"openstack_vm_count"},
-                {label:"镜像个数:",value:"openstack_image_count"},
-                {label:"云硬盘个数:",value:"openstack_disk_count"}
-               ]
-    },{
-      title:"用户",
-      content: [
-        {label:"当前space成员个数:",value:"userAuth_member_count"},
-      ]
-    }],
+      },{
+        title: "CODIS",
+        id: "codis",
+        content: [
+                  {
+                    name: "Codis 集群",
+                    stateName: "codis_cluster",
+                    value: "${lives} / ${total}",
+                    desc: "正常: ${lives}<br/>\
+                           异常: ${dead}"
+                  },
+                  {
+                    name: "Codis 内存使用率",
+                    stateName: "codis_memory",
+                    value: {
+                      used: "${used}",
+                      nonUsed: "${nonUsed}"
+                    },
+                    type: "pie",
+                    desc: "已使用: ${used} ${unit}<br/>\
+                           剩余: ${nonUsed} ${unit}<br/>\
+                           总共: ${total} ${unit}"
+                  },
+                 ]
+      },{
+        title: "K8SP",
+        id: "k8s",
+        content: [
+                  {
+                    name: "Pod个数",
+                    stateName: "k8sp_pod",
+                    value: "${lives} / ${total}",
+                    desc: "正常: ${lives}<br/>异常: ${dead}"
+                  },
+                  {
+                    name: "RC个数",
+                    stateName: "k8sp_rc",
+                    value: "${current} / ${desired}",
+                    desc: "当前: ${current}<br/>预期: ${desired}"
+                  },
+                  {
+                    name: "Service状态",
+                    stateName: "k8sp_service",
+                    value: "${count}",
+                    desc: "${count} 状态."
+                  },
+                  {
+                    name: "Node个数",
+                    stateName: "k8sp_nodes",
+                    value: "${lives} / ${total}",
+                    desc: "正常: ${lives}<br/>异常: ${dead}"
+                  }
+                 ]
+      },{
+        title: "OPENSTACK",
+        id: "openstack",
+        content: [
+                  {
+                    name: "虚拟机状态",
+                    stateName: "openstack_vm",
+                    value: "${lives} / ${total}",
+                    desc: "正常: ${lives}<br/>异常: ${dead}",
+                  },
+                  {
+                    name: "镜像个数",
+                    stateName: "openstack_image",
+                    value: "${openstack_image}",
+                    desc: "共保存了 ${openstack_image} 个镜像"
+                  },
+                  {
+                    name: "云硬盘个数",
+                    stateName: "openstack_disk",
+                    value: "${openstack_disk}",
+                    desc: "共分配了 ${openstack_disk} 个磁盘"
+                  }
+                 ]
+      },{
+        title: "用户",
+        id: "user",
+        content: [
+          {
+            name: "成员个数",
+            stateName: "userAuth_member",
+            value: "${userAuth_member}",
+            desc: "当前空间共有 ${userAuth_member} 人"
+          },
+        ]
+      }]
+  },
   //从location中获取cur_space
   getCurSpace(_this){
     return conf.getCurSpace(_this);

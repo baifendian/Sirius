@@ -1,14 +1,67 @@
 .overview {
-  .common{
-    min-height: 200px;
-    border: 1px solid #D4D4D4;
-    margin-top: 10px;
-    .title{
-      border-bottom: 1px solid #D4D4D4;
-      padding: 5px 10px 0px;
+  div.container-div{
+    width: 185px;
+    height: 165px;
+    float: left;
+    position: relative;
+    min-height: 1px;
+    margin: 0 auto;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    &:hover{
+      cursor: move;
+      .container-body{
+        display: none;
+      }
+      .diagram-div{
+        display: none;
+      }
+      .chart-hover{
+        display: block;
+        //z-index: 100;
+      }
     }
-    .content{
-      padding: 5px 10px 5px;
+    .diagram-div{
+      width: 185px;
+      height: 130px;
+    }
+
+    .container-head{
+      padding: 8px 5px 5px 5px;
+      font-weight: bold;
+      text-align: left;
+      color: #000;
+      font-size: 15px;
+    }
+
+    .container-body{
+      font-size: 35px;
+      text-align: center;
+      color: #5ab400;
+      font-weight: bold;
+      padding-top: 30px;
+    }
+
+    .chart-hover{
+      /*
+      position: absolute;
+      top: 0;
+      left:0;
+      right: 0;
+      bottom: 0;
+      opacity: 0;
+      transition: 0.1s all ease-in-out;
+      */
+      background-color: #fff;
+      display: none;
+      width: 100%;
+      padding: 8px 5px 5px 5px;
+      font-weight: bold;
+      text-align: center;;
+      color: #000;
+      font-size: 15px;
+      transition: 0.1s all ease-in-out;
     }
   }
 }
