@@ -4,15 +4,8 @@ div.ResourceUsageRootDiv{
     width: 10px;
   }
 
-  div.FixedTableFatherDiv {
-    padding-top:13px;   // DataTable的表头文本距离上边框为17px
-    padding-left:20px;
-    padding-right:8px;
-  }
-
   div.cTabs{
     .bfd-tabs__list {
-      margin-top:-30px;
       float: right;
       border-bottom:0px
     }
@@ -24,6 +17,27 @@ div.ResourceUsageRootDiv{
       background-color: #FFFFFF;
       border-bottom: 1.5px solid #00BFFF;
     }
+  }
+
+  div.ResourceUsageEchartFatherDiv{
+    overflow-y: auto;
+    margin:auto;
+    width: 100%;
+  }
+
+  div#ResourceUsageEchartDiv{
+    margin:auto;
+    width:1000px;
+    height:500px;
+    padding-top: 40px;
+  }
+  div.FixedTableFatherDiv {
+    padding-top:13px;   // DataTable的表头文本距离上边框为17px
+    border: 1px solid #ECECEC;
+  }
+
+  div#ResourceUsageEchartDiv , div.FixedTableFatherDiv{
+     margin-top: 30px;
   }
 
 }

@@ -49,7 +49,7 @@ var mod = React.createClass({
   },
 
   onHeightChanged(newHeight){
-    this.setState({'fixedTableHeight':newHeight-60})
+    this.setState({'fixedTableHeight':newHeight})
   },
 
   // 对cpu、memory、用量等数据进行进制转换、单位变换
@@ -58,7 +58,6 @@ var mod = React.createClass({
   },
   // cpu数据的含义是毫核的个数，但是要求界面上展示虚拟核的个数，因此直接除以 1000
   renderCPUUsageValue(v){
-    let toolTipInfo = this.userData['echartToolTipFormatterInfo']['cpu']
     return v/1000 + ' VCPU'
   },
   renderMemoryUsageValue(v){
@@ -289,12 +288,15 @@ var mod = React.createClass({
               <Tab><img src={require('public/TabBar/bars.png')} /></Tab>
             </TabList>
             <TabPanel>
-              <div id='ResourceUsageEchartDiv' style={{width:'1000px',height:'400px','margin':'auto'}} />
+              <div className='ResourceUsageEchartFatherDiv' 
+                   style={{ 'height':(this.state.fixedTableHeight-40)+'px' }}>
+                <div id='ResourceUsageEchartDiv' />
+              </div>
             </TabPanel>
             <TabPanel>
               <div className="FixedTableFatherDiv">
                 <FixedTable className="FixedTable" ref="FixedTable" 
-                          height={ this.state.fixedTableHeight }
+                          height={ this.state.fixedTableHeight-90 }
                           data={ this.state.fixedTableDataList }
                           showPage='false'
                           column={ this.userData['fixedTableColumn'] } />
