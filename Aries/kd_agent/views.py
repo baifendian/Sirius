@@ -774,7 +774,7 @@ def get_resource_usage_info( start_date,namespace ):
 @trans_return_json
 def resource_usage(request,namespace):
     start_date_str = request.GET.get('startdate',datetime.now().strftime('%Y-%m-%d'))
-    days = request.GET.get('days',1)
+    days = int(request.GET.get('days',1))
 
     # 从时间字符串初始化一个datetime对象
     start_date = datetime.strptime( start_date_str,'%Y-%m-%d' )

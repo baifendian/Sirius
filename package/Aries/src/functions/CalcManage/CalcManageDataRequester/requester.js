@@ -37,7 +37,17 @@ var CalcManageDataRequester = {
       'rcjsondownload':         '{baseUrl}v1/k8s/api/namespaces/{nameSpace}/replicationcontrollers/downloadjson?rcname={rcName}',
       'ingressjsondownload':    '{baseUrl}v1/k8s/apis/extensions/v1beta1/namespaces/{nameSpace}/ingresses/downloadjson?ingressname={ingressName}',
 
+      'resourceusage':    'v1/k8s/api/namespaces/{nameSpace}/resourceusage?startdate={startdate}&days={days}'
     }
+  },
+
+  getResourceUsageInfo( nameSpace, startdate, days, callback){
+    let url = Toolkit.strFormatter.formatString(this.getUrlForm()['resourceusage'],{
+      'nameSpace':nameSpace,
+      'startdate': startdate,
+      'days': days
+    })
+    this.xhrGetDataEnhanced(url, callback)
   },
 
   // 下载文件必须使用 button + url 的方式，不能使用ajax请求，因此这里只返回 url

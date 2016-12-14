@@ -337,6 +337,13 @@ const conf = {
           url: "/CloudContainer/CalcManage/Overview?cur_space=${spaceName}"
         }]
       },
+      ResourceUsage: {
+        headText: "资源用量",
+        navigationTexts: [{
+          text: "资源用量",
+          url: "/CloudContainer/CalcManage/ResourceUsage?cur_space=${spaceName}"
+        }]
+      },
       PodInfo: {
         headText: "Pod信息",
         navigationTexts: [{

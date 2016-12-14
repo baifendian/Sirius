@@ -220,7 +220,7 @@ var PodDetailElement = React.createClass({
     let userUnSelectedPodDetailInfo = [['请选择Pod']]
 
     return(
-      <Tabs ref='RootTab' className="PodDetailRootTab">
+      <Tabs className="PodDetailRootTab">
         <TabList>
           <Tab>容器基本信息</Tab>
           <Tab>监控</Tab>
