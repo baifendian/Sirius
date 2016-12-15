@@ -4,12 +4,15 @@ import time
 import logging
 import traceback
 import requests
+import os
+import codecs
 
 from django.http import StreamingHttpResponse
 from datetime import datetime
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
+from django.core.servers.basehttp import FileWrapper
 
 from kd_agent.toolsmanager import RETU_INFO_SUCCESS,RETU_INFO_ERROR
 from kd_agent.toolsmanager import generate_success,generate_failure
@@ -125,9 +128,12 @@ def get_pod_list(request,namespace):
         record = {}
         retu_data.append(record)
         record['Name'] = item['metadata']['name']
+        record['PodIP'] = item['status'].get('podIP','<None>')
+        record['HostIP'] = item['status'].get('hostIP','<None>')
         record['CreationTime'] = trans_time_str(item['metadata']['creationTimestamp'])
         record['Node'] = item['spec'].get('nodeName','<None>')
-        record['DetailInfo'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoStrList'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoDict'] = item
 
         containerStatuses = item['status'].get('containerStatuses',[])
         total = len(containerStatuses)
@@ -174,7 +180,8 @@ def get_service_list(request,namespace):
         record['ClusterIP'] = item['spec']['clusterIP']
         record['ExternalIP'] = '<None-IP>'      #TODO:mini的测试暂时没有这个东西，这里暂时填充 <none-IP>
         record['CreationTime'] = trans_time_str( item['metadata']['creationTimestamp'] )
-        record['DetailInfo'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoStrList'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoDict'] = item
 
         ports_info_arr = []
         for cItem in item['spec']['ports']:
@@ -212,7 +219,8 @@ def get_rc_list(request,namespace):
         record['Desired'] = item['spec']['replicas']
         record['Current'] = item['status']['replicas']      #TODO:Current暂时这样取值
         record['CreationTime'] = trans_time_str( item['metadata']['creationTimestamp'] )
-        record['DetailInfo'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoStrList'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoDict'] = item
 
         container_arr = []
         image_arr = []
@@ -285,7 +293,8 @@ def get_ingress_list(request,namespace):
         except: record['Rules'] = []
          
         record['CreationTime'] = trans_time_str(item['metadata']['creationTimestamp'])
-        record['DetailInfo'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoStrList'] = trans_obj_to_easy_dis(item)
+        record['DetailInfoDict'] = item
     
     kd_logger.debug( 'call get_ingress_list query k8s data : %s' % retu_data )
     kd_logger.info( 'call get_ingress_list query k8s data successful' )
@@ -293,6 +302,64 @@ def get_ingress_list(request,namespace):
 
 def trans_obj_to_easy_dis(obj_info):
     return json.dumps(obj_info, indent=1).split('\n')
+
+
+def download_pod_json(request,namespace):
+    pod_name = request.GET.get('podname')
+    kd_logger.info( 'call download_pod_json namespace : %s, name : %s' % (namespace,pod_name) )
+    return search_k8s_config_obj( 'pod',KRM.get_pod_detail_info,namespace,pod_name )
+
+def download_service_json(request,namespace):
+    service_name = request.GET.get('servicename')
+    kd_logger.info( 'call download_service_json namespace : %s, name : %s' % (namespace,service_name) )
+    return search_k8s_config_obj( 'service',KRM.get_service_detail_info,namespace,service_name )
+
+def download_rc_json(request,namespace):
+    rc_name = request.GET.get('rcname')
+    kd_logger.info( 'call download_rc_json namespace : %s, name : %s' % (namespace,rc_name) )
+    return search_k8s_config_obj( 'rc',KRM.get_rc_detail_info,namespace,rc_name )
+
+def download_ingress_json(request,namespace):
+    ingress_name = request.GET.get('ingressname')
+    kd_logger.info( 'call download_ingress_json namespace : %s, name : %s' % (namespace,ingress_name) )
+    return search_k8s_config_obj( 'ingress',KRM.get_ingress_detail_info,namespace,ingress_name )
+
+# 严格意义上，search_k8s_config_obj 函数从以上四个 download_*_json 函数中提取出来是不合适的
+# 但是因为它们的操作很统一，因此提取出来，以避免重复编码
+def search_k8s_config_obj( key,func,namespace,name ):
+    detail_info = func( namespace )
+    if detail_info['code'] == RETU_INFO_ERROR:
+        kd_logger.error( 'call get_%s_list query k8s data error : %s' % (key,detail_info['msg']) )
+        return generate_failure( detail_info['msg'] )
+    for item in detail_info['data']['items']:
+        if item['metadata']['name'] == name:
+            kd_logger.info( 'find %s with name : %s' % (key,name) )
+            json_obj = {
+                'metadata':item['metadata'],
+                'spec':item['spec']
+            }
+            return download_k8s_config_json( json_obj,'%s_%s_%s.json' % (namespace,key,name) )
+    
+    s = 'cannot find %s with name : %s' % (key,name)
+    kd_logger.error(s)
+    return generate_failure( s )
+
+def download_k8s_config_json( json_obj,file_name ):
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    file_full_path = os.path.abspath(os.path.join( cur_dir,file_name ))
+
+    with codecs.open(file_full_path,'wb','utf8') as fileObj:
+        for line_text in trans_obj_to_easy_dis(json_obj):
+            fileObj.write( line_text + '\n' )
+    
+    wrapper = FileWrapper(file(file_full_path))  
+    response = StreamingHttpResponse(wrapper, content_type='text/csv')  
+    response['Content-Disposition'] = 'attachment; filename="%s"' % file_name
+    response['Content-Length'] = os.path.getsize(file_full_path)
+    return response
+
+
+
 
 @csrf_exempt
 @return_http_json
@@ -482,7 +549,7 @@ def get_namespace_cpu_info(request,namespace,minutes):
     time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ]:
-        retu_data = ISM.get_cluster_info_data( 
+        retu_data = ISM.get_namespace_podsummary_data( 
             measurement=m,
             time_start=time_range['time_start'],
             time_end=time_range['time_end'],
@@ -501,7 +568,7 @@ def get_namespace_memory_info(request,namespace,minutes):
     time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_WORKINGSET,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]:
-        retu_data = ISM.get_cluster_info_data( 
+        retu_data = ISM.get_namespace_podsummary_data( 
             measurement=m,
             time_start=time_range['time_start'],
             time_end=time_range['time_end'],
@@ -520,7 +587,7 @@ def get_namespace_network_info(request,namespace,minutes):
     time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_NETWORK_TRANSMIT,ISM.M_NETWORK_RECEIVE ]:
-        retu_data = ISM.get_cluster_info_data( 
+        retu_data = ISM.get_namespace_podsummary_data( 
             measurement=m,
             time_start=time_range['time_start'],
             time_end=time_range['time_end'],
@@ -539,7 +606,7 @@ def get_namespace_filesystem_info(request,namespace,minutes):
     time_range = generate_time_range( minutes )
     data_dict = {}
     for m in [ ISM.M_FILESYSTEM_USAGE,ISM.M_FILESYSTEM_LIMIT ]:
-        retu_data = ISM.get_cluster_info_data( 
+        retu_data = ISM.get_namespace_podsummary_data( 
             measurement=m,
             time_start=time_range['time_start'],
             time_end=time_range['time_end'],
@@ -550,4 +617,94 @@ def get_namespace_filesystem_info(request,namespace,minutes):
         else:
             return retu_data
     return execute_clusterinfo_request( data_dict,time_range )
+
+@csrf_exempt
+@return_http_json
+@trans_return_json
+def get_poddetail_cpu_info(request,namespace,minutes):
+    pod_name = request.GET.get('podname')
+    time_range = generate_time_range( minutes )
+    data_dict = {}
+    for m in [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ]:
+        retu_data = ISM.get_namespace_poddetail_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace,
+            pod_name=pod_name
+        )        
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict,time_range )
+
+
+@csrf_exempt
+@return_http_json
+@trans_return_json
+def get_poddetail_memory_info(request,namespace,minutes):
+    pod_name = request.GET.get('podname')
+    time_range = generate_time_range( minutes )
+    data_dict = {}
+    for m in [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_WORKINGSET,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]:
+        retu_data = ISM.get_namespace_poddetail_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace,
+            pod_name=pod_name
+        )        
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict,time_range )
+
+@csrf_exempt
+@return_http_json
+@trans_return_json
+def get_poddetail_network_info(request,namespace,minutes):
+    pod_name = request.GET.get('podname')
+    time_range = generate_time_range( minutes )
+    data_dict = {}
+    for m in [ ISM.M_NETWORK_TRANSMIT,ISM.M_NETWORK_RECEIVE ]:
+        retu_data = ISM.get_namespace_poddetail_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace,
+            pod_name=pod_name
+        )        
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict,time_range )
+
+@csrf_exempt
+@return_http_json
+@trans_return_json
+def get_poddetail_filesystem_info(request,namespace,minutes):
+    pod_name = request.GET.get('podname')
+    time_range = generate_time_range( minutes )
+    data_dict = {}
+    for m in [ ISM.M_FILESYSTEM_USAGE,ISM.M_FILESYSTEM_LIMIT ]:
+        retu_data = ISM.get_namespace_poddetail_data( 
+            measurement=m,
+            time_start=time_range['time_start'],
+            time_end=time_range['time_end'],
+            namespace=namespace,
+            pod_name=pod_name
+        )        
+        if retu_data['code'] == RETU_INFO_SUCCESS:
+            data_dict[m] = retu_data['data']
+        else:
+            return retu_data
+    return execute_clusterinfo_request( data_dict,time_range )
+
+
+
+
+
 

@@ -13,6 +13,7 @@ import React from 'react';
  *                    它们将会根据 xxx 所代表的比例，来分割剩余的高度（剩余的高度：总高度-所有Const的高度）
  */
 
+
 function layoutInfoGenerator( id,isRoot,heightProp,heightChangedCallback ){
   let infoDict = {
     id:id,
@@ -32,7 +33,7 @@ var AutoLayoutDiv = React.createClass({
 
   componentDidMount(){
     this.calcDesiredSize()
-    window.onresize = ()=>{ this.onWindowResize() }
+    window.addEventListener( 'resize',this.onWindowResize )
   },
 
   componentDidUpdate(){
@@ -40,9 +41,9 @@ var AutoLayoutDiv = React.createClass({
   },
 
   onWindowResize(){
-    window.onresize = undefined
+    window.removeEventListener( 'resize',this.onWindowResize )
     this.calcDesiredSize()
-    window.onresize = ()=>{ this.onWindowResize() }
+    window.addEventListener( 'resize',this.onWindowResize )
   },
 
   calcRootDivSize(){

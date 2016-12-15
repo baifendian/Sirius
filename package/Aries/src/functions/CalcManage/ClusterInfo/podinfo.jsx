@@ -1,5 +1,9 @@
 import React from 'react'
 
+import Button from 'bfd/Button'
+
+import Toolkit from 'public/Toolkit/index.js'
+
 import ClusterCommonInfo from './index.jsx'
 import CMDR from '../CalcManageDataRequester/requester.js'
 import CalcManageConf from '../UrlConf'
@@ -30,11 +34,35 @@ export default React.createClass({
     let dataTableConfigDict = {
 	    // 表格信息
       column:  [{ title:'Name',          key:'Name',	        order:true }, 
-                { title:'Ready',         key:'Ready',	        order:true }, 
                 { title:'Status',        key:'Status',	      order:true },                
-                { title:'Restarts',      key:'Restarts',	    order:true }, 
-                { title:'CreationTime',  key:'CreationTime',	order:true }, 
-                { title:'Node',          key:'Node',          order:true }],
+                { title:'Ready',         key:'Ready',	        order:true }, 
+                { title:'PodIP',         key:'PodIP',	        order:true },                
+                { title:'HostIP',        key:'HostIP',	      order:true },                
+                { title:'Node',          key:'Node',          order:true },
+                { title:'Restarts',      key:'Restarts',	    order:false }, 
+                { title:'CreationTime',  key:'CreationTime',	order:false },
+                { 
+                  title:'Age',
+                  key:'',
+                  render:(varNotUse,item) => {
+                    return Toolkit.calcAge( item['CreationTime'] )
+                  },
+                  order:false,
+                },{
+                  title:'Json',
+                  key:'',
+                  render:(varNotUse,item) => {
+                    let downloadUrl = CMDR.getPodJsonDownloadUrl( CMDR.getCurNameSpace(this),item['Name'] )
+                    let aLabelID = 'ALabel'+item['Name']
+                    return (
+                      <div>
+                        <Button size='sm' onClick={()=>{ document.getElementById(aLabelID).click() }}>下载</Button> 
+                        <a id={aLabelID} href={downloadUrl} style={{'display':'none'}}></a>
+                      </div>
+                    )
+                  },
+                  order:false,
+                }],
       showPage:'false'
     }
     let navigationKey = 'PodInfo'

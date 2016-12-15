@@ -1,30 +1,59 @@
 
 
+// 默认情况下，splitpanel组件把用户选择给禁掉了。这里需要把它打开，允许用户选择文本
+td,th{
+  -webkit-user-select: initial;
+  -moz-user-select: initial;
+  -ms-user-select: initial;
+  user-select: initial;
+}
+
+// k8s的信息（pod、service、rc、ingress）在table显示的时候，都在后面添加了一个下载Json的按钮
+// 由于DataTable组件自身样式的问题（不设title则边框不齐），为其设置了 padding-bottom
+// 同时统一设置了 按钮的宽度为 9%
+div.PodInfoChildRootDiv,div.ServiceInfoChildRootDiv,div.RCInfoChildRootDiv,div.IngressInfoChildRootDiv{
+  div.DataTableFatherDiv .DataTable{
+    > thead > tr > th:last-child,> tbody > tr > td:last-child {
+      width: 9%;
+    }
+  }
+}
+
+
 // 私有的样式
 div.PodInfoChildRootDiv div.DataTableFatherDiv .DataTable {
-  thead tr th,tbody tr td { 
-    width: 16.66%;
+  thead > tr > th:nth-child(1),tbody > tr > td:nth-child(1) {
+    width: 19%;
+  }
+  thead > tr > th:nth-child(4),tbody > tr > td:nth-child(4),
+  thead > tr > th:nth-child(5),tbody > tr > td:nth-child(5),
+  thead > tr > th:nth-child(6),tbody > tr > td:nth-child(6),
+  thead > tr > th:nth-child(8),tbody > tr > td:nth-child(8){
+    width: 10%;
+  }
+  thead > tr > th,tbody > tr > td {
+    width: 8%;
   }
 }
 
 div.ServiceInfoChildRootDiv div.DataTableFatherDiv .DataTable {
   thead tr th,tbody tr td { 
-    width: 16.66%;
+    width: 15.16%;
   }
 }
 
 div.RCInfoChildRootDiv div.DataTableFatherDiv .DataTable {
   thead tr th,tbody tr td { 
-    width: 14.28%; 
+    width: 13%; 
   }
 }
 
 div.IngressInfoChildRootDiv div.DataTableFatherDiv .DataTable {
   > thead > tr > th, > tbody > tr > td { 
-    width: 17%; 
+    width: 15%; 
   }
   > thead > tr > th:nth-child(3), > tbody > tr > td:nth-child(3) { 
-    width: 49%;
+    width: 46%;
   }
 }
 
