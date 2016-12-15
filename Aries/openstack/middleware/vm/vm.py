@@ -103,13 +103,15 @@ class Vm_manage:
         return ret
 
     @plog("Vm_manage.wait_complete")
-    def wait_complete(self, vm_id,username):
+    def wait_complete(self, vm_id,username,event=None):
         '''
         等待指定虚拟机创建完成,status为ACTIVE的状态
         :return:
         '''
         flag = True
         while flag:
+            if event and event.is_set():
+                break
             tmp_ret = self.show_detail(vm_id,username)
             if tmp_ret.get("server", {}).get("status", "") == "ACTIVE":
                 flag = False
@@ -307,7 +309,7 @@ class Vm_control:
         self.project_id_dict = get_proid()
 
     @plog("Vm_control.wait_complete")
-    def wait_complete(self, vm_id, status,username):
+    def wait_complete(self, vm_id, status,username,event=None):
         '''
         等待指定虚拟机创建完成,status为指定的状态
         :return:
@@ -315,6 +317,8 @@ class Vm_control:
         flag = True
         vm_mange = Vm_manage()
         while flag:
+            if event and event.is_set():
+                break
             tmp_ret = vm_mange.show_detail(vm_id,username)
             if tmp_ret.get("server", {}).get("status", "") in status:
                 flag = False
