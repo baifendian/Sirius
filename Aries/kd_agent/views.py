@@ -6,7 +6,6 @@ import traceback
 import requests
 import os
 import codecs
-import math
 
 from django.http import StreamingHttpResponse
 from datetime import datetime,timedelta
@@ -26,7 +25,7 @@ from kd_agent.toolsmanager import trans_return_json
 from kd_agent.toolsmanager import K8sRequestManager as KRM
 from kd_agent.toolsmanager import InfluxDBQueryStrManager as ISM
 
-from kd_agent.models import ResourceUsageCache
+from kd_agent.models import ResourceUsageDailyCache
 
 kd_logger = logging.getLogger("kd_agent_log")
 
@@ -750,7 +749,7 @@ def get_resource_usage_info( start_date,namespace ):
     if start_date >= datetime.combine( datetime.now(),datetime_time() ):
         return get_resource_usage_from_influxdb( start_date,end_date,namespace )
     else:
-        records = list(ResourceUsageCache.objects.filter( datetime=start_date,namespace=namespace ))
+        records = list(ResourceUsageDailyCache.objects.filter( datetime=start_date,namespace=namespace ))
         if len(records) == 0:
             # 如果数据库中无缓存，则需要查询influxdb
             retu_data = get_resource_usage_from_influxdb( start_date,end_date,namespace )
@@ -761,7 +760,7 @@ def get_resource_usage_info( start_date,namespace ):
 
             # 如果查询成功，但是缓存失败，也可以直接返回，而不做任何处理
             try:
-                ResourceUsageCache.generate_obj_by_measurement_key( start_date,namespace,retu_data['data'] ).save()
+                ResourceUsageDailyCache.generate_obj_by_measurement_key( start_date,namespace,retu_data['data'] ).save()
             except:
                 pass
             return retu_data
@@ -788,16 +787,6 @@ def resource_usage(request,namespace):
             return retu_data
 
         data_obj = retu_data['data']
-
-        # 将获取到的指标数据的总和在分钟上进行平均，得到每分钟的指标值
-        measurements = [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ] + \
-                       [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]
-        for m in measurements:
-            data_obj[m] = data_obj[m]/(24*60)
-
-        data_obj['usage'] = calc_virtual_machine_day( data_obj[ISM.M_CPU_USAGE],data_obj[ISM.M_MEMORY_USAGE] )
-        data_obj['limit'] = calc_virtual_machine_day( data_obj[ISM.M_CPU_LIMIT],data_obj[ISM.M_MEMORY_LIMIT] )
-        data_obj['request'] = calc_virtual_machine_day( data_obj[ISM.M_CPU_REQUEST],data_obj[ISM.M_MEMORY_REQUEST] )
         
         # date 是可以直接显示到页面上的日期（没有时分秒）
         retu_infos.append({
@@ -807,24 +796,7 @@ def resource_usage(request,namespace):
         
     return generate_success(data=retu_infos)
 
-# u 多少个0.5VCPU   （1VCPU == cpu/1000 ，0.5VCPU是预设的值）
-# v 多少个128MB内存  （ 128MB是预设的值 ）
-# 计算公式为： u*0.025 + 0.003*v / (8*u)
-# 同时，这个结果保留两位有效小数（0.01）（且直接进位）
-# 即如果结果是 0.0212 则，应该显示 0.03
-def calc_virtual_machine_day( cpu_value,memory_value ):
-    u = float(cpu_value)/1000/0.5
-    v = float(memory_value)/128/1024/1024
-    try:
-        v = u*0.025 + 0.003*v / (8*u)
-    except:
-        v = 0
-    
-    # 先放大100倍，然后向上取整。之后再缩小100倍。由于缩小之后，获取的数不会严格100倍，因此round一下
-    # 如：
-    # >>> 1.3/10000
-    # 0.00013000000000000002
-    return round( math.ceil(v/0.01)*0.01,2 )
+
 
 
 
