@@ -813,8 +813,8 @@ def resource_usage(request,namespace):
 # 同时，这个结果保留两位有效小数（0.01）（且直接进位）
 # 即如果结果是 0.0212 则，应该显示 0.03
 def calc_virtual_machine_day( cpu_value,memory_value ):
-    u = cpu_value/1000/0.5
-    v = memory_value/128/1024/1024
+    u = float(cpu_value)/1000/0.5
+    v = float(memory_value)/128/1024/1024
     try:
         v = u*0.025 + 0.003*v / (8*u)
     except:
