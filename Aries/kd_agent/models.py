@@ -6,6 +6,9 @@ import math
 
 from kd_agent.toolsmanager import InfluxDBQueryStrManager as ISM
 
+def calc_minute_ave(v):
+    return float(v)/(24*60)
+
 class ResourceUsageDailyCache(models.Model):
     datetime = models.DateTimeField()
     namespace = models.CharField( max_length=1024 )
@@ -26,8 +29,6 @@ class ResourceUsageDailyCache(models.Model):
     limit = models.FloatField()
     usage = models.FloatField()
     
-    calc_minute_ave = lambda v:float(v)/(24*60)
-
     # 方便地生成一个对象
     # data_json 是一个json对象，其中的key应该与 ISM 中定义的一致，如下
     # ISM.M_CPU_USAGE
@@ -61,14 +62,13 @@ class ResourceUsageDailyCache(models.Model):
         return ResourceUsageDailyCache( datetime=datetime,namespace=namespace,**obj )
 
     def to_minuteaverge_measurementkey_json(self):
-        CMA = ResourceUsageDailyCache.calc_minute_ave
         return {
-            ISM.M_CPU_REQUEST:CMA(self.cpu_request),
-            ISM.M_CPU_LIMIT:CMA(self.cpu_limit),
-            ISM.M_CPU_USAGE:CMA(self.cpu_usage),
-            ISM.M_MEMORY_REQUEST:CMA(self.memory_request),            
-            ISM.M_MEMORY_LIMIT:CMA(self.memory_limit),
-            ISM.M_MEMORY_USAGE:CMA(self.memory_usage),
+            ISM.M_CPU_REQUEST:calc_minute_ave(self.cpu_request),
+            ISM.M_CPU_LIMIT:calc_minute_ave(self.cpu_limit),
+            ISM.M_CPU_USAGE:calc_minute_ave(self.cpu_usage),
+            ISM.M_MEMORY_REQUEST:calc_minute_ave(self.memory_request),            
+            ISM.M_MEMORY_LIMIT:calc_minute_ave(self.memory_limit),
+            ISM.M_MEMORY_USAGE:calc_minute_ave(self.memory_usage),
             'request':self.request,
             'limit':self.limit,
             'usage':self.usage,
@@ -81,10 +81,9 @@ class ResourceUsageDailyCache(models.Model):
     # 即如果结果是 0.0212 则，应该显示 0.03
     @staticmethod
     def calc_virtual_machine_day( cpu_value,memory_value ):
-        CMA = ResourceUsageDailyCache.calc_minute_ave
 
-        u = CMA(cpu_value)/1000/0.5
-        v = CMA(memory_value)/128/1024/1024
+        u = calc_minute_ave(cpu_value)/1000/0.5
+        v = calc_minute_ave(memory_value)/128/1024/1024
         try:
             v = u*0.025 + 0.003*v / (8*u)
         except:
