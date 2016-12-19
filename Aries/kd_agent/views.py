@@ -25,7 +25,7 @@ from kd_agent.toolsmanager import trans_return_json
 from kd_agent.toolsmanager import K8sRequestManager as KRM
 from kd_agent.toolsmanager import InfluxDBQueryStrManager as ISM
 
-from kd_agent.models import ResourceUsageDailyCache
+from kd_agent.models import ResourceUsageDailyCache as RUDC
 
 kd_logger = logging.getLogger("kd_agent_log")
 
@@ -736,10 +736,8 @@ def get_resource_usage_from_influxdb( start_date,end_date,namespace ):
     return generate_success( data = retu_obj )
 
 
-# 1. 检查mysql数据库中是否已经缓存了数据。如果有，则直接返回；如果没有，则现查
-#    注意，如果 start_date 的年月日与今天的年月日相同，则直接查influxdb，而不存mysql缓存
-# 2. get_resource_usage_from_influxdb 返回的值是相应指标的总和，即将1天内24×60个分钟的采样数据全部加起来；
-#    但是计算使用量所需要的是1天内平均每分钟的指标值。之所以缓存的值也是总和，是为了防止浮点存储数据不一致的为题（ 0.1+0.2 == 0.3 返回False ）
+# 检查mysql数据库中是否已经缓存了数据。如果有，则直接返回；如果没有，则现查
+# 注意，如果 start_date 的年月日与今天的年月日相同，则直接查influxdb，而不存mysql缓存
 def get_resource_usage_info( start_date,namespace ):
     # 保证 start_date 时分秒都为0
     start_date = datetime.combine( start_date,datetime_time() )
@@ -747,9 +745,14 @@ def get_resource_usage_info( start_date,namespace ):
 
     # 如果 start_date 与当前的年月日相同或者大，则直接查询influxdb并返回，且不缓存数据到mysql
     if start_date >= datetime.combine( datetime.now(),datetime_time() ):
-        return get_resource_usage_from_influxdb( start_date,end_date,namespace )
+        retu_data = get_resource_usage_from_influxdb( start_date,end_date,namespace )
+        if retu_data['code'] != RETU_INFO_SUCCESS:
+            return retu_data
+        else:
+            obj = RUDC.generate_obj_by_measurement_key( start_date,namespace,retu_data['data'] )
+            return generate_success( data=obj.to_minuteaverge_measurementkey_json() )
     else:
-        records = list(ResourceUsageDailyCache.objects.filter( datetime=start_date,namespace=namespace ))
+        records = list(RUDC.objects.filter( datetime=start_date,namespace=namespace ))
         if len(records) == 0:
             # 如果数据库中无缓存，则需要查询influxdb
             retu_data = get_resource_usage_from_influxdb( start_date,end_date,namespace )
@@ -759,13 +762,14 @@ def get_resource_usage_info( start_date,namespace ):
                 return retu_data
 
             # 如果查询成功，但是缓存失败，也可以直接返回，而不做任何处理
+            obj = RUDC.generate_obj_by_measurement_key( start_date,namespace,retu_data['data'] )
             try:
-                ResourceUsageDailyCache.generate_obj_by_measurement_key( start_date,namespace,retu_data['data'] ).save()
+                obj.save()
             except:
                 pass
-            return retu_data
+            return generate_success(data=obj.to_minuteaverge_measurementkey_json())
         else:
-            return generate_success(data=records[0].to_measurement_keys())
+            return generate_success(data=records[0].to_minuteaverge_measurementkey_json())
 
 
 @csrf_exempt
@@ -786,12 +790,10 @@ def resource_usage(request,namespace):
         if retu_data['code'] != RETU_INFO_SUCCESS:
             return retu_data
 
-        data_obj = retu_data['data']
-        
         # date 是可以直接显示到页面上的日期（没有时分秒）
         retu_infos.append({
             'date':s.strftime('%Y-%m-%d'),
-            'data':data_obj
+            'data':retu_data['data']
         })
         
     return generate_success(data=retu_infos)

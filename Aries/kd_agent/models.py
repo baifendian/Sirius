@@ -26,6 +26,8 @@ class ResourceUsageDailyCache(models.Model):
     limit = models.FloatField()
     usage = models.FloatField()
     
+    calc_minute_ave = lambda v:float(v)/(24*60)
+
     # 方便地生成一个对象
     # data_json 是一个json对象，其中的key应该与 ISM 中定义的一致，如下
     # ISM.M_CPU_USAGE
@@ -36,8 +38,6 @@ class ResourceUsageDailyCache(models.Model):
     # ISM.M_MEMORY_REQUEST
     @staticmethod
     def generate_obj_by_measurement_key( datetime,namespace,data_json ):
-        RUDC = ResourceUsageDailyCache
-
         keys_map = {
             ISM.M_CPU_REQUEST:'cpu_request',
             ISM.M_CPU_LIMIT:'cpu_limit',
@@ -49,22 +49,26 @@ class ResourceUsageDailyCache(models.Model):
         obj = {}
         for k,v in keys_map.items():
             obj[ v ] = data_json.get(k,0)
-        
-        # 根据提供的cpu、memory、usage数据来计算资源用量
-        obj['usage'] = RUDC.calc_virtual_machine_day( obj['cpu_usage'],obj['memory_usage'] )
-        obj['limit'] = RUDC.calc_virtual_machine_day( obj['cpu_limit'],obj['memory_limit'] )
-        obj['request'] = RUDC.calc_virtual_machine_day( obj['cpu_request'],obj['memory_request'] )
-        
-        return RUDC( datetime=datetime,namespace=namespace,**obj )
+        return ResourceUsageDailyCache.generate_obj_by_base_keys( datetime,namespace,obj )
 
-    def to_measurement_keys(self):
+    @staticmethod
+    def generate_obj_by_base_keys( datetime,namespace,obj ):
+        CVMD = ResourceUsageDailyCache.calc_virtual_machine_day
+        # 根据提供的cpu、memory、usage数据来计算资源用量
+        obj['usage'] = CVMD( obj['cpu_usage'],obj['memory_usage'] )
+        obj['limit'] = CVMD( obj['cpu_limit'],obj['memory_limit'] )
+        obj['request'] = CVMD( obj['cpu_request'],obj['memory_request'] )        
+        return ResourceUsageDailyCache( datetime=datetime,namespace=namespace,**obj )
+
+    def to_minuteaverge_measurementkey_json(self):
+        CMA = ResourceUsageDailyCache.calc_minute_ave
         return {
-            ISM.M_CPU_REQUEST:self.cpu_request,
-            ISM.M_CPU_LIMIT:self.cpu_limit,
-            ISM.M_CPU_USAGE:self.cpu_usage,
-            ISM.M_MEMORY_REQUEST:self.memory_request,            
-            ISM.M_MEMORY_LIMIT:self.memory_limit,
-            ISM.M_MEMORY_USAGE:self.memory_usage,
+            ISM.M_CPU_REQUEST:CMA(self.cpu_request),
+            ISM.M_CPU_LIMIT:CMA(self.cpu_limit),
+            ISM.M_CPU_USAGE:CMA(self.cpu_usage),
+            ISM.M_MEMORY_REQUEST:CMA(self.memory_request),            
+            ISM.M_MEMORY_LIMIT:CMA(self.memory_limit),
+            ISM.M_MEMORY_USAGE:CMA(self.memory_usage),
             'request':self.request,
             'limit':self.limit,
             'usage':self.usage,
@@ -77,12 +81,10 @@ class ResourceUsageDailyCache(models.Model):
     # 即如果结果是 0.0212 则，应该显示 0.03
     @staticmethod
     def calc_virtual_machine_day( cpu_value,memory_value ):
-        # 先计算出来平均值
-        cpu_value = float(cpu_value)/(24*60)
-        memory_value = float(memory_value)/(24*60)
+        CMA = ResourceUsageDailyCache.calc_minute_ave
 
-        u = cpu_value/1000/0.5
-        v = memory_value/128/1024/1024
+        u = CMA(cpu_value)/1000/0.5
+        v = CMA(memory_value)/128/1024/1024
         try:
             v = u*0.025 + 0.003*v / (8*u)
         except:
