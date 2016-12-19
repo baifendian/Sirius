@@ -78,7 +78,7 @@ var mod = React.createClass({
     let date_keys = []
     for ( let index = 0 ; index < executedData.length ; index ++ ){
       date_keys.push( executedData[index]['date'] )
-      values.push( executedData[index]['data']['usage'] )
+      values.push( executedData[index]['data']['request'] )
     }
     this.userData['echartDatas'] = {
       'xAxisData':date_keys,
@@ -93,7 +93,7 @@ var mod = React.createClass({
 
       fixedTableDataList.push({
         'Date':curData['date'],
-        'ResourceUsage':this.renderResourceUsageValue(curData['data']['usage']),
+        'ResourceUsage':this.renderResourceUsageValue(curData['data']['request']),
         'CPUUsage':this.renderCPUUsageValue(curData['data'][toolTipInfo['cpu']['key']]),
         'MemoryUsage':this.renderMemoryUsageValue(curData['data'][toolTipInfo['memory']['key']]),
       })
@@ -131,7 +131,7 @@ var mod = React.createClass({
     this.userData['echartToolTipFormatterInfo'] = {
       'cpu':{
         'name':'CPU用量',
-        'key':'cpu/usage_rate',
+        'key':'cpu/request',
         'renderFunc':this.renderCPUUsageValue,
       },
       'memory':{
@@ -140,7 +140,7 @@ var mod = React.createClass({
         'base':1024,
 
         'name':'Memory用量',
-        'key':'memory/usage',
+        'key':'memory/request',
         'renderFunc':this.renderMemoryUsageValue,
       },
     }

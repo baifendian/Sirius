@@ -709,7 +709,7 @@ def get_poddetail_filesystem_info(request,namespace,minutes):
     return execute_clusterinfo_request( data_dict,time_range )
 
 
-
+# 这里获取某个时间段内，cpu、memory相应指标的总和
 def get_resource_usage_from_influxdb( start_date,end_date,namespace ):
     # 由于传入的时间是local time，而influxdb中保存的时间戳是 utc time，因此需要做一个简单的转换
     s_timestamp = int(time.mktime( start_date.timetuple() ))
@@ -737,23 +737,23 @@ def get_resource_usage_from_influxdb( start_date,end_date,namespace ):
     return generate_success( data = retu_obj )
 
 
-# 检查mysql数据库中是否已经缓存了数据。如果有，则直接返回；如果没有，则现查
-# 注意，如果 start_date 的年月日与今天的年月日相同，则直接查influxdb，而不存mysqk缓存
+# 1. 检查mysql数据库中是否已经缓存了数据。如果有，则直接返回；如果没有，则现查
+#    注意，如果 start_date 的年月日与今天的年月日相同，则直接查influxdb，而不存mysql缓存
+# 2. get_resource_usage_from_influxdb 返回的值是相应指标的总和，即将1天内24×60个分钟的采样数据全部加起来；
+#    但是计算使用量所需要的是1天内平均每分钟的指标值。之所以缓存的值也是总和，是为了防止浮点存储数据不一致的为题（ 0.1+0.2 == 0.3 返回False ）
 def get_resource_usage_info( start_date,namespace ):
-    request_influxdb_data = lambda : get_resource_usage_from_influxdb( start_date,start_date+timedelta(seconds=24*60*60),namespace )
-
     # 保证 start_date 时分秒都为0
     start_date = datetime.combine( start_date,datetime_time() )
+    end_date = start_date+timedelta(seconds=24*60*60)
 
-
-    # 如果 start_date 与当前的年月日相同，则直接查询influxdb并返回，且不缓存数据到mysql
-    if start_date.strftime('%Y-%m-%d') == datetime.now().strftime('%Y-%m-%d'):
-        return request_influxdb_data()
+    # 如果 start_date 与当前的年月日相同或者大，则直接查询influxdb并返回，且不缓存数据到mysql
+    if start_date >= datetime.combine( datetime.now(),datetime_time() ):
+        return get_resource_usage_from_influxdb( start_date,end_date,namespace )
     else:
         records = list(ResourceUsageCache.objects.filter( datetime=start_date,namespace=namespace ))
         if len(records) == 0:
             # 如果数据库中无缓存，则需要查询influxdb
-            retu_data = request_influxdb_data()
+            retu_data = get_resource_usage_from_influxdb( start_date,end_date,namespace )
 
             # 查询失败，则直接返回
             if retu_data['code'] != RETU_INFO_SUCCESS:
@@ -788,8 +788,17 @@ def resource_usage(request,namespace):
             return retu_data
 
         data_obj = retu_data['data']
-        data_obj['usage'] = calc_virtual_machine_day( data_obj[ISM.M_CPU_USAGE],data_obj[ISM.M_MEMORY_USAGE] )
 
+        # 将获取到的指标数据的总和在分钟上进行平均，得到每分钟的指标值
+        measurements = [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ] + \
+                       [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]
+        for m in measurements:
+            data_obj[m] = data_obj[m]/(24*60)
+
+        data_obj['usage'] = calc_virtual_machine_day( data_obj[ISM.M_CPU_USAGE],data_obj[ISM.M_MEMORY_USAGE] )
+        data_obj['limit'] = calc_virtual_machine_day( data_obj[ISM.M_CPU_LIMIT],data_obj[ISM.M_MEMORY_LIMIT] )
+        data_obj['request'] = calc_virtual_machine_day( data_obj[ISM.M_CPU_REQUEST],data_obj[ISM.M_MEMORY_REQUEST] )
+        
         # date 是可以直接显示到页面上的日期（没有时分秒）
         retu_infos.append({
             'date':s.strftime('%Y-%m-%d'),
