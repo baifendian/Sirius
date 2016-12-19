@@ -17,6 +17,10 @@ import './index.less'
 
 var mod = React.createClass({
   
+  fix(v){
+    return Number(v).toFixed(2)
+  },
+
   getInitialState(){
     let days = 90
     let today_start = new Date(Toolkit.generateTimeStrByMilliSeconds(-1).slice(0,'YYYY-MM-DD'.length))
@@ -54,11 +58,11 @@ var mod = React.createClass({
 
   // 对cpu、memory、用量等数据进行进制转换、单位变换
   renderResourceUsageValue( v ){
-    return v + ' 机器/天'
+    return this.fix(v) + ' 机器/天'
   },
   // cpu数据的含义是毫核的个数，但是要求界面上展示虚拟核的个数，因此直接除以 1000
   renderCPUUsageValue(v){
-    return v/1000 + ' VCPU'
+    return this.fix(v/1000) + ' VCPU'
   },
   renderMemoryUsageValue(v){
     let toolTipInfo = this.userData['echartToolTipFormatterInfo']['memory']
@@ -78,7 +82,7 @@ var mod = React.createClass({
     let date_keys = []
     for ( let index = 0 ; index < executedData.length ; index ++ ){
       date_keys.push( executedData[index]['date'] )
-      values.push( executedData[index]['data']['request'] )
+      values.push( this.fix(executedData[index]['data']['request']) )
     }
     this.userData['echartDatas'] = {
       'xAxisData':date_keys,
