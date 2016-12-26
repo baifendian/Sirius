@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 import echarts from 'echarts'
 
 import { Tabs, TabList, Tab, TabPanel } from 'bfd/Tabs'
-import FixedTable from 'bfd/FixedTable'
 
 import { AutoLayoutDiv , layoutInfoGenerator } from 'public/AutoLayout'
 import NavigationInPage from 'public/NavigationInPage'
@@ -27,10 +26,9 @@ var mod = React.createClass({
     let start_date_str = Toolkit.generateTimeStrByMilliSeconds(today_start.getTime() - days*24*60*60*1000).slice(0,'YYYY-MM-DD'.length)
 
     return {
-      'days':90,
+      'days':days+1,              // +1，获取当天的用量
       'startdate':start_date_str,
-      'fixedTableDataList':[],
-      'fixedTableHeight':0
+      'echartFatherDivHeight':0,
     }
   },
   componentWillMount(){
@@ -53,7 +51,7 @@ var mod = React.createClass({
   },
 
   onHeightChanged(newHeight){
-    this.setState({'fixedTableHeight':newHeight})
+    this.setState({'echartFatherDivHeight':newHeight})
   },
 
   // 对cpu、memory、用量等数据进行进制转换、单位变换
@@ -88,21 +86,6 @@ var mod = React.createClass({
       'xAxisData':date_keys,
       'seriesData':values
     }
-
-    // 转换数据格式，方便 FixedTable 使用
-    let toolTipInfo = this.userData['echartToolTipFormatterInfo']
-    let fixedTableDataList = []
-    for ( let i in executedData ){
-      let curData = executedData[executedData.length-1-i]
-
-      fixedTableDataList.push({
-        'Date':curData['date'],
-        'ResourceUsage':this.renderResourceUsageValue(curData['data']['request']),
-        'CPUUsage':this.renderCPUUsageValue(curData['data'][toolTipInfo['cpu']['key']]),
-        'MemoryUsage':this.renderMemoryUsageValue(curData['data'][toolTipInfo['memory']['key']]),
-      })
-    }
-    this.userData['fixedTableDataList'] = fixedTableDataList
   },
 
   initUserData(){
@@ -116,22 +99,16 @@ var mod = React.createClass({
     this.userData['divIDs'] = {
       rootDivID:Toolkit.generateGUID(),
       navigationInPageID:Toolkit.generateGUID(),      
-      tabPanelID:Toolkit.generateGUID(),
+      echartFatherDivID:Toolkit.generateGUID(),
     }
     this.userData['autoLayoutInfos'] = [
       layoutInfoGenerator( this.userData['divIDs']['rootDivID'],true ),
       layoutInfoGenerator( this.userData['divIDs']['navigationInPageID'],false,'Const' ),
-      layoutInfoGenerator( this.userData['divIDs']['tabPanelID'],false,'Var',( newHeight )=>{
+      layoutInfoGenerator( this.userData['divIDs']['echartFatherDivID'],false,'Var',( newHeight )=>{
         this.onHeightChanged( newHeight )
       } ),
     ]
 
-    this.userData['fixedTableColumn'] = [
-      { title:'日期',          key:'Date' },
-      { title:'资源用量',       key:'ResourceUsage' },
-      { title:'CPU用量',       key:'CPUUsage' },
-      { title:'Memory用量',    key:'MemoryUsage' },
-    ]
     this.userData['echartToolTipFormatterInfo'] = {
       'cpu':{
         'name':'CPU用量',
@@ -218,16 +195,14 @@ var mod = React.createClass({
 
   requestData(){
     this.userData['echartObj'].showLoading()
-    this.setState({ 'fixedTableDataList':[] })
     CMDR.getResourceUsageInfo(
       CMDR.getCurNameSpace(this),
       this.state.startdate,
-      this.state.days+1,      // +1，获取当天的用量
+      this.state.days,
       (executedData)=>{
         this.userData['echartObj'].hideLoading()
         this.resetResourceUsageData(executedData)
         this.insertDataToEchart()
-        this.insertDataToTable()
       }
     )
   },
@@ -254,10 +229,6 @@ var mod = React.createClass({
     })
   },
 
-  insertDataToTable(){
-    this.setState({ 'fixedTableDataList':this.userData['fixedTableDataList'] })
-  },
-
   generateTooltipFormatterStr( lineNumber ){
     let templateStr = '<tr><td colspan="3">{time}</td></tr>'
     for ( let i = 0 ; i < lineNumber ; i ++ ){
@@ -272,41 +243,24 @@ var mod = React.createClass({
 
   render: function() {
     return (
-      <div id={this.userData['divIDs']['rootDivID']} className="ResourceUsageRootDiv">
+      <div id={this.userData['divIDs']['rootDivID']} className="ResourceUsageRecentlyRootDiv">
         <div id={this.userData['divIDs']['navigationInPageID']}>
           <NavigationInPage ref="NavigationInPage" 
                             headText={CalcManageConf.getNavigationData({
-                              pageName:'ResourceUsage',
+                              pageName:'ResourceUsageRecently',
                               type : 'headText'
                             })} 
                             naviTexts={CalcManageConf.getNavigationData({
-                              pageName:'ResourceUsage',
+                              pageName:'ResourceUsageRecently',
                               type:'navigationTexts',
                               spaceName:CalcManageConf.getCurSpace(this)
                             })} />
         </div>
-        <div id={this.userData['divIDs']['tabPanelID']} className="cTabs">
-          <Tabs>
-            <TabList>
-              <Tab><img src={require('public/TabBar/picture.png')} /></Tab>
-              <Tab><img src={require('public/TabBar/bars.png')} /></Tab>
-            </TabList>
-            <TabPanel>
-              <div className='ResourceUsageEchartFatherDiv' 
-                   style={{ 'height':(this.state.fixedTableHeight-40)+'px' }}>
-                <div id='ResourceUsageEchartDiv' />
-              </div>
-            </TabPanel>
-            <TabPanel>
-              <div className="FixedTableFatherDiv">
-                <FixedTable className="FixedTable" ref="FixedTable" 
-                          height={ this.state.fixedTableHeight-90 }
-                          data={ this.state.fixedTableDataList }
-                          showPage='false'
-                          column={ this.userData['fixedTableColumn'] } />
-              </div>
-            </TabPanel>
-          </Tabs>
+        <div id={this.userData['divIDs']['echartFatherDivID']} className="cTabs">
+          <div className='ResourceUsageEchartFatherDiv' 
+               style={{ 'height':(this.state.echartFatherDivHeight-40)+'px' }}>
+            <div id='ResourceUsageEchartDiv' />
+          </div>
         </div>
         <AutoLayoutDiv layoutInfos={this.userData['autoLayoutInfos']} />
       </div>

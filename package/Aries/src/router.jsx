@@ -104,9 +104,14 @@ export default render((
               cb(null, require('./functions/CalcManage/ClusterInfo/ingressinfo').default)
             })
           }}/>
-          <Route path="ResourceUsage" getComponent={(location, cb) => {
+          <Route path="ResourceUsageRecently" getComponent={(location, cb) => {
             require.ensure([], require => {
-              cb(null, require('./functions/CalcManage/ResourceUsage').default)
+              cb(null, require('./functions/CalcManage/ResourceUsageRecently').default)
+            })
+          }}/>
+          <Route path="ResourceUsageBilling" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/ResourceUsageBilling').default)
             })
           }}/>
           
