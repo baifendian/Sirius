@@ -18,7 +18,7 @@ import './index.less'
 var mod = React.createClass({
   
   fix(v){
-    return Number(v).toFixed(2)
+    return Number(v).toFixed(4)
   },
 
   getInitialState(){
@@ -125,7 +125,7 @@ var mod = React.createClass({
       },
       'memory':{
         'unitArr':['B','KiB','MiB','GiB','TiB','PiB'],
-        'significantFractionBit':2,
+        'significantFractionBit':4,
         'base':1024,
 
         'name':'Memory用量',

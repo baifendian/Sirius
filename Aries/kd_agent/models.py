@@ -77,23 +77,23 @@ class ResourceUsageDailyCache(models.Model):
     # u 多少个0.5VCPU   （1VCPU == cpu/1000 ，0.5VCPU是预设的值）
     # v 多少个128MB内存  （ 128MB是预设的值 ）
     # 计算公式为： u*0.025 + 0.003*v / (8*u)
-    # 同时，这个结果保留两位有效小数（0.01）（且直接进位）
-    # 即如果结果是 0.0212 则，应该显示 0.03
+    # 结果保留11位有效小数（1e-11）（且直接进位） 即如果结果是 1.11e-11 则，应该显示 1.2e-11
     @staticmethod
     def calc_virtual_machine_day( cpu_value,memory_value ):
 
         u = calc_minute_ave(cpu_value)/1000/0.5
         v = calc_minute_ave(memory_value)/128/1024/1024
         try:
-            v = u*0.025 + 0.003*v / (8*u)
+            value = u*0.025 + 0.003*v / (8*u)
         except:
-            v = 0
+            value = 0
         
-        # 先放大100倍，然后向上取整。之后再缩小100倍。由于缩小之后，获取的数不会严格100倍，因此round一下
+        # 先放大1e11倍，然后向上取整。之后再缩小1e11倍。由于缩小之后，获取的数不会严格1e11倍，因此round一下
         # 如：
         # >>> 1.3/10000
         # 0.00013000000000000002
-        return round( math.ceil(v/0.01)*0.01,2 )
+        d = 1e-11
+        return round( math.ceil(value/d)*d,11 )
 
 
 
