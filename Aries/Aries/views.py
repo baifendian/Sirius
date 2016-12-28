@@ -69,9 +69,12 @@ def login(request):
         if ldap_user:
             user = authenticate(username=username, password=password)
             if not user:
+                userTemp, created = User.objects.get_or_create(username=username)
+                if created:
+                    userTemp.delete()
                 userAdd = User.objects.create_user(username, email, password)
                 userAdd.is_active = True
-                userAdd.save
+                userAdd.save()
                 user = authenticate(username=username, password=password)
             if user:
                 auth_login(request, user)
