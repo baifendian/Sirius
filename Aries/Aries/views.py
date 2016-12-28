@@ -70,8 +70,7 @@ def login(request):
             user = authenticate(username=username, password=password)
             if not user:
                 userTemp, created = User.objects.get_or_create(username=username)
-                if not created:
-                    userTemp.delete()
+                userTemp.delete()
                 userAdd = User.objects.create_user(username, email, password)
                 userAdd.is_active = True
                 userAdd.save()
