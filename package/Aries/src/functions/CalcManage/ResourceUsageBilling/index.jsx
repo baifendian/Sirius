@@ -156,6 +156,7 @@ var mod = React.createClass({
   },
 
   onSearchButtonClicked(){
+    this.setState({ 'fixedTableDataList':[] })
     let dateStr = this.refs.MonthSelectControlRef.getDate()
     if ( !this.checkDateValid(dateStr) ){
       message.danger( '指定月份的账单尚未生成' )
@@ -235,10 +236,12 @@ var mod = React.createClass({
               </tr>
             </tbody>
           </table>
+          <hr/>
+          <h2>详单</h2>
         </div>
         <div className="FixedTableFatherDiv MiddleBillingBlock" id={this.userData['divIDs']['FixedTableFatherDivID']}>
           <FixedTable className="FixedTable" ref="FixedTable" 
-                          height={ this.state.fixedTableHeight-70 }
+                          height={ this.state.fixedTableHeight-90 }
                           data={ this.state.fixedTableDataList }
                           showPage='false'
                           column={ this.userData['fixedTableColumn'] } />

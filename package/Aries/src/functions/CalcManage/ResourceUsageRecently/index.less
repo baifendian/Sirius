@@ -1,45 +1,42 @@
 
 div.ResourceUsageRecentlyRootDiv{
+
   table.TooltipTable td.SpaceTdDistraction {
     width: 10px;
   }
 
-  div.cTabs{
-    .bfd-tabs__list {
-      float: right;
-      border-bottom:0px
-    }
-    .bfd-tabs__list li a{
-      background-color: #FFFFFF;
-      margin-right: 20px;
-    }
-    .bfd-tabs__list li a:hover , .nav.nav-tabs li a:focus{
-      background-color: #FFFFFF;
-      border-bottom: 1.5px solid #00BFFF;
-    }
+  table.RecentlyOverviewInfoTable{
+    font-size: 15px;
+    font-weight: bold;
+    td:nth-child(1){ width: 10px; }
+    td:nth-child(3){ width: 30px; }
   }
 
-  div.ResourceUsageEchartFatherDiv{
+  .MiddleMainBlock{
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  div.EchartFatherDiv{
+    overflow-x: hidden;
     overflow-y: auto;
     margin:auto;
-    width: 100%;
-  }
+    width: 80%;
 
-  div#ResourceUsageEchartDiv{
-    margin:auto;
-    width:1000px;
-    height:500px;
-    padding-top: 40px;
+    div#ResourceUsageEchartDiv{
+      margin-top: 30px;
+      margin:auto;
+      width:85%;
+      height:400px;
+    }
+    div#CPUEchartDiv,div#MemoryEchartDiv{
+      display: inline-block;
+      margin:auto;
+      width:50%;
+      height:280px;
+    }
   }
-  div.FixedTableFatherDiv {
-    padding-top:13px;   // DataTable的表头文本距离上边框为17px
-    border: 1px solid #ECECEC;
-  }
-
-  div#ResourceUsageEchartDiv , div.FixedTableFatherDiv{
-     margin-top: 30px;
-  }
-
 }
 
 
