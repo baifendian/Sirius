@@ -77,13 +77,8 @@ var MonthSelectControl = React.createClass({
     }
   },
 
-  componentDidMount(){
-    ReactDOM.findDOMNode( this.refs.InputRef ).addEventListener( 'click',()=>{
-      this.refs.PleaseSelectMonthControlDropDownRef.setState({ 'dropdownOpenState':true })
-
-      // js是单线程的，因此setState之后并不会马上进入setState的回调函数中，因此这里过500ms再进行绑定
-      setTimeout( ()=>{ this.bindButtonClickCallBack() },500 );
-    } )
+  onDropdownToggle(state){
+    state && setTimeout( ()=>{ this.bindButtonClickCallBack() },500 )
   },
 
   // 由于在 componentDidMount 函数中不能保证 DropdownMenu 的内容已经被渲染到页面上（lazy渲染），因此需要存储月份按钮是否绑定click事件的状态
@@ -93,6 +88,7 @@ var MonthSelectControl = React.createClass({
         curLine.map( (monthIndex)=>{
           ReactDOM.findDOMNode( this.refs['MonthButtonRef'+monthIndex] ).addEventListener( 'click',()=>{
             this.onMonthButtonClicked( monthIndex )
+            this.refs.PleaseSelectMonthControlDropDownRef.close()
           } )
         } )
       } )
@@ -138,10 +134,10 @@ var MonthSelectControl = React.createClass({
     return (
       <div className="MonthSelectControlRootDiv">
         <Dropdown ref="PleaseSelectMonthControlDropDownRef" 
-                  open={this.state.dropdownOpenState}
-                  aligned={false}>
+                  aligned={false}
+                  onToggle={this.onDropdownToggle}>
           <DropdownToggle>
-            <Input ref="InputRef" value={this.state.inputValue} readOnly='true' />
+            <Input value={this.state.inputValue} readOnly='true' />
           </DropdownToggle>
           <DropdownMenu >
             <table className="MonthSelectTable">
