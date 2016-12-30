@@ -81,7 +81,7 @@ var MonthSelectControl = React.createClass({
     state && setTimeout( ()=>{ this.bindButtonClickCallBack() },500 )
   },
 
-  // 由于在 componentDidMount 函数中不能保证 DropdownMenu 的内容已经被渲染到页面上（lazy渲染），因此需要存储月份按钮是否绑定click事件的状态
+  // 由于在 onDropdownToggle 函数中不能保证 DropdownMenu 的内容已经被渲染到页面上，因此需要存储月份按钮是否绑定click事件的状态
   bindButtonClickCallBack(){
     if ( this.userData['hasBindButtonCallBack'] != true ){
       this.userData['monthInfoList'].map( (curLine)=>{

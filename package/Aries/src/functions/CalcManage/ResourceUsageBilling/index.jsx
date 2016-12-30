@@ -82,9 +82,9 @@ var mod = React.createClass({
       totalMemory += curData['data'][toolTipInfo['memory']['key']]
     }
     this.userData['fixedTableDataList'] = fixedTableDataList
-    this.userData['totalBilling'] = this.renderResourceUsageValue(totalBilling)
-    this.userData['totalCPU'] = this.renderCPUUsageValue(totalCPU)
-    this.userData['totalMemory'] = this.renderMemoryUsageValue(totalMemory)
+    this.userData['totalBilling'] = this.renderResourceUsageValue(totalBilling / executedData.length)
+    this.userData['totalCPU'] = this.renderCPUUsageValue(totalCPU / executedData.length)
+    this.userData['totalMemory'] = this.renderMemoryUsageValue(totalMemory / executedData.length)
     return fixedTableDataList
   },
 
@@ -218,19 +218,19 @@ var mod = React.createClass({
               </tr>
               <tr>
                 <td></td>
-                <td>总账单</td>
+                <td>月账单</td>
                 <td></td>
                 <td>{this.userData['totalBilling']}</td>
               </tr>
               <tr>
                 <td></td>
-                <td>总CPU</td>
+                <td>月平均CPU</td>
                 <td></td>
                 <td>{this.userData['totalCPU']}</td>
               </tr>
               <tr>
                 <td></td>
-                <td>总内存</td>
+                <td>月平均内存</td>
                 <td></td>
                 <td>{this.userData['totalMemory']}</td>
               </tr>

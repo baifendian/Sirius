@@ -90,6 +90,7 @@ var mod = React.createClass({
       'seriesData':memoryUsageValues
     }
 
+    let days = 0.0
     // 计算出来本月的CPU、内存、用量总和
     let totalResourceUsage = 0.0
     let totalCPU = 0.0
@@ -99,15 +100,16 @@ var mod = React.createClass({
       let curData = executedData[executedData.length-1-i]
       // 汇总数据显示月初到当天的汇总
       if ( monthFirstDate.getTime() <= new Date(curData['date']).getTime() ){
+        days += 1
         totalResourceUsage += curData['data'][ echartBaseInfo['resourceUsage']['key'] ]
         totalCPU += curData['data'][ echartBaseInfo['cpu']['key'] ]
         totalMemory += curData['data'][ echartBaseInfo['memory']['key'] ]
       }
     }
 
-    this.setState({'totalResourceUsage':totalResourceUsage})
-    this.setState({'totalCPU':totalCPU})
-    this.setState({'totalMemory':totalMemory})
+    this.setState({'totalResourceUsage':totalResourceUsage/days})
+    this.setState({'totalCPU':totalCPU/days})
+    this.setState({'totalMemory':totalMemory/days})
   },
 
   initUserData(){
@@ -224,14 +226,17 @@ var mod = React.createClass({
   },
 
   initCharts(){
+    let colorPool = ['rgba(38,166,154,0.9)','rgba(255,138,101,0.9)','rgba(102,187,106,0.9)']
+
     for ( let i in this.userData['keywords'] ){
       let k = this.userData['keywords'][i]
       let echartBaseInfo = this.userData['echartBaseInfo'][k]
 
+      let initOptions = this.generateInitEchartOption(echartBaseInfo['name'],echartBaseInfo['tooltipFormatterFunc'],echartBaseInfo['yAxisLabelFormatterFunc'])
+      initOptions['color'] = [colorPool[i]]
+
       this.userData['echartObjs'][k] = echarts.init(document.getElementById( echartBaseInfo['divID'] ))
-      this.userData['echartObjs'][k].setOption( this.generateInitEchartOption(
-        echartBaseInfo['name'],echartBaseInfo['tooltipFormatterFunc'],echartBaseInfo['yAxisLabelFormatterFunc']
-      ) )
+      this.userData['echartObjs'][k].setOption( initOptions )
     }
   },
 
@@ -376,19 +381,19 @@ var mod = React.createClass({
               </tr>
               <tr>
                 <td></td>
-                <td>总账单</td>
+                <td>月账单</td>
                 <td></td>
                 <td>{totalResourceUsage}</td>
               </tr>
               <tr>
                 <td></td>
-                <td>总CPU</td>
+                <td>月平均CPU</td>
                 <td></td>
                 <td>{totalCPU}</td>
               </tr>
               <tr>
                 <td></td>
-                <td>总内存</td>
+                <td>月平均内存</td>
                 <td></td>
                 <td>{totalMemory}</td>
               </tr>
