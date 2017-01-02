@@ -69,6 +69,9 @@ const pie = {
   },
   //渲染option的函数
   renderOption(data){
+    if(data.nonUsed == 0 && data.used == 0){
+      data.nonUsed = 1;
+    }
     let option = common.tempPreHandler(this.getOption(),data);
     return option;
   }

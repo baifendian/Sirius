@@ -15,9 +15,9 @@ export default React.createClass({
         random: 0,
         hdfs_disk: { //hdfs磁盘
           used: 0,
-          nonUsed: 1,
+          nonUsed: 0,
           unit: "TB",
-          total: 1,
+          total: 0,
         },
         hdfs_shares: 0, //HDFS分享文件的个数
         hdfs_datanodes: { //hdfs datanode状态
@@ -32,9 +32,9 @@ export default React.createClass({
         },
         codis_memory: {
           used: 0,
-          nonUsed: 1,
+          nonUsed: 0,
           unit: "GB",
-          total: 1
+          total: 0
         },
         k8sp_pod: {
           lives: 0,
@@ -135,6 +135,7 @@ export default React.createClass({
       let title = item.title;
       let cid = item.id;
       let content = item.content.map(function(item,index){
+        item = common.tempPreHandler(item,this.state[item.stateName]);
         let id = `echarts_${cid}_${index}`
         let type = item.type;
         if( type != undefined ){
