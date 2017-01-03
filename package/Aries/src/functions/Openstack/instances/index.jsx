@@ -23,6 +23,7 @@ import {Tabs_List} from './instanses_tabs'
 
 export default React.createClass({
   getInitialState: function () {
+    var self =this;
     return {
       title_status:'内容加载中',
       height_log:'',
@@ -43,11 +44,13 @@ export default React.createClass({
       logs:'',
       logs_loading:'',
       vmdisk:'',
-      url: "v1/openstack/bfddashboard/instances/",
+      //url: "v1/openstack/bfddashboard/instances/",
+      url:"data/a.json",
       column: [{
         title: '名称',
         order: false,
         render: (text, item) => {
+          self.count_initialization()
           return (
             <div>
               <div>
@@ -156,9 +159,9 @@ export default React.createClass({
     })
   },
   count_height(){
-    let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
-    let totallength = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].childNodes.length
-    let tdheight = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].scrollHeight
+    let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length
+    let totallength = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length
+    let tdheight = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes[0].scrollHeight
     let height_table = (totallength + 1) * tdheight
     let totalwidth_t = ReactDOM.findDOMNode(this.refs.instances_bu).clientWidth
     //let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/table_trlengt
@@ -176,23 +179,40 @@ export default React.createClass({
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height = totalHeight2 + "px"
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top = totalHeight2 + "px"
     ReactDOM.findDOMNode(this.refs.Table_t).childNodes[0].style.width = totalwidth_t + 'px'
-    ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].style.height = totalHeight + 'px'
+    ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].style.height = totalHeight + 'px'
     ReactDOM.findDOMNode(this.refs.Tabs_list).childNodes[1].style.height=(totalHeight1-totalHeight2-35)+'px'
     if (totalHeight <= height_table) {
-      for (let i = 0; i < ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length; i++) {
+      for (let i = 0; i < ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length; i++) {
         if (i == (table_trlengt - 1)) {
           totalwidth = totalwidth + 17
-          ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width = totalwidth + 'px'
+          ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes[i].style.width = totalwidth + 'px'
         } else {
-          ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width = totalwidth + 'px'
+          ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes[i].style.width = totalwidth + 'px'
         }
       }
     }
   },
   count_initialization(){
-    let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
-    let totallength = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].childNodes.length
-    let tdheight = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].scrollHeight
+    try {
+      let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length
+    }
+    catch (err){
+      let totalHeight = document.body.clientHeight
+      totalHeight -= document.getElementById('header').clientHeight
+      totalHeight -= document.getElementById('footer').clientHeight
+      let instances_nav = ReactDOM.findDOMNode(this.refs.instances_nav).clientHeight
+      let instances_bu = ReactDOM.findDOMNode(this.refs.instances_bu).clientHeight
+      let totalHeight1 = totalHeight - 120
+      totalHeight = totalHeight - instances_nav - instances_bu - 140 - 10
+      let totalHeight2 = totalHeight + 82
+      ReactDOM.findDOMNode(this.refs.SplitPanel).style.height = totalHeight1 + "px"
+      ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height = totalHeight1 + "px"
+      ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top = totalHeight1 + "px"
+      ReactDOM.findDOMNode(this.refs.Table).style.height = totalHeight + 'px'
+      return
+    }
+    let totallength = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length
+    let tdheight = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes[0].scrollHeight
     let height_table = (totallength + 1) * tdheight
     // let totalwidth=(ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[0].clientWidth-32.5)/7
     let totalwidth_t = ReactDOM.findDOMNode(this.refs.instances_bu).clientWidth
@@ -209,17 +229,17 @@ export default React.createClass({
     ReactDOM.findDOMNode(this.refs.SplitPanel).style.height = totalHeight1 + "px"
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[0].style.height = totalHeight1 + "px"
     ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[1].style.top = totalHeight1 + "px"
-    ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].style.height = totalHeight + 'px'
+    ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].style.height = totalHeight + 'px'
     ReactDOM.findDOMNode(this.refs.Table_t).childNodes[0].style.width = totalwidth_t + 'px'
     if (totalHeight <= height_table) {
       // ReactDOM.findDOMNode( this.refs.Table_t).childNodes[0].style.width=totalwidth_t+'px'
       // ReactDOM.findDOMNode( this.refs.Table).childNodes[1].childNodes[1].style.height=totalHeight+'px'
-      for (let i = 0; i < ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length; i++) {
+      for (let i = 0; i < ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length; i++) {
         if (i == (table_trlengt - 1)) {
           totalwidth = totalwidth + 17
-          ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width = totalwidth + 'px'
+          ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes[i].style.width = totalwidth + 'px'
         } else {
-          ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width = totalwidth + 'px'
+          ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes[i].style.width = totalwidth + 'px'
         }
       }
     }
@@ -353,6 +373,7 @@ export default React.createClass({
       }
     }
     this.count_initialization()
+
   },
   handleSplit(){
     let hand_height=ReactDOM.findDOMNode(this.refs.SplitPanel).childNodes[2].style.height
