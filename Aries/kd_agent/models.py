@@ -9,9 +9,12 @@ from kd_agent.toolsmanager import InfluxDBQueryStrManager as ISM
 def calc_minute_ave(v):
     return float(v)/(24*60)
 
+# 建库语句
+# create database DecisionMakingSurvey default charset utf8 collate utf8_unicode_ci;
+
 class ResourceUsageDailyCache(models.Model):
     datetime = models.DateTimeField()
-    namespace = models.CharField( max_length=1024 )
+    namespace = models.CharField( max_length=255 )
 
     cpu_request = models.BigIntegerField( default=0 )
     cpu_limit = models.BigIntegerField( default=0 )
@@ -95,6 +98,20 @@ class ResourceUsageDailyCache(models.Model):
         d = 1e-11
         return round( math.ceil(value/d)*d,11 )
 
+
+# 该表中记录namespace到部门名的一个对照，只用做向运维推送集群每天某个namespace的资源用量
+# 由于推送数据与Sirius的主要业务不相关，因此这里会尽量降低它与Sirius业务相关表的耦合度
+class NamespaceDepartmentRef(models.Model):
+    namespace = models.CharField( max_length=255,primary_key=True )
+    department = models.CharField( max_length=1024 )
+
+# 该表是为了记录推送的状态。比如某天的数据推送失败，则该表中将会有一条push_success为False的记录
+# 等到下次推送的时候，将会查找这些记录并重新推送
+class ClusterUsagePushFailureRecords(models.Model):
+    namespace = models.ForeignKey( NamespaceDepartmentRef )
+    datetime = models.DateTimeField()
+    class Meta:
+        unique_together = ("namespace", "datetime")
 
 
 

@@ -153,8 +153,14 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'{0}/service.log'.format(LOG_BASE_DIR).replace('\\','/')
+            'filename' :'{0}/kd_agent.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
+        'kd_agent_pushclusterinfo_file': {
+            'level':'DEBUG',
+            'class':'logging.FileHandler',
+            'formatter': 'complete',
+            'filename' :'{0}/kd_agent_pushclusterinfo.log'.format(LOG_BASE_DIR).replace('\\','/')
+        },        
         'openstack_log': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
@@ -194,6 +200,11 @@ LOGGING = {
         },
         'kd_agent_log': {
             'handlers':['kd_agent_file','console'],
+            'propagate': False,
+            'level':'INFO',
+        },
+        'kd_agent_pushclusterinfo_log': {
+            'handlers':['kd_agent_pushclusterinfo_file','console'],
             'propagate': False,
             'level':'DEBUG',
         },
