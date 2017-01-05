@@ -1,5 +1,5 @@
-FROM docker.baifendian.com/sjx/sirius_base
-MAINTAINER jingxia.sun <jingxia.sun@baifendian.com>
+FROM docker.baifendian.com/guopan/sirius_base
+MAINTAINER pan.guo <pan.guo@baifendian.com>
 
 ENV SIRIUS_PATH /opt/Sirius
 RUN mkdir -p /opt/Sirius
@@ -39,8 +39,3 @@ RUN chmod +x $SIRIUS_PATH/sbin/Aries.sh &&\
 EXPOSE 10086
 #CMD /opt/Sirius/sbin/Aries.sh start >>/opt/Sirius/log/uwsgi.log
 CMD sh $SIRIUS_PATH/docker-k8s/script/start_script.sh
-
-# 启动一个crontab进程，定时往运维推送数据
-CMD echo '* * * * * /opt/Python-2.7/bin/python '$SIRIUS_PATH'/Aries/manage.py pushk8sdata' >> /var/spool/cron/root
-CMD service crond restart
-

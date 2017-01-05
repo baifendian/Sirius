@@ -95,5 +95,12 @@ sed -i "s#YARN_YARN_RESOURCEMANAGER_WEBAPP_ADDRESS_RM2#$YARN_YARN_RESOURCEMANAGE
 sed -i "s#YARN_YARN_RESOURCEMANAGER_RESOURCE_TRACKER_ADDRESS_RM2#$YARN_YARN_RESOURCEMANAGER_RESOURCE_TRACKER_ADDRESS_RM2#g" /opt/hadoop/etc/hadoop/yarn-site.xml
 sed -i "s#YARN_YARN_RESOURCEMANAGER_ADMIN_ADDRESS_RM2#$YARN_YARN_RESOURCEMANAGER_ADMIN_ADDRESS_RM2#g" /opt/hadoop/etc/hadoop/yarn-site.xml
 
+
+# 启动一个crontab进程，定时往运维推送数据
+sed -i '/session    required   pam_loginuid.so/c\session    sufficient   pam_loginuid.so' /etc/pam.d/crond
+echo '0 2 * * * /opt/Python-2.7/bin/python /opt/Sirius/Aries/manage.py pushk8sdata' >> /var/spool/cron/root
+chmod 600 /var/spool/cron/root
+service crond restart
+
 source /etc/profile
 /opt/Sirius/sbin/Aries.sh start
