@@ -61,6 +61,21 @@ export default React.createClass({
     //console.log(this.state.flavors_list)
   },
   componentDidMount(){
+    try{
+      let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
+    }
+    catch (err){
+      let tdheight = ReactDOM.findDOMNode(this.refs.Table).scrollHeight
+      let height_table = (totallength) * tdheight
+      let totalHeight = document.body.clientHeight
+      totalHeight -= document.getElementById('header').clientHeight
+      totalHeight -= document.getElementById('footer').clientHeight
+      let flavors_nav = ReactDOM.findDOMNode(this.refs.flavors_nav).clientHeight
+      let flavors_bu = ReactDOM.findDOMNode(this.refs.flavors_bu).clientHeight
+      totalHeight = totalHeight - flavors_nav - flavors_bu - 110
+      ReactDOM.findDOMNode(this.refs.Table).style.height = totalHeight + 'px'
+      return
+    }
     let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
     let totallength = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].childNodes.length
     let tdheight = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].scrollHeight

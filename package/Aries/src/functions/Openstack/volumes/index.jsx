@@ -127,6 +127,21 @@ export default React.createClass({
     OPEN.volumes_data(this,this.state.select_all)
   },
   componentDidMount(){
+    try{
+      let table_trlengt=ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
+    }
+    catch (err){
+      let tdheight = ReactDOM.findDOMNode(this.refs.volumes_table).scrollHeight
+      let height_table=(totallength)*tdheight
+      let totalHeight = document.body.clientHeight
+      totalHeight -= document.getElementById('header').clientHeight
+      totalHeight -= document.getElementById('footer').clientHeight
+      let volumes_nav = ReactDOM.findDOMNode(this.refs.volumes_nav).clientHeight
+      let volumes_bu = ReactDOM.findDOMNode(this.refs.volumes_bu).clientHeight
+      totalHeight = totalHeight - volumes_nav - volumes_bu - 120
+      ReactDOM.findDOMNode( this.refs.volumes_table).style.height=totalHeight+'px'
+      return
+    }
     let table_trlengt=ReactDOM.findDOMNode(this.refs.volumes_table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
     let totallength=ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].childNodes.length
     let tdheight=ReactDOM.findDOMNode( this.refs.volumes_table).childNodes[1].childNodes[1].scrollHeight
