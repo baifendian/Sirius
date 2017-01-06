@@ -243,7 +243,7 @@ var mod = React.createClass({
   requestData(){
     // 该页面需要两块数据：账单信息要求显示本月初到今天的数据。走势图需要近14天的数据，为了一次请求成功，因此需要把这两个时间段的数据汇总起来
     let todayStartStr = Toolkit.generateTimeStrByMilliSeconds(-1).slice(0,'YYYY-MM-DD'.length)
-    let sDate1 = new Date(new Date(todayStartStr).getTime() - (this.userData['recentlyDays']-1)*24*60*60*1000)     // 最近14天
+    let sDate1 = new Date(new Date(todayStartStr).getTime() - (this.userData['recentlyDays'])*24*60*60*1000)     // 最近14天
     let sDate2 = new Date(todayStartStr.slice(0,'YYYY-MM'.length)+'-01')                  // 月初
 
     let days = undefined
@@ -253,7 +253,7 @@ var mod = React.createClass({
       days = this.userData['recentlyDays']
     } else {
       sDate = sDate2
-      days = new Date(todayStartStr).getDate()
+      days = (new Date(todayStartStr).getDate())-1
     }
     let startDateStr = Toolkit.generateTimeStrByMilliSeconds(sDate.getTime()).slice(0,'YYYY-MM-DD'.length)
 
@@ -344,7 +344,7 @@ var mod = React.createClass({
   render: function() {
 
     let monthFirstDayStr = Toolkit.generateTimeStrByMilliSeconds((new Date()).getTime()).slice( 0,'YYYY-MM'.length )
-    let recentlyTitle = Toolkit.strFormatter.formatString('{date} {nameSpace} 账单信息（截至到当前时间）',{
+    let recentlyTitle = Toolkit.strFormatter.formatString('{date} {nameSpace} 账单信息（截至到当天凌晨）',{
       'nameSpace':CalcManageConf.getCurSpace(this),
       'date':monthFirstDayStr.split('-').join('年') + '月'
     })
