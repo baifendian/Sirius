@@ -295,8 +295,9 @@ const MyTable = React.createClass({
     }]}
   },
   render(){
+    console.log(this.props.data.totalList);
     return <div className="mytable">
-              <FixedTable height={300} data={this.props.data} column={this.state.column}></FixedTable>
+              <FixedTable height={300} data={this.props.data.totalList} column={this.state.column}></FixedTable>
               <Modal ref="modal">
                 <ModalHeader>
                   <h4 className="modal-title">{this.modalTitle[this.state.modalTitle].call(this)}</h4>
