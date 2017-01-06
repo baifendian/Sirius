@@ -73,7 +73,7 @@ export default React.createClass({
     totalHeight -= document.getElementById('footer').clientHeight
     let images_nav = ReactDOM.findDOMNode(this.refs.images_nav).clientHeight
     let images_bu = ReactDOM.findDOMNode(this.refs.images_bu).clientHeight
-    totalHeight = totalHeight - images_nav - images_bu
+    totalHeight = totalHeight - images_nav - images_bu - 110
     ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].style.height = totalHeight + 'px'
     if (totalHeight > height_table) {
       for (let i=0; i< ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++) {
