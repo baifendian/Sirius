@@ -2,6 +2,24 @@
 
 var Toolkit = {
 
+  // 计算某年某月共多少天
+  calcMonthDays(date){
+    if (date){
+      date = new Date(date)
+    } else {
+      date = new Date()
+    }
+    let biggerDays = 0
+    while ( date.getMonth() == new Date(date.getTime()+biggerDays*24*60*60*1000).getMonth() ){
+      biggerDays += 1
+    }
+    let smallerDays = 0
+    while ( date.getMonth() == new Date(date.getTime()-smallerDays*24*60*60*1000).getMonth() ){
+      smallerDays += 1
+    }
+    return biggerDays+smallerDays-1
+  },
+
   // 传入开始时间字符串，计算出开始时间距离现在大约多长时间
   calcAge(createTime){
     if ( !createTime ){

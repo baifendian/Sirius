@@ -1,0 +1,43 @@
+
+div.ResourceUsageBillingRootDiv{
+
+  .MiddleBillingBlock{
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  table.BillingOverviewInfoTable{
+    font-size: 15px;
+    font-weight: bold;
+    td:nth-child(1){ width: 10px; }
+    td:nth-child(3){ width: 30px; }
+  }
+
+  table.SearchLayoutTable{
+    width: 100%;
+
+    td:nth-child(1){ width:38% }
+    td:nth-child(2){ width:10% }
+    td:nth-child(3){ width:4% }
+    td:nth-child(4){ width:15% }
+    td:nth-child(5){ width:33% }
+  }
+
+
+  div.FixedTableFatherDiv {
+    padding-top:10px;   // DataTable的表头文本距离上边框为17px
+
+    > * {
+      border: 1px solid #ECECEC;
+      padding-top: 42px;
+      th > div{
+        margin-top: 12px;
+      }
+    }
+  }
+  
+
+}
+
+

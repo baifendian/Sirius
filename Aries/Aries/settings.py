@@ -34,7 +34,7 @@ file_name='{0}/Aries.yaml'.format(FILE_PATH).replace('\\','/')
 yaml_file = open(file_name)
 OPENSTACK_KEY_PATH = os.path.join(BASE_DIR,"openstack/middleware/common/key.yaml")
 SETTINGS = yaml.load(yaml_file)
-print SETTINGS
+# print SETTINGS
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -152,8 +152,14 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'formatter': 'complete',
-            'filename' :'{0}/service.log'.format(LOG_BASE_DIR).replace('\\','/')
+            'filename' :'{0}/kd_agent.log'.format(LOG_BASE_DIR).replace('\\','/')
         },
+        'kd_agent_pushclusterinfo_file': {
+            'level':'DEBUG',
+            'class':'logging.FileHandler',
+            'formatter': 'complete',
+            'filename' :'{0}/kd_agent_pushclusterinfo.log'.format(LOG_BASE_DIR).replace('\\','/')
+        },        
         'openstack_log': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
@@ -193,6 +199,11 @@ LOGGING = {
         },
         'kd_agent_log': {
             'handlers':['kd_agent_file','console'],
+            'propagate': False,
+            'level':'INFO',
+        },
+        'kd_agent_pushclusterinfo_log': {
+            'handlers':['kd_agent_pushclusterinfo_file','console'],
             'propagate': False,
             'level':'DEBUG',
         },
@@ -310,10 +321,7 @@ IP_CINDER = OPENSTACK_SETTINGS["IP_CINDER"]
 PORT_CINDER = OPENSTACK_SETTINGS["PORT_CINDER"]
 MONITOR_URL = OPENSTACK_SETTINGS['MONITOR_URL']
 
-#启动一个线程开始定时统计配额. default: 10m
-POLL_TIME = 600
-import sumSpace
-sumSpace.run(POLL_TIME)
+
 
 #admin页面白名单IP
 WHITELIST_SETTINGS = SETTINGS['WHITELIST']

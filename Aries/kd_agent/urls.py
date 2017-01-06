@@ -15,6 +15,8 @@ urlpatterns = patterns('',
     url(r'^api/namespaces/(?P<namespace>\w{1,64})/replicationcontrollers/downloadjson$',views.download_rc_json),
     url(r'^apis/extensions/v1beta1/namespaces/(?P<namespace>\w{1,64})/ingresses/downloadjson$',views.download_ingress_json ),
 
+    url(r'^api/namespaces/(?P<namespace>\w{1,64})/resourceusage$',views.resource_usage),
+    
     url(r'^api/namespaces/mytaskgraph$', views.get_mytask_graph),
     url(r'^download/$', views.download),
     url(r'^api/namespaces/mytasklist/getoldrecords', views.mytask_get_old_records),

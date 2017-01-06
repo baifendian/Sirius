@@ -104,6 +104,17 @@ export default render((
               cb(null, require('./functions/CalcManage/ClusterInfo/ingressinfo').default)
             })
           }}/>
+          <Route path="ResourceUsageRecently" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/ResourceUsageRecently').default)
+            })
+          }}/>
+          <Route path="ResourceUsageBilling" getComponent={(location, cb) => {
+            require.ensure([], require => {
+              cb(null, require('./functions/CalcManage/ResourceUsageBilling').default)
+            })
+          }}/>
+          
         </Route>
         <Route path="OffLineCalcTask">
           <Route path="MyTask" getComponent={(location, cb) => {

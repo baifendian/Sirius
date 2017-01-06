@@ -8,7 +8,11 @@ import os
 import codecs
 
 from django.http import StreamingHttpResponse
-from datetime import datetime
+from datetime import datetime,timedelta
+
+# 由于前面有 import time ，为了防止重名，因此这里改下名
+from datetime import time as datetime_time
+
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
@@ -21,7 +25,7 @@ from kd_agent.toolsmanager import trans_return_json
 from kd_agent.toolsmanager import K8sRequestManager as KRM
 from kd_agent.toolsmanager import InfluxDBQueryStrManager as ISM
 
-
+from kd_agent.models import ResourceUsageDailyCache as RUDC
 
 kd_logger = logging.getLogger("kd_agent_log")
 
@@ -702,6 +706,101 @@ def get_poddetail_filesystem_info(request,namespace,minutes):
         else:
             return retu_data
     return execute_clusterinfo_request( data_dict,time_range )
+
+
+# 这里获取某个时间段内，cpu、memory相应指标的总和
+def get_resource_usage_from_influxdb( start_date,end_date,namespace ):
+    # 由于传入的时间是local time，而influxdb中保存的时间戳是 utc time，因此需要做一个简单的转换
+    s_timestamp = int(time.mktime( start_date.timetuple() ))
+    e_timestamp = int(time.mktime( end_date.timetuple() ))
+
+    # 这里只计算CPU、Memory的
+    measurements = [ ISM.M_CPU_USAGE,ISM.M_CPU_LIMIT,ISM.M_CPU_REQUEST ] + \
+                   [ ISM.M_MEMORY_USAGE,ISM.M_MEMORY_LIMIT,ISM.M_MEMORY_REQUEST ]
+
+    retu_obj = {}
+    for m in measurements:
+        retu_data = ISM.get_namespace_resourceusage_data( m,s_timestamp,e_timestamp,namespace )
+        
+        if retu_data['code'] != RETU_INFO_SUCCESS:
+            return retu_data
+        
+        # 如果某个space下，influxdb返回的 results 为是空数组，则表明数据库中没有该筛选条件下的数据，因此置为0
+        try:
+            data_arr = [ item[1] if item[1] else 0   \
+                         for item in retu_data['data']['results'][0]['series'][0]['values'] ]
+            retu_obj[m] = sum(data_arr)
+        except Exception as e:
+            retu_obj[m] = 0
+            
+    return generate_success( data = retu_obj )
+
+
+# 检查mysql数据库中是否已经缓存了数据。如果有，则直接返回；如果没有，则现查
+# 注意，如果 start_date 的年月日与今天的年月日相同，则直接查influxdb，而不存mysql缓存
+def get_resource_usage_info( start_date,namespace ):
+    # 保证 start_date 时分秒都为0
+    start_date = datetime.combine( start_date,datetime_time() )
+    end_date = start_date+timedelta(seconds=24*60*60)
+
+    # 如果 start_date 与当前的年月日相同或者大，则直接查询influxdb并返回，且不缓存数据到mysql
+    if start_date >= datetime.combine( datetime.now(),datetime_time() ):
+        retu_data = get_resource_usage_from_influxdb( start_date,end_date,namespace )
+        if retu_data['code'] != RETU_INFO_SUCCESS:
+            return retu_data
+        else:
+            obj = RUDC.generate_obj_by_measurement_key( start_date,namespace,retu_data['data'] )
+            return generate_success( data=obj.to_minuteaverge_measurementkey_json() )
+    else:
+        records = list(RUDC.objects.filter( datetime=start_date,namespace=namespace ))
+        if len(records) == 0:
+            # 如果数据库中无缓存，则需要查询influxdb
+            retu_data = get_resource_usage_from_influxdb( start_date,end_date,namespace )
+
+            # 查询失败，则直接返回
+            if retu_data['code'] != RETU_INFO_SUCCESS:
+                return retu_data
+
+            # 如果查询成功，但是缓存失败，也可以直接返回，而不做任何处理
+            obj = RUDC.generate_obj_by_measurement_key( start_date,namespace,retu_data['data'] )
+            try:
+                obj.save()
+            except:
+                pass
+            return generate_success(data=obj.to_minuteaverge_measurementkey_json())
+        else:
+            return generate_success(data=records[0].to_minuteaverge_measurementkey_json())
+
+
+@csrf_exempt
+@return_http_json
+@trans_return_json
+def resource_usage(request,namespace):
+    start_date_str = request.GET.get('startdate',datetime.now().strftime('%Y-%m-%d'))
+    days = int(request.GET.get('days',1))
+
+    # 从时间字符串初始化一个datetime对象
+    start_date = datetime.strptime( start_date_str,'%Y-%m-%d' )
+
+    retu_infos = []
+    for index in range(days):
+        s = start_date+timedelta(seconds=24*60*60)*index
+        retu_data = get_resource_usage_info(s,namespace)
+        
+        if retu_data['code'] != RETU_INFO_SUCCESS:
+            return retu_data
+
+        # date 是可以直接显示到页面上的日期（没有时分秒）
+        retu_infos.append({
+            'date':s.strftime('%Y-%m-%d'),
+            'data':retu_data['data']
+        })
+        
+    return generate_success(data=retu_infos)
+
+
+
+
 
 
 

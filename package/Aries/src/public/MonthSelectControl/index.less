@@ -1,0 +1,67 @@
+
+div.MonthSelectControlRootDiv {
+
+}
+
+
+
+// 由于DropDown实现的原因，在html节点树上，MonthButton 并不是 MonthSelectControlRootDiv 的子孙节点
+
+table.MonthSelectTable{
+  @buttonSideLength: 24px;
+  @buttonMargin: 2px;
+
+  // 下拉框的最小宽度要重新调整一下
+  tr:nth-child(1) > td {
+    > *{
+      min-width: 4*(@buttonSideLength+2*@buttonMargin);
+      max-width: 4*(@buttonSideLength+2*@buttonMargin);
+      margin-bottom: 6px;
+    }
+  }
+
+  tr{
+    margin: 0px;
+    padding: 0px;
+    td{
+      width: @buttonSideLength+2*@buttonMargin;
+      max-width: @buttonSideLength+2*@buttonMargin;
+      min-width: @buttonSideLength+2*@buttonMargin;
+      
+      height: @buttonSideLength+2*@buttonMargin;
+      max-height: @buttonSideLength+2*@buttonMargin;
+      min-height: @buttonSideLength+2*@buttonMargin;
+    }
+  }
+
+  tr td {
+    div.MonthButton{
+      font-weight: bold;
+      cursor: pointer;
+
+      margin: @buttonMargin;
+
+      width: @buttonSideLength;
+      min-width: @buttonSideLength;
+      max-width: @buttonSideLength;
+      height: @buttonSideLength;
+      min-height: @buttonSideLength;
+      max-height: @buttonSideLength;
+      line-height: @buttonSideLength;
+
+      text-align: center;
+
+      border: 1px solid #42a5f5;
+      border-radius: 2px;
+    }
+    div.MonthButton{
+      color: #42a5f5;
+      background-color: white;      
+    }
+    div.MonthButton:hover{
+      color: white;
+      background-color: #42a5f5;
+    }
+
+  }
+}

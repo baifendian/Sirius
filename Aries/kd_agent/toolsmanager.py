@@ -127,6 +127,12 @@ class InfluxDBQueryStrManager:
                       WHERE "type" = '{type}' AND "pod_namespace" = '{namespace}' AND "pod_name"='{pod_name}' AND time > {time_start} and time < {time_end} 
                       GROUP BY time(1m) fill(null)'''
 
+    # 这里本来应该直接 group by time(1440m) （汇总1天数据），但是不知道为什么汇总出来的是2条数据
+    # 因此就降一级，按照小时汇总数据，然后吧所有数据都加起来
+    SQL_NAMESPACE_RESOURCE_USAGE = '''SELECT sum("value") FROM "{measurement}" 
+                      WHERE "type" = '{type}' AND "pod_namespace" = '{namespace}' AND time >= {time_start} and time < {time_end} 
+                      GROUP BY time(60m) fill(null)'''
+
 
     M_CPU_USAGE = 'cpu/usage_rate'
     M_CPU_LIMIT = 'cpu/limit'
@@ -168,6 +174,16 @@ class InfluxDBQueryStrManager:
                 namespace=namespace,
                 type=InfluxDBQueryStrManager.T_POD,
                 pod_name=pod_name)
+
+    @staticmethod
+    def format_namespace_resourceusage_query_str(measurement,time_start ,time_end ,namespace ):
+        return InfluxDBQueryStrManager.SQL_NAMESPACE_RESOURCE_USAGE.format( 
+                measurement=measurement,
+                time_start=time_start,
+                time_end=time_end,
+                namespace=namespace,
+                type=InfluxDBQueryStrManager.T_POD)
+
 
 
     @staticmethod
@@ -270,6 +286,27 @@ class InfluxDBQueryStrManager:
             kd_logger.error( traceback_str )
             return generate_failure( traceback_str )
 
+    @staticmethod
+    def get_namespace_resourceusage_data( measurement,time_start,time_end,namespace ):
+        kd_logger.info( 'call get_namespace_resourceusage_data with args : %s %s %s %s' % (measurement,time_start,time_end,namespace) )
+        try:
+            sql_str = InfluxDBQueryStrManager.format_namespace_resourceusage_query_str(
+                            measurement=measurement,
+                            time_start='%ss' % time_start ,
+                            time_end='%ss' % time_end,
+                            namespace=namespace)
+            kd_logger.info( 'generate sql_str : %s' % (sql_str) )
+
+            retu_data = InfluxDBQueryStrManager.get_influxdb_data(sql_str=sql_str) 
+            if retu_data['code'] == RETU_INFO_SUCCESS:
+                kd_logger.debug( 'get influxdb data by sql_str return data : %s' % retu_data['data'] )
+            else:
+                kd_logger.error( 'get influxdb data by sql_str return error : %s' % retu_data['msg'] )
+            return retu_data
+        except:
+            traceback_str = traceback.format_exc()
+            kd_logger.error( traceback_str )
+            return generate_failure( traceback_str )
 
 
 
