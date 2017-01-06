@@ -35,7 +35,7 @@ file_name='{0}/Aries.yaml'.format(FILE_PATH).replace('\\','/')
 yaml_file = open(file_name)
 OPENSTACK_KEY_PATH = os.path.join(BASE_DIR,"openstack/middleware/common/key.yaml")
 SETTINGS = yaml.load(yaml_file)
-print SETTINGS
+# print SETTINGS
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -322,10 +322,7 @@ IP_CINDER = OPENSTACK_SETTINGS["IP_CINDER"]
 PORT_CINDER = OPENSTACK_SETTINGS["PORT_CINDER"]
 MONITOR_URL = OPENSTACK_SETTINGS['MONITOR_URL']
 
-#启动一个线程开始定时统计配额. default: 10m
-POLL_TIME = 600
-import sumSpace
-sumSpace.run(POLL_TIME)
+
 
 #admin页面白名单IP
 WHITELIST_SETTINGS = SETTINGS['WHITELIST']

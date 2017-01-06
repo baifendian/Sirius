@@ -104,3 +104,5 @@ service crond restart
 
 source /etc/profile
 /opt/Sirius/sbin/Aries.sh start
+
+/opt/Python-2.7/bin/python /opt/Sirius/Aries/manage.py calcsumspace
