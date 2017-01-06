@@ -17,8 +17,6 @@ spec:
           ports:
             - containerPort: 10086
           env:
-          - name: SHARE_PROXY_BASE_URI
-            value: "sirius.k8s.baifendian.com"
           - name: REST_BASE_URI
             value: "sirius.k8s.baifendian.com"
           - name: DATABASES_DEFAULT_ENGINE

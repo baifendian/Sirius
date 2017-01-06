@@ -74,7 +74,7 @@ def postshare(request,path):
     path = os.path.realpath("/%s/%s" %(os.path.sep,path))
     space_name = request.GET.get("spaceName","")
     proxy_link = hashlib.md5("%s%s%s" %(space_name,path,int(time.time()))).hexdigest()
-    proxy_link = "{0}/{1}/{2}".format(settings.SHARE_PROXY_BASE_URI,"CloudService/HDFS/ShowShare",proxy_link)
+    proxy_link = "{0}/{1}/{2}".format(settings.REST_BASE_URI,"CloudService/HDFS/ShowShare",proxy_link)
     hdfs_logger.info("proxy_link:{0}".format(proxy_link))
     # 设置目录权限 chmod -R 755 space_path/path
     exitCode,data = share_cmd(space_name,path,"755")
