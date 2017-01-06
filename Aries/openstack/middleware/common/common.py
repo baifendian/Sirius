@@ -191,8 +191,10 @@ class exec_thread(threading.Thread):
 
 def run_in_thread(target, *args, **kwargs):
     interrupt = False
+    event = threading.Event()
     timeout = kwargs.pop('timeout', 0)
     countdown = timeout
+    kwargs.update({"event":event})
     t = exec_thread(target, *args, **kwargs)
     t.daemon = True
     t.start()
@@ -205,6 +207,7 @@ def run_in_thread(target, *args, **kwargs):
                     raise KeyboardInterrupt
         t.join()
     except KeyboardInterrupt:
+        event.set()
         dlog("method:%s timeout" % target.func_name, lever="ERROR")
         interrupt = True
     if interrupt:
@@ -255,7 +258,9 @@ def cache(cache_dict={}, del_cache="",username="",func_str=""):
     设置每个的缓存的最大生存时间，默认120s(根据实际情况来调整)
     cache_dict:{
                     func:{
-                        tuple_tmp:(fun(*args,**kwargs),time,username)
+                        username:{
+                            tuple_tmp:(fun(*args,**kwargs),time)
+                            }
                     }
                 }
     在用户登入时先清空用户的缓存
@@ -270,10 +275,12 @@ def cache(cache_dict={}, del_cache="",username="",func_str=""):
             if len(cache_dict) >= 100 or cache_dict.__sizeof__() >= (10<<20):   #限制cache长度小于100，容量小于100M
                 cache_dict.clear()
             username = kwargs.get("username","")
-            if fun not in cache_dict or tuple_tmp not in cache_dict[fun][username] or (
+            if fun not in cache_dict or username not in cache_dict[fun] or tuple_tmp not in cache_dict[fun][username] or (
                 time_now - cache_dict[fun][username][tuple_tmp][1]) > 120:
                 if not cache_dict.has_key(fun):
                     cache_dict[fun] = {username:{}}
+                elif not cache_dict[fun].has_key(username):
+                    cache_dict[fun][username] = {}
                 cache_dict[fun][username][tuple_tmp] = (fun(*args, **kwargs), time_now)
             return cache_dict[fun][username][tuple_tmp][0]
         return _exec_fun
