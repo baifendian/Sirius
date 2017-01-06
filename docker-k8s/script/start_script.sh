@@ -102,7 +102,8 @@ echo '0 2 * * * /opt/Python-2.7/bin/python /opt/Sirius/Aries/manage.py pushk8sda
 chmod 600 /var/spool/cron/root
 service crond restart
 
+nohup /opt/Python-2.7/bin/python /opt/Sirius/Aries/manage.py calcsumspace > /opt/Sirius/log/nohup.out 2>&1 &
+
 source /etc/profile
 /opt/Sirius/sbin/Aries.sh start
 
-/opt/Python-2.7/bin/python /opt/Sirius/Aries/manage.py calcsumspace
