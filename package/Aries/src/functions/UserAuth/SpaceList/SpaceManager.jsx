@@ -107,7 +107,7 @@ const SpaceManager = React.createClass({
         <div className="spaceManager">
           {this.is_admin_button[this.props.is_admin].call(this)}
           <div>
-            <FixedTable height={300} data={this.state.memberData} column={this.state.column}></FixedTable>
+            <FixedTable height={300} data={this.state.memberData.totalList} column={this.state.column}></FixedTable>
           </div>
           <div>
             <Modal ref="modal">

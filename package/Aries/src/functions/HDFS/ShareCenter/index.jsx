@@ -78,7 +78,7 @@ export default React.createClass({
         <div>
           <NavigationInPage headText={HdfsConf.getNavigationData({pageName : this.requestArgs.pageName, type : "headText"})} naviTexts={HdfsConf.getNavigationData({pageName:this.requestArgs.pageName,type:"navigationTexts",spaceName:spaceName})} />
           <Fetch style={{minHeight:0}} url={shareUrl} onSuccess={this.handleSuccess}>
-            <FixedTable height={300} data={this.state.data.totalList} column={this.state.column}></FixedTable>
+            <FixedTable height={300} data={this.state.data} column={this.state.column}></FixedTable>
           </Fetch>
         </div>
     )
