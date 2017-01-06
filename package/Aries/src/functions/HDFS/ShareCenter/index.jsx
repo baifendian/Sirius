@@ -14,7 +14,7 @@ import NavigationInPage from 'public/NavigationInPage'
 export default React.createClass({
   handleSuccess(data){
     console.log(data);
-    this.setState({data:data});
+    this.setState({data:data.totalList});
   },
   getInitialState: function() {
     return {
