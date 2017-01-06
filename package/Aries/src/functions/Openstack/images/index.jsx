@@ -49,9 +49,23 @@ export default React.createClass({
     //console.log(this.state.images_list)
   },
   componentDidMount(){
-    let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length
-    let totallength = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].childNodes.length
-    let tdheight = ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].scrollHeight
+    try {
+      let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.lengt
+    }
+    catch(err) {
+      let tdheight = ReactDOM.findDOMNode(this.refs.Table).scrollHeight
+      let height_table = (totallength) * tdheight
+      let totalHeight = document.body.clientHeight
+      totalHeight -= document.getElementById('header').clientHeight
+      totalHeight -= document.getElementById('footer').clientHeight
+      let images_nav = ReactDOM.findDOMNode(this.refs.images_nav).clientHeight
+      let images_bu = ReactDOM.findDOMNode(this.refs.images_bu).clientHeight
+      totalHeight = totalHeight - images_nav - images_bu - 110
+      ReactDOM.findDOMNode(this.refs.Table).style.height = totalHeight + 'px'
+      return
+    }
+    let totallength = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length
+    let tdheight = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes[0].scrollHeight
     let height_table = (totallength) * tdheight
     let totalwidth = (ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].clientWidth - 17) / table_trlengt
     let totalHeight = document.body.clientHeight
@@ -59,15 +73,15 @@ export default React.createClass({
     totalHeight -= document.getElementById('footer').clientHeight
     let images_nav = ReactDOM.findDOMNode(this.refs.images_nav).clientHeight
     let images_bu = ReactDOM.findDOMNode(this.refs.images_bu).clientHeight
-    totalHeight = totalHeight - images_nav - images_bu - 110
+    totalHeight = totalHeight - images_nav - images_bu
     ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[1].style.height = totalHeight + 'px'
     if (totalHeight > height_table) {
       for (let i=0; i< ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes.length;i++) {
         if (i == (table_trlengt - 1)) {
           totalwidth = totalwidth + 17
-          ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width = totalwidth + 'px'
+          ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes[i].style.width = totalwidth + 'px'
         } else {
-          ReactDOM.findDOMNode(this.refs.Table).childNodes[1].childNodes[0].childNodes[0].childNodes[i].style.width = totalwidth + 'px'
+          ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes[i].style.width = totalwidth + 'px'
         }
       }
     }

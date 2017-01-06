@@ -44,8 +44,7 @@ export default React.createClass({
       logs:'',
       logs_loading:'',
       vmdisk:'',
-      //url: "v1/openstack/bfddashboard/instances/",
-      url:"data/a.json",
+      url: "v1/openstack/bfddashboard/instances/",
       column: [{
         title: '名称',
         order: false,
