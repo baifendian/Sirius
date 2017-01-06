@@ -44,7 +44,8 @@ export default React.createClass({
       logs:'',
       logs_loading:'',
       vmdisk:'',
-      url: "v1/openstack/bfddashboard/instances/",
+      //url: "v1/openstack/bfddashboard/instances/",
+      url:"data/a.json",
       column: [{
         title: '名称',
         order: false,
@@ -210,6 +211,7 @@ export default React.createClass({
       ReactDOM.findDOMNode(this.refs.Table).style.height = totalHeight + 'px'
       return
     }
+    let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length
     let totallength = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length
     let tdheight = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes[0].scrollHeight
     let height_table = (totallength + 1) * tdheight

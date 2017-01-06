@@ -50,7 +50,7 @@ export default React.createClass({
   },
   componentDidMount(){
     try {
-      let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.lengt
+      let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length
     }
     catch(err) {
       let tdheight = ReactDOM.findDOMNode(this.refs.Table).scrollHeight
@@ -64,6 +64,7 @@ export default React.createClass({
       ReactDOM.findDOMNode(this.refs.Table).style.height = totalHeight + 'px'
       return
     }
+    let table_trlengt = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length
     let totallength = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes.length
     let tdheight = ReactDOM.findDOMNode(this.refs.Table).childNodes[0].childNodes[1].childNodes[0].scrollHeight
     let height_table = (totallength) * tdheight
